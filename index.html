@@ -2,7 +2,7 @@
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
-    <title>그림 게임</title>
+    <title>그림 짝맞추기 게임</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <style>
         /* 기본 스타일링 */
@@ -18,37 +18,15 @@
             color: #333;
             font-size: 2em;
         }
-        #gameSelection {
-            display: flex;
-            justify-content: center;
-            margin: 20px 0;
-        }
-        .game-option {
-            margin: 0 10px;
-            padding: 10px 20px;
-            background-color: #87cefa;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            transition: background-color 0.3s;
-            font-size: 1em;
-        }
-        .game-option:hover {
-            background-color: #4682b4;
-        }
-        .hidden {
-            display: none;
-        }
         /* 공통 스타일 */
-        #controls, #guessControls {
+        #controls {
             display: flex;
             flex-direction: column;
             align-items: center;
             margin: 10px 0;
             padding: 0 10px;
         }
-        #controls > *, #guessControls > * {
+        #controls > * {
             margin: 5px 0;
             width: 100%;
             max-width: 300px;
@@ -68,7 +46,7 @@
         button:hover {
             background-color: #ff8c00;
         }
-        #score, #scoreGuess {
+        #score {
             font-size: 1.2em;
             margin: 10px 0;
         }
@@ -112,40 +90,6 @@
         .matched {
             background-color: #32cd32 !important;
             cursor: default;
-        }
-        /* 사진 맞추기 게임 스타일 */
-        #guessGameBoard {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            margin: 20px 0;
-        }
-        #guessImage {
-            width: 80%;
-            max-width: 300px;
-            border-radius: 10px;
-            margin-bottom: 20px;
-        }
-        #guessInput {
-            padding: 10px;
-            font-size: 1em;
-            width: 80%;
-            max-width: 300px;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-        }
-        #guessSubmit {
-            margin-top: 10px;
-            padding: 10px 20px;
-            background-color: #ffa500;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            transition: background-color 0.3s;
-        }
-        #guessSubmit:hover {
-            background-color: #ff8c00;
         }
         /* 성공 메시지 스타일 */
         #successMessage {
@@ -192,7 +136,7 @@
             h1 {
                 font-size: 1.8em;
             }
-            #controls > *, #guessControls > * {
+            #controls > * {
                 max-width: 90%;
             }
             #wordDisplay {
@@ -204,7 +148,7 @@
             h1 {
                 font-size: 1.5em;
             }
-            #controls > *, #guessControls > * {
+            #controls > * {
                 max-width: 100%;
             }
             #wordDisplay {
@@ -214,12 +158,6 @@
             #gameBoard {
                 gap: 5px;
                 padding: 5px;
-            }
-            #guessImage {
-                width: 90%;
-            }
-            #guessInput {
-                width: 90%;
             }
         }
         /* 가로 모드일 때 그리드 레이아웃 조정 */
@@ -249,70 +187,41 @@
     </style>
 </head>
 <body>
-    <h1>그림 게임</h1>
-    <!-- 게임 선택 섹션 -->
-    <div id="gameSelection">
-        <button class="game-option" id="matchingGameBtn">그림 짝맞추기 게임</button>
-        <button class="game-option" id="guessGameBtn">사진을 보고 무엇인지 맞추는 게임</button>
+    <h1>그림 짝맞추기 게임</h1>
+    <!-- 게임 시작 섹션 -->
+    <div id="controls">
+        <label for="category">카테고리 선택:</label>
+        <select id="category">
+            <option value="animals">동물</option>
+            <option value="plants">식물</option>
+            <option value="tyniping">티니핑</option>
+            <!-- 필요한 경우 더 추가 -->
+        </select>
+        <label for="difficulty">난이도 선택:</label>
+        <select id="difficulty">
+            <option value="easy">쉬움 (4열 x 4행, 16칸)</option>
+            <option value="medium">보통 (6열 x 6행, 36칸)</option>
+            <option value="hard">어려움 (8열 x 8행, 64칸)</option>
+        </select>
+        <button id="startMatchingGame">게임 시작</button>
     </div>
-
-    <!-- 그림 짝맞추기 게임 섹션 -->
-    <div id="matchingGame" class="hidden">
-        <div id="controls">
-            <label for="category">카테고리 선택:</label>
-            <select id="category">
-                <option value="animals">동물</option>
-                <option value="plants">식물</option>
-                <option value="tyniping">티니핑</option>
-                <!-- 필요한 경우 더 추가 -->
-            </select>
-            <label for="difficulty">난이도 선택:</label>
-            <select id="difficulty">
-                <option value="easy">쉬움 (4열 x 4행, 16칸)</option>
-                <option value="medium">보통 (6열 x 6행, 36칸)</option>
-                <option value="hard">어려움 (8열 x 8행, 64칸)</option>
-            </select>
-            <button id="startMatchingGame">게임 시작</button>
-        </div>
-        <div id="score">점수: 0</div>
-        <div id="wordDisplay"></div>
-        <div class="game-board easy" id="gameBoard">
-            <!-- 카드가 여기에 생성됩니다 -->
-        </div>
-    </div>
-
-    <!-- 사진 맞추기 게임 섹션 -->
-    <div id="guessGame" class="hidden">
-        <div id="guessControls">
-            <label for="guessCategory">카테고리 선택:</label>
-            <select id="guessCategory">
-                <option value="animals">동물</option>
-                <option value="plants">식물</option>
-                <option value="tyniping">티니핑</option>
-                <!-- 필요한 경우 더 추가 -->
-            </select>
-            <button id="startGuessGame">게임 시작</button>
-        </div>
-        <div id="scoreGuess">점수: 0</div>
-        <div id="guessGameBoard">
-            <img id="guessImage" src="" alt="Guess the Picture" class="hidden">
-            <input type="text" id="guessInput" placeholder="무엇일까요?" class="hidden">
-            <button id="guessSubmit" class="hidden">제출</button>
-        </div>
+    <div id="score">점수: 0</div>
+    <div id="wordDisplay"></div>
+    <div class="game-board easy" id="gameBoard">
+        <!-- 카드가 여기에 생성됩니다 -->
     </div>
 
     <!-- 성공 메시지 -->
     <div id="successMessage">
         <img src="https://i.imgur.com/4AI6B5K.png" alt="축하 이미지">
-        <div>축하해요! 모든 게임을 완료하셨습니다!</div>
+        <div>축하해요! 모든 짝을 맞췄어요!</div>
         <button id="restartButton">다시 하기</button>
     </div>
 
     <!-- 오디오 요소 -->
-    <audio id="correctSound" src="https://www.soundjay.com/buttons/sounds/button-4.mp3" preload="auto"></audio>
+    <audio id="correctSoundEffect" src="https://freesound.org/data/previews/66/66762_634166-lq.mp3" preload="auto"></audio>
     <audio id="incorrectSound" src="https://www.soundjay.com/buttons/sounds/button-10.mp3" preload="auto"></audio>
-    <audio id="correctSoundEffect" src="https://cdn.pixabay.com/download/audio/2024/10/25/audio_593a2d86e9.mp3?filename=bubblepop-254773.mp3" preload="auto"></audio>
-
+    
     <script>
         // 카테고리별 데이터 (충분한 아이템 제공)
         const categories = {
@@ -427,10 +336,7 @@
                 { name: '덜덜핑', image: 'https://i.namu.wiki/i/Thml6I35uJiiUb94DUyeuCvFPCUpNi2F5-k4lw_d5Zn-rMVzXXowTfP1GbCoUkDpx-HxYjP6EJi7S0bRVMRp-N2Uht33lJL4PSUDVaKf08bW0V9zZAlcWk368Ju4qP2xPGNheU1AqQOAjCqaUo6YbQ.webp' },
                 { name: '그림핑', image: 'https://i.namu.wiki/i/Zp2rfX5TzThzF-2BDoFjwQ1upLURC7JpKhSCmfUk-oVV02XLJdELP7dmJ7bKgHWF0B8e5abN43Jz2RWcItJ0wrCmajiJrIq4fseYclXzNxU_QMj2DmoLl0W6NbCvZTMEm-81j0XOPvAvA5i4B3jDrQ.webp' },
                 { name: '무거핑', image: 'https://i.namu.wiki/i/7JN9ur-gKfyjF2alOjd_9RE0xXVpv17Vg4hMaqN5meshp3_bXQ2IiY2giC4x-a56kGfHjRTM3rOvduZpl6phjuo2kMUYIbl8EhKWSAy68GrkjlPd38UyhRkG7c6O-rC5XiGY_qJkPwuO30DVuJ26VQ.webp' },
-                { name: '꺼꿀핑', image: 'https://i.namu.wiki/i/VqyVB1ieN7oIM2_O8jHDQLdYHnSbkNroHfvMemDGdp1voWxRwdGgg9P-6FXtm1aB1XkS3WBoVBlZxzLN1TZEpEv4WoCn7qh4wrSmQkgzhwAj856l4VjqaV6vlfcESZlxAzFF_tiwhu5sgeQfoTpLlw.webp' },
-                { name: '씽씽핑', image: 'https://i.namu.wiki/i/U43UiyeK9-fEeyTA9LjZN4QDFc3EnPXrDfIQdnjEDGAISblhyz2FMzPtY-vp_Fm01F00FgqjNMoBn53t5BezNYk7nu3mHs9JeMYjOQSeCe9lqkKQSiSZiFZVQPf54xhDA_5Qm2LzRg2cRIeqspXlFw.webp' },
-                { name: '베베핑', image: 'https://i.namu.wiki/i/R9O-FTitzyZ2-sK7e6p7i83cNn01wV7XI5F-UUcOM3D6wUHAjmDXBrGSJzycXi9KO_ukFjYwRFHwfYB-0IIplFDpDJwOv4BqNUoWK8dSneFWBLjwckbZ0fURmmXzD1oipmn93vGVH9H7FJK0DqAtTw.webp' },
-                { name: '코자핑', image: 'https://i.namu.wiki/i/2yMIQNSWO31Nzo44vff8_qBoPkJldMxmdkLbLx4r3THwjXbshwXPBCdvqR4_7-TpTTw4r50LwUt6hvGMfcIMV9bJ-Tq7jY6mgSEUwDHpQ6Y0fmUaNUm4fZH_Q6FqWrWMjBr7p6ARtALtyopJpCm_gw.webp' },
+                { name: '꺼꿀핑', image: 'https://i.namu.wiki/i/VqyVB1ieN7oIM2_O8jHDQLdYHnSbkNroHfvMemDGdp1voWxRwdGgg9P-6FXtm1aB1XkS3WBoVBlZxzLN1TZEpEv4WoCn7qh4wrSmQkgzhwAj856l4VjqaV6vlfcESZlxAzFF_tiwhu5sgeQfoTpLlw.webp' }
             ],
             // 다른 카테고리 추가 가능
         };
@@ -445,15 +351,7 @@
         let matchedPairs = 0;
         let isProcessing = false;
 
-        // 사진 맞추기 게임 변수
-        let guessScore = 0;
-        let currentGuessIndex = 0;
-        let guessImages = [];
-        let guessCategoryItems = [];
-        let timer = null;
-
         const matchingGameSection = document.getElementById('matchingGame');
-        const guessGameSection = document.getElementById('guessGame');
         const gameSelection = document.getElementById('gameSelection');
 
         const matchingStartButton = document.getElementById('startMatchingGame');
@@ -463,49 +361,19 @@
         const scoreDisplay = document.getElementById('score');
         const wordDisplay = document.getElementById('wordDisplay');
 
-        const guessStartButton = document.getElementById('startGuessGame');
-        const guessCategorySelect = document.getElementById('guessCategory');
-        const guessGameBoard = document.getElementById('guessGameBoard');
-        const guessImage = document.getElementById('guessImage');
-        const guessInput = document.getElementById('guessInput');
-        const guessSubmit = document.getElementById('guessSubmit');
-        const scoreGuessDisplay = document.getElementById('scoreGuess');
-
         const successMessage = document.getElementById('successMessage');
         const restartButton = document.getElementById('restartButton');
 
         // 오디오 요소
-        const correctSound = document.getElementById('correctSound');
+        const correctSoundEffect = document.getElementById('correctSoundEffect');
         const incorrectSound = document.getElementById('incorrectSound');
-
-        // 게임 선택 버튼
-        const matchingGameBtn = document.getElementById('matchingGameBtn');
-        const guessGameBtn = document.getElementById('guessGameBtn');
-
-        // 게임 선택 이벤트
-        matchingGameBtn.addEventListener('click', () => {
-            matchingGameSection.classList.remove('hidden');
-            guessGameSection.classList.add('hidden');
-            gameSelection.classList.add('hidden');
-        });
-
-        guessGameBtn.addEventListener('click', () => {
-            guessGameSection.classList.remove('hidden');
-            matchingGameSection.classList.add('hidden');
-            gameSelection.classList.add('hidden');
-        });
 
         // 게임 시작 버튼 이벤트 (그림 짝맞추기)
         matchingStartButton.addEventListener('click', () => {
             initializeMatchingGame();
         });
 
-        // 게임 시작 버튼 이벤트 (사진 맞추기)
-        guessStartButton.addEventListener('click', () => {
-            initializeGuessGame();
-        });
-
-        // 그림 짝맞추기 게임 초기화 함수
+        // 게임 시작 버튼 이벤트
         function initializeMatchingGame() {
             // 사용자가 선택한 카테고리 값을 가져와 selectedCategory에 할당
             selectedCategory = categorySelectMatching.value;
@@ -601,8 +469,7 @@
                 checkMatch();
             }
         }
-
-
+    
         // 매치 확인 함수
         function checkMatch() {
             if (firstCard.dataset.image === secondCard.dataset.image) {
@@ -613,10 +480,10 @@
                 score += 10; // +10점
                 scoreDisplay.textContent = `점수: ${score}`;
                 displayWord(firstCard.dataset.name);
-        
-                // 매치 성공 시 단어 읽기 (제거)
-                // speakWord(firstCard.dataset.name);
-        
+                
+                // 매치된 단어를 읽어줍니다. 카테고리를 전달
+                // speakWord(firstCard.dataset.name, selectedCategory); // 제거
+                
                 // 카테고리가 'tyniping'인 경우 캐릭터별 효과음 재생
                 if (selectedCategory === 'tyniping') {
                     const characterSound = categories.tyniping.find(char => char.name === firstCard.dataset.name)?.sound;
@@ -624,9 +491,9 @@
                         playCharacterSound(characterSound);
                     }
                 }
-        
+    
                 resetCards();
-        
+    
                 // 모든 짝을 맞췄는지 확인
                 if (matchedPairs === pairsCount) {
                     setTimeout(() => {
@@ -634,11 +501,7 @@
                         playCorrectSoundEffect();
                         showSuccessMessage('축하해요! 모든 짝을 맞췄어요!');
                     }, 500);
-                } else {
-                    // 매치 성공 시 짧은 효과음 재생
-                    playCorrectSoundEffect();
                 }
-                
             } else {
                 // 매치되지 않은 경우
                 setTimeout(() => {
@@ -650,27 +513,19 @@
                     secondContent.style.display = 'flex';
                     score -= 2; // -2점
                     scoreDisplay.textContent = `점수: ${score}`;
+                    // playIncorrectSound(); // 필요 시 주석 해제
                     resetCards();
                 }, 1000);
             }
         }
-        
-
-        function playCorrectSoundEffect() {
-            const correctSoundEffect = document.getElementById('correctSoundEffect');
-            correctSoundEffect.currentTime = 0;
-            correctSoundEffect.play();
-        }
-        
-        
-
+    
         // 카드 상태 초기화
         function resetCards() {
             firstCard = null;
             secondCard = null;
             isProcessing = false;
         }
-
+    
         // 성공 메시지 표시
         function showSuccessMessage(message) {
             successMessage.innerHTML = `
@@ -679,55 +534,50 @@
                 <button id="restartButton">다시 하기</button>
             `;
             successMessage.style.display = 'flex';
-
+    
             // 새로 추가된 'restartButton'에 이벤트 리스너 추가
             const newRestartButton = document.getElementById('restartButton');
             newRestartButton.addEventListener('click', () => {
                 restartGame();
             });
         }
-
+    
         // 다시 시작 함수
         function restartGame() {
             // 선택된 게임에 따라 초기화
-            if (!matchingGameSection.classList.contains('hidden')) {
-                initializeMatchingGame();
-            } else if (!guessGameSection.classList.contains('hidden')) {
-                initializeGuessGame();
-            }
+            initializeMatchingGame();
             successMessage.style.display = 'none';
         }
-
+    
         // 영어 단어 표시 함수
         function displayWord(word) {
             wordDisplay.textContent = word;
         }
-
+    
         // 단어 소리 내어 읽기 함수
         function speakWord(word, category) {
             const utterance = new SpeechSynthesisUtterance(word);
-
+            
             // 카테고리에 따라 언어 설정
             if (category === 'tyniping') {
                 utterance.lang = 'ko-KR'; // 한국어
             } else {
                 utterance.lang = 'en-US'; // 영어
             }
-
+            
             // 말하기 속도 조절 (기본값 1, 높을수록 빠름)
-            utterance.rate = 1.5; // 1.5배 속도            
-
-            // 음성 목록이 로드되었는지 확인하고 적절한 음성 설정
+            utterance.rate = 1.5; // 1.5배 속도
+    
+            // 음성 설정
             const voices = window.speechSynthesis.getVoices();
             const selectedVoice = voices.find(voice => voice.lang === utterance.lang);
             if (selectedVoice) {
                 utterance.voice = selectedVoice;
             }
-
+            
             window.speechSynthesis.speak(utterance);
         }
-
-
+    
         // 배열 섞기 함수 (Fisher-Yates Shuffle)
         function shuffleArray(array) {
             for (let i = array.length - 1; i > 0; i--) {
@@ -736,122 +586,20 @@
             }
             return array;
         }
+        
         // 특정 효과음 재생 함수
         function playCharacterSound(url) {
             const audio = new Audio(url);
             audio.play();
         }
-        // 소리 재생 함수
-        function playCorrectSound() {
-            correctSound.currentTime = 0;
-            correctSound.play();
+        
+        // 짝이 최종 맞았을 때 소리 재생 함수
+        function playCorrectSoundEffect() {
+            const correctSoundEffect = document.getElementById('correctSoundEffect');
+            correctSoundEffect.currentTime = 0;
+            correctSoundEffect.play();
         }
-
-        function playIncorrectSound() {
-            incorrectSound.currentTime = 0;
-            incorrectSound.play();
-        }
-
-        // 사진 맞추기 게임 초기화 함수
-        function initializeGuessGame() {
-            // 점수 및 상태 초기화
-            guessScore = 0;
-            currentGuessIndex = 0;
-            scoreGuessDisplay.textContent = `점수: ${guessScore}`;
-            wordDisplay.textContent = '';
-            successMessage.style.display = 'none';
-
-            // 카테고리 선택
-            const selectedGuessCategory = guessCategorySelect.value;
-            guessCategoryItems = categories[selectedGuessCategory];
-            if (!guessCategoryItems || guessCategoryItems.length === 0) {
-                alert('선택한 카테고리에 아이템이 없습니다.');
-                return;
-            }
-
-            // 무작위로 이미지 선택 (전체 아이템 사용 가능)
-            guessImages = shuffleArray([...guessCategoryItems]);
-
-            console.log(`사진 맞추기 게임 이미지 수: ${guessImages.length}`);
-
-            // 시작 첫 이미지
-            currentGuessIndex = 0;
-            showGuessImage();
-        }
-
-        // 사진 맞추기 게임 이미지 표시 함수
-        function showGuessImage() {
-            if (currentGuessIndex >= guessImages.length) {
-                // 모든 이미지 완료
-                setTimeout(() => showSuccessMessage('축하해요! 모든 사진을 맞추셨습니다!'), 500);
-                return;
-            }
-
-            const currentImage = guessImages[currentGuessIndex];
-            guessImage.src = currentImage.image;
-            guessImage.alt = 'Guess the Picture';
-            guessImage.classList.remove('hidden');
-            guessInput.value = '';
-            guessInput.disabled = true;
-            guessSubmit.disabled = true;
-            guessInput.classList.add('hidden');
-            guessSubmit.classList.add('hidden');
-
-            // 3초 후 입력 활성화
-            timer = setTimeout(() => {
-                guessInput.disabled = false;
-                guessSubmit.disabled = false;
-                guessInput.classList.remove('hidden');
-                guessSubmit.classList.remove('hidden');
-                guessInput.focus();
-            }, 3000);
-        }
-
-        // 사진 맞추기 제출 버튼 이벤트
-        guessSubmit.addEventListener('click', () => {
-            const userGuess = guessInput.value.trim().toLowerCase();
-            if (userGuess === '') return;
-
-            const correctAnswer = guessImages[currentGuessIndex].name.toLowerCase();
-
-            if (userGuess === correctAnswer) {
-                alert('정답입니다!');
-                guessScore += 10;
-                scoreGuessDisplay.textContent = `점수: ${guessScore}`;
-            } else {
-                alert(`틀렸습니다! 정답은 "${guessImages[currentGuessIndex].name}"입니다.`);
-                guessScore -= 2;
-                scoreGuessDisplay.textContent = `점수: ${guessScore}`;
-            }
-
-            currentGuessIndex++;
-            clearTimeout(timer);
-            showGuessImage();
-        });
-
-        // 엔터키로 제출 가능하게
-        guessInput.addEventListener('keyup', (event) => {
-            if (event.key === 'Enter') {
-                guessSubmit.click();
-            }
-        });
-
-        // 사진 맞추기 성공 메시지
-        function showGuessSuccessMessage(message) {
-            successMessage.innerHTML = `
-                <img src="https://i.imgur.com/4AI6B5K.png" alt="축하 이미지">
-                <div>${message}</div>
-                <button id="restartButton">다시 하기</button>
-            `;
-            successMessage.style.display = 'flex';
-
-            // 새로 추가된 'restartButton'에 이벤트 리스너 추가
-            const newRestartButton = document.getElementById('restartButton');
-            newRestartButton.addEventListener('click', () => {
-                restartGame();
-            });
-        }
-
+        
         // 게임 재시작 버튼 이벤트
         restartButton.addEventListener('click', () => {
             restartGame();
