@@ -585,23 +585,23 @@
         // 그림 짝맞추기 게임 카드 뒤집기 함수
         function flipCard() {
             if (isProcessing || this.classList.contains('matched') || this === firstCard) return;
-    this.style.backgroundImage = `url("${this.dataset.image}")`;
-    const cardContent = this.querySelector('.card-content');
-    cardContent.style.display = 'none';
+            this.style.backgroundImage = `url("${this.dataset.image}")`;
+            const cardContent = this.querySelector('.card-content');
+            cardContent.style.display = 'none';
+        
+            // 클릭한 카드의 단어를 읽어줍니다. 현재 카테고리를 함께 전달
+            speakWord(this.dataset.name, selectedCategory);
+        
+            if (!firstCard) {
+                firstCard = this;
+            } else {
+                secondCard = this;
+                isProcessing = true;
+                checkMatch();
+            }
+        }
 
-    // 클릭한 카드의 단어를 읽어줍니다.
-    speakWord(this.dataset.name);
 
-    if (!firstCard) {
-        firstCard = this;
-    } else {
-        secondCard = this;
-        isProcessing = true;
-        checkMatch();
-    }
-}
-
-        // 매치 확인 함수
         // 매치 확인 함수
         function checkMatch() {
             if (firstCard.dataset.image === secondCard.dataset.image) {
@@ -612,18 +612,20 @@
                 score += 10; // +10점
                 scoreDisplay.textContent = `점수: ${score}`;
                 displayWord(firstCard.dataset.name);
-                speakWord(firstCard.dataset.name);
+                
+                // 매치된 단어를 읽어줍니다. 카테고리를 전달
+                speakWord(firstCard.dataset.name, selectedCategory);
                 
                 // 카테고리가 'tyniping'인 경우 캐릭터별 효과음 재생
                 if (selectedCategory === 'tyniping') {
                     const characterSound = categories.tyniping.find(char => char.name === firstCard.dataset.name)?.sound;
                     if (characterSound) {
                         playCharacterSound(characterSound);
-                    } else {
-                       // playCorrectSound(); // 기본 효과음 재생
                     }
+                    // 기본 효과음은 필요 없으므로 주석 처리
                 } else {
-                    //playCorrectSound(); // 기본 효과음 재생
+                    // 다른 카테고리의 경우 기본 효과음 재생을 원하면 주석 해제
+                    // playCorrectSound();
                 }
                 
                 resetCards();
@@ -647,6 +649,7 @@
                 }, 1000);
             }
         }
+
 
 
         // 카드 상태 초기화
@@ -689,11 +692,26 @@
         }
 
         // 단어 소리 내어 읽기 함수
-        function speakWord(word) {
+        function speakWord(word, category) {
             const utterance = new SpeechSynthesisUtterance(word);
-            utterance.lang = 'en-US';
+
+            // 카테고리에 따라 언어 설정
+            if (category === 'tyniping') {
+                utterance.lang = 'ko-KR'; // 한국어
+            } else {
+                utterance.lang = 'en-US'; // 영어
+            }
+
+            // 음성 목록이 로드되었는지 확인하고 적절한 음성 설정
+            const voices = window.speechSynthesis.getVoices();
+            const selectedVoice = voices.find(voice => voice.lang === utterance.lang);
+            if (selectedVoice) {
+                utterance.voice = selectedVoice;
+            }
+
             window.speechSynthesis.speak(utterance);
         }
+
 
         // 배열 섞기 함수 (Fisher-Yates Shuffle)
         function shuffleArray(array) {
