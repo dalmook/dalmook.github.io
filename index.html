@@ -311,7 +311,7 @@
     <!-- 오디오 요소 -->
     <audio id="correctSound" src="https://www.soundjay.com/buttons/sounds/button-4.mp3" preload="auto"></audio>
     <audio id="incorrectSound" src="https://www.soundjay.com/buttons/sounds/button-10.mp3" preload="auto"></audio>
-    <audio id="clapSound" src="https://www.soundjay.com/button/sounds/button-19.mp3" preload="auto"></audio>
+    <audio id="correctSoundEffect" src="https://freesound.org/data/previews/66/66762_634166-lq.mp3" preload="auto"></audio>
 
     <script>
         // 카테고리별 데이터 (충분한 아이템 제공)
@@ -630,11 +630,15 @@
                 // 모든 짝을 맞췄는지 확인
                 if (matchedPairs === pairsCount) {
                     setTimeout(() => {
-                        // 박수 소리 재생
-                        playClapSound();
+                        // 짧은 효과음 재생
+                        playCorrectSoundEffect();
                         showSuccessMessage('축하해요! 모든 짝을 맞췄어요!');
                     }, 500);
+                } else {
+                    // 매치 성공 시 짧은 효과음 재생
+                    playCorrectSoundEffect();
                 }
+                
             } else {
                 // 매치되지 않은 경우
                 setTimeout(() => {
@@ -652,11 +656,12 @@
         }
         
 
-        function playClapSound() {
-            const clapSound = document.getElementById('clapSound');
-            clapSound.currentTime = 0;
-            clapSound.play();
+        function playCorrectSoundEffect() {
+            const correctSoundEffect = document.getElementById('correctSoundEffect');
+            correctSoundEffect.currentTime = 0;
+            correctSoundEffect.play();
         }
+        
         
 
         // 카드 상태 초기화
