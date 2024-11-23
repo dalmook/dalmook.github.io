@@ -74,7 +74,28 @@
         }
         #wordDisplay.grow {
             transform: scale(1.5);
-        }        
+        }
+        #recordSection {
+            padding: 20px;
+            background-color: #f9f9f9;
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            text-align: center;
+            margin: 20px auto;
+            max-width: 500px;
+        }
+        
+        #recordTable {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 10px 0;
+        }
+        
+        #recordTable th, #recordTable td {
+            border: 1px solid #ccc;
+            padding: 8px;
+            text-align: center;
+        }                
         .card {
             width: 100%;
             padding-top: 100%; /* 정사각형을 유지하기 위해 비율 설정 */
@@ -242,7 +263,28 @@
     <div class="game-board easy" id="gameBoard">
         <!-- 카드가 여기에 생성됩니다 -->
     </div>
-
+    <div id="recordSection" style="display: none;">
+        <h2>🎉 클리어 기록 저장 🎉</h2>
+        <label for="playerName">이름을 입력하세요:</label>
+        <input type="text" id="playerName" placeholder="이름">
+        <button id="saveRecordButton">저장</button>
+        <h3>기록 보기</h3>
+        <table id="recordTable">
+            <thead>
+                <tr>
+                    <th>카테고리</th>
+                    <th>난이도</th>
+                    <th>이름</th>
+                    <th>점수</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- 기록이 여기에 추가됩니다 -->
+            </tbody>
+        </table>
+        <button id="backToGameButton">게임으로 돌아가기</button>
+    </div>
+    
     <!-- 성공 메시지 -->
     <div id="successMessage">
         <img src="https://cdn-icons-png.flaticon.com/128/5361/5361046.png" alt="축하 이미지">
@@ -526,7 +568,8 @@
         let score = 0;
         let matchedPairs = 0;
         let isProcessing = false;
-
+        
+        const records = [];
         const matchingStartButton = document.getElementById('startMatchingGame');
         const categorySelectMatching = document.getElementById('category');
         const difficultySelect = document.getElementById('difficulty');
@@ -699,6 +742,7 @@
                         // 짧은 효과음 재생
                         playCorrectSoundEffect();
                         showSuccessMessage('축하해요! 모든 짝을 맞췄어요!');
+                        showRecordSection();
                     }, 500);
                 }
             } else {
@@ -813,6 +857,55 @@
             correctSoundEffect.play();
         }
         
+        //게임 클리어 시 이름을 입력받고 저장하는 로직 추가:
+        function showRecordSection() {
+            document.getElementById('recordSection').style.display = 'block';
+            document.getElementById('successMessage').style.display = 'none';
+        }
+        
+        document.getElementById('saveRecordButton').addEventListener('click', () => {
+            const playerName = document.getElementById('playerName').value.trim();
+            if (!playerName) {
+                alert('이름을 입력하세요!');
+                return;
+            }
+        
+            // 기록 저장
+            records.push({
+                category: selectedCategory,
+                difficulty: difficultySelect.value,
+                name: playerName,
+                score: score,
+            });
+        
+            // 기록 표시
+            updateRecordTable();
+        
+            // 기록 섹션 숨기고 게임으로 돌아가기
+            document.getElementById('recordSection').style.display = 'none';
+            initializeMatchingGame(); // 새 게임 시작
+        });
+        
+        document.getElementById('backToGameButton').addEventListener('click', () => {
+            document.getElementById('recordSection').style.display = 'none';
+            initializeMatchingGame(); // 새 게임 시작
+        });
+        //기록 테이블을 업데이트하는 함수 추가:
+        function updateRecordTable() {
+            const recordTableBody = document.getElementById('recordTable').querySelector('tbody');
+            recordTableBody.innerHTML = ''; // 기존 내용 초기화
+        
+            records.forEach(record => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${record.category}</td>
+                    <td>${record.difficulty}</td>
+                    <td>${record.name}</td>
+                    <td>${record.score}</td>
+                `;
+                recordTableBody.appendChild(row);
+            });
+        }
         // 게임 재시작 버튼 이벤트
         restartButton.addEventListener('click', () => {
             restartGame();
