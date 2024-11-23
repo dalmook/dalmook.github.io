@@ -65,6 +65,16 @@
             max-width: 100%;
             margin: 0 auto 20px;
         }
+        #wordDisplay {
+            margin: 10px 0;
+            font-size: 1.5em;
+            color: #333;
+            height: 1.5em;
+            transition: transform 0.3s ease, color 0.3s ease;
+        }
+        #wordDisplay.grow {
+            transform: scale(1.5);
+        }        
         .card {
             width: 100%;
             padding-top: 100%; /* 정사각형을 유지하기 위해 비율 설정 */
@@ -618,7 +628,25 @@
                 checkMatch();
             }
         }
-
+        function updateScore(delta) {
+            // 점수 업데이트
+            score += delta;
+            scoreDisplay.textContent = `점수: ${score}`;
+        
+            // 깜빡이는 효과
+            const originalColor = scoreDisplay.style.color;
+            if (delta < 0) {
+                scoreDisplay.style.color = 'red'; // 깜빡이는 색상: 빨간색
+            } else {
+                scoreDisplay.style.color = 'blue'; // 깜빡이는 색상: 파란색
+            }
+        
+            // 0.5초 후 원래 색상으로 복원
+            setTimeout(() => {
+                scoreDisplay.style.color = originalColor;
+            }, 500);
+        }
+        
         // 매치 확인 함수
         function checkMatch() {
             if (firstCard.dataset.image === secondCard.dataset.image) {
@@ -626,7 +654,7 @@
                 firstCard.classList.add('matched');
                 secondCard.classList.add('matched');
                 matchedPairs++;
-                score += 10; // +10점
+                updateScore(10); // 점수 +10
                 scoreDisplay.textContent = `점수: ${score}`;
                 
                 // 매치된 단어를 읽어주는 부분 제거
@@ -659,7 +687,7 @@
                     const secondContent = secondCard.querySelector('.card-content');
                     firstContent.style.display = 'flex';
                     secondContent.style.display = 'flex';
-                    score -= 2; // -2점
+                    updateScore(-2); // 점수 -2
                     scoreDisplay.textContent = `점수: ${score}`;
                     // playIncorrectSound(); // 필요 시 주석 해제
                     resetCards();
@@ -700,7 +728,14 @@
         // 영어 단어 표시 함수 (필요 시 제거)
         function displayWord(word) {
             wordDisplay.textContent = word;
+        
+            // 애니메이션 효과 추가
+            wordDisplay.classList.add('grow');
+            setTimeout(() => {
+                wordDisplay.classList.remove('grow');
+            }, 300); // 0.3초 후 원래 크기로 복원
         }
+        
 
         // 단어 소리 내어 읽기 함수
         function speakWord(word, category) {
