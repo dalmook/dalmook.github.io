@@ -87,6 +87,7 @@
             justify-content: center;
             font-size: 2em;
         }
+        /* .card-info 클래스는 더 이상 사용되지 않으므로 필요 시 제거 가능 */
         .card-info {
             position: absolute;
             bottom: 10px;
@@ -465,7 +466,7 @@
                 { name: '띠용핑', image: 'https://i.namu.wiki/i/UaZHst54YlGioIjt434yJn0R4HmoMUAWtHfe4yJcqqrK0Qw9NiteUy1Olyi7VxtX4RKzyAEOHpJbDptH6FVLQ4uaWcvFLxCddJXxOyukHHYSO7n9q9AMaPVlcnfY1mIx-8I8qIT89t8WNojJtlw8ZA.webp', desc: '캐릭터 설명' },
                 { name: '주르핑', image: 'https://i.namu.wiki/i/wx7TDh8gp4SizPKFHQkiEa0E3Z0fEl6XoaWgJt3qvtNnvlQsTW-7KabXZznQNxH2vZlKln6aKcUx3hogHg7R-jXMNr4igMMEOQN9jU_E9kpEVDum7WSPwh75iBNJtJGD5grRVL1rZ8TCjjnwfT3NXA.webp', desc: '캐릭터 설명' },
                 { name: '차나핑', image: 'https://i.namu.wiki/i/yyd6xRFZ6VdChQszgBCLsqCxW5CQ6U_gt3c7HbS9qeiMvEhaABMaLp6qfHIZthwkfgPlw8yJwALh5FYpG49oaLW2_2sedYYrbj_bL9zp-Vrda49aT83rhuoPpUWrk26DUTTgxOax5wSmLNDux5QuuA.webp', desc: '캐릭터 설명' },
-                { name: '따라핑', image: 'https://i.namu.wiki/i/lZSWlgbwRwETrMK9R2heCY62WEKrH5dWf0vD-fUD4eh9YhJqW9YWUarrwtpM9CMcbW9Glu6KAFKMbj-neTol0zMVKuyYbSLR6RP1sLfCSybcNYOItYMvLLqzkvSsVBLKVtIHScRxIOdG96eKbQnecQ.webp', desc: '캐릭터 설명' },
+                { name: '따라핑', image: 'https://i.namu.wiki/i/lZSWlgbwRwETrMK9R2heCY62WEKrH5dWf0vD-fUD4eh9YhJqW9YWUarrwtpM9CMcbW9Glu6KAFKMbj-neTol0zMVKuyYbSLR6RP1sLfCSybcNYOItYMvLLqzkvSsVBLKVtIHScRxIOdYuqwM7LUfOcg.webp', desc: '캐릭터 설명' },
                 { name: '나르핑', image: 'https://i.namu.wiki/i/_qHbDRMHXivN4IlpuXqMtXTzZjbCauj2R33Zh_Zvk1G4u_kKH3_auqdz-ItIQZebmWI4cKrywn59wM5eIgIN-nSpRkYsLDCGQD2AJZHJjZ1QJL_S6ExqFdLuddanftH-lMOQxGB7BuT09zRR6_ieMA.webp', desc: '캐릭터 설명' },
                 { name: '무셔핑', image: 'https://i.namu.wiki/i/pjstZFsiY4cwl60ogVs1kx6duJTCT-uqjrPG6DnFu7XGyTi_6UypXq25ZQFGkEEWhnuACx69W-ZAvRp2c-36Ab38tEv2ihH8jbWpEol6AEMqoIcptGi9k1Bqy5m_nhMI4oyHkSaW_lKMnsg2oMr99g.webp', desc: '캐릭터 설명' },
                 { name: '투투핑', image: 'https://i.namu.wiki/i/AgbmD6XHvA9XY7XJTlpsac5YD5510OT__RTVjbBtfSJyF1gjK5hpDQQXRlE_41HHCl7pIknENw56Qh89d3ElTvIj49XYlLk7Ue3I5ud-E6OAX1ubrDTwXHkm_JZPQ6PGloW5datRMSACGkypOQzoBA.webp', desc: '캐릭터 설명' },
@@ -602,8 +603,12 @@
             // 클릭한 카드의 단어와 설명을 읽어줍니다. 현재 카테고리를 함께 전달
             speakWord(this.dataset.name, selectedCategory);
 
-            // 카드에 name과 desc를 표시
-            displayCardInfo(this);
+            // 클릭한 카드의 이름과 설명을 점수 아래에 표시
+            if (this.dataset.desc) {
+                displayWord(`${this.dataset.name} (${this.dataset.desc})`);
+            } else {
+                displayWord(`${this.dataset.name}`);
+            }
 
             if (!firstCard) {
                 firstCard = this;
@@ -612,36 +617,6 @@
                 isProcessing = true;
                 checkMatch();
             }
-        }
-
-        // 카드에 name과 desc 표시 함수
-        function displayCardInfo(card) {
-            // 기존에 이미 info가 표시되었으면 제거
-            const existingInfo = card.querySelector('.card-info');
-            if (existingInfo) {
-                existingInfo.remove();
-            }
-
-            // info 컨테이너 생성
-            const infoDiv = document.createElement('div');
-            infoDiv.classList.add('card-info');
-
-            // name 추가
-            const nameSpan = document.createElement('span');
-            nameSpan.classList.add('card-name');
-            nameSpan.textContent = card.dataset.name;
-            infoDiv.appendChild(nameSpan);
-
-            // desc가 있는 경우 추가
-            if (card.dataset.desc) {
-                const descSpan = document.createElement('span');
-                descSpan.classList.add('card-desc');
-                descSpan.textContent = `(${card.dataset.desc})`;
-                infoDiv.appendChild(descSpan);
-            }
-
-            // infoDiv를 카드에 추가
-            card.appendChild(infoDiv);
         }
 
         // 매치 확인 함수
@@ -653,7 +628,6 @@
                 matchedPairs++;
                 score += 10; // +10점
                 scoreDisplay.textContent = `점수: ${score}`;
-                displayWord(firstCard.dataset.name);
                 
                 // 매치된 단어를 읽어주는 부분 제거
                 // speakWord(firstCard.dataset.name, selectedCategory);
@@ -740,14 +714,23 @@
             }
             
 
-            // 음성 설정
-            const voices = window.speechSynthesis.getVoices();
-            const selectedVoice = voices.find(voice => voice.lang === utterance.lang);
-            if (selectedVoice) {
-                utterance.voice = selectedVoice;
+            // 음성 설정 함수
+            function setVoice() {
+                const voices = window.speechSynthesis.getVoices();
+                const selectedVoice = voices.find(voice => voice.lang === utterance.lang);
+                if (selectedVoice) {
+                    utterance.voice = selectedVoice;
+                }
+                window.speechSynthesis.speak(utterance);
             }
-            
-            window.speechSynthesis.speak(utterance);
+
+            // 음성 목록이 이미 로드된 경우
+            if (speechSynthesis.getVoices().length !== 0) {
+                setVoice();
+            } else {
+                // 음성 목록이 로드될 때까지 대기
+                speechSynthesis.onvoiceschanged = setVoice;
+            }
         }
 
         // 배열 섞기 함수 (Fisher-Yates Shuffle)
