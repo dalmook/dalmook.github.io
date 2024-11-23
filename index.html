@@ -243,20 +243,21 @@
     <h1>그림 짝맞추기 게임</h1>
     <!-- 게임 시작 섹션 -->
     <div id="controls">
-        <label for="category">카테고리 선택:</label>
+        <!-- <label for="category">카테고리 선택:</label> -->
         <select id="category">
             <option value="animals">동물</option>
             <option value="plants">식물</option>
             <option value="tyniping">티니핑</option>
             <!-- 필요한 경우 더 추가 -->
         </select>
-        <label for="difficulty">난이도 선택:</label>
+        <!-- <label for="difficulty">난이도 선택:</label> -->
         <select id="difficulty">
             <option value="easy">쉬움 (4열 x 4행, 16칸)</option>
             <option value="medium">보통 (6열 x 6행, 36칸)</option>
             <option value="hard">어려움 (8열 x 8행, 64칸)</option>
         </select>
         <button id="startMatchingGame">게임 시작</button>
+        <button id="viewRecordsButton">기록보기</button>
     </div>
     <div id="score">점수: 0</div>
     <div id="wordDisplay"></div>
@@ -890,6 +891,20 @@
             document.getElementById('recordSection').style.display = 'none';
             initializeMatchingGame(); // 새 게임 시작
         });
+        //기록보기 버튼 이벤트 리스너 추가
+        document.getElementById('viewRecordsButton').addEventListener('click', () => {
+            document.getElementById('recordSection').style.display = 'block';
+            document.getElementById('controls').style.display = 'none';
+            document.getElementById('gameBoard').style.display = 'none';
+        });
+        //게임 보드 초기화 및 기록 화면 숨기기
+        document.getElementById('backToGameButton').addEventListener('click', () => {
+            document.getElementById('recordSection').style.display = 'none';
+            document.getElementById('controls').style.display = 'flex';
+            document.getElementById('gameBoard').style.display = 'grid';
+            initializeMatchingGame(); // 새 게임 시작
+        });
+        
         //기록 테이블을 업데이트하는 함수 추가:
         function updateRecordTable() {
             const recordTableBody = document.getElementById('recordTable').querySelector('tbody');
