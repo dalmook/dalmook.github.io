@@ -311,6 +311,7 @@
     <!-- 오디오 요소 -->
     <audio id="correctSound" src="https://www.soundjay.com/buttons/sounds/button-4.mp3" preload="auto"></audio>
     <audio id="incorrectSound" src="https://www.soundjay.com/buttons/sounds/button-10.mp3" preload="auto"></audio>
+    <audio id="clapSound" src="https://www.soundjay.com/button/sounds/button-19.mp3" preload="auto"></audio>
 
     <script>
         // 카테고리별 데이터 (충분한 아이템 제공)
@@ -612,26 +613,27 @@
                 score += 10; // +10점
                 scoreDisplay.textContent = `점수: ${score}`;
                 displayWord(firstCard.dataset.name);
-
-                // 매치된 단어를 읽어줍니다. 카테고리를 전달
-                speakWord(firstCard.dataset.name, selectedCategory);
-
+        
+                // 매치 성공 시 단어 읽기 (제거)
+                // speakWord(firstCard.dataset.name);
+        
                 // 카테고리가 'tyniping'인 경우 캐릭터별 효과음 재생
                 if (selectedCategory === 'tyniping') {
                     const characterSound = categories.tyniping.find(char => char.name === firstCard.dataset.name)?.sound;
                     if (characterSound) {
                         playCharacterSound(characterSound);
                     }
-                    // 기본 효과음은 필요 없으므로 주석 처리
-                } else {
-                    // 다른 카테고리의 경우 기본 효과음 재생을 원하면 주석 해제
-                    // playCorrectSound();
                 }
-
+        
                 resetCards();
+        
                 // 모든 짝을 맞췄는지 확인
                 if (matchedPairs === pairsCount) {
-                    setTimeout(() => showSuccessMessage('축하해요! 모든 짝을 맞췄어요!'), 500);
+                    setTimeout(() => {
+                        // 박수 소리 재생
+                        playClapSound();
+                        showSuccessMessage('축하해요! 모든 짝을 맞췄어요!');
+                    }, 500);
                 }
             } else {
                 // 매치되지 않은 경우
@@ -644,13 +646,18 @@
                     secondContent.style.display = 'flex';
                     score -= 2; // -2점
                     scoreDisplay.textContent = `점수: ${score}`;
-                    //playIncorrectSound();
                     resetCards();
                 }, 1000);
             }
         }
+        
 
-
+        function playClapSound() {
+            const clapSound = document.getElementById('clapSound');
+            clapSound.currentTime = 0;
+            clapSound.play();
+        }
+        
 
         // 카드 상태 초기화
         function resetCards() {
