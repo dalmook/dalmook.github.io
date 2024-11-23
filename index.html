@@ -1,0 +1,828 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>그림 게임</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        /* 기본 스타일링 */
+        body {
+            font-family: 'Arial', sans-serif;
+            text-align: center;
+            background-color: #f0f8ff;
+            margin: 0;
+            padding: 0;
+        }
+        h1 {
+            margin: 20px 0;
+            color: #333;
+            font-size: 2em;
+        }
+        #gameSelection {
+            display: flex;
+            justify-content: center;
+            margin: 20px 0;
+        }
+        .game-option {
+            margin: 0 10px;
+            padding: 10px 20px;
+            background-color: #87cefa;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            font-size: 1em;
+        }
+        .game-option:hover {
+            background-color: #4682b4;
+        }
+        .hidden {
+            display: none;
+        }
+        /* 공통 스타일 */
+        #controls, #guessControls {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin: 10px 0;
+            padding: 0 10px;
+        }
+        #controls > *, #guessControls > * {
+            margin: 5px 0;
+            width: 100%;
+            max-width: 300px;
+        }
+        select, button, input {
+            padding: 10px;
+            font-size: 1em;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+        button {
+            background-color: #ffa500;
+            color: white;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        button:hover {
+            background-color: #ff8c00;
+        }
+        #score, #scoreGuess {
+            font-size: 1.2em;
+            margin: 10px 0;
+        }
+        /* 그림 짝맞추기 게임 스타일 */
+        #wordDisplay {
+            margin: 10px 0;
+            font-size: 1.5em;
+            color: #333;
+            height: 1.5em;
+        }
+        #gameBoard {
+            display: grid;
+            gap: 10px;
+            justify-content: center;
+            padding: 10px;
+            max-width: 100%;
+            margin: 0 auto 20px;
+        }
+        .card {
+            width: 100%;
+            padding-top: 100%; /* 정사각형을 유지하기 위해 비율 설정 */
+            position: relative;
+            background-color: #87cefa;
+            cursor: pointer;
+            border-radius: 10px;
+            transition: transform 0.3s, background-color 0.3s;
+            background-size: cover;
+            background-position: center;
+        }
+        .card-content {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2em;
+        }
+        .matched {
+            background-color: #32cd32 !important;
+            cursor: default;
+        }
+        /* 사진 맞추기 게임 스타일 */
+        #guessGameBoard {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin: 20px 0;
+        }
+        #guessImage {
+            width: 80%;
+            max-width: 300px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+        #guessInput {
+            padding: 10px;
+            font-size: 1em;
+            width: 80%;
+            max-width: 300px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+        #guessSubmit {
+            margin-top: 10px;
+            padding: 10px 20px;
+            background-color: #ffa500;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        #guessSubmit:hover {
+            background-color: #ff8c00;
+        }
+        /* 성공 메시지 스타일 */
+        #successMessage {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.8);
+            color: white;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5em;
+            z-index: 1000;
+            display: none;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+        #successMessage img {
+            width: 80px;
+            margin-bottom: 20px;
+        }
+        /* 난이도별 그리드 설정 */
+        .game-board.easy {
+            grid-template-columns: repeat(4, 1fr);
+        }
+        .game-board.medium {
+            grid-template-columns: repeat(6, 1fr);
+        }
+        .game-board.hard {
+            grid-template-columns: repeat(8, 1fr);
+        }
+        /* 미디어 쿼리로 화면 크기에 맞게 조정 */
+        @media (max-width: 1200px) {
+            /* 큰 화면에서도 카드가 너무 크지 않도록 조정 */
+            .game-board.easy .card, .game-board.medium .card, .game-board.hard .card {
+                padding-top: 100%;
+            }
+        }
+        @media (max-width: 992px) {
+            /* 태블릿 및 중간 크기 화면용 설정 */
+            h1 {
+                font-size: 1.8em;
+            }
+            #controls > *, #guessControls > * {
+                max-width: 90%;
+            }
+            #wordDisplay {
+                font-size: 1.2em;
+            }
+        }
+        @media (max-width: 768px) {
+            /* 스마트폰 세로 화면용 설정 */
+            h1 {
+                font-size: 1.5em;
+            }
+            #controls > *, #guessControls > * {
+                max-width: 100%;
+            }
+            #wordDisplay {
+                font-size: 1em;
+            }
+            /* 카드 간격 줄이기 */
+            #gameBoard {
+                gap: 5px;
+                padding: 5px;
+            }
+            #guessImage {
+                width: 90%;
+            }
+            #guessInput {
+                width: 90%;
+            }
+        }
+        /* 가로 모드일 때 그리드 레이아웃 조정 */
+        @media (orientation: landscape) {
+            /* 쉬움 난이도: 4x4 -> 4x4 동일, 필요 시 변경 가능 */
+            .game-board.easy {
+                grid-template-columns: repeat(6, 1fr); /* 예시: 컬럼 수를 늘려 더 넓은 레이아웃 */
+            }
+        
+            /* 보통 난이도: 6x6 -> 8x6 */
+            .game-board.medium {
+                grid-template-columns: repeat(8, 1fr); /* 컬럼 수를 8로 늘려 가로 공간 활용 */
+            }
+        
+            /* 어려움 난이도: 8x8 -> 10x8 */
+            .game-board.hard {
+                grid-template-columns: repeat(10, 1fr); /* 컬럼 수를 10으로 늘려 더 넓은 레이아웃 */
+            }
+        
+            /* 카드 크기 조정 (선택 사항) */
+            .game-board.easy .card,
+            .game-board.medium .card,
+            .game-board.hard .card {
+                padding-top: 100%; /* 필요에 따라 비율 조정 가능 */
+            }
+        }
+    </style>
+</head>
+<body>
+    <h1>그림 게임</h1>
+    <!-- 게임 선택 섹션 -->
+    <div id="gameSelection">
+        <button class="game-option" id="matchingGameBtn">그림 짝맞추기 게임</button>
+        <button class="game-option" id="guessGameBtn">사진을 보고 무엇인지 맞추는 게임</button>
+    </div>
+
+    <!-- 그림 짝맞추기 게임 섹션 -->
+    <div id="matchingGame" class="hidden">
+        <div id="controls">
+            <label for="category">카테고리 선택:</label>
+            <select id="category">
+                <option value="animals">동물</option>
+                <option value="plants">식물</option>
+                <option value="tyniping">티니핑</option>
+                <!-- 필요한 경우 더 추가 -->
+            </select>
+            <label for="difficulty">난이도 선택:</label>
+            <select id="difficulty">
+                <option value="easy">쉬움 (4열 x 4행, 16칸)</option>
+                <option value="medium">보통 (6열 x 6행, 36칸)</option>
+                <option value="hard">어려움 (8열 x 8행, 64칸)</option>
+            </select>
+            <button id="startMatchingGame">게임 시작</button>
+        </div>
+        <div id="score">점수: 0</div>
+        <div id="wordDisplay"></div>
+        <div class="game-board easy" id="gameBoard">
+            <!-- 카드가 여기에 생성됩니다 -->
+        </div>
+    </div>
+
+    <!-- 사진 맞추기 게임 섹션 -->
+    <div id="guessGame" class="hidden">
+        <div id="guessControls">
+            <label for="guessCategory">카테고리 선택:</label>
+            <select id="guessCategory">
+                <option value="animals">동물</option>
+                <option value="plants">식물</option>
+                <option value="tyniping">티니핑</option>
+                <!-- 필요한 경우 더 추가 -->
+            </select>
+            <button id="startGuessGame">게임 시작</button>
+        </div>
+        <div id="scoreGuess">점수: 0</div>
+        <div id="guessGameBoard">
+            <img id="guessImage" src="" alt="Guess the Picture" class="hidden">
+            <input type="text" id="guessInput" placeholder="무엇일까요?" class="hidden">
+            <button id="guessSubmit" class="hidden">제출</button>
+        </div>
+    </div>
+
+    <!-- 성공 메시지 -->
+    <div id="successMessage">
+        <img src="https://i.imgur.com/4AI6B5K.png" alt="축하 이미지">
+        <div>축하해요! 모든 게임을 완료하셨습니다!</div>
+        <button id="restartButton">다시 하기</button>
+    </div>
+
+    <!-- 오디오 요소 -->
+    <audio id="correctSound" src="https://www.soundjay.com/buttons/sounds/button-4.mp3" preload="auto"></audio>
+    <audio id="incorrectSound" src="https://www.soundjay.com/buttons/sounds/button-10.mp3" preload="auto"></audio>
+
+    <script>
+        // 카테고리별 데이터 (충분한 아이템 제공)
+        const categories = {
+            animals: [
+                { name: 'Lion', image: 'https://cdn-icons-png.flaticon.com/512/616/616433.png' },
+                { name: 'Tiger', image: 'https://cdn-icons-png.flaticon.com/512/616/616536.png' },
+                { name: 'Elephant', image: 'https://cdn-icons-png.flaticon.com/512/616/616421.png' },
+                { name: 'Dog', image: 'https://cdn-icons-png.flaticon.com/512/616/616430.png' },
+                { name: 'Cat', image: 'https://cdn-icons-png.flaticon.com/512/616/616554.png' },
+                { name: 'Rabbit', image: 'https://cdn-icons-png.flaticon.com/512/616/616537.png' },
+                { name: 'Zebra', image: 'https://cdn-icons-png.flaticon.com/512/616/616531.png' },
+                { name: 'Fox', image: 'https://cdn-icons-png.flaticon.com/512/616/616445.png' },
+                { name: 'Bear', image: 'https://cdn-icons-png.flaticon.com/512/616/616434.png' },
+                { name: 'Kangaroo', image: 'https://cdn-icons-png.flaticon.com/512/616/616430.png' },
+                { name: 'Giraffe', image: 'https://cdn-icons-png.flaticon.com/512/616/616440.png' },
+                { name: 'Panda', image: 'https://cdn-icons-png.flaticon.com/512/616/616430.png' },
+                { name: 'Horse', image: 'https://cdn-icons-png.flaticon.com/512/616/616430.png' },
+                { name: 'Monkey', image: 'https://cdn-icons-png.flaticon.com/512/616/616430.png' },
+                { name: 'Deer', image: 'https://cdn-icons-png.flaticon.com/512/616/616430.png' },
+                { name: 'Whale', image: 'https://cdn-icons-png.flaticon.com/512/616/616430.png' },
+                { name: 'Penguin', image: 'https://cdn-icons-png.flaticon.com/512/616/616438.png' },
+                { name: 'Shark', image: 'https://cdn-icons-png.flaticon.com/512/616/616439.png' },
+                { name: 'Dolphin', image: 'https://cdn-icons-png.flaticon.com/512/616/616441.png' },
+                { name: 'Squirrel', image: 'https://cdn-icons-png.flaticon.com/512/616/616442.png' },
+                { name: 'Owl', image: 'https://cdn-icons-png.flaticon.com/512/616/616443.png' },
+                { name: 'Eagle', image: 'https://cdn-icons-png.flaticon.com/512/616/616444.png' },
+                { name: 'Snake', image: 'https://cdn-icons-png.flaticon.com/512/616/616446.png' },
+                { name: 'Frog', image: 'https://cdn-icons-png.flaticon.com/512/616/616447.png' },
+                { name: 'Turtle', image: 'https://cdn-icons-png.flaticon.com/512/616/616448.png' },
+                { name: 'Butterfly', image: 'https://cdn-icons-png.flaticon.com/512/616/616449.png' },
+                { name: 'Dragonfly', image: 'https://cdn-icons-png.flaticon.com/512/616/616450.png' },
+                { name: 'Beaver', image: 'https://cdn-icons-png.flaticon.com/512/616/616451.png' },
+                { name: 'Swan', image: 'https://cdn-icons-png.flaticon.com/512/616/616452.png' },
+                { name: 'Goat', image: 'https://cdn-icons-png.flaticon.com/512/616/616453.png' },
+                { name: 'Sheep', image: 'https://cdn-icons-png.flaticon.com/512/616/616454.png' },
+                { name: 'Cow', image: 'https://cdn-icons-png.flaticon.com/512/616/616455.png' },
+                { name: 'Pig', image: 'https://cdn-icons-png.flaticon.com/512/616/616456.png' },
+                { name: 'Cow2', image: 'https://cdn-icons-png.flaticon.com/512/616/616457.png' }, // 중복 제거
+            ],
+            plants: [
+                { name: 'Apple', image: 'https://cdn-icons-png.flaticon.com/512/415/415733.png' },
+                { name: 'Banana', image: 'https://cdn-icons-png.flaticon.com/512/415/415740.png' },
+                { name: 'Grapes', image: 'https://cdn-icons-png.flaticon.com/512/415/415750.png' },
+                { name: 'Orange', image: 'https://cdn-icons-png.flaticon.com/512/415/415748.png' },
+                { name: 'Pineapple', image: 'https://cdn-icons-png.flaticon.com/512/415/415738.png' },
+                { name: 'Strawberry', image: 'https://cdn-icons-png.flaticon.com/512/415/415755.png' },
+                { name: 'Watermelon', image: 'https://cdn-icons-png.flaticon.com/512/415/415753.png' },
+                { name: 'Cherry', image: 'https://cdn-icons-png.flaticon.com/512/415/415754.png' },
+                { name: 'Peach', image: 'https://cdn-icons-png.flaticon.com/512/415/415742.png' },
+                { name: 'Pear', image: 'https://cdn-icons-png.flaticon.com/512/415/415734.png' },
+                { name: 'Lemon', image: 'https://cdn-icons-png.flaticon.com/512/415/415741.png' },
+                { name: 'Mango', image: 'https://cdn-icons-png.flaticon.com/512/415/415739.png' },
+                { name: 'Blueberry', image: 'https://cdn-icons-png.flaticon.com/512/415/415756.png' },
+                { name: 'Kiwi', image: 'https://cdn-icons-png.flaticon.com/512/415/415737.png' },
+                { name: 'Papaya', image: 'https://cdn-icons-png.flaticon.com/512/415/415744.png' },
+                { name: 'Coconut', image: 'https://cdn-icons-png.flaticon.com/512/415/415745.png' },
+                { name: 'Lily', image: 'https://cdn-icons-png.flaticon.com/512/415/415746.png' },
+                { name: 'Sunflower', image: 'https://cdn-icons-png.flaticon.com/512/415/415747.png' },
+                { name: 'Rose', image: 'https://cdn-icons-png.flaticon.com/512/415/415749.png' },
+                { name: 'Tulip', image: 'https://cdn-icons-png.flaticon.com/512/415/415751.png' },
+                { name: 'Cactus', image: 'https://cdn-icons-png.flaticon.com/512/415/415752.png' },
+                { name: 'Bamboo', image: 'https://cdn-icons-png.flaticon.com/512/415/415754.png' },
+                { name: 'Maple', image: 'https://cdn-icons-png.flaticon.com/512/415/415755.png' },
+                { name: 'Oak', image: 'https://cdn-icons-png.flaticon.com/512/415/415756.png' },
+                { name: 'Pine', image: 'https://cdn-icons-png.flaticon.com/512/415/415757.png' },
+                { name: 'Fern', image: 'https://cdn-icons-png.flaticon.com/512/415/415758.png' },
+                { name: 'Lavender', image: 'https://cdn-icons-png.flaticon.com/512/415/415759.png' },
+                { name: 'Mint', image: 'https://cdn-icons-png.flaticon.com/512/415/415760.png' },
+                { name: 'Basil', image: 'https://cdn-icons-png.flaticon.com/512/415/415761.png' },
+                { name: 'Cilantro', image: 'https://cdn-icons-png.flaticon.com/512/415/415762.png' },
+                { name: 'Rosemary', image: 'https://cdn-icons-png.flaticon.com/512/415/415763.png' },
+                { name: 'Thyme', image: 'https://cdn-icons-png.flaticon.com/512/415/415764.png' },
+                { name: 'Sage', image: 'https://cdn-icons-png.flaticon.com/512/415/415765.png' },
+                { name: 'Daisy', image: 'https://cdn-icons-png.flaticon.com/512/415/415766.png' },
+            ],
+            tyniping: [
+                { name: '하츄핑', image: 'https://i.namu.wiki/i/ruTCX2vHbSGM8KynYQNQ7n8Gbv91SJEWxNF7KhLqT-DiMPFq8fQo6T21mQy4bUiEpT0kGdprg5VbvRARnh4LK9YeVLrkcVhx6ru8kJYAh8vnnIQKvUIUK_a2EU-kAkTGErtaQ6DfulH5M3ER9L5N-g.webp' },
+                { name: '바로핑', image: 'https://i.namu.wiki/i/HTO3W5mSVlboa-hho2eNallSHLcr3ZMNYgWF2RDui42jcDgPW26mIuIoHPhk_1KrnKYI-DDWlH9w-4bTPtM3Zs766AXgmhGUFWlaiJAAlmPleOAwTASxvKrEv5WykVmxD9g5lOFWdQBEDHH5ac05LQ.webp' },
+                { name: '아자핑', image: 'https://i.namu.wiki/i/QEieLSO2YP-PuNKJPVEGoOLp8ocI_efD0ozKuM-FhtMZ7R--eq9fadyFAN4K3veGEG8F9ZneSP2ppBPhg3Hn3V40gYqFDP0RfmBcdqJw1IJxSQGqJ-OSZeUAwZd0gL5SvBb7jDgIWJLlxe4yBq-VDg.webp' },                
+                { name: '차차핑', image: 'https://i.namu.wiki/i/e955neWvT2qL7_bJBTftaL-Ei0GauFP6yo0XqqFvWhrEQCga0c7GlCzNE_vte_IZmekhL-d_c4pP7ozCTTe1Y82nsiCXMJ-pfYG9q_5Gsw9A_-FVjBfJuCTvSE2X7gFvSOe7GZcE8_5wn4PcW8L2fg.webp' },
+                { name: '라라핑', image: 'https://i.namu.wiki/i/6JWYca_OTOyg_FoWClS9bIxpuMeEQYiTQ4YmzVWOY9vm_pW0PHtOwmc87ufLsb47CYfcj1043CiSrIlYuzNCOldICtvdT05GvIOReiuP0em8e9ockw_L1xIb4vQ1YupZJhja5CDBVIE01KApF5xYXA.webp' },
+                { name: '해핑', image: 'https://i.namu.wiki/i/OHNB8lctC8FwGti_UOCUwtDk3FtavNjb6gCrcQ3TyMJw0R_2N_C1zJzMoqXHcDfbQ855YbPd-RhAoUwCOf31VM0qupQ15ALBeK4LMuX06uNHoN1mV1EQPBlhExqyCCb-1Gx2g7nklLT7fwWTtd91SA.webp' },
+                { name: '조아핑', image: 'https://i.namu.wiki/i/WuozKgj-juzjLfIziH92Ag4roaOHr3B7JApmnQwBSMVPpKTSA65iQ8ni7rnB-_QJwAII0mxooTWeBXBW1-tZYaE_5S8wCbtAh8BxjXyn9P9Aw3hdq1lkPKqkTBpmFU8fqeDDW_pnibeWdgp0jOaknw.webp' },
+                { name: '방글핑', image: 'https://i.namu.wiki/i/9bF2EoRbUVhsqqcwck90Ywn8Mjp4yUEMOhJp5xN7R87kxIz3uG4xNqMVm504H9kd1GjEqKVTIXKiQpyMNsmE2ox8EgjwMfYQ0Mh2seNuEZJ1OvMquJ_6nfn1jll2BveXHOzAH8HYFxAQxYoxOybtiw.webp' },
+                { name: '믿어핑', image: 'https://i.namu.wiki/i/Q5f_9P0yZtb8NofTZiqyr72hWdOXOny6lo-f930obsl7XKiuBe-I5OZu7poL5UXL8b_Fs-RpHezca8ARCWD9f55MM91Rb-pDy1y_PMqhvQVB6nsOODRS-3QCEkx7Mdwp2qIMYvcjA2sh7XzGTZMWxg.webp' },
+                { name: '꾸래핑', image: 'https://i.namu.wiki/i/Bwlf7cw60lf4bLkf2dQNtWfjQDYxy9G4NwY5xn_vrbCQVjcxveDiTrCoYhybtPsiEF0JIdLnn29hfEJ2L9jRpeG0DxKJmKR8yO6FdEp2HCfE_VvWwHEK9YAFIaek8No26Bbk5L-WdmhO7L_MyMhEsA.webp' },                
+                { name: '나나핑', image: 'https://i.namu.wiki/i/PqFZsnHJjBxi-9gx-PZcsANKnAt0ATSduLt9d4dpaiWxuFBSM3AxpSe4yGQtMHx9GmMat-i3aVUjcqNxAM0gy8QcN9Ndz2p12q0kgIwgpBV_CQ3rXHErDuLNkuB39JdXVJIwfUoAx58zaR_ncBaSrg.webp' },                
+                { name: '솔찌핑', image: 'https://i.namu.wiki/i/xyW5Xddjmrwfk1NLQF217kvtChR5kqMEY3k5heUdxLxf0_JTznqhgOAJYFH3vk8iFCzGLQI1-Uuv7VWE8KgpraMDjqog34tqj4QZV5CMr9xTUblLMAiMWZai-mhqi9qsraKJQUrkcbn2tQoIbQSl7g.webp' },                
+                { name: '포실핑', image: 'https://i.namu.wiki/i/s6KvAX6uDJmHXCf8PmzN9CnHPCdxrwXu-JpL1yUofy5uc33nE-EvQfF1mN-gOVFUh3uZLiKoWl4xEPPPkOUZGSgszak4unuCIL4kxoFk6RXWlDmgO4aV80Sq7v1kc3Ro6ecwsXKSMK_h6I1phEr59A.webp' },                
+                { name: '말랑핑', image: 'https://i.namu.wiki/i/npt5xLIN5w63_E4qm7T3QMZuRGtR9tCvANvfL29e69_UpIcj-67edXWEWLcGoiC5uTekN5060GVNIJqsZ_zkbogbvX95XHAp-1rg61jpIPZoOtBPawlFkxThgrTIk80cn-um8xr6R63oxRjU_NuNKw.webp' },                
+                { name: '샤샤핑', image: 'https://i.namu.wiki/i/yQUnI_yiHwdXiAvB8bwxWy-oyS5j967vaxGpAC5YC8hbTixdms_maHNxqOKEMadN6o0N2-KSk79o_P-qYz-8cPxhDGdCALFUcGXpz7W2MNyZy3Jo5XKbVSxnLv-7C3K34cL2aprLNiVrNWGE1EgxJw.webp' },                
+                { name: '빛나핑', image: 'https://i.namu.wiki/i/P49IF9GZg1QFWPhENeQ1I26wEJc6tBF4-8GZp6-NqEfI73BXQXQrnRJ5cIe3CvQ0leHnbxfW3sKEB8J133Guy9-vva39M5Qi19Fqy9bRXG878YZVZ2hqHbO0TjPWSA6gBRCmyIR-UnYR-nkm1WQ1Ig.webp' },                
+                { name: '초롱핑', image: 'https://i.namu.wiki/i/p1Umr4DjweRnfF4atlHzZHsKuukwqnPGxX4PVksBdgrgL2JX6471IUpfVTny-ZxKWMn1apixk9HOIWNod5RxpX85Cu0-Mc1gDLS-9JIr0qPeR8PoEL12eAgv_6IZpAUY6Apdo0w1SzY576caFNjMZQ.webp' },                
+                { name: '빤짝핑', image: 'https://i.namu.wiki/i/VU7H3mZ7rLMZFZ1eNFGYV5851doz3ag0L10Yovu0Rv0gl1YQi8fGIktzSItj7YHliJG4BYljiH96rN6FvgBpUopADSiTarGIqOr9Mr9Vko9mZK0Ko0XP-A3CrULFr90ymhn2lFzRsyE7jt9wp-6ffw.webp' },                             
+                { name: '키키핑', image: 'https://i.namu.wiki/i/nVnMr4rG7DdxuJRddVWKZCCiEMcNZTO_Mhfp2ZsIr1uAftBalp3k0aqi9SvmZqPAnoExazSsWK_PI-Voe5XlQEsq_UB-TL-pkmkIRD7Od8eEmjK0pH8f5tfMb3i3bdB_HgWSRyHnUlw5kLPzo_Tm6g.webp' },
+                { name: '부끄핑', image: 'https://i.namu.wiki/i/5mLnwchViVl7h3Qef61JP3tJUJ7cG5rJjVJhQRgqF27BLSNTD8aHs1ky3XTnvHxhxzl82vKC5xHdumlxGWmyJB7A0XUtwbJ2lCNY3X20qh6Cnfz7xnh7HIULKgAqGuZBJ5dzEuhV7GXD8hYSPlZQfQ.webp' },
+                { name: '부투핑', image: 'https://i.namu.wiki/i/1Ne1wjVYLT-dGkbv_2xZ2fCbRredlRzCYLh2ZVuEy5WDRTS8YigQJpgvHR3ViB8TKCqPTsZ7PrE-rVsrFPVwMdxGAM__LIpllEki9XVnyGgxUS1ahaKVckEl_JG3yJFHxct_EAHIWSwVMRUox7HPEg.webp' },
+                { name: '깜빡핑', image: 'https://i.namu.wiki/i/Ox39DwY_KcRIuQteZlZb-vUfYUHRo-nMhk34fa2sxnhiGnqpTnux7miELKGTdUGK9jealv_oS4IPy5fK0JESHdo7kbOrKcYNpEwqDu2FQgY95vusbLuLMJLjzaxoQmLgpPaFm0cdAlGJ_HljZDza-A.webp' },
+                { name: '띠용핑', image: 'https://i.namu.wiki/i/UaZHst54YlGioIjt434yJn0R4HmoMUAWtHfe4yJcqqrK0Qw9NiteUy1Olyi7VxtX4RKzyAEOHpJbDptH6FVLQ4uaWcvFLxCddJXxOyukHHYSO7n9q9AMaPVlcnfY1mIx-8I8qIT89t8WNojJtlw8ZA.webp' },
+                { name: '주르핑', image: 'https://i.namu.wiki/i/wx7TDh8gp4SizPKFHQkiEa0E3Z0fEl6XoaWgJt3qvtNnvlQsTW-7KabXZznQNxH2vZlKln6aKcUx3hogHg7R-jXMNr4igMMEOQN9jU_E9kpEVDum7WSPwh75iBNJtJGD5grRVL1rZ8TCjjnwfT3NXA.webp' },
+                { name: '차나핑', image: 'https://i.namu.wiki/i/yyd6xRFZ6VdChQszgBCLsqCxW5CQ6U_gt3c7HbS9qeiMvEhaABMaLp6qfHIZthwkfgPlw8yJwALh5FYpG49oaLW2_2sedYYrbj_bL9zp-Vrda49aT83rhuoPpUWrk26DUTTgxOax5wSmLNDux5QuuA.webp' },
+                { name: '따라핑', image: 'https://i.namu.wiki/i/lZSWlgbwRwETrMK9R2heCY62WEKrH5dWf0vD-fUD4eh9YhJqW9YWUarrwtpM9CMcbW9Glu6KAFKMbj-neTol0zMVKuyYbSLR6RP1sLfCSybcNYOItYMvLLqzkvSsVBLKVtIHScRxIOdG96eKbQnecQ.webp' },
+                { name: '나르핑', image: 'https://i.namu.wiki/i/_qHbDRMHXivN4IlpuXqMtXTzZjbCauj2R33Zh_Zvk1G4u_kKH3_auqdz-ItIQZebmWI4cKrywn59wM5eIgIN-nSpRkYsLDCGQD2AJZHJjZ1QJL_S6ExqFdLuddanftH-lMOQxGB7BuT09zRR6_ieMA.webp' },
+                { name: '무셔핑', image: 'https://i.namu.wiki/i/pjstZFsiY4cwl60ogVs1kx6duJTCT-uqjrPG6DnFu7XGyTi_6UypXq25ZQFGkEEWhnuACx69W-ZAvRp2c-36Ab38tEv2ihH8jbWpEol6AEMqoIcptGi9k1Bqy5m_nhMI4oyHkSaW_lKMnsg2oMr99g.webp' },
+                { name: '투투핑', image: 'https://i.namu.wiki/i/AgbmD6XHvA9XY7XJTlpsac5YD5510OT__RTVjbBtfSJyF1gjK5hpDQQXRlE_41HHCl7pIknENw56Qh89d3ElTvIj49XYlLk7Ue3I5ud-E6OAX1ubrDTwXHkm_JZPQ6PGloW5datRMSACGkypOQzoBA.webp' },
+                { name: '차캐핑', image: 'https://i.namu.wiki/i/iD2BKcDoYvj1CVbpJAF5eKi0eB4ekn-WRqGUDqFIFGNk-N4bWmgGXAtIW3PRasM3jfLLPo8V6PIzl0ixcv4z_Hj9d8Af_IOvTCxFbTLdqLwvgQkXHxQYsGlKuHDGypcmvdIoQ0vrx8sfmb_0hSNZlw.webp' },
+                { name: '떠벌핑', image: 'https://i.namu.wiki/i/HvQQlyvcpIgh2E08sPFLSxW_doZZb2TuY8A5yJSak77SwSyAmIXIRZdUXXtoSEVaWoja6P208Z45XgCA9CEDUgGJ58YjlG--rXN2YlMCJTK56za85-2jwiQu-dCDgsAq7KyTGJF5srEWLQKIKMIjiw.webp' },
+                { name: '다조핑', image: 'https://i.namu.wiki/i/ngMOHHl8o3FGcxzaBoJFLQf3sPd8YFRPfLmZ1_lcYK3tlcVZPlmxQsTeoRCuQOpfF7pvSNALJ7qYx3eiPWmZsRIIwl6z0IbjR7I_rYCAOHG3J5KNhcVaFh7HioNrj5FTxeQGZQFEnKLCBpn6MYyHeA.webp' },
+                { name: '화나핑', image: 'https://i.namu.wiki/i/WDeOk0QJbPHhMuJ2JY4wnuqfLJHwlFpu0OMeq2P0T6I2Q7aaG5ZipTLW2OxoH-aqoIJAoFa4sWuOGYRGvj4ROXL3Mo7Wt1dkvtzGywC69QD-C0vVwZMNBVDdTGxXRoTOp8EyTrCk0OPr4HUJyoypsw.webp' },
+                { name: '시러핑', image: 'https://i.namu.wiki/i/Qi3JZfTVmAPXUrzguwyojrCGCSyFIxOvTxp_3jPnZv87LFgPo0nL99dLRclnfLoF7MMNgVOEdDgr-hm4NnM4YDj45VI-R9KAJ0Vx6d7k44xz3lqSbrq4Mma_2K538jrmbOeQN_-rndYuqwM7LUfOcg.webp' },
+                { name: '바네핑', image: 'https://i.namu.wiki/i/P5-ytRrm5Eps93MHqJBuoLWFw61x3Y99rUZIpbWs_RsSagWtdy72DeMp8eRyLXELqj08yjbm95yGZX9qwTqUlkGiNq184xSFKxLYcYuCqmKtTpsw4fYQKniNu2y8jNlmS7ZJ-B9xP7MXYLa03na5ag.webp' },
+                { name: '덜덜핑', image: 'https://i.namu.wiki/i/Thml6I35uJiiUb94DUyeuCvFPCUpNi2F5-k4lw_d5Zn-rMVzXXowTfP1GbCoUkDpx-HxYjP6EJi7S0bRVMRp-N2Uht33lJL4PSUDVaKf08bW0V9zZAlcWk368Ju4qP2xPGNheU1AqQOAjCqaUo6YbQ.webp' },
+                { name: '그림핑', image: 'https://i.namu.wiki/i/Zp2rfX5TzThzF-2BDoFjwQ1upLURC7JpKhSCmfUk-oVV02XLJdELP7dmJ7bKgHWF0B8e5abN43Jz2RWcItJ0wrCmajiJrIq4fseYclXzNxU_QMj2DmoLl0W6NbCvZTMEm-81j0XOPvAvA5i4B3jDrQ.webp' },
+                { name: '무거핑', image: 'https://i.namu.wiki/i/7JN9ur-gKfyjF2alOjd_9RE0xXVpv17Vg4hMaqN5meshp3_bXQ2IiY2giC4x-a56kGfHjRTM3rOvduZpl6phjuo2kMUYIbl8EhKWSAy68GrkjlPd38UyhRkG7c6O-rC5XiGY_qJkPwuO30DVuJ26VQ.webp' },
+                { name: '꺼꿀핑', image: 'https://i.namu.wiki/i/VqyVB1ieN7oIM2_O8jHDQLdYHnSbkNroHfvMemDGdp1voWxRwdGgg9P-6FXtm1aB1XkS3WBoVBlZxzLN1TZEpEv4WoCn7qh4wrSmQkgzhwAj856l4VjqaV6vlfcESZlxAzFF_tiwhu5sgeQfoTpLlw.webp' },
+                { name: '씽씽핑', image: 'https://i.namu.wiki/i/U43UiyeK9-fEeyTA9LjZN4QDFc3EnPXrDfIQdnjEDGAISblhyz2FMzPtY-vp_Fm01F00FgqjNMoBn53t5BezNYk7nu3mHs9JeMYjOQSeCe9lqkKQSiSZiFZVQPf54xhDA_5Qm2LzRg2cRIeqspXlFw.webp' },
+                { name: '베베핑', image: 'https://i.namu.wiki/i/R9O-FTitzyZ2-sK7e6p7i83cNn01wV7XI5F-UUcOM3D6wUHAjmDXBrGSJzycXi9KO_ukFjYwRFHwfYB-0IIplFDpDJwOv4BqNUoWK8dSneFWBLjwckbZ0fURmmXzD1oipmn93vGVH9H7FJK0DqAtTw.webp' },
+                { name: '코자핑', image: 'https://i.namu.wiki/i/2yMIQNSWO31Nzo44vff8_qBoPkJldMxmdkLbLx4r3THwjXbshwXPBCdvqR4_7-TpTTw4r50LwUt6hvGMfcIMV9bJ-Tq7jY6mgSEUwDHpQ6Y0fmUaNUm4fZH_Q6FqWrWMjBr7p6ARtALtyopJpCm_gw.webp' },
+            ],
+            // 다른 카테고리 추가 가능
+        };
+
+        // 변수 초기화
+        let selectedCategory = 'animals';
+        let pairsCount = 8; // 쉬움: 4x4 (16칸, 8쌍), 보통: 6x6 (36칸, 18쌍), 어려움: 8x8 (64칸, 32쌍)
+        let gameImages = [];
+        let firstCard = null;
+        let secondCard = null;
+        let score = 0;
+        let matchedPairs = 0;
+        let isProcessing = false;
+
+        // 사진 맞추기 게임 변수
+        let guessScore = 0;
+        let currentGuessIndex = 0;
+        let guessImages = [];
+        let guessCategoryItems = [];
+        let timer = null;
+
+        const matchingGameSection = document.getElementById('matchingGame');
+        const guessGameSection = document.getElementById('guessGame');
+        const gameSelection = document.getElementById('gameSelection');
+
+        const matchingStartButton = document.getElementById('startMatchingGame');
+        const categorySelectMatching = document.getElementById('category');
+        const difficultySelect = document.getElementById('difficulty');
+        const gameBoard = document.getElementById('gameBoard');
+        const scoreDisplay = document.getElementById('score');
+        const wordDisplay = document.getElementById('wordDisplay');
+
+        const guessStartButton = document.getElementById('startGuessGame');
+        const guessCategorySelect = document.getElementById('guessCategory');
+        const guessGameBoard = document.getElementById('guessGameBoard');
+        const guessImage = document.getElementById('guessImage');
+        const guessInput = document.getElementById('guessInput');
+        const guessSubmit = document.getElementById('guessSubmit');
+        const scoreGuessDisplay = document.getElementById('scoreGuess');
+
+        const successMessage = document.getElementById('successMessage');
+        const restartButton = document.getElementById('restartButton');
+
+        // 오디오 요소
+        const correctSound = document.getElementById('correctSound');
+        const incorrectSound = document.getElementById('incorrectSound');
+
+        // 게임 선택 버튼
+        const matchingGameBtn = document.getElementById('matchingGameBtn');
+        const guessGameBtn = document.getElementById('guessGameBtn');
+
+        // 게임 선택 이벤트
+        matchingGameBtn.addEventListener('click', () => {
+            matchingGameSection.classList.remove('hidden');
+            guessGameSection.classList.add('hidden');
+            gameSelection.classList.add('hidden');
+        });
+
+        guessGameBtn.addEventListener('click', () => {
+            guessGameSection.classList.remove('hidden');
+            matchingGameSection.classList.add('hidden');
+            gameSelection.classList.add('hidden');
+        });
+
+        // 게임 시작 버튼 이벤트 (그림 짝맞추기)
+        matchingStartButton.addEventListener('click', () => {
+            initializeMatchingGame();
+        });
+
+        // 게임 시작 버튼 이벤트 (사진 맞추기)
+        guessStartButton.addEventListener('click', () => {
+            initializeGuessGame();
+        });
+
+        // 그림 짝맞추기 게임 초기화 함수
+        function initializeMatchingGame() {
+            // 사용자가 선택한 카테고리 값을 가져와 selectedCategory에 할당
+            selectedCategory = categorySelectMatching.value;
+        
+            // 현재 난이도 선택을 직접 참조
+            const currentDifficulty = difficultySelect.value;
+            console.log(`현재 선택된 난이도: ${currentDifficulty}`);
+        
+            // 난이도에 따라 pairsCount와 클래스 설정
+            gameBoard.classList.remove('easy', 'medium', 'hard');
+            switch(currentDifficulty) {
+                case 'easy':
+                    pairsCount = 8; // 4x4 = 16칸
+                    gameBoard.classList.add('easy');
+                    break;
+                case 'medium':
+                    pairsCount = 18; // 6x6 = 36칸
+                    gameBoard.classList.add('medium');
+                    break;
+                case 'hard':
+                    pairsCount = 32; // 8x8 = 64칸
+                    gameBoard.classList.add('hard');
+                    break;
+                default:
+                    pairsCount = 8;
+                    gameBoard.classList.add('easy');
+            }
+            console.log(`pairsCount 설정됨: ${pairsCount}`);
+            console.log(`gameBoard 클래스 적용됨: ${gameBoard.className}`);
+        
+            // 선택한 카테고리와 난이도에 맞게 이미지 선택
+            const categoryItems = categories[selectedCategory];
+            if (!categoryItems || categoryItems.length < pairsCount) {
+                alert('선택한 카테고리에 충분한 아이템이 없습니다.');
+                return;
+            }
+        
+            // 짝의 수에 맞게 아이템 선택
+            const shuffled = shuffleArray([...categoryItems]);
+            const selectedItems = shuffled.slice(0, pairsCount);
+            gameImages = [...selectedItems, ...selectedItems];
+            // 이미지 섞기
+            gameImages = shuffleArray(gameImages);
+        
+            console.log(`선택된 아이템 수: ${selectedItems.length}`);
+            console.log(`총 카드 수: ${gameImages.length}`);
+        
+            // 게임 보드 초기화
+            gameBoard.innerHTML = '';
+            gameImages.forEach((item, index) => {
+                const card = document.createElement('div');
+                card.classList.add('card');
+                card.dataset.image = item.image;
+                card.dataset.name = item.name;
+                card.dataset.index = index;
+                card.addEventListener('click', flipCard);
+                // 카드 뒷면 이미지 (아이콘 대신 물음표)
+                card.style.backgroundImage = 'url("https://cdn-icons-png.flaticon.com/512/929/929500.png")';
+                card.style.backgroundSize = 'cover';
+                card.style.backgroundPosition = 'center';
+                // 카드 안에 내용 추가
+                const cardContent = document.createElement('div');
+                cardContent.classList.add('card-content');
+                cardContent.innerHTML = '❓';
+                card.appendChild(cardContent);
+                gameBoard.appendChild(card);
+            });
+        
+            // 점수 및 상태 초기화
+            score = 0;
+            matchedPairs = 0;
+            scoreDisplay.textContent = `점수: ${score}`;
+            wordDisplay.textContent = '';
+            successMessage.style.display = 'none';
+        }
+
+
+        // 그림 짝맞추기 게임 카드 뒤집기 함수
+        function flipCard() {
+            if (isProcessing || this.classList.contains('matched') || this === firstCard) return;
+    this.style.backgroundImage = `url("${this.dataset.image}")`;
+    const cardContent = this.querySelector('.card-content');
+    cardContent.style.display = 'none';
+
+    // 클릭한 카드의 단어를 읽어줍니다.
+    speakWord(this.dataset.name);
+
+    if (!firstCard) {
+        firstCard = this;
+    } else {
+        secondCard = this;
+        isProcessing = true;
+        checkMatch();
+    }
+}
+
+        // 매치 확인 함수
+        // 매치 확인 함수
+        function checkMatch() {
+            if (firstCard.dataset.image === secondCard.dataset.image) {
+                // 매치된 경우
+                firstCard.classList.add('matched');
+                secondCard.classList.add('matched');
+                matchedPairs++;
+                score += 10; // +10점
+                scoreDisplay.textContent = `점수: ${score}`;
+                displayWord(firstCard.dataset.name);
+                speakWord(firstCard.dataset.name);
+                
+                // 카테고리가 'tyniping'인 경우 캐릭터별 효과음 재생
+                if (selectedCategory === 'tyniping') {
+                    const characterSound = categories.tyniping.find(char => char.name === firstCard.dataset.name)?.sound;
+                    if (characterSound) {
+                        playCharacterSound(characterSound);
+                    } else {
+                       // playCorrectSound(); // 기본 효과음 재생
+                    }
+                } else {
+                    //playCorrectSound(); // 기본 효과음 재생
+                }
+                
+                resetCards();
+                // 모든 짝을 맞췄는지 확인
+                if (matchedPairs === pairsCount) {
+                    setTimeout(() => showSuccessMessage('축하해요! 모든 짝을 맞췄어요!'), 500);
+                }
+            } else {
+                // 매치되지 않은 경우
+                setTimeout(() => {
+                    firstCard.style.backgroundImage = 'url("https://cdn-icons-png.flaticon.com/512/929/929500.png")';
+                    secondCard.style.backgroundImage = 'url("https://cdn-icons-png.flaticon.com/512/929/929500.png")';
+                    const firstContent = firstCard.querySelector('.card-content');
+                    const secondContent = secondCard.querySelector('.card-content');
+                    firstContent.style.display = 'flex';
+                    secondContent.style.display = 'flex';
+                    score -= 2; // -2점
+                    scoreDisplay.textContent = `점수: ${score}`;
+                    //playIncorrectSound();
+                    resetCards();
+                }, 1000);
+            }
+        }
+
+
+        // 카드 상태 초기화
+        function resetCards() {
+            firstCard = null;
+            secondCard = null;
+            isProcessing = false;
+        }
+
+        // 성공 메시지 표시
+        function showSuccessMessage(message) {
+            successMessage.innerHTML = `
+                <img src="https://i.imgur.com/4AI6B5K.png" alt="축하 이미지">
+                <div>${message}</div>
+                <button id="restartButton">다시 하기</button>
+            `;
+            successMessage.style.display = 'flex';
+
+            // 새로 추가된 'restartButton'에 이벤트 리스너 추가
+            const newRestartButton = document.getElementById('restartButton');
+            newRestartButton.addEventListener('click', () => {
+                restartGame();
+            });
+        }
+
+        // 다시 시작 함수
+        function restartGame() {
+            // 선택된 게임에 따라 초기화
+            if (!matchingGameSection.classList.contains('hidden')) {
+                initializeMatchingGame();
+            } else if (!guessGameSection.classList.contains('hidden')) {
+                initializeGuessGame();
+            }
+            successMessage.style.display = 'none';
+        }
+
+        // 영어 단어 표시 함수
+        function displayWord(word) {
+            wordDisplay.textContent = word;
+        }
+
+        // 단어 소리 내어 읽기 함수
+        function speakWord(word) {
+            const utterance = new SpeechSynthesisUtterance(word);
+            utterance.lang = 'en-US';
+            window.speechSynthesis.speak(utterance);
+        }
+
+        // 배열 섞기 함수 (Fisher-Yates Shuffle)
+        function shuffleArray(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+            return array;
+        }
+        // 특정 효과음 재생 함수
+        function playCharacterSound(url) {
+            const audio = new Audio(url);
+            audio.play();
+        }
+        // 소리 재생 함수
+        function playCorrectSound() {
+            correctSound.currentTime = 0;
+            correctSound.play();
+        }
+
+        function playIncorrectSound() {
+            incorrectSound.currentTime = 0;
+            incorrectSound.play();
+        }
+
+        // 사진 맞추기 게임 초기화 함수
+        function initializeGuessGame() {
+            // 점수 및 상태 초기화
+            guessScore = 0;
+            currentGuessIndex = 0;
+            scoreGuessDisplay.textContent = `점수: ${guessScore}`;
+            wordDisplay.textContent = '';
+            successMessage.style.display = 'none';
+
+            // 카테고리 선택
+            const selectedGuessCategory = guessCategorySelect.value;
+            guessCategoryItems = categories[selectedGuessCategory];
+            if (!guessCategoryItems || guessCategoryItems.length === 0) {
+                alert('선택한 카테고리에 아이템이 없습니다.');
+                return;
+            }
+
+            // 무작위로 이미지 선택 (전체 아이템 사용 가능)
+            guessImages = shuffleArray([...guessCategoryItems]);
+
+            console.log(`사진 맞추기 게임 이미지 수: ${guessImages.length}`);
+
+            // 시작 첫 이미지
+            currentGuessIndex = 0;
+            showGuessImage();
+        }
+
+        // 사진 맞추기 게임 이미지 표시 함수
+        function showGuessImage() {
+            if (currentGuessIndex >= guessImages.length) {
+                // 모든 이미지 완료
+                setTimeout(() => showSuccessMessage('축하해요! 모든 사진을 맞추셨습니다!'), 500);
+                return;
+            }
+
+            const currentImage = guessImages[currentGuessIndex];
+            guessImage.src = currentImage.image;
+            guessImage.alt = 'Guess the Picture';
+            guessImage.classList.remove('hidden');
+            guessInput.value = '';
+            guessInput.disabled = true;
+            guessSubmit.disabled = true;
+            guessInput.classList.add('hidden');
+            guessSubmit.classList.add('hidden');
+
+            // 3초 후 입력 활성화
+            timer = setTimeout(() => {
+                guessInput.disabled = false;
+                guessSubmit.disabled = false;
+                guessInput.classList.remove('hidden');
+                guessSubmit.classList.remove('hidden');
+                guessInput.focus();
+            }, 3000);
+        }
+
+        // 사진 맞추기 제출 버튼 이벤트
+        guessSubmit.addEventListener('click', () => {
+            const userGuess = guessInput.value.trim().toLowerCase();
+            if (userGuess === '') return;
+
+            const correctAnswer = guessImages[currentGuessIndex].name.toLowerCase();
+
+            if (userGuess === correctAnswer) {
+                alert('정답입니다!');
+                guessScore += 10;
+                scoreGuessDisplay.textContent = `점수: ${guessScore}`;
+            } else {
+                alert(`틀렸습니다! 정답은 "${guessImages[currentGuessIndex].name}"입니다.`);
+                guessScore -= 2;
+                scoreGuessDisplay.textContent = `점수: ${guessScore}`;
+            }
+
+            currentGuessIndex++;
+            clearTimeout(timer);
+            showGuessImage();
+        });
+
+        // 엔터키로 제출 가능하게
+        guessInput.addEventListener('keyup', (event) => {
+            if (event.key === 'Enter') {
+                guessSubmit.click();
+            }
+        });
+
+        // 사진 맞추기 성공 메시지
+        function showGuessSuccessMessage(message) {
+            successMessage.innerHTML = `
+                <img src="https://i.imgur.com/4AI6B5K.png" alt="축하 이미지">
+                <div>${message}</div>
+                <button id="restartButton">다시 하기</button>
+            `;
+            successMessage.style.display = 'flex';
+
+            // 새로 추가된 'restartButton'에 이벤트 리스너 추가
+            const newRestartButton = document.getElementById('restartButton');
+            newRestartButton.addEventListener('click', () => {
+                restartGame();
+            });
+        }
+
+        // 게임 재시작 버튼 이벤트
+        restartButton.addEventListener('click', () => {
+            restartGame();
+        });
+    </script>
+</body>
+</html>
