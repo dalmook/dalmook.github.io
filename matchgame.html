@@ -148,9 +148,12 @@
             border-radius: 10px;
             width: 90%;
             max-width: 500px;
+            max-height: 80%; /* 높이 제한 추가 */
+            overflow-y: auto; /* 스크롤 추가 */
             box-shadow: 0 5px 15px rgba(0,0,0,0.3);
             animation: fadeIn 0.3s ease-out;
         }
+        
         @keyframes fadeIn {
             from { opacity: 0; transform: scale(0.9); }
             to { opacity: 1; transform: scale(1); }
@@ -976,6 +979,8 @@
                 <td>${date}</td>
             `;
             recordTableBody.appendChild(row);
+            // 테이블 끝으로 스크롤 이동
+            recordTableBody.scrollIntoView({ behavior: 'smooth', block: 'end' });
         }
 
         // 페이지 로드 시 Firestore 기록 불러오기
