@@ -1,0 +1,716 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>그림 퀴즈 게임</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        /* 기본 스타일 */
+        body {
+            font-family: 'Arial', sans-serif;
+            text-align: center;
+            background-color: #f0f8ff;
+            margin: 0;
+            padding: 0;
+        }
+        h1 {
+            margin: 20px 0;
+            color: #333;
+            font-size: 2em;
+        }
+        /* 공통 스타일 */
+        #controls {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin: 10px 0;
+            padding: 0 10px;
+        }
+        #controls > * {
+            margin: 5px 0;
+            width: 100%;
+            max-width: 300px;
+        }
+        select, button, input {
+            padding: 10px;
+            font-size: 1em;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+        button {
+            background-color: #ffa500;
+            color: white;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        button:hover {
+            background-color: #ff8c00;
+        }
+        #score {
+            font-size: 1.2em;
+            margin: 10px 0;
+            transition: color 0.5s;
+        }
+        /* 퀴즈 게임 스타일 */
+        #quizContainer {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin: 20px;
+        }
+        #questionImage {
+            width: 300px;
+            height: 300px;
+            background-color: #fff;
+            border: 2px solid #ccc;
+            border-radius: 10px;
+            background-size: cover;
+            background-position: center;
+            position: relative;
+            margin-bottom: 20px;
+        }
+        #feedback {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            font-size: 2em;
+            font-weight: bold;
+        }
+        /* 정답 표시 영역 */
+        #correctAnswer {
+            position: absolute;
+            bottom: 10px;
+            left: 10px;
+            font-size: 1em;
+            color: #fff;
+            background-color: rgba(0, 0, 0, 0.6);
+            padding: 5px 10px;
+            border-radius: 5px;
+            display: none; /* 기본적으로 숨김 */
+        }
+        #options {
+            display: grid;
+            grid-template-columns: repeat(2, 150px);
+            gap: 10px;
+        }
+        .option-button {
+            padding: 15px;
+            font-size: 1em;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            background-color: #87cefa;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        .option-button:hover {
+            background-color: #00bfff;
+        }
+        /* 성공 메시지 스타일 */
+        #successMessage {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.8);
+            color: white;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5em;
+            z-index: 1000;
+            display: none;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+        #successMessage img {
+            width: 80px;
+            margin-bottom: 20px;
+        }
+        #successMessage button {
+            margin-top: 20px;
+        }
+        /* 기록 섹션 스타일 (모달) */
+        #recordSection {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5); /* 반투명 배경 */
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+        #recordContent {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            width: 90%;
+            max-width: 500px;
+            max-height: 80%; /* 높이 제한 추가 */
+            overflow-y: auto; /* 스크롤 추가 */
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+            animation: fadeIn 0.3s ease-out;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: scale(0.9); }
+            to { opacity: 1; transform: scale(1); }
+        }
+        #recordTable {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 10px 0;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+        #recordTable th, #recordTable td {
+            border: 1px solid #ccc;
+            padding: 8px;
+            text-align: center;
+        }
+        /* 미디어 쿼리로 화면 크기에 맞게 조정 */
+        @media (max-width: 768px) {
+            #questionImage {
+                width: 200px;
+                height: 200px;
+            }
+            #options {
+                grid-template-columns: repeat(1, 200px);
+            }
+        }
+        .correct-answer {
+            text-decoration: underline;
+        }
+        /* 정답 애니메이션: 확대되면서 서서히 나타나기 */
+        @keyframes correctAnimation {
+            0% {
+                transform: scale(0.5);
+                opacity: 0;
+            }
+            50% {
+                transform: scale(1.2);
+                opacity: 1;
+            }
+            100% {
+                transform: scale(1);
+            }
+        }
+
+        /* 오답 애니메이션: 흔들리면서 빨리 사라지기 */
+        @keyframes incorrectAnimation {
+            0% {
+                transform: translateX(0);
+                opacity: 1;
+            }
+            25% {
+                transform: translateX(-10px);
+            }
+            50% {
+                transform: translateX(10px);
+            }
+            75% {
+                transform: translateX(-10px);
+            }
+            100% {
+                transform: translateX(0);
+                opacity: 0;
+            }
+        }
+
+        /* 정답 애니메이션 클래스 */
+        .animate-correct {
+            animation: correctAnimation 1s ease-out forwards;
+        }
+
+        /* 오답 애니메이션 클래스 */
+        .animate-incorrect {
+            animation: incorrectAnimation 1s ease-out forwards;
+        }
+    </style>
+    
+    <!-- Firebase SDK 추가 -->
+    <!-- Firebase App (필수) -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <!-- Firebase Firestore -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+</head>
+<body>
+    <h1>그림 퀴즈 게임</h1>
+    <!-- 게임 시작 섹션 -->
+    <div id="controls">
+        <!-- 카테고리 선택 -->
+        <label for="categorySelect">카테고리 선택:</label>
+        <select id="categorySelect">
+            <option value="">-- 선택하세요 --</option>
+            <option value="animals">동물</option>
+            <option value="plants">식물</option>
+            <!-- 추가 카테고리 옵션을 여기에 추가 -->
+        </select>
+        
+        <!-- 난이도 선택 -->
+        <label for="difficultySelect">난이도 선택:</label>
+        <select id="difficultySelect">
+            <option value="">-- 선택하세요 --</option>
+            <option value="easy">쉬움</option>
+            <option value="medium">보통</option>
+            <option value="hard">어려움</option>
+        </select>
+        
+        <!-- 게임 시작 버튼 -->
+        <button id="startQuizGame">게임 시작</button>
+    </div>
+    <div id="score">점수: 0</div>
+    <div id="quizContainer" style="display: none;">
+        <div id="questionImage">
+            <div id="feedback"></div>
+            <div id="correctAnswer"></div> <!-- 정답 표시 영역 추가 -->
+        </div>
+        <div id="options">
+            <!-- 보기 버튼이 여기에 생성됩니다 -->
+        </div>
+    </div>
+
+    <!-- 성공 메시지 -->
+    <div id="successMessage">
+        <img src="https://cdn-icons-png.flaticon.com/128/1365/1365358.png" alt="축하 이미지">
+        <div>축하해요! 모든 문제를 완료했어요!</div>
+        <button id="saveRecordButton">기록 저장</button>
+        <button id="restartButton">다시 하기</button>
+    </div>
+
+    <!-- 기록 섹션 (모달) -->
+    <div id="recordSection">
+        <div id="recordContent">
+            <h2>🎉 클리어 기록 저장 🎉</h2>
+            <label for="playerName">이름을 입력하세요:</label>
+            <input type="text" id="playerName" placeholder="이름">
+            <button id="submitRecordButton">저장</button>
+            <h3>기록 보기</h3>
+            <table id="recordTable">
+                <thead>
+                    <tr>
+                        <th>이름</th>
+                        <th>점수</th>
+                        <th>날짜</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- 기록이 여기에 추가됩니다 -->
+                </tbody>
+            </table>
+            <button id="closeRecordSection">닫기</button>
+        </div>
+    </div>
+
+    <!-- 오디오 요소 -->
+    <audio id="correctSoundEffect" src="https://www.soundjay.com/buttons/sounds/button-16.mp3" preload="auto"></audio> <!-- "띵동" 소리 -->
+    <audio id="incorrectSound" src="https://www.soundjay.com/buttons/sounds/button-10.mp3" preload="auto"></audio>
+
+    <script>
+        // Firebase 초기화 (Firebase 콘솔에서 얻은 설정 정보로 대체)
+        const firebaseConfig = {
+            apiKey: "AIzaSyBbyta3aYZuMcaWDFyUP_LqQFDXr95_m6U",
+            authDomain: "imagechoice20241125.firebaseapp.com",
+            projectId: "imagechoice20241125",
+            storageBucket: "imagechoice20241125.firebasestorage.app",
+            messagingSenderId: "4727525381",
+            appId: "1:4727525381:web:a90aab12dbdba5de430c6c"
+        };
+        
+        // Firebase 초기화
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+        
+        // 질문 데이터 (카테고리와 난이도별로 분류)
+        const questions = {
+            animals: {
+                easy: [
+                    {
+                        image: 'https://cdn-icons-png.flaticon.com/128/616/616412.png', // 사자 이미지 URL
+                        correct: 'Lion',
+                        options: ['Tiger', 'Elephant', 'Lion', 'Bear']
+                    },
+                    {
+                        image: 'https://cdn-icons-png.flaticon.com/128/1998/1998804.png', // 호랑이 이미지 URL
+                        correct: 'Tiger',
+                        options: ['Leopard', 'Tiger', 'Zebra', 'Giraffe']
+                    },
+                    // 더 많은 쉬운 동물 질문을 추가하세요
+                ],
+                medium: [
+                    {
+                        image: 'https://cdn-icons-png.flaticon.com/128/13421/13421996.png', // 표범 이미지 URL
+                        correct: 'Leopard',
+                        options: ['Leopard', 'Lion', 'Cheetah', 'Jaguar']
+                    },
+                    // 더 많은 보통 난이도 동물 질문을 추가하세요
+                ],
+                hard: [
+                    {
+                        image: 'https://cdn-icons-png.flaticon.com/128/1998/1998813.png', // 얼룩말 이미지 URL
+                        correct: 'Zebra',
+                        options: ['Zebra', 'Horse', 'Donkey', 'Mule']
+                    },
+                    // 더 많은 어려운 동물 질문을 추가하세요
+                ]
+            },
+            plants: {
+                easy: [
+                    {
+                        image: 'https://cdn-icons-png.flaticon.com/128/190/190411.png', // 장미 이미지 URL
+                        correct: 'Rose',
+                        options: ['Tulip', 'Daisy', 'Rose', 'Sunflower']
+                    },
+                    // 더 많은 쉬운 식물 질문을 추가하세요
+                ],
+                medium: [
+                    {
+                        image: 'https://cdn-icons-png.flaticon.com/128/808/808269.png', // 선인장 이미지 URL
+                        correct: 'Cactus',
+                        options: ['Bamboo', 'Cactus', 'Fern', 'Oak']
+                    },
+                    // 더 많은 보통 난이도 식물 질문을 추가하세요
+                ],
+                hard: [
+                    {
+                        image: 'https://cdn-icons-png.flaticon.com/128/194/194630.png', // 대나무 이미지 URL
+                        correct: 'Bamboo',
+                        options: ['Bamboo', 'Sequoia', 'Maple', 'Pine']
+                    },
+                    // 더 많은 어려운 식물 질문을 추가하세요
+                ]
+            }
+            // 추가 카테고리를 여기에 추가하세요
+        };
+    
+        // 변수 초기화
+        let currentQuestionIndex = 0;
+        let score = 0;
+        let countdown = 3; // 초기 카운트다운 시간
+        let countdownInterval;
+        let selectedCategory = '';
+        let selectedDifficulty = '';
+        let filteredQuestions = []; // 선택된 카테고리와 난이도에 맞는 질문들
+    
+        const startQuizButton = document.getElementById('startQuizGame');
+        const quizContainer = document.getElementById('quizContainer');
+        const questionImage = document.getElementById('questionImage');
+        const optionsContainer = document.getElementById('options');
+        const scoreDisplay = document.getElementById('score');
+        const feedback = document.getElementById('feedback');
+        const correctAnswerDiv = document.getElementById('correctAnswer'); // 정답 표시 요소
+        
+        const successMessage = document.getElementById('successMessage');
+        const saveRecordButton = document.getElementById('saveRecordButton');
+        const restartButton = document.getElementById('restartButton');
+    
+        const recordSection = document.getElementById('recordSection');
+        const playerNameInput = document.getElementById('playerName');
+        const submitRecordButton = document.getElementById('submitRecordButton');
+        const recordTableBody = document.getElementById('recordTable').querySelector('tbody');
+        const closeRecordSectionButton = document.getElementById('closeRecordSection');
+        const backToGameButton = document.getElementById('backToGameButton');
+    
+        const correctSoundEffect = document.getElementById('correctSoundEffect');
+        const incorrectSound = document.getElementById('incorrectSound');
+    
+        // 게임 시작 버튼 이벤트
+        startQuizButton.addEventListener('click', () => {
+            // 카테고리와 난이도가 선택되었는지 확인
+            selectedCategory = document.getElementById('categorySelect').value;
+            selectedDifficulty = document.getElementById('difficultySelect').value;
+    
+            if (!selectedCategory) {
+                alert('카테고리를 선택하세요!');
+                return;
+            }
+            if (!selectedDifficulty) {
+                alert('난이도를 선택하세요!');
+                return;
+            }
+    
+            // 선택된 카테고리와 난이도에 맞는 질문들 필터링
+            if (questions[selectedCategory] && questions[selectedCategory][selectedDifficulty]) {
+                filteredQuestions = [...questions[selectedCategory][selectedDifficulty]];
+            } else {
+                alert('선택한 카테고리와 난이도에 맞는 질문이 없습니다.');
+                return;
+            }
+    
+            // 퀴즈 시작
+            startQuizGame();
+        });
+    
+        // 게임 시작 함수
+        function startQuizGame() {
+            quizContainer.style.display = 'flex';
+            startQuizButton.disabled = true;
+            currentQuestionIndex = 0;
+            score = 0;
+            scoreDisplay.textContent = `점수: ${score}`;
+            loadQuestion();
+        }
+    
+        // 질문 로드 함수
+        function loadQuestion() {
+            if (currentQuestionIndex >= filteredQuestions.length) {
+                endQuiz();
+                return;
+            }
+    
+            const currentQuestion = filteredQuestions[currentQuestionIndex];
+            questionImage.style.backgroundImage = `url("${currentQuestion.image}")`;
+            feedback.innerHTML = ''; // 피드백 초기화
+            correctAnswerDiv.innerHTML = ''; // 정답 표시 초기화
+            correctAnswerDiv.style.display = 'none'; // 정답 표시 숨김
+    
+            // 보기 버튼 생성
+            optionsContainer.innerHTML = '';
+            currentQuestion.options.forEach(option => {
+                const button = document.createElement('button');
+                button.classList.add('option-button');
+                button.textContent = option;
+                button.addEventListener('click', () => selectOption(option, button));
+                optionsContainer.appendChild(button);
+            });
+    
+            // 난이도에 따른 카운트다운 시간 설정 (옵션)
+            let countdownTime = 3; // 기본 시간
+            if (selectedDifficulty === 'easy') {
+                countdownTime = 5;
+            } else if (selectedDifficulty === 'medium') {
+                countdownTime = 3;
+            } else if (selectedDifficulty === 'hard') {
+                countdownTime = 2;
+            }
+    
+            // 카운트다운 초기화
+            countdown = countdownTime;
+            feedback.innerHTML = `${countdown}초`;
+            countdownInterval = setInterval(() => {
+                countdown--;
+                if (countdown > 0) {
+                    feedback.innerHTML = `${countdown}초`;
+                } else {
+                    clearInterval(countdownInterval);
+                    markAsIncorrect(); // 시간이 초과되면 오답 처리
+                }
+            }, 1000);
+        }
+    
+        // 보기 선택 함수
+        function selectOption(selectedOption, button) {
+            clearInterval(countdownInterval); // 카운트다운 타이머 정리
+            const currentQuestion = filteredQuestions[currentQuestionIndex];
+            if (selectedOption === currentQuestion.correct) {
+                // 정답
+                score += 10;
+                scoreDisplay.textContent = `점수: ${score}`;
+                feedback.innerHTML = '⭕';
+                button.style.backgroundColor = '#32cd32'; // 녹색
+                correctSoundEffect.play();
+            
+                // 애니메이션 클래스 추가
+                feedback.classList.add('animate-correct');
+            
+                // 애니메이션이 끝난 후 클래스 제거
+                feedback.addEventListener('animationend', () => {
+                    feedback.classList.remove('animate-correct');
+                }, { once: true });
+            
+            } else {
+                // 오답
+                score -= 2;
+                scoreDisplay.textContent = `점수: ${score}`;
+                feedback.innerHTML = '❌';
+                button.style.backgroundColor = '#ff4d4d'; // 빨간색
+                incorrectSound.play();
+            
+                // 정답 밑줄 표시
+                Array.from(optionsContainer.children).forEach(btn => {
+                    if (btn.textContent === currentQuestion.correct) {
+                        btn.classList.add('correct-answer');
+                    }
+                });
+            
+                // 애니메이션 클래스 추가
+                feedback.classList.add('animate-incorrect');
+            
+                // 애니메이션이 끝난 후 클래스 제거
+                feedback.addEventListener('animationend', () => {
+                    feedback.classList.remove('animate-incorrect');
+                }, { once: true });
+            }
+            // 모든 보기 버튼 비활성화
+            Array.from(optionsContainer.children).forEach(btn => {
+                btn.disabled = true;
+                if (btn.textContent === currentQuestion.correct) {
+                    btn.style.backgroundColor = '#32cd32'; // 정답 표시
+                }
+            });
+    
+            // 정답 표시
+            displayCorrectAnswer(currentQuestion.correct);
+    
+            setTimeout(() => {
+                nextQuestion();
+            }, 2000); // 2초 후 다음 질문으로 이동 (정답 표시 시간 포함)
+        }
+    
+        // 시간 초과 시 오답 처리 함수
+        function markAsIncorrect() {
+            const currentQuestion = filteredQuestions[currentQuestionIndex];
+            score -= 2;
+            scoreDisplay.textContent = `점수: ${score}`;
+            feedback.innerHTML = '❌';
+            // 모든 보기 버튼 비활성화 및 정답 표시
+            Array.from(optionsContainer.children).forEach(btn => {
+                btn.disabled = true;
+                if (btn.textContent === currentQuestion.correct) {
+                    btn.style.backgroundColor = '#32cd32'; // 정답 표시
+                    btn.classList.add('correct-answer'); // 정답 밑줄 표시
+                }
+            });
+            incorrectSound.play();
+        
+            // 애니메이션 클래스 추가
+            feedback.classList.add('animate-incorrect');
+        
+            // 애니메이션이 끝난 후 클래스 제거
+            feedback.addEventListener('animationend', () => {
+                feedback.classList.remove('animate-incorrect');
+            }, { once: true });
+        
+            // 정답 표시
+            displayCorrectAnswer(currentQuestion.correct);
+        
+            // 2초 후 다음 질문으로 이동
+            setTimeout(() => {
+                nextQuestion();
+            }, 2000);
+        }
+    
+        // 정답 표시 함수
+        function displayCorrectAnswer(correctAnswer) {
+            const message = correctAnswer; // 정답 단어만 읽도록 수정
+            correctAnswerDiv.innerHTML = `정답: ${message}`;
+            correctAnswerDiv.style.display = 'block';
+        
+            // 텍스트 음성 변환 (선택 사항)
+            if ('speechSynthesis' in window) {
+                const utterance = new SpeechSynthesisUtterance(message);
+                speechSynthesis.speak(utterance);
+            }
+        }
+        
+    
+        // 다음 질문으로 이동 함수
+        function nextQuestion() {
+            currentQuestionIndex++;
+            loadQuestion();
+        }
+    
+        // 퀴즈 종료 함수
+        function endQuiz() {
+            quizContainer.style.display = 'none';
+            successMessage.style.display = 'flex';
+            clearInterval(countdownInterval);
+        }
+    
+        // 기록 저장 버튼 이벤트
+        saveRecordButton.addEventListener('click', () => {
+            successMessage.style.display = 'none';
+            recordSection.style.display = 'flex';
+            loadRecordsFromFirestore();
+        });
+    
+        // 기록 제출 버튼 이벤트
+        submitRecordButton.addEventListener('click', () => {
+            const name = playerNameInput.value.trim();
+            if (!name) {
+                alert('이름을 입력하세요!');
+                return;
+            }
+            saveRecord(name);
+        });
+    
+        // 게임 재시작 버튼 이벤트
+        restartButton.addEventListener('click', () => {
+            restartGame();
+        });
+    
+        // 기록 섹션 닫기 버튼 이벤트
+        closeRecordSectionButton.addEventListener('click', () => {
+            recordSection.style.display = 'none';
+        });
+    
+        // Firestore에 기록 저장 함수
+        function saveRecord(name) {
+            const record = {
+                name: name,
+                score: score,
+                category: selectedCategory,
+                difficulty: selectedDifficulty,
+                timestamp: firebase.firestore.FieldValue.serverTimestamp()
+            };
+            db.collection('quizGameRecords').add(record)
+                .then(() => {
+                    console.log('게임 기록이 성공적으로 저장되었습니다.');
+                    playerNameInput.value = '';
+                    loadRecordsFromFirestore();
+                })
+                .catch((error) => {
+                    console.error('게임 기록 저장 중 오류 발생: ', error);
+                    alert('기록 저장에 실패했습니다. 다시 시도해주세요.');
+                });
+        }
+    
+        // Firestore에서 기록 불러오기 함수
+        function loadRecordsFromFirestore() {
+            recordTableBody.innerHTML = ''; // 기존 기록 초기화
+            db.collection('quizGameRecords').orderBy('timestamp', 'desc').limit(10).get()
+                .then((querySnapshot) => {
+                    querySnapshot.forEach((doc) => {
+                        const record = doc.data();
+                        addRecordToTable(record);
+                    });
+                })
+                .catch((error) => {
+                    console.error('기록 불러오기 중 오류 발생: ', error);
+                });
+        }
+    
+        // 기록 테이블에 기록 추가 함수
+        function addRecordToTable(record) {
+            const row = document.createElement('tr');
+            const date = record.timestamp ? record.timestamp.toDate().toLocaleString() : 'N/A';
+            row.innerHTML = `
+                <td>${record.name}</td>
+                <td>${record.score}</td>
+                <td>${date}</td>
+            `;
+            recordTableBody.appendChild(row);
+        }
+    
+        // 게임 재시작 함수 수정
+        function restartGame() {
+            currentQuestionIndex = 0; // 질문 인덱스 초기화
+            score = 0;                 // 점수 초기화
+            scoreDisplay.textContent = `점수: ${score}`;
+            recordSection.style.display = 'none';    // 기록 섹션 숨기기
+            successMessage.style.display = 'none';    // 성공 메시지 숨기기
+            playerNameInput.value = '';               // 이름 입력 필드 초기화
+            quizContainer.style.display = 'none';      // 퀴즈 컨테이너 숨기기
+            startQuizButton.disabled = false;         // "게임 시작" 버튼 활성화
+            // 카테고리와 난이도 선택 초기화 (필요 시)
+            document.getElementById('categorySelect').value = '';
+            document.getElementById('difficultySelect').value = '';
+        }
+    </script>
+        
+</body>
+</html>
