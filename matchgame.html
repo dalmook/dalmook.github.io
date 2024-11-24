@@ -283,7 +283,7 @@
     <div id="controls">
         <label for="category">카테고리 선택:</label>
         <select id="category">
-            <option value="tyniping">티니핑</option>
+            <option value="Teenieping">티니핑</option>
             <option value="animals">동물</option>
             <option value="plants">식물</option>            
             <option value="hangul">한글</option>
@@ -553,7 +553,7 @@
                 { name: 'Sugarcane', image: 'https://cdn-icons-png.flaticon.com/128/1157/1157252.png', desc: '사탕수수' },
                 { name: 'Aloe vera', image: 'https://cdn-icons-png.flaticon.com/128/5389/5389056.png', desc: '알로에 베라' },
             ],
-            tyniping: [
+            Teenieping: [
                 { name: '하츄핑', image: 'https://i.namu.wiki/i/ruTCX2vHbSGM8KynYQNQ7n8Gbv91SJEWxNF7KhLqT-DiMPFq8fQo6T21mQy4bUiEpT0kGdprg5VbvRARnh4LK9YeVLrkcVhx6ru8kJYAh8vnnIQKvUIUK_a2EU-kAkTGErtaQ6DfulH5M3ER9L5N-g.webp', desc: '캐릭터 설명' },
                 { name: '바로핑', image: 'https://i.namu.wiki/i/HTO3W5mSVlboa-hho2eNallSHLcr3ZMNYgWF2RDui42jcDgPW26mIuIoHPhk_1KrnKYI-DDWlH9w-4bTPtM3Zs766AXgmhGUFWlaiJAAlmPleOAwTASxvKrEv5WykVmxD9g5lOFWdQBEDHH5ac05LQ.webp', desc: '캐릭터 설명' },
                 { name: '아자핑', image: 'https://i.namu.wiki/i/QEieLSO2YP-PuNKJPVEGoOLp8ocI_efD0ozKuM-FhtMZ7R--eq9fadyFAN4K3veGEG8F9ZneSP2ppBPhg3Hn3V40gYqFDP0RfmBcdqJw1IJxSQGqJ-OSZeUAwZd0gL5SvBb7jDgIWJLlxe4yBq-VDg.webp', desc: '캐릭터 설명' },                
@@ -712,8 +712,8 @@
             });
             
             // 티니핑 카테고리의 소리 미리 로드 (sound 속성이 있다면)
-            if (selectedCategory === 'tyniping') {
-                categories.tyniping.forEach(char => {
+            if (selectedCategory === 'Teenieping') {
+                categories.Teenieping.forEach(char => {
                     if (char.sound) {
                         const audio = new Audio(char.sound);
                         audio.load();
@@ -839,9 +839,9 @@
                 matchedPairs++;
                 updateScore(10); // 점수 +10
                 
-                // 카테고리가 'tyniping'인 경우 캐릭터별 효과음 재생 (sound 속성 필요 시 추가)
-                if (selectedCategory === 'tyniping') {
-                    const characterSound = categories.tyniping.find(char => char.name === firstCard.dataset.name)?.sound;
+                // 카테고리가 'Teenieping'인 경우 캐릭터별 효과음 재생 (sound 속성 필요 시 추가)
+                if (selectedCategory === 'Teenieping') {
+                    const characterSound = categories.Teenieping.find(char => char.name === firstCard.dataset.name)?.sound;
                     if (characterSound) {
                         playCharacterSound(characterSound);
                     }
@@ -1002,7 +1002,7 @@
             const utterance = new SpeechSynthesisUtterance(word);
             
             // 카테고리에 따라 언어 설정
-            if (category === 'tyniping') {
+            if (category === 'Teenieping') {
                 utterance.lang = 'ko-KR'; // 한국어
             } else {
                 utterance.lang = 'en-US'; // 영어
