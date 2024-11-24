@@ -70,6 +70,15 @@
             max-width: 100%;
             margin: 0 auto 20px;
         }
+        .game-board.easy {
+            grid-template-columns: repeat(4, 1fr);
+        }
+        .game-board.medium {
+            grid-template-columns: repeat(6, 1fr);
+        }
+        .game-board.hard {
+            grid-template-columns: repeat(8, 1fr);
+        }
         .card {
             width: 100%;
             padding-top: 100%; /* 정사각형 유지 */
@@ -158,16 +167,6 @@
             padding: 8px;
             text-align: center;
         }
-        /* 난이도별 그리드 설정 */
-        .game-board.easy {
-            grid-template-columns: repeat(4, 1fr);
-        }
-        .game-board.medium {
-            grid-template-columns: repeat(6, 1fr);
-        }
-        .game-board.hard {
-            grid-template-columns: repeat(8, 1fr);
-        }
         /* 미디어 쿼리로 화면 크기에 맞게 조정 */
         @media (max-width: 1200px) {
             /* 큰 화면에서도 카드가 너무 크지 않도록 조정 */
@@ -206,7 +205,7 @@
         }
         /* 가로 모드일 때 그리드 레이아웃 조정 */
         @media (orientation: landscape) {
-            /* 쉬움 난이도: 4x4 -> 4x4 동일, 필요 시 변경 가능 */
+            /* 쉬움 난이도: 4x4 -> 6x4 */
             .game-board.easy {
                 grid-template-columns: repeat(6, 1fr); /* 예시: 컬럼 수를 늘려 더 넓은 레이아웃 */
             }
@@ -228,6 +227,48 @@
                 padding-top: 100%; /* 필요에 따라 비율 조정 가능 */
             }
         }
+        @keyframes countdown-animation {
+            0% {
+                transform: scale(1);
+                opacity: 1;
+                color: red;
+            }
+            50% {
+                transform: scale(1.5);
+                opacity: 0.8;
+                color: orange;
+            }
+            100% {
+                transform: scale(0.8);
+                opacity: 0;
+                color: yellow;
+            }
+        }
+        /* 카운트다운 오버레이 스타일 */
+        #countdownOverlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7); /* 반투명 검정 배경 */
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 2000; /* 다른 요소들보다 위에 표시 */
+        }
+
+        #countdownNumber {
+            color: white;
+            font-size: 5em;
+            font-weight: bold;
+            animation: countdownFade 1s ease-in-out forwards;
+        }
+
+        @keyframes countdownFade {
+            from { opacity: 1; transform: scale(1); }
+            to { opacity: 0; transform: scale(1.5); }
+        }
     </style>
     
     <!-- Firebase SDK 추가 -->
@@ -245,6 +286,7 @@
             <option value="animals">동물</option>
             <option value="plants">식물</option>
             <option value="tyniping">티니핑</option>
+            <option value="hangul">한글</option>
             <!-- 필요한 경우 더 추가 -->
         </select>
         <label for="difficulty">난이도 선택:</label>
@@ -259,6 +301,11 @@
     <div id="wordDisplay"></div>
     <div class="game-board easy" id="gameBoard">
         <!-- 카드가 여기에 생성됩니다 -->
+    </div>
+
+    <!-- 카운트다운 오버레이 -->
+    <div id="countdownOverlay">
+        <div id="countdownNumber">3</div>
     </div>
 
     <!-- 성공 메시지 -->
@@ -546,6 +593,48 @@
                 { name: '그림핑', image: 'https://i.namu.wiki/i/Zp2rfX5TzThzF-2BDoFjwQ1upLURC7JpKhSCmfUk-oVV02XLJdELP7dmJ7bKgHWF0B8e5abN43Jz2RWcItJ0wrCmajiJrIq4fseYclXzNxU_QMj2DmoLl0W6NbCvZTMEm-81j0XOPvAvA5i4B3jDrQ.webp', desc: '캐릭터 설명' },
                 { name: '무거핑', image: 'https://i.namu.wiki/i/7JN9ur-gKfyjF2alOjd_9RE0xXVpv17Vg4hMaqN5meshp3_bXQ2IiY2giC4x-a56kGfHjRTM3rOvduZpl6phjuo2kMUYIbl8EhKWSAy68GrkjlPd38UyhRkG7c6O-rC5XiGY_qJkPwuO30DVuJ26VQ.webp', desc: '캐릭터 설명' },
                 { name: '꺼꿀핑', image: 'https://i.namu.wiki/i/VqyVB1ieN7oIM2_O8jHDQLdYHnSbkNroHfvMemDGdp1voWxRwdGgg9P-6FXtm1aB1XkS3WBoVBlZxzLN1TZEpEv4WoCn7qh4wrSmQkgzhwAj856l4VjqaV6vlfcESZlxAzFF_tiwhu5sgeQfoTpLlw.webp', desc: '캐릭터 설명' }
+            ],            
+            hangul: [
+                { name: 'ㄱ', image: 'https://static.wikia.nocookie.net/korean/images/3/3e/Giyeok_Writing.gif/revision/latest?cb=20230822103141', desc: '캐릭터 설명' },
+                { name: 'ㄴ', image: 'https://static.wikia.nocookie.net/korean/images/4/48/Nieun_Writing.gif/revision/latest?cb=20230822103704', desc: '캐릭터 설명' },
+                { name: 'ㄷ', image: 'https://static.wikia.nocookie.net/korean/images/f/ff/Digeut_Writing.gif/revision/latest?cb=20230822152545', desc: '캐릭터 설명' },                
+                { name: 'ㄹ', image: 'https://static.wikia.nocookie.net/korean/images/9/97/Rieul_Writing.gif/revision/latest?cb=20230823084354', desc: '캐릭터 설명' },
+                { name: 'ㅁ', image: 'https://static.wikia.nocookie.net/korean/images/f/ff/Mieum_Writing.gif/revision/latest?cb=20230823174832', desc: '캐릭터 설명' },
+                { name: 'ㅂ', image: 'https://static.wikia.nocookie.net/korean/images/f/fb/Bieup_Writing.gif/revision/latest?cb=20230825124627', desc: '캐릭터 설명' },
+                { name: 'ㅅ', image: 'https://static.wikia.nocookie.net/korean/images/1/1e/Siot_Writing.gif/revision/latest?cb=20230825203614', desc: '캐릭터 설명' },
+                { name: 'ㅇ', image: 'https://static.wikia.nocookie.net/korean/images/6/6b/Ieung_Writing.gif/revision/latest?cb=20230825214133', desc: '캐릭터 설명' },
+                { name: 'ㅈ', image: 'https://static.wikia.nocookie.net/korean/images/6/62/Jieut_Writing.gif/revision/latest?cb=20230826103728', desc: '캐릭터 설명' },
+                { name: 'ㅊ', image: 'https://static.wikia.nocookie.net/korean/images/5/5f/Chieut_Writing.gif/revision/latest?cb=20230826153044', desc: '캐릭터 설명' },
+                { name: 'ㅋ', image: 'https://static.wikia.nocookie.net/korean/images/1/12/Kieuk_Writing.gif/revision/latest?cb=20230827120210', desc: '캐릭터 설명' },
+                { name: 'ㅌ', image: 'https://static.wikia.nocookie.net/korean/images/5/55/Tieut_Writing.gif/revision/latest?cb=20230830202056', desc: '캐릭터 설명' },                
+                { name: 'ㅍ', image: 'https://static.wikia.nocookie.net/korean/images/f/fe/Pieup_Writing.gif/revision/latest?cb=20230830203506', desc: '캐릭터 설명' },                
+                { name: 'ㅎ', image: 'https://static.wikia.nocookie.net/korean/images/0/08/Hieut_Writing.gif/revision/latest?cb=20230830205416', desc: '캐릭터 설명' },                
+                { name: 'ㄲ', image: 'https://static.wikia.nocookie.net/korean/images/1/1a/Ssanggiyeok_Writing.gif/revision/latest?cb=20230831094559', desc: '캐릭터 설명' },                
+                { name: 'ㄸ', image: 'https://static.wikia.nocookie.net/korean/images/0/04/Ssangdigeut_Writing.gif/revision/latest?cb=20230831100354', desc: '캐릭터 설명' },                
+                { name: 'ㅃ', image: 'https://static.wikia.nocookie.net/korean/images/6/64/Ssangbieup_Writing.gif/revision/latest?cb=20230905091936', desc: '캐릭터 설명' },                
+                { name: 'ㅆ', image: 'https://static.wikia.nocookie.net/korean/images/7/7c/Ssangsiot_Writing.gif/revision/latest?cb=20231013181352', desc: '캐릭터 설명' },                
+                { name: 'ㅉ', image: 'https://static.wikia.nocookie.net/korean/images/c/c6/Ssangjieut_Writing.gif/revision/latest?cb=20231013183711', desc: '캐릭터 설명' },                
+                { name: 'ㅏ', image: 'https://static.wikia.nocookie.net/korean/images/c/c9/A_Writing.gif/revision/latest?cb=20231102184545', desc: '캐릭터 설명' },                             
+                { name: 'ㅐ', image: 'https://static.wikia.nocookie.net/korean/images/3/3a/Ae_Writing.gif/revision/latest?cb=20231102191605', desc: '캐릭터 설명' },
+                { name: 'ㅑ', image: 'https://static.wikia.nocookie.net/korean/images/0/01/Ya_Writing.gif/revision/latest?cb=20231102192559', desc: '캐릭터 설명' },
+                { name: 'ㅒ', image: 'https://static.wikia.nocookie.net/korean/images/5/51/Yae_Writing.gif/revision/latest?cb=20231102193523', desc: '캐릭터 설명' },
+                { name: 'ㅓ', image: 'https://static.wikia.nocookie.net/korean/images/0/01/Eo_Writing.gif/revision/latest?cb=20231102195203', desc: '캐릭터 설명' },
+                { name: 'ㅔ', image: 'https://static.wikia.nocookie.net/korean/images/5/5d/E_Writing.gif/revision/latest?cb=20231103140108', desc: '캐릭터 설명' },
+                { name: 'ㅕ', image: 'https://static.wikia.nocookie.net/korean/images/6/64/Yeo_Writing.gif/revision/latest?cb=20231103180808', desc: '캐릭터 설명' },
+                { name: 'ㅖ', image: 'https://static.wikia.nocookie.net/korean/images/8/88/Ye_Writing.gif/revision/latest?cb=20231103194719', desc: '캐릭터 설명' },
+                { name: 'ㅗ', image: 'https://static.wikia.nocookie.net/korean/images/c/cf/O_Writing.gif/revision/latest?cb=20231104091917', desc: '캐릭터 설명' },
+                { name: 'ㅘ', image: 'https://static.wikia.nocookie.net/korean/images/d/d2/Wa_Writing.gif/revision/latest?cb=20231104121442', desc: '캐릭터 설명' },
+                { name: 'ㅙ', image: 'https://static.wikia.nocookie.net/korean/images/f/fd/Wae_Writing.gif/revision/latest?cb=20231104145137', desc: '캐릭터 설명' },
+                { name: 'ㅚ', image: 'https://static.wikia.nocookie.net/korean/images/c/c9/Oe_Writing.gif/revision/latest?cb=20231104183014', desc: '캐릭터 설명' },
+                { name: 'ㅛ', image: 'https://static.wikia.nocookie.net/korean/images/d/de/Yo_Writing.gif/revision/latest?cb=20231104191633', desc: '캐릭터 설명' },
+                { name: 'ㅜ', image: 'https://static.wikia.nocookie.net/korean/images/4/44/U_Writing.gif/revision/latest?cb=20231104192750', desc: '캐릭터 설명' },
+                { name: 'ㅝ', image: 'https://static.wikia.nocookie.net/korean/images/d/dc/Wo_Writing.gif/revision/latest?cb=20231104193801', desc: '캐릭터 설명' },
+                { name: 'ㅞ', image: 'https://static.wikia.nocookie.net/korean/images/2/24/We_Writing.gif/revision/latest?cb=20231104194905', desc: '캐릭터 설명' },
+                { name: 'ㅟ', image: 'https://static.wikia.nocookie.net/korean/images/8/8a/Wi.png/revision/latest?cb=20231104200615', desc: '캐릭터 설명' },
+                { name: 'ㅠ', image: 'https://static.wikia.nocookie.net/korean/images/1/1f/Yu_Writing.gif/revision/latest?cb=20231104201302', desc: '캐릭터 설명' },
+                { name: 'ㅡ', image: 'https://static.wikia.nocookie.net/korean/images/c/c6/Eu_Writing.gif/revision/latest?cb=20231104201826', desc: '캐릭터 설명' },
+                { name: 'ㅢ', image: 'https://static.wikia.nocookie.net/korean/images/b/b4/Ui_Writing.gif/revision/latest?cb=20231104202410', desc: '캐릭터 설명' },
+                { name: 'ㅣ', image: 'https://static.wikia.nocookie.net/korean/images/f/f2/I_Writing.gif/revision/latest?cb=20231104202825', desc: '캐릭터 설명' },
             ],
             // 다른 카테고리 추가 가능
         };
@@ -575,10 +664,66 @@
         const backToGameButton = document.getElementById('backToGameButton');
         const recordTableBody = document.getElementById('recordTable').querySelector('tbody');
 
+        const countdownOverlay = document.getElementById('countdownOverlay');
+        const countdownNumber = document.getElementById('countdownNumber');
+
         // 게임 시작 버튼 이벤트 (그림 짝맞추기)
         matchingStartButton.addEventListener('click', () => {
-            initializeMatchingGame();
+            startMatchingGame(); // 게임 시작 함수 호출
         });
+
+        // 새로운 게임 시작 함수
+        function startMatchingGame() {
+            // 카운트다운 오버레이 표시
+            countdownOverlay.style.display = 'flex';
+            countdownNumber.textContent = '시작';
+            
+            let countdown = 2;
+            
+            const countdownInterval = setInterval(() => {
+                countdown--;
+                if (countdown > 0) {
+                    countdownNumber.textContent = countdown;
+                    // 애니메이션 재시작
+                    countdownNumber.classList.remove('fade');
+                    void countdownNumber.offsetWidth; // 리플로우를 강제하여 애니메이션 재시작
+                    countdownNumber.classList.add('fade');
+                } else {
+                    clearInterval(countdownInterval);
+                    countdownOverlay.style.display = 'none';
+                    initializeMatchingGame();
+                }
+            }, 1000);
+            
+            // 카운트다운 동안 이미지와 음성 미리 로드
+            preloadResources();
+        }
+
+        // 리소스 미리 로드 함수
+        function preloadResources() {
+            const categoryItems = categories[selectedCategory];
+            if (!categoryItems || categoryItems.length < pairsCount) return;
+            
+            // 짝의 수에 맞게 아이템 선택
+            const shuffled = shuffleArray([...categoryItems]);
+            const selectedItems = shuffled.slice(0, pairsCount);
+            const imagesToLoad = [...selectedItems, ...selectedItems].map(item => item.image);
+            
+            imagesToLoad.forEach(src => {
+                const img = new Image();
+                img.src = src;
+            });
+            
+            // 티니핑 카테고리의 소리 미리 로드 (sound 속성이 있다면)
+            if (selectedCategory === 'tyniping') {
+                categories.tyniping.forEach(char => {
+                    if (char.sound) {
+                        const audio = new Audio(char.sound);
+                        audio.load();
+                    }
+                });
+            }
+        }
 
         // 그림 짝맞추기 게임 초기화 함수
         function initializeMatchingGame() {
@@ -640,10 +785,11 @@
                 }
                 card.dataset.index = index;
                 card.addEventListener('click', flipCard);
-                // 카드 뒷면 이미지 (아이콘 대신 물음표)
+                
                 card.style.backgroundImage = 'url("https://cdn-icons-png.flaticon.com/512/929/929500.png")';
                 card.style.backgroundSize = 'cover';
-                card.style.backgroundPosition = 'center';
+                card.style.backgroundPosition = 'center';                
+                
                 // 카드 안에 내용 추가
                 const cardContent = document.createElement('div');
                 cardContent.classList.add('card-content');
@@ -807,14 +953,8 @@
             document.getElementById('playerName').style.display = 'block';
             saveRecordButton.style.display = 'block';
             // 게임 초기화
-            initializeMatchingGame(); // 새 게임 시작
+            startMatchingGame(); // 새 게임 시작
         });
-
-        // 기록 테이블 업데이트 함수 (Firestore의 실시간 업데이트 덕분에 별도 호출 필요 없음)
-        function updateRecordTable() {
-            // 이 함수는 Firestore의 실시간 업데이트를 통해 자동으로 처리됩니다.
-            // 따라서 별도로 호출할 필요가 없습니다.
-        }
 
         // Firestore에서 기록 불러오기
         function loadRecordsFromFirestore() {
@@ -846,6 +986,7 @@
         // 페이지 로드 시 Firestore 기록 불러오기
         window.onload = function() {
             loadRecordsFromFirestore();
+            // initializeMatchingGame(); // 이 줄을 제거하거나 주석 처리하세요.
         };
 
         // 영어 단어 표시 함수
@@ -918,7 +1059,7 @@
 
         // 게임 재시작 함수
         function restartGame() {
-            initializeMatchingGame();
+            startMatchingGame();
             successMessage.style.display = 'none';
         }
     </script>
