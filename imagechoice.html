@@ -336,12 +336,11 @@
         const db = firebase.firestore();
         // 카테고리별 옵션 풀 정의
         const optionPools = {
-            animals: [
-                'Tiger', 'Elephant', 'Lion', 'Bear', 'Leopard', 'Zebra', 'Horse', 'Giraffe',
-                'Kangaroo', 'Panda', 'Wolf', 'Fox', 'Deer', 'Rhinoceros', 'Cheetah', 'Hyena',
-                'Buffalo', 'Chimpanzee', 'Hippopotamus', 'Otter'
-                // 필요한 만큼 추가
-            ],
+            animals: ['Tiger', 'Elephant', 'Lion', 'Giraffe', 'Zebra', 'Kangaroo', 'Panda', 'Dolphin', 'Whale', 'Shark',
+ 'Cheetah', 'Wolf', 'Fox', 'Bear', 'Rabbit', 'Deer', 'Horse', 'Sheep', 'Goat', 'Pig',
+ 'Dog', 'Cat', 'Mouse', 'Rat', 'Squirrel', 'Eagle', 'Owl', 'Parrot', 'Penguin', 'Flamingo',
+ 'Camel', 'Crocodile', 'Turtle', 'Frog', 'Snake', 'Lizard', 'Butterfly', 'Bee', 'Ant', 'Octopus',
+ 'Crab', 'Jellyfish', 'Starfish', 'Seal', 'Walrus', 'Peacock', 'Turkey', 'Chicken', 'Duck', 'Goose'],
             plants: [
                 'Rose', 'Tulip', 'Daisy', 'Sunflower', 'Cactus', 'Fern', 'Oak', 'Maple',
                 'Bamboo', 'Sequoia', 'Palm', 'Lavender', 'Lily', 'Orchid', 'Ivy', 'Basil',
@@ -355,6 +354,114 @@
         const questions = {
             animals: {
                 easy: [
+                    {
+                        image: 'https://i.namu.wiki/i/ioILpXbTJj2nT-bVkNvBUfKYB-R11GLiQr_qwpUP1046Txd6kKgMIY3z6H7kGIElKjlMThLK1mz2-PSb-aSGZa066tSA9nbRUNucpqPH0E1tP1TtmWgQ3iXvkgb408qJJdKp_hAlaQ-8WgA1EZ4fbQ.webp', // 사자 이미지 URL
+                        correct: 'Goose'
+                    },
+                    {
+                        image: 'https://i.namu.wiki/i/FNyNbwX6eq3n4LXJ9tOTwBStf65WBfv9ZvXAk3_QrmBZ8EjAN8zjqvL50WEffIB3BjCcjdMuoU8sXGRz60OBYFFNMnN6T5T5yomGnDzzyIktLFYbCrO2zMih0fvjP5CezYUb9a3r-fandGmjW52DWQ.webp', // 사자 이미지 URL
+                        correct: 'Duck'
+                    },
+                    {
+                        image: 'https://i.namu.wiki/i/r66ST3DsYAaDkwLTpH7nEQtEXRgIMsE1EIpUE5lbBIX2MjsPtSpZNez0agBkRT2gTi4UDui7dMrMEDFIa0t7ahws4rSTO1QroiIj0uTua5PJOOAYFqj2kQpLokm0rrIXQwdGibbaaDncVG48nCxQRA.jpg', // 사자 이미지 URL
+                        correct: 'Starfish'
+                    },
+                    {
+                        image: 'https://i.namu.wiki/i/ncfX362Ygg64Ukg-kRuYRII4x4-hyHTvav5tkRU5ts46gZbCw8CaUOpuSVv-ZgOMbuuxVQvKPINrRvEYD-qmBeD8vb71gAeYFCbGWYcXLcqFHp226lfVXyXNexKErpnMnK8Xqf06PMv-wtq5Kv3J0A.webp', // 사자 이미지 URL
+                        correct: 'Crab'
+                    },
+                    {
+                        image: 'https://i.namu.wiki/i/PEPEAAj4OgOIKuvU94VLiq9XrKKabjSSZ9VxKsujTm5pjaNKa290Nq-A6C3aIQSFU8-yiDMmyKhbz8wTCvnqQpfKmlRze4AezZoA55VJ10ngXOByhi9JZ7AX2XD28Fbt2GH5v-CAr2CVPSrHk5ctLw.webp', // 사자 이미지 URL
+                        correct: 'Octopus'
+                    },
+                    {
+                        image: 'https://i.namu.wiki/i/-xeH_Vz4am_l5cw47ph7kSHqgUWis9xC0eTQsJIGz8NAVIS8QNEJt3ODS5kp2oM3CRom0CxUWeOXzvj9TlC3pWFnCr0t7HmFpI95b24IWxYioyS5hWrvtxhQlEAJWfQV5LC4YShcSv9tN7DMGV6Gqw.webp', // 사자 이미지 URL
+                        correct: 'Ant'
+                    },
+                    {
+                        image: 'https://i.namu.wiki/i/53xvrMJTJUT35z5hvBt4WuyHvv5T5kR9oEjm6SnKHRUVYq1D3JaSdVR39CZciULv_Miu__jeH4NkpUs6Ou-dyyguyTkQdo1R5mE1MZyiHdrhXfkAmf0NfNX7dh5iRPRb6cpAAuzsDx2V8DumuQa1iA.webp', // 사자 이미지 URL
+                        correct: 'Bee'
+                    },
+                    {
+                        image: 'https://i.namu.wiki/i/JWDmnNQWZVBcszh3fy3bsn_MTi9MMz0F8Fe79k71UTux5C57lh0pjrP9Q8wu0LWAtB4yqsZTsx_KuwJDP8tk0oEvweve1ff5C-vvpGc09MW3fahz4fdAV2_MpCBdaRNGX8GYDphl-pNJ9c85TDyMrg.webp', // 사자 이미지 URL
+                        correct: 'Butterfly'
+                    },
+                    {
+                        image: 'https://i.namu.wiki/i/ZX9M5gA2XEPzwvIShNJsPAqvmZcMPmr_tjtiMMbVN5Di8cf4kX1UQe6RjTrsXRt0BmGqihXLqmPcLpPF_dn2aA7FbGVOlpdp-FOptzCRsLbv0VMg1J9kteVgAiXLZQooqvPfv1h7JAJfFQ5YaBPA5A.jpg', // 사자 이미지 URL
+                        correct: 'Lizard'
+                    },
+                    {
+                        image: 'https://i.namu.wiki/i/gxkQ2DwJw9Z9i0UQgmpMO4Uo2R8iGh2WGcxik0WYAHlBlt1WaJOBgYFMP9dl8pMRdsUVB2bXeScEKjf4sKbGqR1zlAT39wEcvsy3PyhKdLLNciXGqrIM_gxV0_wk5NHeObkvVxGpD4Bb4YaajdYIMQ.webp', // 사자 이미지 URL
+                        correct: 'Snake'
+                    },
+                    {
+                        image: 'https://i.namu.wiki/i/OJymeAICv-rLfsA-pfGYxDAPGr2dwNxCN-4YlleWLfghZAOXkblL9QTmBLUYsxO7BxoWg1Syv9etb3aABaAXzXwtOSPOSBEhF3p0OCR4VbZIZSTyXpNevarmjG7liTDw3yzSzwacdv1r1FaOL5qRFA.webp', // 사자 이미지 URL
+                        correct: 'Frog'
+                    },
+                    {
+                        image: 'https://i.namu.wiki/i/uHNOk1QgHD1SEqy-L5lU9FkK56WXjH04i37tXyksTN5KlK94yVStrve5qto-EmWhF51xPCbfqaX3pKz7kE8G0U6w9r_ubNS497kXVMUGYZXvsv8bu38ptGRKJ8hqJdC-CBm8TPQVCdDJc-OrdQSkcQ.webp', // 사자 이미지 URL
+                        correct: 'Turtle'
+                    },
+                    {
+                        image: 'https://i.namu.wiki/i/3H_b0aczQ59l6lR4SSDK7qriLnECtUALeS54xL2lB2KTevg2r9UUlMB8ZVxTYhFjsrEbpl2xcdYO9HWNgpvNlL0fofXjG-fYzFw1Y0RXOCDk-skfTfy9aiPSjIK4gZzCMwgzQY74BkuiuZlqFqj9qA.jpg', // 사자 이미지 URL
+                        correct: 'Crocodile'
+                    },
+                    {
+                        image: 'https://i.namu.wiki/i/iBi7mb8mMGvfoE-vfNeCbEIeEVoVnhBAnoYJ6GIQZcPM6MsaKVyL_YEauAL2J4B_AX3L4tFnI_Cmo-mgUfnEXlIzw2Mux0FOYD5SSqD3-c6OueWU66QPxvofpP4FVmFffq6GoSueObcKLU8RdJSgng.jpg', // 사자 이미지 URL
+                        correct: 'Camel'
+                    },
+                    {
+                        image: 'https://i.namu.wiki/i/uKtumlADlYlasfcDE8uwv9vxpktrk92YAuxC--28Qyiy8xj7fzsVLPWPv8qP1ViT1ic6b9offlKi21cXE-LD-u1dX5rdDxI3rbMCOgp-SXJByjgCGCWge5E9cbGlJ7jXzKoDR9KoYVkJ0NvLyNjzbQ.webp', // 사자 이미지 URL
+                        correct: 'Flamingo'
+                    },
+                    {
+                        image: 'https://i.namu.wiki/i/4tXU_4g3xsjXbQdIp1pOCUn1csRzD_U3zKPTmqB8heLb1dS_Zv8NgPBmUljX_FExjFKT1-F-GOD1UohwMAU4ljRbTCkBdp5SlnnuFv5rmYklFRN9ZGwsGS4J3Dd8UlVaAYBcZbP4EtMIjzVGWu46FQ.webp', // 사자 이미지 URL
+                        correct: 'Penguin'
+                    },
+                    {
+                        image: 'https://i.namu.wiki/i/7hX2Gp3jF3F82AWtdHVUwp-HyCPNESGydA0Q2_VkBfheNj3thQSJHTA6IPYMAoTxMgbSu7Ij-o4sOvPV2mvsfxaIlSicxIeG257KQgb9ZNFXwSVfeZulk93-R7uWhWYfz3ivVXYDsWOjdYftzaSDCA.webp', // 사자 이미지 URL
+                        correct: 'Parrot'
+                    },
+                    {
+                        image: 'https://i.namu.wiki/i/GemFQA1wD-o0WXgNzOHJrLr4a6c9eXdiKQsscV_6sPXw646frj_x7jY2rAA_GkmZw3nWG06V6bsnaRhdq5jDjbN0bw8QxtyGwXapll9otd19RAfguD5AGhDDEMmTRaCgEiCCn5Wij6sL1qg1r0xHLg.webp', // 사자 이미지 URL
+                        correct: 'Owl'
+                    },
+                    {
+                        image: 'https://i.namu.wiki/i/6-_USuPDvC1DArebX82wp3yLtZvcr__7IpGd9OZ4t7RfoNb3U8qT-miKQVJ2yl32wMWbUXm2LLiFoCEJmSww0mwP0qzavBqNuRit1U4hdaatfv2hxg8QN-E0ffZ5wN-5aFYE7AftJ4iosL7_Xpb0_w.webp', // 사자 이미지 URL
+                        correct: 'Rabbit'
+                    },
+                    {
+                        image: 'https://i.namu.wiki/i/jlfqN2xWP1q78tkwTr0scE35MlVOAhXYXyqAHKpRkPunAM5XvHXqda8cxyuf5gmi54KZs9CXSqsl3L-KqJFDKUurcr7EAiNBRGdY6fHRXZR1mQYsiTEE-4Ci-t59r8qE2ovNDvSlJ8en0hcIIFo4jQ.webp', // 사자 이미지 URL
+                        correct: 'Goat'
+                    },
+                    {
+                        image: 'https://i.namu.wiki/i/cCpNGb5t1L9qY94xyrUdpcpjVyslgthObruJDZIL7yclQsnMAw8rSKdxuDGueEKw63BF3BeG4XRVdE45h5BWbZYilLKbxODCr3lCsVBvfeQlVOkLhUS5bwPSJutekcocDPAYrfBZRfjnUfzqdBsuoA.webp', // 사자 이미지 URL
+                        correct: 'Pig'
+                    },
+                    {
+                        image: 'https://i.namu.wiki/i/2tlVg-RYf_j-FQqrcU71fTK3NoAm-els1IVE_zof3kP1BsJ813rtEpKn6nOHTwyzNVkPn7kn0eN7rzWXzKCdkk-uxVEfN-ia5E8TuO2-AA38ylS7Yht7f0MxJ3YfXx_NnLlOWeHtbBsaHZIRkIWOfg.webp', // 사자 이미지 URL
+                        correct: 'Cat'
+                    },
+                    {
+                        image: 'https://i.namu.wiki/i/zBn8N5Nb8gdupwCDIhSGFjpuHAC2EFUOXgHFRf-nkQxV2X0uK2BIzxi25QMh5ZjQh6stRKzk8Dggm9vXbQmEvgmGliabxfb-xPYDI8AGg7GOE6zDkeFWMAkNHH_qbg4M23-YpgBiOCbnGmxlFl2qAA.webp', // 사자 이미지 URL
+                        correct: 'Mouse'
+                    },
+                    {
+                        image: 'https://i.namu.wiki/i/EmdH6p43znpLDW07Tc8dzKtHrJa9qV90rnsPqGr2oR5g1pJ3-xbLA3hD8mQ_ULSLb03b5VD7AXa3BQujIUTCni-Wt0MM1p23v9THbRNJiQCT0u1shOKN8HrvgG5Gz5CbBNkUxNr-TTwZxyhdDG74Mw.webp', // 사자 이미지 URL
+                        correct: 'Squirrel'
+                    },
+                    {
+                        image: 'https://i.namu.wiki/i/7ZezLHfdT0EN1oReZURwwLopgGJUAMizqVxikp6sLoJD3Ox6zTZ8XSHy-UfnzsIqx3wl7IRRKUn12FM2_4tkt0BS6-4iC4UnPOJ77Z7ipp72NH0BCspONs_TMi7k5LTLz-dh3MbfD8xOqIjb4kEBFg.webp', // 사자 이미지 URL
+                        correct: 'Eagle'
+                    },
+                    {
+                        image: 'https://i.namu.wiki/i/1I4lAliJZN2Buxkq5lPFxC6O3SqeIqGsm9jNcdY0-SR65IkvlGB1k_ojHv3vQMEORCoWu70khXFF29DqSm8VE4eVEuHcqP14OD0OASiPz7dA6Umja1q16Adt8Mh1hYesZfkGPr8bxg38UYE20V0Sdg.webp', // 사자 이미지 URL
+                        correct: 'Shark'
+                    },
+                    {
+                        image: 'https://i.namu.wiki/i/89B-fn5vK0eYg4l_5EKW72j2IGXeaXGyiDieajG4nE-gU-UG9sSX-qNMOSCeeGDGh5YvYAjgGN6dvHcLx2CO-ey62XY_IIxNvKkO3JCzj0O-PNPxNr360wV3F-nXSlHnMS8iFzNpPWj3sGytptt1vQ.webp', // 사자 이미지 URL
+                        correct: 'Whale'
+                    },
                     {
                         image: 'https://i.namu.wiki/i/468hRLNzu1N19E8r0s7nrmB6_X4ZTdy5h8AUZSDgUKuHByPrIhgcUIcULqW6_tGNWeLY3gBksuqGT3zI2Ze_Zw.webp', // 사자 이미지 URL
                         correct: 'Lion'
