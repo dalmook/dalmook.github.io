@@ -19,10 +19,15 @@ const result = document.getElementById("result");
 const difficultySelect = document.getElementById("difficulty");
 const startButton = document.getElementById("start-game");
 const viewRecordsButton = document.getElementById('viewRecordsButton'); // "기록 보기" 버튼
-const recordSection = document.getElementById('recordSection'); // 기록 섹션
-const saveRecordButton = document.getElementById('saveRecordButton'); // 기록 저장 버튼
-const backToGameButton = document.getElementById('backToGameButton'); // 게임으로 돌아가기 버튼
+const saveRecordButton = document.getElementById('saveRecordButton');
+const restartButton = document.getElementById('restartButton');
 const timerDisplay = document.getElementById("timer");
+
+const recordSection = document.getElementById('recordSection');
+const playerNameInput = document.getElementById('playerName');
+const submitRecordButton = document.getElementById('submitRecordButton');
+const recordTableBody = document.getElementById('recordTable').querySelector('tbody');
+const closeRecordSectionButton = document.getElementById('closeRecordSection');
 
 // 기타 변수 초기화
 let wordsToFind = [];
@@ -46,14 +51,10 @@ const difficulties = {
     hard: { gridSize: 9, wordCount: 9 },
 };
 
-// "기록 보기" 버튼이 제대로 선택되었는지 확인
-console.log("View Records Button:", viewRecordsButton);
-
-// "기록 보기" 버튼 이벤트 리스너 추가
-viewRecordsButton.addEventListener('click', () => {
-    console.log("기록 보기 버튼 클릭됨"); // 디버깅용
-    recordSection.style.display = 'flex'; // 기록 섹션 열기
-    showLeaderboard(); // 리더보드 표시 함수 호출
+// 기록 보기 버튼 이벤트 리스너 추가
+document.getElementById('viewRecordsButton').addEventListener('click', () => {
+    recordSection.style.display = 'flex'; // 기록 섹션 표시
+    loadRecordsFromFirestore(); // 기록 불러오기 함수 호출
 });
 
 // "게임으로 돌아가기" 버튼 이벤트 리스너 추가
@@ -69,73 +70,74 @@ backToGameButton.addEventListener('click', () => {
 
 // 기록 저장 버튼 이벤트
 saveRecordButton.addEventListener('click', () => {
-    const playerName = document.getElementById('playerName').value.trim();
-    if (!playerName) {
+    successMessage.style.display = 'none';
+    recordSection.style.display = 'flex';
+    loadRecordsFromFirestore();
+});
+// 기록 제출 버튼 이벤트
+submitRecordButton.addEventListener('click', () => {
+    const name = playerNameInput.value.trim();
+    if (!name) {
         alert('이름을 입력하세요!');
         return;
     }
-
-    // 기록 생성
-    const newRecord = {
-        category: selectedCategory, // 'selectedCategory'가 정의되어 있는지 확인
-        difficulty: difficultySelect.value,
-        name: playerName,
-        score: score, // 'score'가 정의되어 있는지 확인
-        timestamp: firebase.firestore.FieldValue.serverTimestamp() // 기록 시간
-    };
-
-    // Firestore에 기록 저장
-    saveRecord(newRecord).then(() => {
-        // 이름 입력 필드 숨기고 기록 테이블 표시
-        document.getElementById('playerName').style.display = 'none';
-        saveRecordButton.style.display = 'none';
-    }).catch((error) => {
-        console.error('게임 기록 저장 중 오류 발생: ', error);
-        alert('기록 저장에 실패했습니다. 다시 시도해주세요.');
-    });
+    saveRecord(name);
+});
+    // 게임 재시작 버튼 이벤트
+    restartButton.addEventListener('click', () => {
+        restartGame();
 });
 
-// 기록 저장 함수 (Firestore에 저장)
-function saveRecord(record) {
-    return db.collection('gameRecords').add(record)
-        .then(() => {
-            console.log('게임 기록이 성공적으로 저장되었습니다.');
-        })
-        .catch((error) => {
-            console.error('게임 기록 저장 중 오류 발생: ', error);
-            throw error; // 에러를 상위로 전달
-        });
+// 기록 섹션 닫기 버튼 이벤트
+closeRecordSectionButton.addEventListener('click', () => {
+    recordSection.style.display = 'none';
+});    
+        // Firestore에 기록 저장 함수
+        function saveRecord(name) {
+            const record = {
+                name: name,
+                score: score,
+                category: selectedCategory,
+                difficulty: selectedDifficulty,
+                timestamp: firebase.firestore.FieldValue.serverTimestamp()
+            };
+            db.collection('quizGameRecords').add(record)
+                .then(() => {
+                    console.log('게임 기록이 성공적으로 저장되었습니다.');
+                    playerNameInput.value = '';
+                    loadRecordsFromFirestore();
+                })
+                .catch((error) => {
+                    console.error('게임 기록 저장 중 오류 발생: ', error);
+                    alert('기록 저장에 실패했습니다. 다시 시도해주세요.');
+                });
 }
+        // Firestore에서 기록 불러오기 함수
+        function loadRecordsFromFirestore() {
+            recordTableBody.innerHTML = ''; // 기존 기록 초기화
+            db.collection('quizGameRecords').orderBy('score', 'desc').limit(10).get()
+                .then((querySnapshot) => {
+                    querySnapshot.forEach((doc) => {
+                        const record = doc.data();
+                        addRecordToTable(record);
+                    });
+                })
+                .catch((error) => {
+                    console.error('기록 불러오기 중 오류 발생: ', error);
+                });
+        }
 
-// Firestore에서 기록 불러오기
-function loadRecordsFromFirestore() {
-    db.collection('gameRecords').orderBy('score', 'desc').onSnapshot((snapshot) => { // 점수 기준 내림차순
-        snapshot.docChanges().forEach((change) => {
-            if (change.type === 'added') {
-                const record = change.doc.data();
-                addRecordToTable(record);
-            }
-        });
-    });
-}
-
-// 기록 테이블에 기록 추가 함수
-function addRecordToTable(record) {
-    const recordTableBody = document.getElementById('recordTable').querySelector('tbody');
-    const row = document.createElement('tr');
-    const date = record.timestamp ? record.timestamp.toDate().toLocaleString() : 'N/A';
-    row.innerHTML = `
-        <td>${record.category}</td>
-        <td>${record.difficulty}</td>
-        <td>${record.name}</td>
-        <td>${record.score}</td>
-        <td>${date}</td>
-    `;
-    recordTableBody.appendChild(row);
-
-    // 테이블 끝으로 스크롤 이동
-    recordTableBody.scrollIntoView({ behavior: 'smooth', block: 'end' });
-}
+        // 기록 테이블에 기록 추가 함수
+        function addRecordToTable(record) {
+            const row = document.createElement('tr');
+            const date = record.timestamp ? record.timestamp.toDate().toLocaleString() : 'N/A';
+            row.innerHTML = `
+                <td>${record.name}</td>
+                <td>${record.score}</td>
+                <td>${date}</td>
+            `;
+            recordTableBody.appendChild(row);
+        }
 
 // 게임 생성 함수
 function generateGame() {
