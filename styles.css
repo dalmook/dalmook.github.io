@@ -90,14 +90,26 @@ main {
     object-fit: cover;
 }
 
+/* 갤러리 텍스트 스타일 */
 .gallery span {
     display: block;
     margin-top: 5px;
-    font-size: 0.9em;
+    font-size: 1em;
     font-weight: bold;
     text-align: center;
     color: #333;
+    padding: 5px 0; /* 글자와 이미지 사이 간격 */
 }
+
+/* 텍스트에 괄호 스타일을 명시적으로 추가 (선택 사항) */
+.gallery span::before {
+    content: '[';
+}
+
+.gallery span::after {
+    content: ']';
+}
+
 
 /* 푸터 스타일 */
 footer {
