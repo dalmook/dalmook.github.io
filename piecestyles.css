@@ -185,44 +185,6 @@ h1 {
     cursor: pointer;
 }
 
-#name-form button:hover {
-    background-color: #e65b50;
-}
-
-/* 리더보드 테이블 스타일 */
-#leaderboard table {
-    width: 100%;
-    margin: 10px 0;
-    border-collapse: collapse;
-}
-
-#leaderboard th, #leaderboard td {
-    border: 1px solid #ccc;
-    padding: 10px;
-    text-align: center;
-}
-
-#leaderboard th {
-    background-color: #f2f2f2;
-}
-/* 이름 입력 폼 중앙 배치 */
-#name-form {
-    display: none; /* 초기 숨김 상태 */
-    position: fixed;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    background-color: rgba(255, 255, 255, 0.95);
-    padding: 30px;
-    border: 2px solid #ccc;
-    border-radius: 10px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-    z-index: 1001; /* 오버레이보다 위에 표시 */
-    width: 80%;
-    max-width: 400px;
-    text-align: center;
-}
-
 /* 기록 섹션 스타일 */
 #recordSection {
     display: none; /* 초기 숨김 상태 */
@@ -239,61 +201,6 @@ h1 {
     width: 90%;
     max-width: 600px;
     text-align: center;
-}
-/* 리더보드 중앙 배치 */
-#leaderboard {
-    display: none; /* 초기 숨김 상태 */
-    position: fixed;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    background-color: rgba(255, 255, 255, 0.95);
-    padding: 20px;
-    border: 2px solid #ccc;
-    border-radius: 10px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-    z-index: 1002; /* 오버레이보다 위에 표시 */
-    width: 90%;
-    max-width: 600px;
-    text-align: center;
-}
-
-/* 리더보드 닫기 버튼 스타일 */
-#close-leaderboard {
-    padding: 5px 10px;
-    font-size: 14px;
-    background-color: #FF6F61;
-    color: white;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    margin-bottom: 10px;
-}
-
-#close-leaderboard:hover {
-    background-color: #e65b50;
-}
-
-/* 이름 입력 폼 내부 요소 스타일 */
-#name-form input {
-    width: 80%;
-    padding: 10px;
-    font-size: 16px;
-    margin-bottom: 15px;
-}
-
-#name-form button {
-    padding: 10px 20px;
-    font-size: 16px;
-    background-color: #FF6F61;
-    color: white;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-}
-
-#name-form button:hover {
-    background-color: #e65b50;
 }
 
 /* 리더보드 테이블 스타일 */
