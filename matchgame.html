@@ -68,7 +68,8 @@
             justify-content: center;
             padding: 10px;
             max-width: 100%;
-            margin: 0 auto 10px;
+            margin: 0 auto;
+            grid-template-columns: repeat(auto-fit, minmax(100px, 1fr)); /* 유연한 카드 크기 */
         }
         .game-board.easy {
             grid-template-columns: repeat(4, 1fr);
@@ -81,7 +82,7 @@
         }
         .card {
             width: 100%;
-            padding-top: 80%; /* 정사각형 유지 */
+            padding-top: 100%; /* 정사각형 유지 */
             position: relative;
             background-color: #87cefa;
             cursor: pointer;
