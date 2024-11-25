@@ -1,22 +1,4 @@
-const grid = document.getElementById("grid");
-const wordList = document.getElementById("words-to-find");
-const result = document.getElementById("result");
-const difficultySelect = document.getElementById("difficulty");
-const startButton = document.getElementById("start-game");
-const timerDisplay = document.getElementById("timer");
 
-let wordsToFind = [];
-let gridWords = [];
-let gridSize = 5; // 기본 크기
-let wordCount = 5; // 기본 단어 개수
-let isDragging = false;
-let selectedIndexes = [];
-let selectedWord = "";
-let startTime, timerInterval;
-let selectedDirection = { row: 0, col: 0 }; // 드래그 방향 저장
-
-
-// Firebase 구성 정보 (Firebase 콘솔에서 복사한 내용으로 대체하세요)
 const firebaseConfig = {
     apiKey: "AIzaSyBeCVOghDQw8hPdp0JrHovXcU7d7aKmmFE",
     authDomain: "piecechoice.firebaseapp.com",
@@ -29,6 +11,24 @@ const firebaseConfig = {
 // Firebase 초기화
 firebase.initializeApp(firebaseConfig);
 const db = firebase.firestore();
+
+const grid = document.getElementById("grid");
+const wordList = document.getElementById("words-to-find");
+const result = document.getElementById("result");
+const difficultySelect = document.getElementById("difficulty");
+const startButton = document.getElementById("start-game");
+const viewLeaderboardButton = document.getElementById("view-leaderboard"); // "기록 보기" 버튼
+const timerDisplay = document.getElementById("timer");
+
+let wordsToFind = [];
+let gridWords = [];
+let gridSize = 5; // 기본 크기
+let wordCount = 5; // 기본 단어 개수
+let isDragging = false;
+let selectedIndexes = [];
+let selectedWord = "";
+let startTime, timerInterval;
+let selectedDirection = { row: 0, col: 0 }; // 드래그 방향 저장
 
 // 난이도 설정
 const difficulties = {
@@ -279,7 +279,8 @@ function checkWord() {
 
 // 이름 입력 폼 표시 함수
 function showNameForm() {
-    document.getElementById("name-form").style.display = "block";
+    document.getElementById("overlay").style.display = "block"; // 오버레이 표시
+    document.getElementById("name-form").style.display = "block"; // 이름 입력 폼 표시
 }
 
 // 이름 제출 버튼 이벤트
@@ -303,7 +304,8 @@ document.getElementById("submit-name").addEventListener("click", () => {
     })
     .then(() => {
         alert("게임 결과가 저장되었습니다!");
-        document.getElementById("name-form").style.display = "none";
+        document.getElementById("overlay").style.display = "none"; // 오버레이 숨기기
+        document.getElementById("name-form").style.display = "none"; // 이름 입력 폼 숨기기
         showLeaderboard(); // 리더보드 표시
     })
     .catch((error) => {
@@ -325,12 +327,12 @@ function showLeaderboard() {
         .limit(10) // 상위 10개만 표시
         .get()
         .then((querySnapshot) => {
-            querySnapshot.forEach((doc) => {
+            querySnapshot.forEach((doc, index) => {
                 const data = doc.data();
                 const tr = document.createElement("tr");
 
                 const rankTd = document.createElement("td");
-                rankTd.textContent = querySnapshot.docs.indexOf(doc) + 1;
+                rankTd.textContent = index + 1;
                 tr.appendChild(rankTd);
 
                 const nameTd = document.createElement("td");
@@ -348,12 +350,22 @@ function showLeaderboard() {
                 leaderboardBody.appendChild(tr);
             });
 
-            leaderboard.style.display = "block";
+            leaderboard.style.display = "block"; // 리더보드 표시
         })
         .catch((error) => {
             console.error("Error getting documents: ", error);
         });
 }
+
+// 리더보드 닫기 버튼 이벤트
+document.getElementById("close-leaderboard").addEventListener("click", () => {
+    document.getElementById("leaderboard").style.display = "none"; // 리더보드 숨기기
+});
+
+// "기록 보기" 버튼 이벤트
+viewLeaderboardButton.addEventListener("click", () => {
+    showLeaderboard(); // 리더보드 표시
+});
 
 // 선택 초기화
 function resetSelection() {
@@ -385,3 +397,4 @@ difficultySelect.addEventListener("change", () => {
 
 // 초기 게임 생성
 generateGame();
+
