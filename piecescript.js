@@ -24,10 +24,13 @@ startGameButton.addEventListener('click', () => {
 
 function setupPuzzle(image, gridSize) {
     gameArea.classList.remove('hidden');
-    puzzleCanvas.width = image.width;
-    puzzleCanvas.height = image.height;
-    const pieceWidth = image.width / gridSize;
-    const pieceHeight = image.height / gridSize;
+
+    // 캔버스 크기를 화면에 맞춤
+    puzzleCanvas.width = window.innerWidth * 0.9;
+    puzzleCanvas.height = (puzzleCanvas.width / image.width) * image.height;
+
+    const pieceWidth = puzzleCanvas.width / gridSize;
+    const pieceHeight = puzzleCanvas.height / gridSize;
 
     pieces = [];
     ctx.clearRect(0, 0, puzzleCanvas.width, puzzleCanvas.height);
@@ -36,8 +39,8 @@ function setupPuzzle(image, gridSize) {
     for (let y = 0; y < gridSize; y++) {
         for (let x = 0; x < gridSize; x++) {
             pieces.push({
-                sx: x * pieceWidth,
-                sy: y * pieceHeight,
+                sx: x * (image.width / gridSize),
+                sy: y * (image.height / gridSize),
                 dx: Math.random() * (puzzleCanvas.width - pieceWidth),
                 dy: Math.random() * (puzzleCanvas.height - pieceHeight),
                 width: pieceWidth,
@@ -56,20 +59,19 @@ function drawPuzzle() {
             image,
             piece.sx,
             piece.sy,
-            piece.width,
-            piece.height,
+            image.width / gridSize,
+            image.height / gridSize,
             piece.dx,
             piece.dy,
             piece.width,
             piece.height
         );
-        // 테두리 그리기 (선택 사항)
         ctx.strokeStyle = "black";
         ctx.strokeRect(piece.dx, piece.dy, piece.width, piece.height);
     });
 }
 
-// 퍼즐 조각 드래그 기능
+// 드래그 앤 드롭 기능
 puzzleCanvas.addEventListener('mousedown', (e) => {
     const { offsetX: mouseX, offsetY: mouseY } = e;
 
