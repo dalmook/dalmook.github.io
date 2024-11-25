@@ -568,22 +568,6 @@
     loadQuestion();
 }
 
-        function isKorean(text) {
-            const koreanRegex = /[가-힣]/; // 한글 확인용 정규식
-            return koreanRegex.test(text);
-        }
-
-        function speakText(text) {
-            const utterance = new SpeechSynthesisUtterance(text);
-            if (isKorean(text)) {
-                utterance.lang = 'ko-KR'; // 한국어
-            } else {
-                utterance.lang = 'en-US'; // 영어
-            }
-            window.speechSynthesis.speak(utterance);
-        }
-
-
     
         // 질문 로드 함수
         // 질문 로드 함수 수정
@@ -653,7 +637,6 @@
     
         // 보기 선택 함수
         function selectOption(selectedOption, button) {
-            clearInterval(countdownInterval); // 카운트다운 타이머 정리
             const currentQuestion = filteredQuestions[currentQuestionIndex];
             if (selectedOption === currentQuestion.correct) {
                 // 정답
@@ -753,9 +736,16 @@
             // 텍스트 음성 변환 (선택 사항)
             if ('speechSynthesis' in window) {
                 const utterance = new SpeechSynthesisUtterance(message);
+
+                // 언어 설정: 한글인지 영어인지 판단
+                const koreanRegex = /[가-힣]/; // 한글 확인용 정규식
+                if (koreanRegex.test(message)) {
+                    utterance.lang = 'ko-KR'; // 한국어 발음
+                } else {
+                    utterance.lang = 'en-US'; // 영어 발음
+                }
                 speechSynthesis.speak(utterance);
             }
-        }
         
     
         // 다음 질문으로 이동 함수
