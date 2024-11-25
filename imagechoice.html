@@ -231,20 +231,17 @@
             animation: incorrectAnimation 1s ease-out forwards;
         }
         #viewRecordsButton {
-            font-size: 0.8em;
-            padding: 5px 10px;
-            border: 1px solid #ccc;
             background-color: #ffa500;
             color: white;
+            border: none;
             border-radius: 5px;
             cursor: pointer;
-            margin-left: 10px;
+            transition: background-color 0.3s;
         }
-        
+
         #viewRecordsButton:hover {
             background-color: #ff8c00;
         }
-
     </style>
     
     <!-- Firebase SDK 추가 -->
@@ -540,7 +537,8 @@
         });
         // 기록 보기 버튼 이벤트 리스너 추가
         document.getElementById('viewRecordsButton').addEventListener('click', () => {
-            recordSection.style.display = 'flex'; // 기록 섹션 열기
+            recordSection.style.display = 'flex'; // 기록 섹션 표시
+            loadRecordsFromFirestore(); // 기록 불러오기 함수 호출
         });
         // 게임 시작 함수
     function startQuizGame() {
