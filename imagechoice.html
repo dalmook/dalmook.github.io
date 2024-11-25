@@ -917,7 +917,7 @@
         function markAsIncorrect() {                       
             const currentQuestion = filteredQuestions[currentQuestionIndex];
             // speakText(currentQuestion.correct); // 제거 (이미 displayCorrectAnswer에서 음성 출력)
-            score -= 2;
+            score -= incorrectScore;
             scoreDisplay.textContent = `점수: ${score}`;
             feedback.innerHTML = '❌';
             // 모든 보기 버튼 비활성화 및 정답 표시
