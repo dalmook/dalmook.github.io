@@ -230,6 +230,21 @@
         .animate-incorrect {
             animation: incorrectAnimation 1s ease-out forwards;
         }
+        #viewRecordsButton {
+            font-size: 0.8em;
+            padding: 5px 10px;
+            border: 1px solid #ccc;
+            background-color: #ffa500;
+            color: white;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-left: 10px;
+        }
+        
+        #viewRecordsButton:hover {
+            background-color: #ff8c00;
+        }
+
     </style>
     
     <!-- Firebase SDK 추가 -->
@@ -239,7 +254,9 @@
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
 </head>
 <body>
-    <h1>그림 퀴즈 게임</h1>
+    <h1>그림 퀴즈 게임
+    <button id="viewRecordsButton" style="font-size: 0.5em; margin-left: 10px; padding: 5px 10px;">기록 보기</button>
+    </h1>
     <!-- 게임 시작 섹션 -->
     <div id="controls">
         <!-- 카테고리 선택 -->
@@ -521,9 +538,12 @@
             // 퀴즈 시작
             startQuizGame();
         });
-    
+        // 기록 보기 버튼 이벤트 리스너 추가
+        document.getElementById('viewRecordsButton').addEventListener('click', () => {
+            recordSection.style.display = 'flex'; // 기록 섹션 열기
+        });
         // 게임 시작 함수
-function startQuizGame() {
+    function startQuizGame() {
     // 난이도와 카테고리 가져오기
     const selectedCategory = categorySelect.value; // 예: 'animals'
     const selectedDifficulty = difficultySelect.value; // 예: 'easy'
@@ -788,7 +808,7 @@ function startQuizGame() {
         // Firestore에서 기록 불러오기 함수
         function loadRecordsFromFirestore() {
             recordTableBody.innerHTML = ''; // 기존 기록 초기화
-            db.collection('quizGameRecords').orderBy('timestamp', 'desc').limit(10).get()
+            db.collection('quizGameRecords').orderBy('score', 'desc').limit(10).get()
                 .then((querySnapshot) => {
                     querySnapshot.forEach((doc) => {
                         const record = doc.data();
