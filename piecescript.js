@@ -1,4 +1,4 @@
-const imageInput = document.getElementById('imageInput');
+const imageSelect = document.getElementById('imageSelect');
 const difficultySelect = document.getElementById('difficultySelect');
 const startGameButton = document.getElementById('startGame');
 const gameArea = document.getElementById('gameArea');
@@ -7,22 +7,19 @@ const ctx = puzzleCanvas.getContext('2d');
 
 let image = new Image();
 let gridSize = 0;
+let pieces = [];
+let selectedPiece = null;
+let offsetX = 0;
+let offsetY = 0;
 
 startGameButton.addEventListener('click', () => {
     const difficulty = parseInt(difficultySelect.value);
     gridSize = Math.sqrt(difficulty); // 조각 크기 결정
-    if (imageInput.files && imageInput.files[0]) {
-        const reader = new FileReader();
-        reader.onload = (e) => {
-            image.src = e.target.result;
-            image.onload = () => {
-                setupPuzzle(image, gridSize);
-            };
-        };
-        reader.readAsDataURL(imageInput.files[0]);
-    } else {
-        alert('사진을 선택하세요!');
-    }
+    const imagePath = imageSelect.value;
+    image.src = imagePath;
+    image.onload = () => {
+        setupPuzzle(image, gridSize);
+    };
 });
 
 function setupPuzzle(image, gridSize) {
@@ -31,7 +28,9 @@ function setupPuzzle(image, gridSize) {
     puzzleCanvas.height = image.height;
     const pieceWidth = image.width / gridSize;
     const pieceHeight = image.height / gridSize;
-    const pieces = [];
+
+    pieces = [];
+    ctx.clearRect(0, 0, puzzleCanvas.width, puzzleCanvas.height);
 
     // 조각 생성
     for (let y = 0; y < gridSize; y++) {
@@ -39,35 +38,66 @@ function setupPuzzle(image, gridSize) {
             pieces.push({
                 sx: x * pieceWidth,
                 sy: y * pieceHeight,
+                dx: Math.random() * (puzzleCanvas.width - pieceWidth),
+                dy: Math.random() * (puzzleCanvas.height - pieceHeight),
                 width: pieceWidth,
                 height: pieceHeight,
             });
         }
     }
 
-    shuffle(pieces);
+    drawPuzzle();
+}
 
-    // 조각 섞어서 캔버스에 그림
-    pieces.forEach((piece, index) => {
-        const dx = (index % gridSize) * pieceWidth;
-        const dy = Math.floor(index / gridSize) * pieceHeight;
+function drawPuzzle() {
+    ctx.clearRect(0, 0, puzzleCanvas.width, puzzleCanvas.height);
+    pieces.forEach((piece) => {
         ctx.drawImage(
             image,
             piece.sx,
             piece.sy,
             piece.width,
             piece.height,
-            dx,
-            dy,
+            piece.dx,
+            piece.dy,
             piece.width,
             piece.height
         );
+        // 테두리 그리기 (선택 사항)
+        ctx.strokeStyle = "black";
+        ctx.strokeRect(piece.dx, piece.dy, piece.width, piece.height);
     });
 }
 
-function shuffle(array) {
-    for (let i = array.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
-        [array[i], array[j]] = [array[j], array[i]];
+// 퍼즐 조각 드래그 기능
+puzzleCanvas.addEventListener('mousedown', (e) => {
+    const { offsetX: mouseX, offsetY: mouseY } = e;
+
+    selectedPiece = pieces.find(
+        (piece) =>
+            mouseX > piece.dx &&
+            mouseX < piece.dx + piece.width &&
+            mouseY > piece.dy &&
+            mouseY < piece.dy + piece.height
+    );
+
+    if (selectedPiece) {
+        offsetX = mouseX - selectedPiece.dx;
+        offsetY = mouseY - selectedPiece.dy;
     }
-}
+});
+
+puzzleCanvas.addEventListener('mousemove', (e) => {
+    if (!selectedPiece) return;
+
+    const { offsetX: mouseX, offsetY: mouseY } = e;
+
+    selectedPiece.dx = mouseX - offsetX;
+    selectedPiece.dy = mouseY - offsetY;
+
+    drawPuzzle();
+});
+
+puzzleCanvas.addEventListener('mouseup', () => {
+    selectedPiece = null;
+});
