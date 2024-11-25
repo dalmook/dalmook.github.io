@@ -108,7 +108,7 @@ function saveRecord(record) {
 
 // Firestore에서 기록 불러오기
 function loadRecordsFromFirestore() {
-    db.collection('gameRecords').orderBy('score', 'desc').onSnapshot((snapshot) => { // 점수 기준 내림차순
+    db.collection('gameRecords').orderBy('timestamp', 'desc').onSnapshot((snapshot) => { // 점수 기준 내림차순
         snapshot.docChanges().forEach((change) => {
             if (change.type === 'added') {
                 const record = change.doc.data();
