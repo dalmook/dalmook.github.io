@@ -324,36 +324,120 @@
         // Firebase 초기화
         firebase.initializeApp(firebaseConfig);
         const db = firebase.firestore();
-        
+        // 카테고리별 옵션 풀 정의
+        const optionPools = {
+            animals: [
+                'Tiger', 'Elephant', 'Lion', 'Bear', 'Leopard', 'Zebra', 'Horse', 'Giraffe',
+                'Kangaroo', 'Panda', 'Wolf', 'Fox', 'Deer', 'Rhinoceros', 'Cheetah', 'Hyena',
+                'Buffalo', 'Chimpanzee', 'Hippopotamus', 'Otter'
+                // 필요한 만큼 추가
+            ],
+            plants: [
+                'Rose', 'Tulip', 'Daisy', 'Sunflower', 'Cactus', 'Fern', 'Oak', 'Maple',
+                'Bamboo', 'Sequoia', 'Palm', 'Lavender', 'Lily', 'Orchid', 'Ivy', 'Basil',
+                'Mint', 'Sage', 'Aloe', 'Jasmine'
+                // 필요한 만큼 추가
+            ]
+            // 추가 카테고리가 있다면 여기에 추가
+        };
+
         // 질문 데이터 (카테고리와 난이도별로 분류)
         const questions = {
             animals: {
                 easy: [
                     {
                         image: 'https://i.namu.wiki/i/468hRLNzu1N19E8r0s7nrmB6_X4ZTdy5h8AUZSDgUKuHByPrIhgcUIcULqW6_tGNWeLY3gBksuqGT3zI2Ze_Zw.webp', // 사자 이미지 URL
-                        correct: 'Lion',
-                        options: ['Tiger', 'Elephant', 'Lion', 'Bear']
+                        correct: 'Lion'
                     },
                     {
-                        image: 'https://cdn-icons-png.flaticon.com/128/1998/1998804.png', // 호랑이 이미지 URL
-                        correct: 'Tiger',
-                        options: ['Leopard', 'Tiger', 'Zebra', 'Giraffe']
+                        image: 'https://i.namu.wiki/i/tRzIs0br_ApCxZ39TQPgikwraB1eNZ_LoSuPKW3AQNcMuqJAr2OPdtFS45h7qy8T5BykgxnsGQ-0BcEHCIOvDdfgUnls7mLd5cHUBdlU5qrV6XllmXfrr7o7qeZM6vvgG4Br_JDZiyxA_lem68N-aw.webp', // 호랑이 이미지 URL
+                        correct: 'Tiger'
                     },
+                    {
+                        image: 'https://i.namu.wiki/i/HBkzfaLd_nixpGLmUdE_1YIqewfbkqa94XVuo73zxdmaSqlDnDsVYZq0fwePMGtBMOUbMDlOmnyClErB4s_SW0hS8VOTVeyjrKB_GbuXpLu-m8otGknOIKzjoSf5nt3BjwbvVRHVroaTJvOqPopPGQ.webp', // 호랑이 이미지 URL
+                        correct: 'Leopard'
+                    },
+                    {
+                        image: 'https://i.namu.wiki/i/Qt_2RsJ9TxzEcs_g3-rDGn4fTZezVXf7FtM5D4lsb5Aojx8B44oezAal_V5xJRbY3AENw4N9fcYk8lBYFjVxEtnOIl1zO48BFY0VxoHpdUDLBxJ3XcPU4mexZ8iqETjuR-yGqqImlLDAorrEDSh16Q.webp', // 호랑이 이미지 URL
+                        correct: 'Zebra'
+                    },
+                    {
+                        image: 'https://i.namu.wiki/i/Y86HkDKrrE_vW3b6AuQoT1zg3U1dG5WvkwokYNU-UJEgpvQwLIf-QW8ibGOjyckcBbRkDhrM31S8Q3rCRF93zpz7_j5jIP61_geHY66UrPA7PYjWXyHeqrPha9gF8vcAaw8dHZnX-wKiNBoUAaZWDg.webp', // 호랑이 이미지 URL
+                        correct: 'Giraffe'
+                    },
+                    {
+                        image: 'https://i.namu.wiki/i/WuMKuSPgux_n4oNyquSIr1t1xdR7Xupc8OUv99ygRJd_MkNhiVkUBVhbn1Ft5OCjeRuNtVrGe04KPStSGxIklE-MXBWYL0dYBcIZvICmxtmiU4prtqIXfNOs3FhKoOvW99BijqNxDqUG5m64LXAZrA.webp', // 호랑이 이미지 URL
+                        correct: 'Elephant'
+                    },                    
+                    {
+                        image: 'https://i.namu.wiki/i/qfgH45GTnahnkp8xEH79n4sEmBKaMlN8QYr52jFlK4WvEtdrnCyM0sQWa40uWvZv3nVpadVX5_JRdDeyOtauLgTwtHM17drrCWNWgYIdfY0XDDt7BL6kl4sb3zR_ILTWu11zTW0T--a_yxKYjPSEaA.webp', // 호랑이 이미지 URL
+                        correct: 'Bear'
+                    },                    
+                    {
+                        image: 'https://i.namu.wiki/i/v8ERLqt6DLB1Nb_g0WEBqM09Dq4odzMuCdk99oQ2m5Uj2QIfJ-yjaZT7MEGNCE1bF-G5rB4kmhHdVvVGJ2c8FWmc7Gf-JZ0chPF36-VpRJv4ZuYFHuXZ2CqeWOmMwzv1OLJgS4QkSpuofEwSvITKfQ.webp', // 호랑이 이미지 URL
+                        correct: 'Horse'
+                    },                    
+                    {
+                        image: 'https://i.namu.wiki/i/rdlBNiZcb1lpZxhWfsCKRDMibXOAYJj83FrHpJa2oXvkqB-ov6k4qA8kESSMC5GdEDdObb5GXD5C4pjg9ZDMKd9Q8vJ0HZVIIauJscOZ6JRu9ifRXzTsTVI83KDp1scglzkNDtSVF--SWn_E7PiA8A.webp', // 호랑이 이미지 URL
+                        correct: 'Kangaroo'
+                    },                    
+                    {
+                        image: 'https://i.namu.wiki/i/CXZiv7dev4gveckKOFVs7tuiZBJxXS-9SuK3Y7xHaQ2ZG1xtAHK8G3RxDH4DxPRtJRkiaiKS8Qrf_G44wBGLhKakzTUPv5VpszUYUphdZM3VoBRwbu5oIGA6-w9VuqfwzkTYrlKW2uzdiA1ntoKldQ.webp', // 호랑이 이미지 URL
+                        correct: 'Panda'
+                    },                    
+                    {
+                        image: 'https://i.namu.wiki/i/mQtxZ8ahVXzUtonM5dBpdrLqGKcXdRM-aIrgYjNHcxoMiLIxhuSTzasbrIpzP7BGQW6es3ElXXzmRkaXnD2k65DCrT60Za_4FQ2pBCe-MDxxIST3scyhVV2Kivm6VNNwZLOFcfItQVEISb70fmwG4w.webp', // 호랑이 이미지 URL
+                        correct: 'Wolf'
+                    },                    
+                    {
+                        image: 'https://i.namu.wiki/i/xsQlzpXNOnCW2JUu7WHP1Efg8Cb1TURJaByGoxNFHm8hXhLlQW-1BUO2rW0Q2607GNpsG4BdhJHwRyCYcSk_tV7sGaE-UDZJMF3wjgo1-35EVUUQ3uESvknHdfL2OQwM3mEWEazicdV1xFx_gJxJ8Q.webp', // 호랑이 이미지 URL
+                        correct: 'Fox'
+                    },                    
+                    {
+                        image: 'https://i.namu.wiki/i/2xgbJAk3iCaB-0jH2d12IfU0PxpVjiq2OL7SvknepNNUeIbGjt8Ouv5qkHa_Scabsy2v0V48qSjaEWh-sBsHY2icnDJ_6x6hbeWKHWF9U98JhXNnGrsk-inG36pRzX3yNRuIRzqgKAJXuo5mvdRXzg.webp', // 호랑이 이미지 URL
+                        correct: 'Deer'
+                    },                    
+                    {
+                        image: 'https://i.namu.wiki/i/6DbcsXWhfMtVbg1kOnSsdZufwXnS7YxCvA6sjNwQnezBsGt58Z4R_4Z2QQd9fg6c1eR13cX0DUeIvU1disGj3oBn-Q9cGVcw1GSEdSr5ATJSmkZ76xVQwffUGCl7QD-j3DqyJSg7zgTVDDTBV8BJow.webp', // 호랑이 이미지 URL
+                        correct: 'Rhinoceros'
+                    },                    
+                    {
+                        image: 'https://i.namu.wiki/i/HzfauxYBD-j36ZAGqM5YKRVI2455SFrbF0UXoDUCYDCLNWIGn3j0sxSZWTp4y6nooYJZmxCFtlJdiDZKjeb1h8DtQVqN9PyZhKh8zbWOCjDc747CyusQwcbtXImc_dV-lXLGLFxOD5se1EvZ-Q2kxA.webp', // 호랑이 이미지 URL
+                        correct: 'Cheetah'
+                    },                    
+                    {
+                        image: 'https://i.namu.wiki/i/rrxA50i8Uy92YBd2NeVQPU21jcwDcbvi9IkCe1hM3CFU5kSt5ENW4ussEVDih2mNq6QPQaW-aUTnCQcO-M1UcNVewl-8dr0em9XZnYC1ilamzjJOrq_vlxsM5x41TE0A9vdRsdD3u4lhACOyGNyG0A.webp', // 호랑이 이미지 URL
+                        correct: 'Hyena'
+                    },                    
+                    {
+                        image: 'https://i.namu.wiki/i/xj_kOtidlIO-7bOjIOm3t2Gk7_bN3Lz_xVdDccMOw3YZbAUpCS9vSv0MTqpA5KN1LAMivv5pECNR363dfgZdCqxtbZv3dPenK9syAX1XXevY6crpQW914Xhu8MZPTpH43bfSESnYvlNzYeup1JwP-w.webp', // 호랑이 이미지 URL
+                        correct: 'Buffalo'
+                    },                    
+                    {
+                        image: 'https://i.namu.wiki/i/Uv-XWTLTi_qKxFN1C4eDnR9PEoonI4PBKM3_nfgD9SW4nFLx3RCSg5PcdwXZvBYv9DF5oibLWbRfuz_LEU5HPyrypLX5ErcN0y2zZj4fpVad4Ou_FFozp5TC77AgqZKw0418BrKWGJ27ypWmk1UwXQ.webp', // 호랑이 이미지 URL
+                        correct: 'Chimpanzee'
+                    },                    
+                    {
+                        image: 'https://i.namu.wiki/i/1fw5sMXvG6c98Y3ByqXQeJmcQxx4bHAbQHQDZclg_2sZa2_sXxLqax4ZsS_PZ8TkRnTBF9vZ1XsRCtGvVLk37mjpvTUwF2PGlqdusCXa5R22dpFbAa6fqt2CClE4KSiI-sZyvX9uduWi5ROMlOBm3g.webp', // 호랑이 이미지 URL
+                        correct: 'Hippopotamus'
+                    },                    
+                    {
+                        image: 'https://i.namu.wiki/i/hkAbRLythosLtWIdM8Pt2zJa8k2XvaLpFlk-Z_PLW11V-kDnKZEH43QKYFDRE4bTn9lPzI3xof4-C74k6v-dAF7pwwsxUy4cADV0A1bWMVQ3MUU53NDpRy4FudpwHVXY4_vfZjGYY3Y33SOMyWUlTg.webp', // 호랑이 이미지 URL
+                        correct: 'Otter'
+                    },                    
                     // 더 많은 쉬운 동물 질문을 추가하세요
                 ],
                 medium: [
                     {
                         image: 'https://cdn-icons-png.flaticon.com/128/13421/13421996.png', // 표범 이미지 URL
-                        correct: 'Leopard',
-                        options: ['Leopard', 'Lion', 'Cheetah', 'Jaguar']
+                        correct: 'Leopard'
                     },
                     // 더 많은 보통 난이도 동물 질문을 추가하세요
                 ],
                 hard: [
                     {
                         image: 'https://cdn-icons-png.flaticon.com/128/1998/1998813.png', // 얼룩말 이미지 URL
-                        correct: 'Zebra',
-                        options: ['Zebra', 'Horse', 'Donkey', 'Mule']
+                        correct: 'Zebra'
                     },
                     // 더 많은 어려운 동물 질문을 추가하세요
                 ]
@@ -362,24 +446,21 @@
                 easy: [
                     {
                         image: 'https://cdn-icons-png.flaticon.com/128/190/190411.png', // 장미 이미지 URL
-                        correct: 'Rose',
-                        options: ['Tulip', 'Daisy', 'Rose', 'Sunflower']
+                        correct: 'Rose'
                     },
                     // 더 많은 쉬운 식물 질문을 추가하세요
                 ],
                 medium: [
                     {
                         image: 'https://cdn-icons-png.flaticon.com/128/808/808269.png', // 선인장 이미지 URL
-                        correct: 'Cactus',
-                        options: ['Bamboo', 'Cactus', 'Fern', 'Oak']
+                        correct: 'Cactus'
                     },
                     // 더 많은 보통 난이도 식물 질문을 추가하세요
                 ],
                 hard: [
                     {
                         image: 'https://cdn-icons-png.flaticon.com/128/194/194630.png', // 대나무 이미지 URL
-                        correct: 'Bamboo',
-                        options: ['Bamboo', 'Sequoia', 'Maple', 'Pine']
+                        correct: 'Bamboo'
                     },
                     // 더 많은 어려운 식물 질문을 추가하세요
                 ]
@@ -446,38 +527,76 @@
         });
     
         // 게임 시작 함수
-        function startQuizGame() {
-            quizContainer.style.display = 'flex';
-            startQuizButton.disabled = true;
-            currentQuestionIndex = 0;
-            score = 0;
-            scoreDisplay.textContent = `점수: ${score}`;
-            loadQuestion();
-        }
+function startQuizGame() {
+    // 난이도와 카테고리 가져오기
+    const selectedCategory = categorySelect.value; // 예: 'animals'
+    const selectedDifficulty = difficultySelect.value; // 예: 'easy'
+
+    // 선택한 카테고리와 난이도의 문제 가져오기
+    const filteredQuestions = questions[selectedCategory]?.[selectedDifficulty] || [];
+
+    // 문제를 무작위로 섞고, 최대 20문제 선택
+    const shuffledQuestions = filteredQuestions.sort(() => Math.random() - 0.5);
+    const selectedQuestions = shuffledQuestions.slice(0, 20);
+
+    if (selectedQuestions.length === 0) {
+        alert('선택한 카테고리와 난이도에 문제가 없습니다!');
+        return;
+    }
+
+    // 문제 리스트를 업데이트하고 게임 시작
+    currentQuestionIndex = 0;
+    score = 0;
+    quizQuestions = selectedQuestions; // 선택된 문제를 저장
+    scoreDisplay.textContent = `점수: ${score}`;
+    quizContainer.style.display = 'flex';
+    startQuizButton.disabled = true;
+    loadQuestion();
+}
+
+
     
         // 질문 로드 함수
+        // 질문 로드 함수 수정
         function loadQuestion() {
             if (currentQuestionIndex >= filteredQuestions.length) {
                 endQuiz();
                 return;
             }
-    
+
             const currentQuestion = filteredQuestions[currentQuestionIndex];
             questionImage.style.backgroundImage = `url("${currentQuestion.image}")`;
             feedback.innerHTML = ''; // 피드백 초기화
             correctAnswerDiv.innerHTML = ''; // 정답 표시 초기화
             correctAnswerDiv.style.display = 'none'; // 정답 표시 숨김
-    
+        
+            // 카테고리별 옵션 풀에서 오답 3개 선택
+            const category = selectedCategory;
+            const correctAnswer = currentQuestion.correct;
+            let wrongOptions = optionPools[category].filter(option => option !== correctAnswer);
+        
+            // 오답이 부족할 경우 옵션 풀에서 중복 없이 가능한 모든 오답 사용
+            if (wrongOptions.length < 3) {
+                wrongOptions = [...wrongOptions]; // 기존 오답 모두 사용
+            }
+        
+            // 오답을 랜덤으로 섞고 3개 선택
+            const shuffledWrongOptions = wrongOptions.sort(() => Math.random() - 0.5);
+            const selectedWrongOptions = shuffledWrongOptions.slice(0, 3);
+        
+            // 정답과 오답을 섞어서 보기 옵션 생성
+            const options = [...selectedWrongOptions, correctAnswer].sort(() => Math.random() - 0.5);
+        
             // 보기 버튼 생성
             optionsContainer.innerHTML = '';
-            currentQuestion.options.forEach(option => {
+            options.forEach(option => {
                 const button = document.createElement('button');
                 button.classList.add('option-button');
                 button.textContent = option;
                 button.addEventListener('click', () => selectOption(option, button));
                 optionsContainer.appendChild(button);
             });
-    
+        
             // 난이도에 따른 카운트다운 시간 설정 (옵션)
             let countdownTime = 3; // 기본 시간
             if (selectedDifficulty === 'easy') {
@@ -487,7 +606,7 @@
             } else if (selectedDifficulty === 'hard') {
                 countdownTime = 2;
             }
-    
+        
             // 카운트다운 초기화
             countdown = countdownTime;
             feedback.innerHTML = `${countdown}초`;
@@ -501,6 +620,7 @@
                 }
             }, 1000);
         }
+
     
         // 보기 선택 함수
         function selectOption(selectedOption, button) {
