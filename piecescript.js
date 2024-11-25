@@ -18,9 +18,13 @@ const wordList = document.getElementById("words-to-find");
 const result = document.getElementById("result");
 const difficultySelect = document.getElementById("difficulty");
 const startButton = document.getElementById("start-game");
-const viewLeaderboardButton = document.getElementById("view-leaderboard"); // "기록 보기" 버튼
+const viewRecordsButton = document.getElementById('viewRecordsButton'); // "기록 보기" 버튼
+const recordSection = document.getElementById('recordSection'); // 기록 섹션
+const saveRecordButton = document.getElementById('saveRecordButton'); // 기록 저장 버튼
+const backToGameButton = document.getElementById('backToGameButton'); // 게임으로 돌아가기 버튼
 const timerDisplay = document.getElementById("timer");
 
+// 기타 변수 초기화
 let wordsToFind = [];
 let gridWords = [];
 let gridSize = 5; // 기본 크기
@@ -31,6 +35,10 @@ let selectedWord = "";
 let startTime, timerInterval;
 let selectedDirection = { row: 0, col: 0 }; // 드래그 방향 저장
 
+// 예시: 게임 기록에 필요한 변수 초기화
+let selectedCategory = '기본 카테고리'; // 실제 카테고리 로직에 맞게 설정
+let score = 0; // 게임 점수 로직에 맞게 업데이트
+
 // 난이도 설정
 const difficulties = {
     easy: { gridSize: 5, wordCount: 5 },
@@ -38,7 +46,98 @@ const difficulties = {
     hard: { gridSize: 9, wordCount: 9 },
 };
 
-// 난이도에 따라 그리드와 단어 생성
+// "기록 보기" 버튼이 제대로 선택되었는지 확인
+console.log("View Records Button:", viewRecordsButton);
+
+// "기록 보기" 버튼 이벤트 리스너 추가
+viewRecordsButton.addEventListener('click', () => {
+    console.log("기록 보기 버튼 클릭됨"); // 디버깅용
+    recordSection.style.display = 'flex'; // 기록 섹션 열기
+    showLeaderboard(); // 리더보드 표시 함수 호출
+});
+
+// "게임으로 돌아가기" 버튼 이벤트 리스너 추가
+backToGameButton.addEventListener('click', () => {
+    console.log("게임으로 돌아가기 버튼 클릭됨"); // 디버깅용
+    recordSection.style.display = 'none'; // 기록 섹션 닫기
+    // 이름 입력 필드와 저장 버튼 다시 보이게 설정
+    document.getElementById('playerName').style.display = 'block';
+    saveRecordButton.style.display = 'block';
+    // 게임 초기화
+    startMatchingGame(); // 새 게임 시작 (함수가 정의되어 있어야 합니다)
+});
+
+// 기록 저장 버튼 이벤트
+saveRecordButton.addEventListener('click', () => {
+    const playerName = document.getElementById('playerName').value.trim();
+    if (!playerName) {
+        alert('이름을 입력하세요!');
+        return;
+    }
+
+    // 기록 생성
+    const newRecord = {
+        category: selectedCategory, // 'selectedCategory'가 정의되어 있는지 확인
+        difficulty: difficultySelect.value,
+        name: playerName,
+        score: score, // 'score'가 정의되어 있는지 확인
+        timestamp: firebase.firestore.FieldValue.serverTimestamp() // 기록 시간
+    };
+
+    // Firestore에 기록 저장
+    saveRecord(newRecord).then(() => {
+        // 이름 입력 필드 숨기고 기록 테이블 표시
+        document.getElementById('playerName').style.display = 'none';
+        saveRecordButton.style.display = 'none';
+    }).catch((error) => {
+        console.error('게임 기록 저장 중 오류 발생: ', error);
+        alert('기록 저장에 실패했습니다. 다시 시도해주세요.');
+    });
+});
+
+// 기록 저장 함수 (Firestore에 저장)
+function saveRecord(record) {
+    return db.collection('gameRecords').add(record)
+        .then(() => {
+            console.log('게임 기록이 성공적으로 저장되었습니다.');
+        })
+        .catch((error) => {
+            console.error('게임 기록 저장 중 오류 발생: ', error);
+            throw error; // 에러를 상위로 전달
+        });
+}
+
+// Firestore에서 기록 불러오기
+function loadRecordsFromFirestore() {
+    db.collection('gameRecords').orderBy('score', 'desc').onSnapshot((snapshot) => { // 점수 기준 내림차순
+        snapshot.docChanges().forEach((change) => {
+            if (change.type === 'added') {
+                const record = change.doc.data();
+                addRecordToTable(record);
+            }
+        });
+    });
+}
+
+// 기록 테이블에 기록 추가 함수
+function addRecordToTable(record) {
+    const recordTableBody = document.getElementById('recordTable').querySelector('tbody');
+    const row = document.createElement('tr');
+    const date = record.timestamp ? record.timestamp.toDate().toLocaleString() : 'N/A';
+    row.innerHTML = `
+        <td>${record.category}</td>
+        <td>${record.difficulty}</td>
+        <td>${record.name}</td>
+        <td>${record.score}</td>
+        <td>${date}</td>
+    `;
+    recordTableBody.appendChild(row);
+
+    // 테이블 끝으로 스크롤 이동
+    recordTableBody.scrollIntoView({ behavior: 'smooth', block: 'end' });
+}
+
+// 게임 생성 함수
 function generateGame() {
     const difficulty = difficultySelect.value;
     gridSize = difficulties[difficulty].gridSize;
@@ -48,7 +147,7 @@ function generateGame() {
     grid.classList.remove('easy', 'medium', 'hard');
 
     // 현재 난이도 클래스 추가
-    grid.classList.add(difficulty);    
+    grid.classList.add(difficulty);
 
     // 단어 목록과 그리드 초기화
     wordsToFind = generateWords(wordCount);
@@ -69,7 +168,7 @@ function generateGame() {
 
 // 랜덤한 단어 생성
 function generateWords(count) {
-    const sampleWords = ["감독자", "평범", "환희", "독자", "탐험", "구조", "소망", "화학", "정직","나노시티"];
+    const sampleWords = ["감독자", "평범", "환회", "독자", "탐험", "구조", "소망", "화학", "정직"];
     return sampleWords.slice(0, count);
 }
 
@@ -273,6 +372,10 @@ function checkWord() {
             selectedCell.classList.add("found");
         });
 
+        // 점수 업데이트 (예시: 단어 길이에 따라 점수 증가)
+        score += selectedWord.length * 10;
+        console.log("현재 점수:", score); // 디버깅용
+
         if (wordsToFind.length === 0) {
             clearInterval(timerInterval);
             result.textContent += " 모든 단어를 찾았습니다!";
@@ -289,109 +392,6 @@ function showNameForm() {
     document.getElementById("overlay").style.display = "block"; // 오버레이 표시
     document.getElementById("name-form").style.display = "block"; // 이름 입력 폼 표시
 }
-
-// 이름 제출 버튼 이벤트
-document.getElementById("submit-name").addEventListener("click", () => {
-    const playerName = document.getElementById("player-name").value.trim();
-    if (playerName === "") {
-        alert("이름을 입력해주세요.");
-        return;
-    }
-
-    const difficulty = difficultySelect.value;
-    const elapsedTimeText = timerDisplay.textContent;
-    const elapsedTime = parseInt(elapsedTimeText.replace("걸린 시간: ", "").replace("초", ""), 10);
-
-    // Firebase에 데이터 저장
-    db.collection("leaderboard").add({
-        name: playerName,
-        difficulty: difficulty,
-        time: elapsedTime,
-        timestamp: firebase.firestore.FieldValue.serverTimestamp()
-    })
-    .then(() => {
-        alert("게임 결과가 저장되었습니다!");
-        document.getElementById("overlay").style.display = "none"; // 오버레이 숨기기
-        document.getElementById("name-form").style.display = "none"; // 이름 입력 폼 숨기기
-        showLeaderboard(); // 리더보드 표시
-    })
-    .catch((error) => {
-        console.error("Error adding document: ", error);
-    });
-});
-
-// 리더보드 표시 함수 수정
-function showLeaderboard() {
-    console.log("showLeaderboard 함수 호출됨"); // 디버깅용
-
-    const leaderboard = document.getElementById("leaderboard");
-    const leaderboardBody = document.getElementById("leaderboard-body");
-    leaderboardBody.innerHTML = ""; // 기존 데이터 초기화
-
-    const difficulty = difficultySelect.value;
-    console.log("현재 난이도:", difficulty); // 디버깅용
-
-    db.collection("leaderboard")
-        .where("difficulty", "==", difficulty)
-        .orderBy("time", "asc")
-        .limit(10) // 상위 10개만 표시
-        .get()
-        .then((querySnapshot) => {
-            console.log(`Firestore에서 ${querySnapshot.size}개의 기록을 가져옴`); // 디버깅용
-            if (querySnapshot.empty) {
-                console.log("해당 난이도에 대한 기록이 없음");
-                const tr = document.createElement("tr");
-                const td = document.createElement("td");
-                td.colSpan = 4;
-                td.textContent = "기록이 없습니다.";
-                tr.appendChild(td);
-                leaderboardBody.appendChild(tr);
-            } else {
-                querySnapshot.forEach((doc, index) => {
-                    const data = doc.data();
-                    console.log(`Record ${index + 1}:`, data); // 디버깅용
-
-                    const tr = document.createElement("tr");
-
-                    const rankTd = document.createElement("td");
-                    rankTd.textContent = index + 1;
-                    tr.appendChild(rankTd);
-
-                    const nameTd = document.createElement("td");
-                    nameTd.textContent = data.name;
-                    tr.appendChild(nameTd);
-
-                    const difficultyTd = document.createElement("td");
-                    difficultyTd.textContent = data.difficulty;
-                    tr.appendChild(difficultyTd);
-
-                    const timeTd = document.createElement("td");
-                    timeTd.textContent = data.time;
-                    tr.appendChild(timeTd);
-
-                    leaderboardBody.appendChild(tr);
-                });
-            }
-
-            leaderboard.style.display = "block"; // 리더보드 표시
-            console.log("리더보드가 화면에 표시됨"); // 디버깅용
-        })
-        .catch((error) => {
-            console.error("Firestore에서 문서를 가져오는 중 오류 발생: ", error);
-        });
-}
-
-// 리더보드 닫기 버튼 이벤트 리스너 추가
-document.getElementById("close-leaderboard").addEventListener("click", () => {
-    console.log("리더보드 닫기 버튼 클릭됨"); // 디버깅용
-    document.getElementById("leaderboard").style.display = "none"; // 리더보드 숨기기
-});
-
-// "기록 보기" 버튼 이벤트 리스너 추가
-viewLeaderboardButton.addEventListener("click", () => {
-    console.log("기록 보기 버튼 클릭됨"); // 디버깅용
-    showLeaderboard(); // 리더보드 표시 함수 호출
-});
 
 // 선택 초기화
 function resetSelection() {
@@ -421,6 +421,78 @@ difficultySelect.addEventListener("change", () => {
     showLeaderboard();
 });
 
-// 초기 게임 생성
-generateGame();
+// 리더보드 표시 함수 수정
+function showLeaderboard() {
+    console.log("showLeaderboard 함수 호출됨"); // 디버깅용
 
+    const leaderboard = document.getElementById("recordSection");
+    const leaderboardBody = document.getElementById("recordTable").querySelector('tbody');
+    leaderboardBody.innerHTML = ""; // 기존 데이터 초기화
+
+    const difficulty = difficultySelect.value;
+    console.log("현재 난이도:", difficulty); // 디버깅용
+
+    db.collection("gameRecords")
+        .where("difficulty", "==", difficulty)
+        .orderBy("score", "desc") // 점수 기준 내림차순
+        .limit(10) // 상위 10개만 표시
+        .get()
+        .then((querySnapshot) => {
+            console.log(`Firestore에서 ${querySnapshot.size}개의 기록을 가져옴`); // 디버깅용
+            if (querySnapshot.empty) {
+                console.log("해당 난이도에 대한 기록이 없음");
+                const tr = document.createElement("tr");
+                const td = document.createElement("td");
+                td.colSpan = 5; // 컬럼 수에 맞게 수정
+                td.textContent = "기록이 없습니다.";
+                tr.appendChild(td);
+                leaderboardBody.appendChild(tr);
+            } else {
+                querySnapshot.forEach((doc, index) => {
+                    const data = doc.data();
+                    console.log(`Record ${index + 1}:`, data); // 디버깅용
+
+                    const tr = document.createElement("tr");
+
+                    const rankTd = document.createElement("td");
+                    rankTd.textContent = index + 1;
+                    tr.appendChild(rankTd);
+
+                    const categoryTd = document.createElement("td");
+                    categoryTd.textContent = data.category;
+                    tr.appendChild(categoryTd);
+
+                    const difficultyTd = document.createElement("td");
+                    difficultyTd.textContent = data.difficulty;
+                    tr.appendChild(difficultyTd);
+
+                    const nameTd = document.createElement("td");
+                    nameTd.textContent = data.name;
+                    tr.appendChild(nameTd);
+
+                    const scoreTd = document.createElement("td");
+                    scoreTd.textContent = data.score;
+                    tr.appendChild(scoreTd);
+
+                    const dateTd = document.createElement("td");
+                    dateTd.textContent = data.timestamp ? data.timestamp.toDate().toLocaleString() : 'N/A';
+                    tr.appendChild(dateTd);
+
+                    leaderboardBody.appendChild(tr);
+                });
+            }
+
+            leaderboard.style.display = "flex"; // 기록 섹션 표시
+            console.log("리더보드가 화면에 표시됨"); // 디버깅용
+        })
+        .catch((error) => {
+            console.error("Firestore에서 문서를 가져오는 중 오류 발생: ", error);
+        });
+}
+
+// Firestore에서 기록 불러오기 함수 호출
+window.onload = async function() {
+    await loadCategories(); // categories.json 불러오기 (함수가 정의되어 있어야 합니다)
+    loadRecordsFromFirestore();
+    // initializeMatchingGame(); // 이 줄을 제거하거나 주석 처리하세요.
+};
