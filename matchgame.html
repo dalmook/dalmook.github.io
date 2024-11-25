@@ -653,3 +653,436 @@
             ],
             // 다른 카테고리 추가 가능
         };
+
+
+        // 변수 초기화
+        let selectedCategory = 'animals';
+        let pairsCount = 8; // 쉬움: 4x4 (16칸, 8쌍), 보통: 6x6 (36칸, 18쌍), 어려움: 8x8 (64칸, 32쌍)
+        let gameImages = [];
+        let firstCard = null;
+        let secondCard = null;
+        let score = 0;
+        let matchedPairs = 0;
+        let isProcessing = false;
+
+        const matchingStartButton = document.getElementById('startMatchingGame');
+        const categorySelectMatching = document.getElementById('category');
+        const difficultySelect = document.getElementById('difficulty');
+        const gameBoard = document.getElementById('gameBoard');
+        const scoreDisplay = document.getElementById('score');
+        const wordDisplay = document.getElementById('wordDisplay');
+
+        const successMessage = document.getElementById('successMessage');
+        const restartButton = document.getElementById('restartButton');
+
+        const recordSection = document.getElementById('recordSection');
+        const saveRecordButton = document.getElementById('saveRecordButton');
+        const backToGameButton = document.getElementById('backToGameButton');
+        const recordTableBody = document.getElementById('recordTable').querySelector('tbody');
+
+        const countdownOverlay = document.getElementById('countdownOverlay');
+        const countdownNumber = document.getElementById('countdownNumber');
+
+        // 게임 시작 버튼 이벤트 (그림 짝맞추기)
+        matchingStartButton.addEventListener('click', () => {
+            startMatchingGame(); // 게임 시작 함수 호출
+        });
+        // 기록 보기 버튼 이벤트 리스너 추가
+        document.getElementById('viewRecordsButton').addEventListener('click', () => {
+            recordSection.style.display = 'flex'; // 기록 섹션 열기
+        });
+        // 새로운 게임 시작 함수
+        function startMatchingGame() {
+            // 카운트다운 오버레이 표시
+            countdownOverlay.style.display = 'flex';
+            countdownNumber.textContent = '시작';
+            
+            let countdown = 2;
+            
+            const countdownInterval = setInterval(() => {
+                countdown--;
+                if (countdown > 0) {
+                    countdownNumber.textContent = countdown;
+                    // 애니메이션 재시작
+                    countdownNumber.classList.remove('fade');
+                    void countdownNumber.offsetWidth; // 리플로우를 강제하여 애니메이션 재시작
+                    countdownNumber.classList.add('fade');
+                } else {
+                    clearInterval(countdownInterval);
+                    countdownOverlay.style.display = 'none';
+                    initializeMatchingGame();
+                }
+            }, 1000);
+            
+            // 카운트다운 동안 이미지와 음성 미리 로드
+            preloadResources();
+        }
+
+        // 리소스 미리 로드 함수
+        function preloadResources() {
+            const categoryItems = categories[selectedCategory];
+            if (!categoryItems || categoryItems.length < pairsCount) return;
+            
+            // 짝의 수에 맞게 아이템 선택
+            const shuffled = shuffleArray([...categoryItems]);
+            const selectedItems = shuffled.slice(0, pairsCount);
+            const imagesToLoad = [...selectedItems, ...selectedItems].map(item => item.image);
+            
+            imagesToLoad.forEach(src => {
+                const img = new Image();
+                img.src = src;
+            });
+            
+            // 티니핑 카테고리의 소리 미리 로드 (sound 속성이 있다면)
+            if (selectedCategory === 'Teenieping') {
+                categories.Teenieping.forEach(char => {
+                    if (char.sound) {
+                        const audio = new Audio(char.sound);
+                        audio.load();
+                    }
+                });
+            }
+        }
+
+        // 그림 짝맞추기 게임 초기화 함수
+        function initializeMatchingGame() {
+            // 사용자가 선택한 카테고리 값을 가져와 selectedCategory에 할당
+            selectedCategory = categorySelectMatching.value;
+
+            // 현재 난이도 선택을 직접 참조
+            const currentDifficulty = difficultySelect.value;
+            console.log(`현재 선택된 난이도: ${currentDifficulty}`);
+
+            // 난이도에 따라 pairsCount와 클래스 설정
+            gameBoard.classList.remove('easy', 'medium', 'hard');
+            switch(currentDifficulty) {
+                case 'easy':
+                    pairsCount = 8; // 4x4 = 16칸
+                    gameBoard.classList.add('easy');
+                    break;
+                case 'medium':
+                    pairsCount = 18; // 6x6 = 36칸
+                    gameBoard.classList.add('medium');
+                    break;
+                case 'hard':
+                    pairsCount = 32; // 8x8 = 64칸
+                    gameBoard.classList.add('hard');
+                    break;
+                default:
+                    pairsCount = 8;
+                    gameBoard.classList.add('easy');
+            }
+            console.log(`pairsCount 설정됨: ${pairsCount}`);
+            console.log(`gameBoard 클래스 적용됨: ${gameBoard.className}`);
+
+            // 선택한 카테고리와 난이도에 맞게 이미지 선택
+            const categoryItems = categories[selectedCategory];
+            if (!categoryItems || categoryItems.length < pairsCount) {
+                alert('선택한 카테고리에 충분한 아이템이 없습니다.');
+                return;
+            }
+
+            // 짝의 수에 맞게 아이템 선택
+            const shuffled = shuffleArray([...categoryItems]);
+            const selectedItems = shuffled.slice(0, pairsCount);
+            gameImages = [...selectedItems, ...selectedItems];
+            // 이미지 섞기
+            gameImages = shuffleArray(gameImages);
+
+            console.log(`선택된 아이템 수: ${selectedItems.length}`);
+            console.log(`총 카드 수: ${gameImages.length}`);
+
+            // 게임 보드 초기화
+            gameBoard.innerHTML = '';
+            gameImages.forEach((item, index) => {
+                const card = document.createElement('div');
+                card.classList.add('card');
+                card.dataset.image = item.image;
+                card.dataset.name = item.name;
+                if (item.desc) {
+                    card.dataset.desc = item.desc;
+                }
+                card.dataset.index = index;
+                card.addEventListener('click', flipCard);
+                
+                card.style.backgroundImage = 'url("https://cdn-icons-png.flaticon.com/512/929/929500.png")';
+                card.style.backgroundSize = 'cover';
+                card.style.backgroundPosition = 'center';                
+                
+                // 카드 안에 내용 추가
+                const cardContent = document.createElement('div');
+                cardContent.classList.add('card-content');
+                cardContent.innerHTML = '❓';
+                card.appendChild(cardContent);
+                gameBoard.appendChild(card);
+            });
+
+            // 점수 및 상태 초기화
+            score = 0;
+            matchedPairs = 0;
+            scoreDisplay.textContent = `점수: ${score}`;
+            wordDisplay.textContent = '';
+            recordSection.style.display = 'none';
+            successMessage.style.display = 'none';
+        }
+
+        // 그림 짝맞추기 게임 카드 뒤집기 함수
+        function flipCard() {
+            if (isProcessing || this.classList.contains('matched') || this === firstCard) return;
+            this.style.backgroundImage = `url("${this.dataset.image}")`;
+            const cardContent = this.querySelector('.card-content');
+            cardContent.style.display = 'none';
+
+            // 클릭한 카드의 단어와 설명을 읽어줍니다. 현재 카테고리를 함께 전달
+            speakWord(this.dataset.name, selectedCategory);
+
+            // 클릭한 카드의 이름과 설명을 점수 아래에 표시
+            if (this.dataset.desc) {
+                displayWord(`${this.dataset.name} (${this.dataset.desc})`);
+            } else {
+                displayWord(`${this.dataset.name}`);
+            }
+
+            if (!firstCard) {
+                firstCard = this;
+            } else {
+                secondCard = this;
+                isProcessing = true;
+                checkMatch();
+            }
+        }
+
+        // 매치 확인 함수
+        function checkMatch() {
+            if (firstCard.dataset.image === secondCard.dataset.image) {
+                // 매치된 경우
+                firstCard.classList.add('matched');
+                secondCard.classList.add('matched');
+                matchedPairs++;
+                updateScore(10); // 점수 +10
+                
+                // 카테고리가 'Teenieping'인 경우 캐릭터별 효과음 재생 (sound 속성 필요 시 추가)
+                if (selectedCategory === 'Teenieping') {
+                    const characterSound = categories.Teenieping.find(char => char.name === firstCard.dataset.name)?.sound;
+                    if (characterSound) {
+                        playCharacterSound(characterSound);
+                    }
+                }
+
+                resetCards();
+
+                // 모든 짝을 맞췄는지 확인
+                if (matchedPairs === pairsCount) {
+                    setTimeout(() => {
+                        playCorrectSoundEffect();
+                        showRecordSection();
+                    }, 500);
+                }
+            } else {
+                // 매치되지 않은 경우
+                setTimeout(() => {
+                    firstCard.style.backgroundImage = 'url("https://cdn-icons-png.flaticon.com/512/929/929500.png")';
+                    secondCard.style.backgroundImage = 'url("https://cdn-icons-png.flaticon.com/512/929/929500.png")';
+                    const firstContent = firstCard.querySelector('.card-content');
+                    const secondContent = secondCard.querySelector('.card-content');
+                    firstContent.style.display = 'flex';
+                    secondContent.style.display = 'flex';
+                    updateScore(-2); // 점수 -2
+                    resetCards();
+                }, 1000);
+            }
+        }
+
+        // 점수 업데이트 함수
+        function updateScore(delta) {
+            // 점수 업데이트
+            score += delta;
+            scoreDisplay.textContent = `점수: ${score}`;
+
+            // 깜빡이는 효과
+            const originalColor = scoreDisplay.style.color || '#000';
+            if (delta < 0) {
+                scoreDisplay.style.color = 'red'; // 깜빡이는 색상: 빨간색
+            } else {
+                scoreDisplay.style.color = 'blue'; // 깜빡이는 색상: 파란색
+            }
+
+            // 0.5초 후 원래 색상으로 복원
+            setTimeout(() => {
+                scoreDisplay.style.color = originalColor;
+            }, 500);
+        }
+
+        // 카드 상태 초기화
+        function resetCards() {
+            firstCard = null;
+            secondCard = null;
+            isProcessing = false;
+        }
+
+        // 성공 메시지 표시 및 기록 섹션 열기
+        function showRecordSection() {
+            recordSection.style.display = 'flex'; // 모달 표시
+        }
+
+        // 기록 저장 함수 (Firestore에 저장)
+        function saveRecord(record) {
+            return db.collection('gameRecords').add(record)
+                .then(() => {
+                    console.log('게임 기록이 성공적으로 저장되었습니다.');
+                })
+                .catch((error) => {
+                    console.error('게임 기록 저장 중 오류 발생: ', error);
+                    throw error; // 에러를 상위로 전달
+                });
+        }
+
+        // 기록 저장 버튼 이벤트
+        saveRecordButton.addEventListener('click', () => {
+            const playerName = document.getElementById('playerName').value.trim();
+            if (!playerName) {
+                alert('이름을 입력하세요!');
+                return;
+            }
+
+            // 기록 생성
+            const newRecord = {
+                category: selectedCategory,
+                difficulty: difficultySelect.value,
+                name: playerName,
+                score: score,
+                timestamp: firebase.firestore.FieldValue.serverTimestamp() // 기록 시간
+            };
+
+            // Firestore에 기록 저장
+            saveRecord(newRecord).then(() => {
+                // 이름 입력 필드 숨기고 기록 테이블 표시
+                document.getElementById('playerName').style.display = 'none';
+                saveRecordButton.style.display = 'none';
+            }).catch((error) => {
+                console.error('게임 기록 저장 중 오류 발생: ', error);
+                alert('기록 저장에 실패했습니다. 다시 시도해주세요.');
+            });
+        });
+
+        // 게임으로 돌아가기 버튼 이벤트
+        backToGameButton.addEventListener('click', () => {
+            recordSection.style.display = 'none';
+            // 이름 입력 필드와 저장 버튼 다시 보이게 설정
+            document.getElementById('playerName').style.display = 'block';
+            saveRecordButton.style.display = 'block';
+            // 게임 초기화
+            startMatchingGame(); // 새 게임 시작
+        });
+
+        // Firestore에서 기록 불러오기
+        function loadRecordsFromFirestore() {
+            db.collection('gameRecords').orderBy('score', 'desc').onSnapshot((snapshot) => {
+                snapshot.docChanges().forEach((change) => {
+                    if (change.type === 'added') {
+                        const record = change.doc.data();
+                        addRecordToTable(record);
+                    }
+                });
+            });
+        }
+
+        // 기록 테이블에 기록 추가 함수
+        function addRecordToTable(record) {
+            const recordTableBody = document.getElementById('recordTable').querySelector('tbody');
+            const row = document.createElement('tr');
+            const date = record.timestamp ? record.timestamp.toDate().toLocaleString() : 'N/A';
+            row.innerHTML = `
+                <td>${record.category}</td>
+                <td>${record.difficulty}</td>
+                <td>${record.name}</td>
+                <td>${record.score}</td>
+                <td>${date}</td>
+            `;
+            recordTableBody.appendChild(row);
+            // 테이블 끝으로 스크롤 이동
+            recordTableBody.scrollIntoView({ behavior: 'smooth', block: 'end' });
+        }
+
+        // 페이지 로드 시 Firestore 기록 불러오기
+        window.onload = function() {
+            loadRecordsFromFirestore();
+            // initializeMatchingGame(); // 이 줄을 제거하거나 주석 처리하세요.
+        };
+
+        // 영어 단어 표시 함수
+        function displayWord(word) {
+            wordDisplay.textContent = word;
+
+            // 애니메이션 효과 추가
+            wordDisplay.classList.add('grow');
+            setTimeout(() => {
+                wordDisplay.classList.remove('grow');
+            }, 300); // 0.3초 후 원래 크기로 복원
+        }
+
+        // 단어 소리 내어 읽기 함수
+        function speakWord(word, category) {
+            const utterance = new SpeechSynthesisUtterance(word);
+            
+            // 카테고리에 따라 언어 설정
+            if (category === 'Teenieping') {
+                utterance.lang = 'ko-KR'; // 한국어
+            } else {
+                utterance.lang = 'en-US'; // 영어
+            }
+            
+            // 음성 설정 함수
+            function setVoice() {
+                const voices = window.speechSynthesis.getVoices();
+                const selectedVoice = voices.find(voice => voice.lang === utterance.lang);
+                if (selectedVoice) {
+                    utterance.voice = selectedVoice;
+                }
+                window.speechSynthesis.speak(utterance);
+            }
+
+            // 음성 목록이 이미 로드된 경우
+            if (speechSynthesis.getVoices().length !== 0) {
+                setVoice();
+            } else {
+                // 음성 목록이 로드될 때까지 대기
+                speechSynthesis.onvoiceschanged = setVoice;
+            }
+        }
+
+        // 배열 섞기 함수 (Fisher-Yates Shuffle)
+        function shuffleArray(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+            return array;
+        }
+        
+        // 특정 효과음 재생 함수
+        function playCharacterSound(url) {
+            const audio = new Audio(url);
+            audio.play();
+        }
+        
+        // 짝이 최종 맞았을 때 소리 재생 함수
+        function playCorrectSoundEffect() {
+            const correctSoundEffect = document.getElementById('correctSoundEffect');
+            correctSoundEffect.currentTime = 0;
+            correctSoundEffect.play();
+        }
+        
+        // 게임 재시작 버튼 이벤트
+        restartButton.addEventListener('click', () => {
+            restartGame();
+        });
+
+        // 게임 재시작 함수
+        function restartGame() {
+            startMatchingGame();
+            successMessage.style.display = 'none';
+        }
+    </script>
+</body>
+</html>
