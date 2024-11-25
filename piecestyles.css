@@ -35,7 +35,7 @@ h1 {
     cursor: pointer;
     user-select: none;
     transition: background-color 0.2s;
-    touch-action: manipulation; /* 터치 동작 최적화 */
+    touch-action: none; /* 터치 동작 최적화 */
 }
 .grid div.found {
     background-color: #90ee90; /* 찾은 단어는 연두색 배경 */
