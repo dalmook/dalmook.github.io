@@ -265,18 +265,17 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background-color: rgba(0, 0, 0, 0.7); /* 반투명 검정 배경 */
+            background-color: rgba(0,0,0,0.8);
             display: none;
-            align-items: center;
             justify-content: center;
-            z-index: 2000; /* 다른 요소들보다 위에 표시 */
+            align-items: center;
+            z-index: 2000;
         }
 
         #countdownNumber {
-            color: white;
             font-size: 5em;
-            font-weight: bold;
-            animation: countdownFade 1s ease-in-out forwards;
+            color: white;
+            animation: fade 1s infinite;
         }
 
         @keyframes countdownFade {
