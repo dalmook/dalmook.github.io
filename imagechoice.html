@@ -843,99 +843,126 @@
         }
 
         // 보기 선택 함수
-        function selectOption(selectedOption, button) {
-            const currentQuestion = questions[currentQuestionIndex];
-            clearInterval(countdownInterval); // 선택 시 카운트다운 중지
-            
+// 보기 선택 함수
+function selectOption(selectedOption, button) {
+    const currentQuestion = filteredQuestions[currentQuestionIndex];
+    clearInterval(countdownInterval); // 선택 시 카운트다운 중지
 
-						 if (selectedOption === currentQuestion.correct) {
-                // 정답
-                score += 10;
-                scoreDisplay.textContent = `점수: ${score}`;
-                feedback.innerHTML = '⭕';
-                button.style.backgroundColor = '#32cd32'; // 녹색
-                correctSoundEffect.play();
-            
-                // 애니메이션 클래스 추가
-                feedback.classList.add('animate-correct');
-            
-                // 애니메이션이 끝난 후 클래스 제거
-                feedback.addEventListener('animationend', () => {
-                    feedback.classList.remove('animate-correct');
-                }, { once: true });
-            
-            } else {
-                // 오답
-                score -= -2;
-                scoreDisplay.textContent = `점수: ${score}`;
-                feedback.innerHTML = '❌';
-                button.style.backgroundColor = '#ff4d4d'; // 빨간색
-                incorrectSound.play();
-            
-                // 정답 밑줄 표시
-                Array.from(optionsContainer.children).forEach(btn => {
-                    if (btn.textContent === currentQuestion.correct) {
-                        btn.classList.add('correct-answer');
-                    }
-                });
-            
-                // 애니메이션 클래스 추가
-                feedback.classList.add('animate-incorrect');
-            
-                // 애니메이션이 끝난 후 클래스 제거
-                feedback.addEventListener('animationend', () => {
-                    feedback.classList.remove('animate-incorrect');
-                }, { once: true });
+    // 난이도에 따른 점수 설정
+    let correctScore, incorrectScore;
+    if (selectedDifficulty === 'easy') {
+        correctScore = 10;
+        incorrectScore = -2;
+    } else if (selectedDifficulty === 'medium') {
+        correctScore = 20;
+        incorrectScore = -4;
+    } else if (selectedDifficulty === 'hard') {
+        correctScore = 30;
+        incorrectScore = -8;
+    }
+
+    if (selectedOption === currentQuestion.correct) {
+        // 정답
+        score += correctScore;
+        scoreDisplay.textContent = `점수: ${score}`;
+        feedback.innerHTML = '⭕';
+        button.style.backgroundColor = '#32cd32'; // 녹색
+        correctSoundEffect.play();
+
+        // 애니메이션 클래스 추가
+        feedback.classList.add('animate-correct');
+
+        // 애니메이션이 끝난 후 클래스 제거
+        feedback.addEventListener('animationend', () => {
+            feedback.classList.remove('animate-correct');
+        }, { once: true });
+
+    } else {
+        // 오답
+        score += incorrectScore; // 예: easy는 -2
+        scoreDisplay.textContent = `점수: ${score}`;
+        feedback.innerHTML = '❌';
+        button.style.backgroundColor = '#ff4d4d'; // 빨간색
+        incorrectSound.play();
+
+        // 정답 밑줄 표시
+        Array.from(optionsContainer.children).forEach(btn => {
+            if (btn.textContent === currentQuestion.correct) {
+                btn.classList.add('correct-answer');
             }
-            // 모든 보기 버튼 비활성화
-            Array.from(optionsContainer.children).forEach(btn => {
-                btn.disabled = true;
-                if (btn.textContent === currentQuestion.correct) {
-                    btn.style.backgroundColor = '#32cd32'; // 정답 표시
-                }
-            });
+        });
 
-            // 정답 표시
-            displayCorrectAnswer(currentQuestion.correct);
+        // 애니메이션 클래스 추가
+        feedback.classList.add('animate-incorrect');
 
-            setTimeout(() => {
-                nextQuestion();
-            }, 2000); // 2초 후 다음 질문으로 이동 (정답 표시 시간 포함)
+        // 애니메이션이 끝난 후 클래스 제거
+        feedback.addEventListener('animationend', () => {
+            feedback.classList.remove('animate-incorrect');
+        }, { once: true });
+    }
+
+    // 모든 보기 버튼 비활성화 및 정답 표시
+    Array.from(optionsContainer.children).forEach(btn => {
+        btn.disabled = true;
+        if (btn.textContent === currentQuestion.correct) {
+            btn.style.backgroundColor = '#32cd32'; // 정답 표시
         }
+    });
 
-        // 시간 초과 시 오답 처리 함수
-        function markAsIncorrect() {                       
-            const currentQuestion = filteredQuestions[currentQuestionIndex];
-            // speakText(currentQuestion.correct); // 제거 (이미 displayCorrectAnswer에서 음성 출력)
-            score -= -2;
-            scoreDisplay.textContent = `점수: ${score}`;
-            feedback.innerHTML = '❌';
-            // 모든 보기 버튼 비활성화 및 정답 표시
-            Array.from(optionsContainer.children).forEach(btn => {
-                btn.disabled = true;
-                if (btn.textContent === currentQuestion.correct) {
-                    btn.style.backgroundColor = '#32cd32'; // 정답 표시
-                    btn.classList.add('correct-answer'); // 정답 밑줄 표시
-                }
-            });
-            incorrectSound.play();
-        
-            // 애니메이션 클래스 추가
-            feedback.classList.add('animate-incorrect');
-        
-            // 애니메이션이 끝난 후 클래스 제거
-            feedback.addEventListener('animationend', () => {
-                feedback.classList.remove('animate-incorrect');
-            }, { once: true });
-        
-            // 정답 표시
-            displayCorrectAnswer(currentQuestion.correct);
-        
-            // 2초 후 다음 질문으로 이동
-            setTimeout(() => {
-                nextQuestion();
-            }, 2000);
+    // 정답 표시
+    displayCorrectAnswer(currentQuestion.correct);
+
+    setTimeout(() => {
+        nextQuestion();
+    }, 2000); // 2초 후 다음 질문으로 이동 (정답 표시 시간 포함)
+}
+
+// 시간 초과 시 오답 처리 함수
+function markAsIncorrect() {                       
+    const currentQuestion = filteredQuestions[currentQuestionIndex];
+    
+    // 난이도에 따른 오답 점수 설정
+    let incorrectScore;
+    if (selectedDifficulty === 'easy') {
+        incorrectScore = -2;
+    } else if (selectedDifficulty === 'medium') {
+        incorrectScore = -4;
+    } else if (selectedDifficulty === 'hard') {
+        incorrectScore = -8;
+    }
+
+    score += incorrectScore;
+    scoreDisplay.textContent = `점수: ${score}`;
+    feedback.innerHTML = '❌';
+    
+    // 모든 보기 버튼 비활성화 및 정답 표시
+    Array.from(optionsContainer.children).forEach(btn => {
+        btn.disabled = true;
+        if (btn.textContent === currentQuestion.correct) {
+            btn.style.backgroundColor = '#32cd32'; // 정답 표시
+            btn.classList.add('correct-answer'); // 정답 밑줄 표시
         }
+    });
+    
+    incorrectSound.play();
+
+    // 애니메이션 클래스 추가
+    feedback.classList.add('animate-incorrect');
+
+    // 애니메이션이 끝난 후 클래스 제거
+    feedback.addEventListener('animationend', () => {
+        feedback.classList.remove('animate-incorrect');
+    }, { once: true });
+
+    // 정답 표시
+    displayCorrectAnswer(currentQuestion.correct);
+
+    // 2초 후 다음 질문으로 이동
+    setTimeout(() => {
+        nextQuestion();
+    }, 2000);
+}
+
 
         // 정답 표시 함수
         function displayCorrectAnswer(correctAnswer) {
