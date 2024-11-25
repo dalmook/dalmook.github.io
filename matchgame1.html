@@ -1,655 +1,336 @@
-<!DOCTYPE html>
-<html lang="ko">
-<head>
-    <meta charset="UTF-8">
-    <title>그림 짝맞추기 게임</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <style>
-        /* 기본 스타일 */
-        body {
-            font-family: 'Arial', sans-serif;
-            text-align: center;
-            background-color: #f0f8ff;
-            margin: 0;
-            padding: 0;
-        }
-        h1 {
-            margin: 20px 0;
-            color: #333;
-            font-size: 2em;
-        }
-        /* 공통 스타일 */
-        #controls {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            margin: 10px 0;
-            padding: 0 10px;
-        }
-        #controls > * {
-            margin: 5px 0;
-            width: 100%;
-            max-width: 300px;
-        }
-        select, button, input {
-            padding: 10px;
-            font-size: 1em;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-        }
-        button {
-            background-color: #ffa500;
-            color: white;
-            cursor: pointer;
-            transition: background-color 0.3s;
-        }
-        button:hover {
-            background-color: #ff8c00;
-        }
-        #score {
-            font-size: 1.2em;
-            margin: 10px 0;
-            transition: color 0.5s;
-        }
-        /* 그림 짝맞추기 게임 스타일 */
-        #wordDisplay {
-            margin: 10px 0;
-            font-size: 1.5em;
-            color: #333;
-            height: 1.5em;
-            transition: transform 0.3s ease, color 0.3s ease;
-        }
-        #wordDisplay.grow {
-            transform: scale(1.5);
-        }
-        #gameBoard {
-            display: grid;
-            gap: 10px;
-            justify-content: center;
-            padding: 10px;
-            max-width: 100%;
-            margin: 0 auto 20px;
-        }
-        .game-board.easy {
-            grid-template-columns: repeat(4, 1fr);
-        }
-        .game-board.medium {
-            grid-template-columns: repeat(6, 1fr);
-        }
-        .game-board.hard {
-            grid-template-columns: repeat(8, 1fr);
-        }
-        .card {
-            width: 100%;
-            padding-top: 100%; /* 정사각형 유지 */
-            position: relative;
-            background-color: #87cefa;
-            cursor: pointer;
-            border-radius: 10px;
-            transition: transform 0.3s, background-color 0.3s;
-            background-size: cover;
-            background-position: center;
-        }
-        .card-content {
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 2em;
-            color: #fff;
-        }
-        .matched {
-            background-color: #32cd32 !important;
-            cursor: default;
-        }
-        /* 성공 메시지 스타일 */
-        #successMessage {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.8);
-            color: white;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.5em;
-            z-index: 1000;
-            display: none;
-            padding: 20px;
-            box-sizing: border-box;
-        }
-        #successMessage img {
-            width: 80px;
-            margin-bottom: 20px;
-        }
-        /* 기록 섹션 스타일 (모달) */
-        #recordSection {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.5); /* 반투명 배경 */
-            display: none;
-            align-items: center;
-            justify-content: center;
-            z-index: 1000;
-        }
-        #recordContent {
-            background-color: #fff;
-            padding: 20px;
-            border-radius: 10px;
-            width: 90%;
-            max-width: 500px;
-            max-height: 80%; /* 높이 제한 추가 */
-            overflow-y: auto; /* 스크롤 추가 */
-            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
-            animation: fadeIn 0.3s ease-out;
-        }
-        
-        @keyframes fadeIn {
-            from { opacity: 0; transform: scale(0.9); }
-            to { opacity: 1; transform: scale(1); }
-        }
-        #recordTable {
-            width: 100%;
-            border-collapse: collapse;
-            margin: 10px 0;
-            max-height: 200px;
-            overflow-y: auto;
-        }
-        #recordTable th, #recordTable td {
-            border: 1px solid #ccc;
-            padding: 8px;
-            text-align: center;
-        }
-        /* 미디어 쿼리로 화면 크기에 맞게 조정 */
-        @media (max-width: 1200px) {
-            /* 큰 화면에서도 카드가 너무 크지 않도록 조정 */
-            .game-board.easy .card, .game-board.medium .card, .game-board.hard .card {
-                padding-top: 100%;
-            }
-        }
-        @media (max-width: 992px) {
-            /* 태블릿 및 중간 크기 화면용 설정 */
-            h1 {
-                font-size: 1.8em;
-            }
-            #controls > * {
-                max-width: 90%;
-            }
-            #wordDisplay {
-                font-size: 1.2em;
-            }
-        }
-        @media (max-width: 768px) {
-            /* 스마트폰 세로 화면용 설정 */
-            h1 {
-                font-size: 1.5em;
-            }
-            #controls > * {
-                max-width: 100%;
-            }
-            #wordDisplay {
-                font-size: 1em;
-            }
-            /* 카드 간격 줄이기 */
-            #gameBoard {
-                gap: 5px;
-                padding: 5px;
-            }
-        }
-        /* 가로 모드일 때 그리드 레이아웃 조정 */
-        @media (orientation: landscape) {
-            /* 쉬움 난이도: 4x4 -> 6x4 */
-            .game-board.easy {
-                grid-template-columns: repeat(6, 1fr); /* 예시: 컬럼 수를 늘려 더 넓은 레이아웃 */
-            }
-        
-            /* 보통 난이도: 6x6 -> 8x6 */
-            .game-board.medium {
-                grid-template-columns: repeat(8, 1fr); /* 컬럼 수를 8로 늘려 가로 공간 활용 */
-            }
-        
-            /* 어려움 난이도: 8x8 -> 10x8 */
-            .game-board.hard {
-                grid-template-columns: repeat(10, 1fr); /* 컬럼 수를 10으로 늘려 더 넓은 레이아웃 */
-            }
-        
-            /* 카드 크기 조정 (선택 사항) */
-            .game-board.easy .card,
-            .game-board.medium .card,
-            .game-board.hard .card {
-                padding-top: 100%; /* 필요에 따라 비율 조정 가능 */
-            }
-        }
-        @keyframes countdown-animation {
-            0% {
-                transform: scale(1);
-                opacity: 1;
-                color: red;
-            }
-            50% {
-                transform: scale(1.5);
-                opacity: 0.8;
-                color: orange;
-            }
-            100% {
-                transform: scale(0.8);
-                opacity: 0;
-                color: yellow;
-            }
-        }
-        /* 카운트다운 오버레이 스타일 */
-        #countdownOverlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.7); /* 반투명 검정 배경 */
-            display: none;
-            align-items: center;
-            justify-content: center;
-            z-index: 2000; /* 다른 요소들보다 위에 표시 */
-        }
-
-        #countdownNumber {
-            color: white;
-            font-size: 5em;
-            font-weight: bold;
-            animation: countdownFade 1s ease-in-out forwards;
-        }
-
-        @keyframes countdownFade {
-            from { opacity: 1; transform: scale(1); }
-            to { opacity: 0; transform: scale(1.5); }
-        }
-        #viewRecordsButton {
-        font-size: 0.8em;
-        padding: 5px 10px;
-        border: 1px solid #ccc;
-        background-color: #ffa500;
-        color: white;
-        border-radius: 5px;
-        cursor: pointer;
-        margin-left: 10px;
-        }
-
-        #viewRecordsButton:hover {
-        background-color: #ff8c00;
-        }
-    </style>
-    
-    <!-- Firebase SDK 추가 -->
-    <!-- Firebase App (필수) -->
-    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
-    <!-- Firebase Firestore -->
-    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
-</head>
-<body>
-    <h1>
-    그림 짝맞추기 게임
-    <button id="viewRecordsButton" style="font-size: 0.5em; margin-left: 10px; padding: 5px 10px;">기록 보기</button>
-    </h1>
-    <!-- 게임 시작 섹션 -->
-    <div id="controls">
-        <select id="category">
-            <option value="Teenieping">티니핑</option>
-            <option value="animals">동물</option>
-            <option value="plants">식물</option>            
-            <option value="hangul">한글</option>
-            <!-- 필요한 경우 더 추가 -->
-        </select>
-        <select id="difficulty">
-            <option value="easy">쉬움 (4열 x 4행, 16칸)</option>
-            <option value="medium">보통 (6열 x 6행, 36칸)</option>
-            <option value="hard">어려움 (8열 x 8행, 64칸)</option>
-        </select>
-        <button id="startMatchingGame">게임 시작</button>
-    </div>
-    <div id="score">점수: 0</div>
-    <div id="wordDisplay"></div>
-    <div class="game-board easy" id="gameBoard">
-        <!-- 카드가 여기에 생성됩니다 -->
-    </div>
-
-    <!-- 카운트다운 오버레이 -->
-    <div id="countdownOverlay">
-        <div id="countdownNumber">3</div>
-    </div>
-
-    <!-- 성공 메시지 -->
-    <div id="successMessage">
-        <img src="https://cdn-icons-png.flaticon.com/128/1365/1365358.png" alt="축하 이미지">
-        <div>축하해요! 모든 짝을 맞췄어요!</div>
-        <button id="restartButton">다시 하기</button>
-    </div>
-
-    <!-- 기록 섹션 (모달) -->
-    <div id="recordSection">
-        <div id="recordContent">
-            <h2>🎉 클리어 기록 저장 🎉</h2>
-            <label for="playerName">이름을 입력하세요:</label>
-            <input type="text" id="playerName" placeholder="이름">
-            <button id="saveRecordButton">저장</button>
-            <h3>기록 보기</h3>
-            <table id="recordTable">
-                <thead>
-                    <tr>
-                        <th>카테고리</th>
-                        <th>난이도</th>
-                        <th>이름</th>
-                        <th>점수</th>
-                        <th>날짜</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <!-- 기록이 여기에 추가됩니다 -->
-                </tbody>
-            </table>
-            <button id="backToGameButton">게임으로 돌아가기</button>
-        </div>
-    </div>
-
-    <!-- 오디오 요소 -->
-    <audio id="correctSoundEffect" src="https://www.soundjay.com/buttons/sounds/button-16.mp3" preload="auto"></audio> <!-- "띵동" 소리 -->
-    <audio id="incorrectSound" src="https://www.soundjay.com/buttons/sounds/button-10.mp3" preload="auto"></audio>
-
-    <script>
-        // Firebase 초기화 (Firebase 콘솔에서 얻은 설정 정보로 대체)
-        const firebaseConfig = {
-            apiKey: "AIzaSyCyl4P_GntdnYHMxwzPNfCQn1dBJkUCEwI",
-            authDomain: "dalbongwebserver.firebaseapp.com",
-            projectId: "dalbongwebserver",
-            storageBucket: "dalbongwebserver.firebasestorage.app",
-            messagingSenderId: "868740633776",
-            appId: "1:868740633776:web:0a4d8438f385ce6e425775"
-        };
-        
-        // Firebase 초기화
-        firebase.initializeApp(firebaseConfig);
-        const db = firebase.firestore();
-        
-        // 카테고리별 데이터 (충분한 아이템 제공)
-        const categories = {
+        const questions = {
             animals: [
-                { name: 'Lion', image: 'https://cdn-icons-png.flaticon.com/128/616/616412.png', desc: '사자' },
-                { name: 'Tiger', image: 'https://cdn-icons-png.flaticon.com/128/1998/1998804.png', desc: '호랑이' },
-                { name: 'Leopard', image: 'https://cdn-icons-png.flaticon.com/128/13421/13421996.png', desc: '표범' },
-                { name: 'Zebra', image: 'https://cdn-icons-png.flaticon.com/128/1998/1998813.png', desc: '얼룩말' },
-                { name: 'Horse', image: 'https://cdn-icons-png.flaticon.com/128/9537/9537923.png', desc: '말' },
-                { name: 'Giraffe', image: 'https://cdn-icons-png.flaticon.com/128/1998/1998659.png', desc: '기린' },
-                { name: 'Hippopotamus', image: 'https://cdn-icons-png.flaticon.com/128/166/166730.png', desc: '하마' },
-                { name: 'Crocodile,alligator', image: 'https://cdn-icons-png.flaticon.com/128/8531/8531885.png', desc: '악어' },
-                { name: 'Kangaroo', image: 'https://cdn-icons-png.flaticon.com/128/3809/3809440.png', desc: '캥거루' },
-                { name: 'Koala', image: 'https://cdn-icons-png.flaticon.com/128/2931/2931505.png', desc: '코알라' },
-                { name: 'Elephant', image: 'https://cdn-icons-png.flaticon.com/128/1864/1864469.png', desc: '코끼리' },
-                { name: 'Snake', image: 'https://cdn-icons-png.flaticon.com/128/8616/8616077.png', desc: '뱀' },
-                { name: 'Deer', image: 'https://cdn-icons-png.flaticon.com/128/47/47238.png', desc: '사슴' },
-                { name: 'Reindeer', image: 'https://cdn-icons-png.flaticon.com/128/6262/6262218.png', desc: '순록' },
-                { name: 'Panda', image: 'https://cdn-icons-png.flaticon.com/128/12783/12783443.png', desc: '팬더' },
-                { name: 'Bear', image: 'https://cdn-icons-png.flaticon.com/128/15212/15212557.png', desc: '곰' },
-                { name: 'Polarbear', image: 'https://cdn-icons-png.flaticon.com/128/14537/14537355.png', desc: '북극곰' },
-                { name: 'Sealion', image: 'https://cdn-icons-png.flaticon.com/128/47/47378.png', desc: '바다사자' },
-                { name: 'Seal', image: 'https://cdn-icons-png.flaticon.com/128/1998/1998783.png', desc: '바다표범' },
-                { name: 'Racoon', image: 'https://cdn-icons-png.flaticon.com/128/7963/7963321.png', desc: '너구리' },
-                { name: 'Platypus', image: 'https://cdn-icons-png.flaticon.com/128/1998/1998753.png', desc: '오리너구리' },
-                { name: 'Otter', image: 'https://cdn-icons-png.flaticon.com/128/5958/5958278.png', desc: '수달' },
-                { name: 'Cheetah', image: 'https://cdn-icons-png.flaticon.com/128/47/47403.png', desc: '치타' },
-                { name: 'Chimpanzee', image: 'https://cdn-icons-png.flaticon.com/128/6469/6469083.png', desc: '침팬지' },
-                { name: 'Monkey', image: 'https://cdn-icons-png.flaticon.com/128/616/616423.png', desc: '원숭이' },
-                { name: 'Cat', image: 'https://cdn-icons-png.flaticon.com/128/12813/12813026.png', desc: '고양이' },
-                { name: 'Dog', image: 'https://cdn-icons-png.flaticon.com/128/1998/1998627.png', desc: '개' },
-                { name: 'Gorilla', image: 'https://cdn-icons-png.flaticon.com/128/84/84171.png', desc: '고릴라' },
-                { name: 'Hedgehog', image: 'https://cdn-icons-png.flaticon.com/128/18003/18003787.png', desc: '고슴도치' },
-                { name: 'Pig', image: 'https://cdn-icons-png.flaticon.com/128/2931/2931513.png', desc: '돼지' },
-                { name: 'Boar', image: 'https://cdn-icons-png.flaticon.com/128/427/427579.png', desc: '멧돼지' },
-                { name: 'Wolf', image: 'https://cdn-icons-png.flaticon.com/128/3359/3359935.png', desc: '늑대' },
-                { name: 'Fox', image: 'https://cdn-icons-png.flaticon.com/128/616/616519.png', desc: '여우' },
-                { name: 'Sheep', image: 'https://cdn-icons-png.flaticon.com/128/2711/2711858.png', desc: '양' },
-                { name: 'Goat', image: 'https://cdn-icons-png.flaticon.com/128/4081/4081988.png', desc: '염소' },
-                { name: 'Cow', image: 'https://cdn-icons-png.flaticon.com/128/62/62470.png', desc: '소' },
-                { name: 'Buffalo,bison', image: 'https://cdn-icons-png.flaticon.com/128/17974/17974394.png', desc: '들소' },
-                { name: 'Squirrel', image: 'https://cdn-icons-png.flaticon.com/128/1864/1864480.png', desc: '다람쥐' },
-                { name: 'Chipmunk', image: 'https://cdn-icons-png.flaticon.com/128/616/616736.png', desc: '줄무늬다람쥐' },
-                { name: 'Sloth', image: 'https://cdn-icons-png.flaticon.com/128/3251/3251154.png', desc: '나무늘보' },
-                { name: 'Weasel', image: 'https://cdn-icons-png.flaticon.com/128/185/185660.png', desc: '족제비' },
-                { name: 'Armadillo', image: 'https://cdn-icons-png.flaticon.com/128/15622/15622681.png', desc: '아르마딜로' },
-                { name: 'Badger', image: 'https://cdn-icons-png.flaticon.com/128/15791/15791591.png', desc: '오소리' },
-                { name: 'Orangutan', image: 'https://cdn-icons-png.flaticon.com/128/1998/1998731.png', desc: '오랑우탄' },
-                { name: 'Meerkat', image: 'https://cdn-icons-png.flaticon.com/128/427/427438.png', desc: '미어캣' },
-                { name: 'Mongoose', image: 'https://cdn-icons-png.flaticon.com/128/1018/1018480.png', desc: '몽구스' },
-                { name: 'Mule', image: 'https://cdn-icons-png.flaticon.com/128/17454/17454395.png', desc: '노새' },
-                { name: 'Donkey', image: 'https://cdn-icons-png.flaticon.com/128/394/394759.png', desc: '당나귀' },
-                { name: 'Rhinoceros', image: 'https://cdn-icons-png.flaticon.com/128/9921/9921156.png', desc: '코뿔소' },
-                { name: 'Rabbit', image: 'https://cdn-icons-png.flaticon.com/128/7256/7256138.png', desc: '토끼' },
-                { name: 'Frog', image: 'https://cdn-icons-png.flaticon.com/128/5999/5999613.png', desc: '개구리' },
-                { name: 'Toad', image: 'https://cdn-icons-png.flaticon.com/128/2832/2832132.png', desc: '두꺼비' },
-                { name: 'Rat', image: 'https://cdn-icons-png.flaticon.com/128/4295/4295663.png', desc: '쥐' },
-                { name: 'Mouse', image: 'https://cdn-icons-png.flaticon.com/128/375/375105.png', desc: '생쥐' },
-                { name: 'Skunk', image: 'https://cdn-icons-png.flaticon.com/128/17684/17684451.png', desc: '스컹크' },
-                { name: 'Bat', image: 'https://cdn-icons-png.flaticon.com/128/17923/17923556.png', desc: '박쥐' },
-                { name: 'Turtle', image: 'https://cdn-icons-png.flaticon.com/128/6789/6789466.png', desc: '거북이' },
-                { name: 'Chameleon', image: 'https://cdn-icons-png.flaticon.com/128/4751/4751269.png', desc: '카멜레온' },
-                { name: 'Lizard', image: 'https://cdn-icons-png.flaticon.com/128/616/616488.png', desc: '도마뱀' },
-                { name: 'Eagle', image: 'https://cdn-icons-png.flaticon.com/128/14030/14030577.png', desc: '독수리' },
-                { name: 'Swallow', image: 'https://cdn-icons-png.flaticon.com/128/9920/9920187.png', desc: '제비' },
-                { name: 'Dove,pigeon', image: 'https://cdn-icons-png.flaticon.com/128/9633/9633739.png', desc: '비둘기' },
-                { name: 'Sparrow', image: 'https://cdn-icons-png.flaticon.com/128/3338/3338291.png', desc: '참새' },
-                { name: 'Owl', image: 'https://cdn-icons-png.flaticon.com/128/616/616451.png', desc: '부엉이' },
-                { name: 'Penguin', image: 'https://cdn-icons-png.flaticon.com/128/18314/18314333.png', desc: '펭귄' },
-                { name: 'Crow', image: 'https://cdn-icons-png.flaticon.com/128/12017/12017046.png', desc: '까마귀' },
-                { name: 'Magpie', image: 'https://cdn-icons-png.flaticon.com/128/7443/7443981.png', desc: '까치' },
-                { name: 'Ostrich', image: 'https://cdn-icons-png.flaticon.com/128/2219/2219678.png', desc: '타조' },
-                { name: 'Seagull', image: 'https://cdn-icons-png.flaticon.com/128/2918/2918657.png', desc: '갈매기' },
-                { name: 'Duck', image: 'https://cdn-icons-png.flaticon.com/128/1012/1012600.png', desc: '오리' },
-                { name: 'Chicken', image: 'https://cdn-icons-png.flaticon.com/128/1046/1046751.png', desc: '닭' },
-                { name: 'Goose', image: 'https://cdn-icons-png.flaticon.com/128/4959/4959004.png', desc: '거위' },
-                { name: 'Heron', image: 'https://cdn-icons-png.flaticon.com/128/47/47053.png', desc: '왜가리' },
-                { name: 'Stork', image: 'https://cdn-icons-png.flaticon.com/128/3320/3320223.png', desc: '황새' },
-                { name: 'Skylark', image: 'https://cdn-icons-png.flaticon.com/128/7197/7197194.png', desc: '종다리' },
-                { name: 'Nightingale', image: 'https://cdn-icons-png.flaticon.com/128/7361/7361761.png', desc: '꾀꼬리' },
-                { name: 'Parrot', image: 'https://cdn-icons-png.flaticon.com/128/427/427406.png', desc: '앵무새' },
-                { name: 'Peacock', image: 'https://cdn-icons-png.flaticon.com/128/3336/3336137.png', desc: '공작새' },
-                { name: 'Swan', image: 'https://cdn-icons-png.flaticon.com/128/16543/16543633.png', desc: '백조' },
-                { name: 'Dolphin', image: 'https://cdn-icons-png.flaticon.com/128/16089/16089579.png', desc: '돌고래' },
-                { name: 'Whale', image: 'https://cdn-icons-png.flaticon.com/128/4971/4971976.png', desc: '고래' },
-                { name: 'Tuna', image: 'https://cdn-icons-png.flaticon.com/128/604/604809.png', desc: '참치(다랑어)' },
-                { name: 'Salmon', image: 'https://cdn-icons-png.flaticon.com/128/4809/4809697.png', desc: '연어' },
-                { name: 'Mackerel', image: 'https://cdn-icons-png.flaticon.com/128/11634/11634170.png', desc: '고등어' },
-                { name: 'Shark', image: 'https://cdn-icons-png.flaticon.com/128/4973/4973848.png', desc: '상어' },
-                { name: 'Anchovy', image: 'https://cdn-icons-png.flaticon.com/128/2055/2055575.png', desc: '멸치' },
-                { name: 'Carp', image: 'https://cdn-icons-png.flaticon.com/128/2267/2267470.png', desc: '잉어' },
-                { name: 'Stingray', image: 'https://cdn-icons-png.flaticon.com/128/6770/6770501.png', desc: '가오리' },
-                { name: 'Catfish', image: 'https://cdn-icons-png.flaticon.com/128/6192/6192674.png', desc: '메기' },
-                { name: 'Blowfish', image: 'https://cdn-icons-png.flaticon.com/128/616/616506.png', desc: '복어' },
-                { name: 'Loach', image: 'https://cdn-icons-png.flaticon.com/128/7594/7594125.png', desc: '미꾸라지' },
-                { name: 'Flatfish', image: 'https://cdn-icons-png.flaticon.com/128/11903/11903143.png', desc: '가자미,넙치' },
-                { name: 'Eel', image: 'https://cdn-icons-png.flaticon.com/128/468/468369.png', desc: '장어' },
-                { name: 'Flyingfish', image: 'https://cdn-icons-png.flaticon.com/128/13142/13142372.png', desc: '날치' },
-                { name: 'Minnow', image: 'https://cdn-icons-png.flaticon.com/128/16187/16187636.png', desc: '피라미' },
-                { name: 'Shad', image: 'https://cdn-icons-png.flaticon.com/128/7314/7314435.png', desc: '청어' },
-                { name: 'Snapper', image: 'https://cdn-icons-png.flaticon.com/128/12344/12344178.png', desc: '도미' },
-                { name: 'Anemonefish', image: 'https://cdn-icons-png.flaticon.com/128/15383/15383803.png', desc: '흰동가리' },
-                { name: 'Trout', image: 'https://cdn-icons-png.flaticon.com/128/11613/11613350.png', desc: '송어' },
-                { name: 'Squid', image: 'https://cdn-icons-png.flaticon.com/128/11177/11177261.png', desc: '오징어' },
-                { name: 'Octopus', image: 'https://cdn-icons-png.flaticon.com/128/11565/11565998.png', desc: '문어' },
-                { name: 'Clam', image: 'https://cdn-icons-png.flaticon.com/128/7591/7591534.png', desc: '조개' },
-                { name: 'Starfish', image: 'https://cdn-icons-png.flaticon.com/128/3065/3065740.png', desc: '불가사리' },
-                { name: 'Conch', image: 'https://cdn-icons-png.flaticon.com/128/4164/4164088.png', desc: '소라' },
-                { name: 'Coral', image: 'https://cdn-icons-png.flaticon.com/128/12907/12907604.png', desc: '산호' },
-                { name: 'Shrimp', image: 'https://cdn-icons-png.flaticon.com/128/3071/3071050.png', desc: '새우' },
-                { name: 'Crab', image: 'https://cdn-icons-png.flaticon.com/128/1010/1010028.png', desc: '게' },
-                { name: 'Crayfish', image: 'https://cdn-icons-png.flaticon.com/128/7471/7471962.png', desc: '가재' },
-                { name: 'Lobster', image: 'https://cdn-icons-png.flaticon.com/128/2931/2931506.png', desc: '바닷가재' },
-                { name: 'Fly', image: 'https://cdn-icons-png.flaticon.com/128/2849/2849905.png', desc: '파리' },
-                { name: 'Mosquito', image: 'https://cdn-icons-png.flaticon.com/128/18149/18149692.png', desc: '모기' },
-                { name: 'Ladybug', image: 'https://cdn-icons-png.flaticon.com/128/1617/1617071.png', desc: '무당벌레' },
-                { name: 'Butterfly', image: 'https://cdn-icons-png.flaticon.com/128/42/42496.png', desc: '나비' },
-                { name: 'Moth', image: 'https://cdn-icons-png.flaticon.com/128/12802/12802709.png', desc: '나방' },
-                { name: 'Mantis', image: 'https://cdn-icons-png.flaticon.com/128/4295/4295619.png', desc: '사마귀' },
-                { name: 'Grasshopper', image: 'https://cdn-icons-png.flaticon.com/128/2233/2233787.png', desc: '메뚜기' },
-                { name: 'Cricket', image: 'https://cdn-icons-png.flaticon.com/128/4982/4982518.png', desc: '귀뚜라미' },
-                { name: 'Centipede', image: 'https://cdn-icons-png.flaticon.com/128/1850/1850296.png', desc: '지네' },
-                { name: 'Scorpion', image: 'https://cdn-icons-png.flaticon.com/128/14545/14545743.png', desc: '전갈' },
-                { name: 'Beetle', image: 'https://cdn-icons-png.flaticon.com/128/1998/1998577.png', desc: '딱정벌레' },
-                { name: 'Scarab', image: 'https://cdn-icons-png.flaticon.com/128/4215/4215032.png', desc: '풍뎅이' },
-                { name: 'Bee', image: 'https://cdn-icons-png.flaticon.com/128/809/809154.png', desc: '꿀벌' },
-                { name: 'Wasp', image: 'https://cdn-icons-png.flaticon.com/128/1497/1497109.png', desc: '말벌' },
-                { name: 'Hornet', image: 'https://cdn-icons-png.flaticon.com/128/2988/2988987.png', desc: '호박벌' },
-                { name: 'Bumble-bee', image: 'https://cdn-icons-png.flaticon.com/128/14966/14966171.png', desc: '땅벌' },
-                { name: 'Cicada', image: 'https://cdn-icons-png.flaticon.com/128/3241/3241491.png', desc: '매미' },
-                { name: 'Caterpillar', image: 'https://cdn-icons-png.flaticon.com/128/5511/5511785.png', desc: '애벌레' },
-                { name: 'Cockroach', image: 'https://cdn-icons-png.flaticon.com/128/10892/10892096.png', desc: '바퀴벌레' },
-                { name: 'Flea', image: 'https://cdn-icons-png.flaticon.com/128/4295/4295658.png', desc: '벼룩' },
-                { name: 'Louse', image: 'https://cdn-icons-png.flaticon.com/128/1779/1779575.png', desc: '이' },
-                { name: 'Bedbug', image: 'https://cdn-icons-png.flaticon.com/128/15847/15847288.png', desc: '빈대' },
-                { name: 'Earthworm', image: 'https://cdn-icons-png.flaticon.com/128/6953/6953012.png', desc: '지렁이' },
-                { name: 'Spider', image: 'https://cdn-icons-png.flaticon.com/128/2250/2250473.png', desc: '거미' },
-                { name: 'Snail', image: 'https://cdn-icons-png.flaticon.com/128/826/826908.png', desc: '달팽이' },
-                { name: 'Slug', image: 'https://cdn-icons-png.flaticon.com/128/47/47358.png', desc: '민달팽이' },            
-                 // 중복 제거
-            ],
-            plants: [
-                { name: 'Tree', image: 'https://cdn-icons-png.flaticon.com/128/489/489969.png', desc: '나무' },
-                { name: 'Flower', image: 'https://cdn-icons-png.flaticon.com/128/346/346167.png', desc: '꽃' },
-                { name: 'Grass', image: 'https://cdn-icons-png.flaticon.com/128/459/459829.png', desc: '풀' },
-                { name: 'Leaf', image: 'https://cdn-icons-png.flaticon.com/128/188/188333.png', desc: '잎' },
-                { name: 'Root', image: 'https://cdn-icons-png.flaticon.com/128/17786/17786406.png', desc: '뿌리' },
-                { name: 'Seed', image: 'https://cdn-icons-png.flaticon.com/128/6113/6113340.png', desc: '씨앗' },
-                { name: 'Stem', image: 'https://cdn-icons-png.flaticon.com/128/5776/5776393.png', desc: '줄기' },
-                { name: 'Branch', image: 'https://cdn-icons-png.flaticon.com/128/1147/1147574.png', desc: '가지' },
-                { name: 'Fruit', image: 'https://cdn-icons-png.flaticon.com/128/1625/1625099.png', desc: '열매' },
-                { name: 'Blossom', image: 'https://cdn-icons-png.flaticon.com/128/2267/2267499.png', desc: '꽃피다' },
-                { name: 'Forest', image: 'https://cdn-icons-png.flaticon.com/128/532/532606.png', desc: '숲' },
-                { name: 'Garden', image: 'https://cdn-icons-png.flaticon.com/128/2545/2545548.png', desc: '정원' },
-                { name: 'Bush', image: 'https://cdn-icons-png.flaticon.com/128/5432/5432682.png', desc: '덤불' },
-                { name: 'Herb', image: 'https://cdn-icons-png.flaticon.com/128/616/616742.png', desc: '허브' },
-                { name: 'Vine', image: 'https://cdn-icons-png.flaticon.com/128/16421/16421941.png', desc: '덩굴' },
-                { name: 'Bamboo', image: 'https://cdn-icons-png.flaticon.com/128/1471/1471184.png', desc: '대나무' },
-                { name: 'Cactus', image: 'https://cdn-icons-png.flaticon.com/128/716/716124.png', desc: '선인장' },
-                { name: 'Moss', image: 'https://cdn-icons-png.flaticon.com/128/6670/6670737.png', desc: '이끼' },
-                { name: 'Shrub', image: 'https://cdn-icons-png.flaticon.com/128/12677/12677740.png', desc: '관목' },
-                { name: 'Weed', image: 'https://cdn-icons-png.flaticon.com/128/5433/5433954.png', desc: '잡초' },
-                { name: 'Acorn', image: 'https://cdn-icons-png.flaticon.com/128/676/676447.png', desc: '도토리' },
-                { name: 'Pinecone', image: 'https://cdn-icons-png.flaticon.com/128/12930/12930458.png', desc: '솔방울' },
-                { name: 'Clover', image: 'https://cdn-icons-png.flaticon.com/128/5725/5725105.png', desc: '클로버' },
-                { name: 'Tulip', image: 'https://cdn-icons-png.flaticon.com/128/14780/14780285.png', desc: '튤립' },
-                { name: 'Rose', image: 'https://cdn-icons-png.flaticon.com/128/4104/4104405.png', desc: '장미' },
-                { name: 'Sunflower', image: 'https://cdn-icons-png.flaticon.com/128/15587/15587273.png', desc: '해바라기' },
-                { name: 'Daisy', image: 'https://cdn-icons-png.flaticon.com/128/8611/8611570.png', desc: '데이지' },
-                { name: 'Lily', image: 'https://cdn-icons-png.flaticon.com/128/5130/5130798.png', desc: '백합' },
-                { name: 'Orchid', image: 'https://cdn-icons-png.flaticon.com/128/6670/6670746.png', desc: '난초' },
-                { name: 'Lavender', image: 'https://cdn-icons-png.flaticon.com/128/3708/3708596.png', desc: '라벤더' },
-                { name: 'Oak', image: 'https://cdn-icons-png.flaticon.com/128/282/282432.png', desc: '떡갈나무' },
-                { name: 'Maple', image: 'https://cdn-icons-png.flaticon.com/128/207/207675.png', desc: '단풍나무' },
-                { name: 'Willow', image: 'https://cdn-icons-png.flaticon.com/128/4986/4986698.png', desc: '버드나무' },
-                { name: 'Apple tree', image: 'https://cdn-icons-png.flaticon.com/128/5264/5264757.png', desc: '사과나무' },
-                { name: 'Cherry blossom', image: 'https://cdn-icons-png.flaticon.com/128/7096/7096435.png', desc: '벚꽃나무' },
-                { name: 'Palm tree', image: 'https://cdn-icons-png.flaticon.com/128/17222/17222780.png', desc: '야자나무' },
-                { name: 'Bamboo shoot', image: 'https://cdn-icons-png.flaticon.com/128/8782/8782543.png', desc: '죽순' },
-                { name: 'Fern', image: 'https://cdn-icons-png.flaticon.com/128/6670/6670681.png', desc: '양치식물' },
-                { name: 'Ivy', image: 'https://cdn-icons-png.flaticon.com/128/6670/6670671.png', desc: '담쟁이덩굴' },
-                { name: 'Peach tree', image: 'https://cdn-icons-png.flaticon.com/128/8511/8511114.png', desc: '복숭아나무' },
-                { name: 'Poppy', image: 'https://cdn-icons-png.flaticon.com/128/1237/1237661.png', desc: '양귀비' },
-                { name: 'Bluebell', image: 'https://cdn-icons-png.flaticon.com/128/7065/7065055.png', desc: '블루벨' },
-                { name: 'Dandelion', image: 'https://cdn-icons-png.flaticon.com/128/17078/17078020.png', desc: '민들레' },
-                { name: 'Mint', image: 'https://cdn-icons-png.flaticon.com/128/6692/6692125.png', desc: '민트' },
-                { name: 'Basil', image: 'https://cdn-icons-png.flaticon.com/128/5621/5621881.png', desc: '바질' },
-                { name: 'Pumpkin', image: 'https://cdn-icons-png.flaticon.com/128/8745/8745230.png', desc: '호박' },
-                { name: 'Corn', image: 'https://cdn-icons-png.flaticon.com/128/9432/9432700.png', desc: '옥수수' },
-                { name: 'Wheat', image: 'https://cdn-icons-png.flaticon.com/128/6327/6327254.png', desc: '밀' },
-                { name: 'Rice plant', image: 'https://cdn-icons-png.flaticon.com/128/2095/2095652.png', desc: '벼' },
-                { name: 'Sugarcane', image: 'https://cdn-icons-png.flaticon.com/128/1157/1157252.png', desc: '사탕수수' },
-                { name: 'Aloe vera', image: 'https://cdn-icons-png.flaticon.com/128/5389/5389056.png', desc: '알로에 베라' },
-            ],
-            Teenieping: [
-                { name: '하츄핑', image: 'https://i.namu.wiki/i/ruTCX2vHbSGM8KynYQNQ7n8Gbv91SJEWxNF7KhLqT-DiMPFq8fQo6T21mQy4bUiEpT0kGdprg5VbvRARnh4LK9YeVLrkcVhx6ru8kJYAh8vnnIQKvUIUK_a2EU-kAkTGErtaQ6DfulH5M3ER9L5N-g.webp', desc: '캐릭터 설명' },
-                { name: '바로핑', image: 'https://i.namu.wiki/i/HTO3W5mSVlboa-hho2eNallSHLcr3ZMNYgWF2RDui42jcDgPW26mIuIoHPhk_1KrnKYI-DDWlH9w-4bTPtM3Zs766AXgmhGUFWlaiJAAlmPleOAwTASxvKrEv5WykVmxD9g5lOFWdQBEDHH5ac05LQ.webp', desc: '캐릭터 설명' },
-                { name: '아자핑', image: 'https://i.namu.wiki/i/QEieLSO2YP-PuNKJPVEGoOLp8ocI_efD0ozKuM-FhtMZ7R--eq9fadyFAN4K3veGEG8F9ZneSP2ppBPhg3Hn3V40gYqFDP0RfmBcdqJw1IJxSQGqJ-OSZeUAwZd0gL5SvBb7jDgIWJLlxe4yBq-VDg.webp', desc: '캐릭터 설명' },                
-                { name: '차차핑', image: 'https://i.namu.wiki/i/e955neWvT2qL7_bJBTftaL-Ei0GauFP6yo0XqqFvWhrEQCga0c7GlCzNE_vte_IZmekhL-d_c4pP7ozCTTe1Y82nsiCXMJ-pfYG9q_5Gsw9A_-FVjBfJuCTvSE2X7gFvSOe7GZcE8_5wn4PcW8L2fg.webp', desc: '캐릭터 설명' },
-                { name: '라라핑', image: 'https://i.namu.wiki/i/6JWYca_OTOyg_FoWClS9bIxpuMeEQYiTQ4YmzVWOY9vm_pW0PHtOwmc87ufLsb47CYfcj1043CiSrIlYuzNCOldICtvdT05GvIOReiuP0em8e9ockw_L1xIb4vQ1YupZJhja5CDBVIE01KApF5xYXA.webp', desc: '캐릭터 설명' },
-                { name: '해핑', image: 'https://i.namu.wiki/i/OHNB8lctC8FwGti_UOCUwtDk3FtavNjb6gCrcQ3TyMJw0R_2N_C1zJzMoqXHcDfbQ855YbPd-RhAoUwCOf31VM0qupQ15ALBeK4LMuX06uNHoN1mV1EQPBlhExqyCCb-1Gx2g7nklLT7fwWTtd91SA.webp', desc: '캐릭터 설명' },
-                { name: '조아핑', image: 'https://i.namu.wiki/i/WuozKgj-juzjLfIziH92Ag4roaOHr3B7JApmnQwBSMVPpKTSA65iQ8ni7rnB-_QJwAII0mxooTWeBXBW1-tZYaE_5S8wCbtAh8BxjXyn9P9Aw3hdq1lkPKqkTBpmFU8fqeDDW_pnibeWdgp0jOaknw.webp', desc: '캐릭터 설명' },
-                { name: '방글핑', image: 'https://i.namu.wiki/i/9bF2EoRbUVhsqqcwck90Ywn8Mjp4yUEMOhJp5xN7R87kxIz3uG4xNqMVm504H9kd1GjEqKVTIXKiQpyMNsmE2ox8EgjwMfYQ0Mh2seNuEZJ1OvMquJ_6nfn1jll2BveXHOzAH8HYFxAQxYoxOybtiw.webp', desc: '캐릭터 설명' },
-                { name: '믿어핑', image: 'https://i.namu.wiki/i/Q5f_9P0yZtb8NofTZiqyr72hWdOXOny6lo-f930obsl7XKiuBe-I5OZu7poL5UXL8b_Fs-RpHezca8ARCWD9f55MM91Rb-pDy1y_PMqhvQVB6nsOODRS-3QCEkx7Mdwp2qIMYvcjA2sh7XzGTZMWxg.webp', desc: '캐릭터 설명' },
-                { name: '꾸래핑', image: 'https://i.namu.wiki/i/Bwlf7cw60lf4bLkf2dQNtWfjQDYxy9G4NwY5xn_vrbCQVjcxveDiTrCoYhybtPsiEF0JIdLnn29hfEJ2L9jRpeG0DxKJmKR8yO6FdEp2HCfE_VvWwHEK9YAFIaek8No26Bbk5L-WdmhO7L_MyMhEsA.webp', desc: '캐릭터 설명' },                
-                { name: '나나핑', image: 'https://i.namu.wiki/i/PqFZsnHJjBxi-9gx-PZcsANKnAt0ATSduLt9d4dpaiWxuFBSM3AxpSe4yGQtMHx9GmMat-i3aVUjcqNxAM0gy8QcN9Ndz2p12q0kgIwgpBV_CQ3rXHErDuLNkuB39JdXVJIwfUoAx58zaR_ncBaSrg.webp', desc: '캐릭터 설명' },                
-                { name: '솔찌핑', image: 'https://i.namu.wiki/i/xyW5Xddjmrwfk1NLQF217kvtChR5kqMEY3k5heUdxLxf0_JTznqhgOAJYFH3vk8iFCzGLQI1-Uuv7VWE8KgpraMDjqog34tqj4QZV5CMr9xTUblLMAiMWZai-mhqi9qsraKJQUrkcbn2tQoIbQSl7g.webp', desc: '캐릭터 설명' },                
-                { name: '포실핑', image: 'https://i.namu.wiki/i/s6KvAX6uDJmHXCf8PmzN9CnHPCdxrwXu-JpL1yUofy5uc33nE-EvQfF1mN-gOVFUh3uZLiKoWl4xEPPPkOUZGSgszak4unuCIL4kxoFk6RXWlDmgO4aV80Sq7v1kc3Ro6ecwsXKSMK_h6I1phEr59A.webp', desc: '캐릭터 설명' },                
-                { name: '말랑핑', image: 'https://i.namu.wiki/i/npt5xLIN5w63_E4qm7T3QMZuRGtR9tCvANvfL29e69_UpIcj-67edXWEWLcGoiC5uTekN5060GVNIJqsZ_zkbogbvX95XHAp-1rg61jpIPZoOtBPawlFkxThgrTIk80cn-um8xr6R63oxRjU_NuNKw.webp', desc: '캐릭터 설명' },                
-                { name: '샤샤핑', image: 'https://i.namu.wiki/i/yQUnI_yiHwdXiAvB8bwxWy-oyS5j967vaxGpAC5YC8hbTixdms_maHNxqOKEMadN6o0N2-KSk79o_P-qYz-8cPxhDGdCALFUcGXpz7W2MNyZy3Jo5XKbVSxnLv-7C3K34cL2aprLNiVrNWGE1EgxJw.webp', desc: '캐릭터 설명' },                
-                { name: '빛나핑', image: 'https://i.namu.wiki/i/P49IF9GZg1QFWPhENeQ1I26wEJc6tBF4-8GZp6-NqEfI73BXQXQrnRJ5cIe3CvQ0leHnbxfW3sKEB8J133Guy9-vva39M5Qi19Fqy9bRXG878YZVZ2hqHbO0TjPWSA6gBRCmyIR-UnYR-nkm1WQ1Ig.webp', desc: '캐릭터 설명' },                
-                { name: '초롱핑', image: 'https://i.namu.wiki/i/p1Umr4DjweRnfF4atlHzZHsKuukwqnPGxX4PVksBdgrgL2JX6471IUpfVTny-ZxKWMn1apixk9HOIWNod5RxpX85Cu0-Mc1gDLS-9JIr0qPeR8PoEL12eAgv_6IZpAUY6Apdo0w1SzY576caFNjMZQ.webp', desc: '캐릭터 설명' },                
-                { name: '빤짝핑', image: 'https://i.namu.wiki/i/VU7H3mZ7rLMZFZ1eNFGYV5851doz3ag0L10Yovu0Rv0gl1YQi8fGIktzSItj7YHliJG4BYljiH96rN6FvgBpUopADSiTarGIqOr9Mr9Vko9mZK0Ko0XP-A3CrULFr90ymhn2lFzRsyE7jt9wp-6ffw.webp', desc: '캐릭터 설명' },                             
-                { name: '키키핑', image: 'https://i.namu.wiki/i/nVnMr4rG7DdxuJRddVWKZCCiEMcNZTO_Mhfp2ZsIr1uAftBalp3k0aqi9SvmZqPAnoExazSsWK_PI-Voe5XlQEsq_UB-TL-pkmkIRD7Od8eEmjK0pH8f5tfMb3i3bdB_HgWSRyHnUlw5kLPzo_Tm6g.webp', desc: '캐릭터 설명' },
-                { name: '부끄핑', image: 'https://i.namu.wiki/i/5mLnwchViVl7h3Qef61JP3tJUJ7cG5rJjVJhQRgqF27BLSNTD8aHs1ky3XTnvHxhxzl82vKC5xHdumlxGWmyJB7A0XUtwbJ2lCNY3X20qh6Cnfz7xnh7HIULKgAqGuZBJ5dzEuhV7GXD8hYSPlZQfQ.webp', desc: '캐릭터 설명' },
-                { name: '부투핑', image: 'https://i.namu.wiki/i/1Ne1wjVYLT-dGkbv_2xZ2fCbRredlRzCYLh2ZVuEy5WDRTS8YigQJpgvHR3ViB8TKCqPTsZ7PrE-rVsrFPVwMdxGAM__LIpllEki9XVnyGgxUS1ahaKVckEl_JG3yJFHxct_EAHIWSwVMRUox7HPEg.webp', desc: '캐릭터 설명' },
-                { name: '깜빡핑', image: 'https://i.namu.wiki/i/bTiyJLwpD9yOvDpTZ6fuKy4pZ13-zCfG2V3s4yiZ6os_0TGc1hWZBSaOqbi-OedUdlywqpNXKaK1QNOqH0ACKh-t5AVPDvbvyVbSSNWRXvXCVkyX9V-9qvFhyf7jLNudonPh3X5WN0-FRzuSp-Sb1w.webp', desc: '캐릭터 설명' },
-                { name: '띠용핑', image: 'https://i.namu.wiki/i/UaZHst54YlGioIjt434yJn0R4HmoMUAWtHfe4yJcqqrK0Qw9NiteUy1Olyi7VxtX4RKzyAEOHpJbDptH6FVLQ4uaWcvFLxCddJXxOyukHHYSO7n9q9AMaPVlcnfY1mIx-8I8qIT89t8WNojJtlw8ZA.webp', desc: '캐릭터 설명' },
-                { name: '주르핑', image: 'https://i.namu.wiki/i/wx7TDh8gp4SizPKFHQkiEa0E3Z0fEl6XoaWgJt3qvtNnvlQsTW-7KabXZznQNxH2vZlKln6aKcUx3hogHg7R-jXMNr4igMMEOQN9jU_E9kpEVDum7WSPwh75iBNJtJGD5grRVL1rZ8TCjjnwfT3NXA.webp', desc: '캐릭터 설명' },
-                { name: '차나핑', image: 'https://i.namu.wiki/i/yyd6xRFZ6VdChQszgBCLsqCxW5CQ6U_gt3c7HbS9qeiMvEhaABMaLp6qfHIZthwkfgPlw8yJwALh5FYpG49oaLW2_2sedYYrbj_bL9zp-Vrda49aT83rhuoPpUWrk26DUTTgxOax5wSmLNDux5QuuA.webp', desc: '캐릭터 설명' },
-                { name: '따라핑', image: 'https://i.namu.wiki/i/Rhjdrn7RmuStuPCn_aETQR4HrtqSChCyzHv0SuzylHIUvlXbNCAgowBkQxbfepisBaOrUdOYXsY7tClUQL-GFAOixB82LGcTb9-pLOh3EtzbdZo3lvWnLg5oz1SU46frtwgdiMyW7KDPNPvlwuIEdQ.webp', desc: '캐릭터 설명' },
-                { name: '나르핑', image: 'https://i.namu.wiki/i/_qHbDRMHXivN4IlpuXqMtXTzZjbCauj2R33Zh_Zvk1G4u_kKH3_auqdz-ItIQZebmWI4cKrywn59wM5eIgIN-nSpRkYsLDCGQD2AJZHJjZ1QJL_S6ExqFdLuddanftH-lMOQxGB7BuT09zRR6_ieMA.webp', desc: '캐릭터 설명' },
-                { name: '무셔핑', image: 'https://i.namu.wiki/i/pjstZFsiY4cwl60ogVs1kx6duJTCT-uqjrPG6DnFu7XGyTi_6UypXq25ZQFGkEEWhnuACx69W-ZAvRp2c-36Ab38tEv2ihH8jbWpEol6AEMqoIcptGi9k1Bqy5m_nhMI4oyHkSaW_lKMnsg2oMr99g.webp', desc: '캐릭터 설명' },
-                { name: '투투핑', image: 'https://i.namu.wiki/i/AgbmD6XHvA9XY7XJTlpsac5YD5510OT__RTVjbBtfSJyF1gjK5hpDQQXRlE_41HHCl7pIknENw56Qh89d3ElTvIj49XYlLk7Ue3I5ud-E6OAX1ubrDTwXHkm_JZPQ6PGloW5datRMSACGkypOQzoBA.webp', desc: '캐릭터 설명' },
-                { name: '차캐핑', image: 'https://i.namu.wiki/i/iD2BKcDoYvj1CVbpJAF5eKi0eB4ekn-WRqGUDqFIFGNk-N4bWmgGXAtIW3PRasM3jfLLPo8V6PIzl0ixcv4z_Hj9d8Af_IOvTCxFbTLdqLwvgQkXHxQYsGlKuHDGypcmvdIoQ0vrx8sfmb_0hSNZlw.webp', desc: '캐릭터 설명' },
-                { name: '떠벌핑', image: 'https://i.namu.wiki/i/HvQQlyvcpIgh2E08sPFLSxW_doZZb2TuY8A5yJSak77SwSyAmIXIRZdUXXtoSEVaWoja6P208Z45XgCA9CEDUgGJ58YjlG--rXN2YlMCJTK56za85-2jwiQu-dCDgsAq7KyTGJF5srEWLQKIKMIjiw.webp', desc: '캐릭터 설명' },
-                { name: '다조핑', image: 'https://i.namu.wiki/i/ngMOHHl8o3FGcxzaBoJFLQf3sPd8YFRPfLmZ1_lcYK3tlcVZPlmxQsTeoRCuQOpfF7pvSNALJ7qYx3eiPWmZsRIIwl6z0IbjR7I_rYCAOHG3J5KNhcVaFh7HioNrj5FTxeQGZQFEnKLCBpn6MYyHeA.webp', desc: '캐릭터 설명' },
-                { name: '화나핑', image: 'https://i.namu.wiki/i/WDeOk0QJbPHhMuJ2JY4wnuqfLJHwlFpu0OMeq2P0T6I2Q7aaG5ZipTLW2OxoH-aqoIJAoFa4sWuOGYRGvj4ROXL3Mo7Wt1dkvtzGywC69QD-C0vVwZMNBVDdTGxXRoTOp8EyTrCk0OPr4HUJyoypsw.webp', desc: '캐릭터 설명' },
-                { name: '시러핑', image: 'https://i.namu.wiki/i/Qi3JZfTVmAPXUrzguwyojrCGCSyFIxOvTxp_3jPnZv87LFgPo0nL99dLRclnfLoF7MMNgVOEdDgr-hm4NnM4YDj45VI-R9KAJ0Vx6d7k44xz3lqSbrq4Mma_2K538jrmbOeQN_-rndYuqwM7LUfOcg.webp', desc: '캐릭터 설명' },
-                { name: '바네핑', image: 'https://i.namu.wiki/i/P5-ytRrm5Eps93MHqJBuoLWFw61x3Y99rUZIpbWs_RsSagWtdy72DeMp8eRyLXELqj08yjbm95yGZX9qwTqUlkGiNq184xSFKxLYcYuCqmKtTpsw4fYQKniNu2y8jNlmS7ZJ-B9xP7MXYLa03na5ag.webp', desc: '캐릭터 설명' },
-                { name: '덜덜핑', image: 'https://i.namu.wiki/i/Thml6I35uJiiUb94DUyeuCvFPCUpNi2F5-k4lw_d5Zn-rMVzXXowTfP1GbCoUkDpx-HxYjP6EJi7S0bRVMRp-N2Uht33lJL4PSUDVaKf08bW0V9zZAlcWk368Ju4qP2xPGNheU1AqQOAjCqaUo6YbQ.webp', desc: '캐릭터 설명' },
-                { name: '그림핑', image: 'https://i.namu.wiki/i/Zp2rfX5TzThzF-2BDoFjwQ1upLURC7JpKhSCmfUk-oVV02XLJdELP7dmJ7bKgHWF0B8e5abN43Jz2RWcItJ0wrCmajiJrIq4fseYclXzNxU_QMj2DmoLl0W6NbCvZTMEm-81j0XOPvAvA5i4B3jDrQ.webp', desc: '캐릭터 설명' },
-                { name: '무거핑', image: 'https://i.namu.wiki/i/7JN9ur-gKfyjF2alOjd_9RE0xXVpv17Vg4hMaqN5meshp3_bXQ2IiY2giC4x-a56kGfHjRTM3rOvduZpl6phjuo2kMUYIbl8EhKWSAy68GrkjlPd38UyhRkG7c6O-rC5XiGY_qJkPwuO30DVuJ26VQ.webp', desc: '캐릭터 설명' },
-                { name: '꺼꿀핑', image: 'https://i.namu.wiki/i/VqyVB1ieN7oIM2_O8jHDQLdYHnSbkNroHfvMemDGdp1voWxRwdGgg9P-6FXtm1aB1XkS3WBoVBlZxzLN1TZEpEv4WoCn7qh4wrSmQkgzhwAj856l4VjqaV6vlfcESZlxAzFF_tiwhu5sgeQfoTpLlw.webp', desc: '캐릭터 설명' }
-            ],            
-            hangul: [
-                { name: '기역', image: 'images/ㄱ.webp', desc: '기역' },
-                { name: '니은', image: 'images/ㄴ.webp', desc: '니은' },
-                { name: '디귿', image: 'images/ㄷ.webp', desc: '디귿' },                
-                { name: '리을', image: 'images/ㄹ.webp', desc: '캐릭터 설명' },
-                { name: '미음', image: 'images/ㅁ.webp', desc: '캐릭터 설명' },
-                { name: '비읍', image: 'images/ㅂ.webp', desc: '캐릭터 설명' },
-                { name: '시옷', image: 'images/ㅅ.webp', desc: '캐릭터 설명' },
-                { name: '이응', image: 'images/ㅇ.webp', desc: '캐릭터 설명' },
-                { name: '지읒', image: 'images/ㅈ.webp', desc: '캐릭터 설명' },
-                { name: '치읓', image: 'images/ㅊ.webp', desc: '캐릭터 설명' },
-                { name: '키읔', image: 'images/ㅋ.webp', desc: '캐릭터 설명' },
-                { name: '티읕', image: 'images/ㅌ.webp', desc: '캐릭터 설명' },                
-                { name: '피읖', image: 'images/ㅍ.webp', desc: '캐릭터 설명' },                
-                { name: '히읗', image: 'images/ㅎ.webp', desc: '캐릭터 설명' },                
-                { name: '쌍기역', image: 'images/ㄲ.webp', desc: '캐릭터 설명' },                
-                { name: '쌍티읕', image: 'images/ㄸ.webp', desc: '캐릭터 설명' },                
-                { name: 'ㅏ', image: 'images/ㅏ.webp', desc: '캐릭터 설명' },                             
-                { name: 'ㅐ', image: 'images/ㅐ.webp', desc: '캐릭터 설명' },
-                { name: 'ㅑ', image: 'images/ㅑ.webp', desc: '캐릭터 설명' },
-                { name: 'ㅒ', image: 'images/ㅒ.webp', desc: '캐릭터 설명' },
-                { name: 'ㅓ', image: 'images/ㅓ.webp', desc: '캐릭터 설명' },
-                { name: 'ㅔ', image: 'images/ㅔ.webp', desc: '캐릭터 설명' },
-                { name: 'ㅕ', image: 'images/ㅕ.webp', desc: '캐릭터 설명' },
-                { name: 'ㅖ', image: 'images/ㅖ.webp', desc: '캐릭터 설명' },
-                { name: 'ㅗ', image: 'images/ㅗ.webp', desc: '캐릭터 설명' },
-                { name: 'ㅘ', image: 'images/ㅘ.webp', desc: '캐릭터 설명' },
-                { name: 'ㅙ', image: 'images/ㅙ.webp', desc: '캐릭터 설명' },
-                { name: 'ㅚ', image: 'images/ㅚ.webp', desc: '캐릭터 설명' },
-                { name: 'ㅛ', image: 'images/ㅛ.webp', desc: '캐릭터 설명' },
-                { name: 'ㅜ', image: 'images/ㅜ.webp', desc: '캐릭터 설명' },
-                { name: 'ㅝ', image: 'images/ㅝ.webp', desc: '캐릭터 설명' },
-                { name: 'ㅞ', image: 'images/ㅞ.webp', desc: '캐릭터 설명' },
-                { name: 'ㅟ', image: 'images/ㅟ.webp', desc: '캐릭터 설명' },
-                { name: 'ㅠ', image: 'images/ㅠ.webp', desc: '캐릭터 설명' },
-                { name: 'ㅡ', image: 'images/ㅡ.webp', desc: '캐릭터 설명' },
-                { name: 'ㅢ', image: 'images/ㅢ.webp', desc: '캐릭터 설명' },
-                { name: 'ㅣ', image: 'images/ㅣ.webp', desc: '캐릭터 설명' },
-            ],
-            // 다른 카테고리 추가 가능
+                    {
+                        image: 'https://i.namu.wiki/i/ioILpXbTJj2nT-bVkNvBUfKYB-R11GLiQr_qwpUP1046Txd6kKgMIY3z6H7kGIElKjlMThLK1mz2-PSb-aSGZa066tSA9nbRUNucpqPH0E1tP1TtmWgQ3iXvkgb408qJJdKp_hAlaQ-8WgA1EZ4fbQ.webp', // 사자 이미지 URL
+                        correct: 'Goose'
+                    },
+                    {
+                        image: 'https://i.namu.wiki/i/FNyNbwX6eq3n4LXJ9tOTwBStf65WBfv9ZvXAk3_QrmBZ8EjAN8zjqvL50WEffIB3BjCcjdMuoU8sXGRz60OBYFFNMnN6T5T5yomGnDzzyIktLFYbCrO2zMih0fvjP5CezYUb9a3r-fandGmjW52DWQ.webp', // 사자 이미지 URL
+                        correct: 'Duck'
+                    },
+                    {
+                        image: 'https://i.namu.wiki/i/r66ST3DsYAaDkwLTpH7nEQtEXRgIMsE1EIpUE5lbBIX2MjsPtSpZNez0agBkRT2gTi4UDui7dMrMEDFIa0t7ahws4rSTO1QroiIj0uTua5PJOOAYFqj2kQpLokm0rrIXQwdGibbaaDncVG48nCxQRA.jpg', // 사자 이미지 URL
+                        correct: 'Starfish'
+                    },
+                    {
+                        image: 'https://i.namu.wiki/i/ncfX362Ygg64Ukg-kRuYRII4x4-hyHTvav5tkRU5ts46gZbCw8CaUOpuSVv-ZgOMbuuxVQvKPINrRvEYD-qmBeD8vb71gAeYFCbGWYcXLcqFHp226lfVXyXNexKErpnMnK8Xqf06PMv-wtq5Kv3J0A.webp', // 사자 이미지 URL
+                        correct: 'Crab'
+                    },
+                    {
+                        image: 'https://i.namu.wiki/i/PEPEAAj4OgOIKuvU94VLiq9XrKKabjSSZ9VxKsujTm5pjaNKa290Nq-A6C3aIQSFU8-yiDMmyKhbz8wTCvnqQpfKmlRze4AezZoA55VJ10ngXOByhi9JZ7AX2XD28Fbt2GH5v-CAr2CVPSrHk5ctLw.webp', // 사자 이미지 URL
+                        correct: 'Octopus'
+                    },
+                    {
+                        image: 'https://i.namu.wiki/i/-xeH_Vz4am_l5cw47ph7kSHqgUWis9xC0eTQsJIGz8NAVIS8QNEJt3ODS5kp2oM3CRom0CxUWeOXzvj9TlC3pWFnCr0t7HmFpI95b24IWxYioyS5hWrvtxhQlEAJWfQV5LC4YShcSv9tN7DMGV6Gqw.webp', // 사자 이미지 URL
+                        correct: 'Ant'
+                    },
+                    {
+                        image: 'https://i.namu.wiki/i/53xvrMJTJUT35z5hvBt4WuyHvv5T5kR9oEjm6SnKHRUVYq1D3JaSdVR39CZciULv_Miu__jeH4NkpUs6Ou-dyyguyTkQdo1R5mE1MZyiHdrhXfkAmf0NfNX7dh5iRPRb6cpAAuzsDx2V8DumuQa1iA.webp', // 사자 이미지 URL
+                        correct: 'Bee'
+                    },
+                    {
+                        image: 'https://i.namu.wiki/i/JWDmnNQWZVBcszh3fy3bsn_MTi9MMz0F8Fe79k71UTux5C57lh0pjrP9Q8wu0LWAtB4yqsZTsx_KuwJDP8tk0oEvweve1ff5C-vvpGc09MW3fahz4fdAV2_MpCBdaRNGX8GYDphl-pNJ9c85TDyMrg.webp', // 사자 이미지 URL
+                        correct: 'Butterfly'
+                    },
+                    {
+                        image: 'https://i.namu.wiki/i/ZX9M5gA2XEPzwvIShNJsPAqvmZcMPmr_tjtiMMbVN5Di8cf4kX1UQe6RjTrsXRt0BmGqihXLqmPcLpPF_dn2aA7FbGVOlpdp-FOptzCRsLbv0VMg1J9kteVgAiXLZQooqvPfv1h7JAJfFQ5YaBPA5A.jpg', // 사자 이미지 URL
+                        correct: 'Lizard'
+                    },
+                    {
+                        image: 'https://i.namu.wiki/i/gxkQ2DwJw9Z9i0UQgmpMO4Uo2R8iGh2WGcxik0WYAHlBlt1WaJOBgYFMP9dl8pMRdsUVB2bXeScEKjf4sKbGqR1zlAT39wEcvsy3PyhKdLLNciXGqrIM_gxV0_wk5NHeObkvVxGpD4Bb4YaajdYIMQ.webp', // 사자 이미지 URL
+                        correct: 'Snake'
+                    },
+                    {
+                        image: 'https://i.namu.wiki/i/OJymeAICv-rLfsA-pfGYxDAPGr2dwNxCN-4YlleWLfghZAOXkblL9QTmBLUYsxO7BxoWg1Syv9etb3aABaAXzXwtOSPOSBEhF3p0OCR4VbZIZSTyXpNevarmjG7liTDw3yzSzwacdv1r1FaOL5qRFA.webp', // 사자 이미지 URL
+                        correct: 'Frog'
+                    },
+                    {
+                        image: 'https://i.namu.wiki/i/uHNOk1QgHD1SEqy-L5lU9FkK56WXjH04i37tXyksTN5KlK94yVStrve5qto-EmWhF51xPCbfqaX3pKz7kE8G0U6w9r_ubNS497kXVMUGYZXvsv8bu38ptGRKJ8hqJdC-CBm8TPQVCdDJc-OrdQSkcQ.webp', // 사자 이미지 URL
+                        correct: 'Turtle'
+                    },
+                    {
+                        image: 'https://i.namu.wiki/i/3H_b0aczQ59l6lR4SSDK7qriLnECtUALeS54xL2lB2KTevg2r9UUlMB8ZVxTYhFjsrEbpl2xcdYO9HWNgpvNlL0fofXjG-fYzFw1Y0RXOCDk-skfTfy9aiPSjIK4gZzCMwgzQY74BkuiuZlqFqj9qA.jpg', // 사자 이미지 URL
+                        correct: 'Crocodile'
+                    },
+                    {
+                        image: 'https://i.namu.wiki/i/iBi7mb8mMGvfoE-vfNeCbEIeEVoVnhBAnoYJ6GIQZcPM6MsaKVyL_YEauAL2J4B_AX3L4tFnI_Cmo-mgUfnEXlIzw2Mux0FOYD5SSqD3-c6OueWU66QPxvofpP4FVmFffq6GoSueObcKLU8RdJSgng.jpg', // 사자 이미지 URL
+                        correct: 'Camel'
+                    },
+                    {
+                        image: 'https://i.namu.wiki/i/uKtumlADlYlasfcDE8uwv9vxpktrk92YAuxC--28Qyiy8xj7fzsVLPWPv8qP1ViT1ic6b9offlKi21cXE-LD-u1dX5rdDxI3rbMCOgp-SXJByjgCGCWge5E9cbGlJ7jXzKoDR9KoYVkJ0NvLyNjzbQ.webp', // 사자 이미지 URL
+                        correct: 'Flamingo'
+                    },
+                    {
+                        image: 'https://i.namu.wiki/i/4tXU_4g3xsjXbQdIp1pOCUn1csRzD_U3zKPTmqB8heLb1dS_Zv8NgPBmUljX_FExjFKT1-F-GOD1UohwMAU4ljRbTCkBdp5SlnnuFv5rmYklFRN9ZGwsGS4J3Dd8UlVaAYBcZbP4EtMIjzVGWu46FQ.webp', // 사자 이미지 URL
+                        correct: 'Penguin'
+                    },
+                    {
+                        image: 'https://i.namu.wiki/i/7hX2Gp3jF3F82AWtdHVUwp-HyCPNESGydA0Q2_VkBfheNj3thQSJHTA6IPYMAoTxMgbSu7Ij-o4sOvPV2mvsfxaIlSicxIeG257KQgb9ZNFXwSVfeZulk93-R7uWhWYfz3ivVXYDsWOjdYftzaSDCA.webp', // 사자 이미지 URL
+                        correct: 'Parrot'
+                    },
+                    {
+                        image: 'https://i.namu.wiki/i/GemFQA1wD-o0WXgNzOHJrLr4a6c9eXdiKQsscV_6sPXw646frj_x7jY2rAA_GkmZw3nWG06V6bsnaRhdq5jDjbN0bw8QxtyGwXapll9otd19RAfguD5AGhDDEMmTRaCgEiCCn5Wij6sL1qg1r0xHLg.webp', // 사자 이미지 URL
+                        correct: 'Owl'
+                    },
+                    {
+                        image: 'https://i.namu.wiki/i/6-_USuPDvC1DArebX82wp3yLtZvcr__7IpGd9OZ4t7RfoNb3U8qT-miKQVJ2yl32wMWbUXm2LLiFoCEJmSww0mwP0qzavBqNuRit1U4hdaatfv2hxg8QN-E0ffZ5wN-5aFYE7AftJ4iosL7_Xpb0_w.webp', // 사자 이미지 URL
+                        correct: 'Rabbit'
+                    },
+                    {
+                        image: 'https://i.namu.wiki/i/jlfqN2xWP1q78tkwTr0scE35MlVOAhXYXyqAHKpRkPunAM5XvHXqda8cxyuf5gmi54KZs9CXSqsl3L-KqJFDKUurcr7EAiNBRGdY6fHRXZR1mQYsiTEE-4Ci-t59r8qE2ovNDvSlJ8en0hcIIFo4jQ.webp', // 사자 이미지 URL
+                        correct: 'Goat'
+                    },
+                    {
+                        image: 'https://i.namu.wiki/i/cCpNGb5t1L9qY94xyrUdpcpjVyslgthObruJDZIL7yclQsnMAw8rSKdxuDGueEKw63BF3BeG4XRVdE45h5BWbZYilLKbxODCr3lCsVBvfeQlVOkLhUS5bwPSJutekcocDPAYrfBZRfjnUfzqdBsuoA.webp', // 사자 이미지 URL
+                        correct: 'Pig'
+                    },
+                    {
+                        image: 'https://i.namu.wiki/i/2tlVg-RYf_j-FQqrcU71fTK3NoAm-els1IVE_zof3kP1BsJ813rtEpKn6nOHTwyzNVkPn7kn0eN7rzWXzKCdkk-uxVEfN-ia5E8TuO2-AA38ylS7Yht7f0MxJ3YfXx_NnLlOWeHtbBsaHZIRkIWOfg.webp', // 사자 이미지 URL
+                        correct: 'Cat'
+                    },
+                    {
+                        image: 'https://i.namu.wiki/i/zBn8N5Nb8gdupwCDIhSGFjpuHAC2EFUOXgHFRf-nkQxV2X0uK2BIzxi25QMh5ZjQh6stRKzk8Dggm9vXbQmEvgmGliabxfb-xPYDI8AGg7GOE6zDkeFWMAkNHH_qbg4M23-YpgBiOCbnGmxlFl2qAA.webp', // 사자 이미지 URL
+                        correct: 'Mouse'
+                    },
+                    {
+                        image: 'https://i.namu.wiki/i/EmdH6p43znpLDW07Tc8dzKtHrJa9qV90rnsPqGr2oR5g1pJ3-xbLA3hD8mQ_ULSLb03b5VD7AXa3BQujIUTCni-Wt0MM1p23v9THbRNJiQCT0u1shOKN8HrvgG5Gz5CbBNkUxNr-TTwZxyhdDG74Mw.webp', // 사자 이미지 URL
+                        correct: 'Squirrel'
+                    },
+                    {
+                        image: 'https://i.namu.wiki/i/7ZezLHfdT0EN1oReZURwwLopgGJUAMizqVxikp6sLoJD3Ox6zTZ8XSHy-UfnzsIqx3wl7IRRKUn12FM2_4tkt0BS6-4iC4UnPOJ77Z7ipp72NH0BCspONs_TMi7k5LTLz-dh3MbfD8xOqIjb4kEBFg.webp', // 사자 이미지 URL
+                        correct: 'Eagle'
+                    },
+                    {
+                        image: 'https://i.namu.wiki/i/1I4lAliJZN2Buxkq5lPFxC6O3SqeIqGsm9jNcdY0-SR65IkvlGB1k_ojHv3vQMEORCoWu70khXFF29DqSm8VE4eVEuHcqP14OD0OASiPz7dA6Umja1q16Adt8Mh1hYesZfkGPr8bxg38UYE20V0Sdg.webp', // 사자 이미지 URL
+                        correct: 'Shark'
+                    },
+                    {
+                        image: 'https://i.namu.wiki/i/89B-fn5vK0eYg4l_5EKW72j2IGXeaXGyiDieajG4nE-gU-UG9sSX-qNMOSCeeGDGh5YvYAjgGN6dvHcLx2CO-ey62XY_IIxNvKkO3JCzj0O-PNPxNr360wV3F-nXSlHnMS8iFzNpPWj3sGytptt1vQ.webp', // 사자 이미지 URL
+                        correct: 'Whale'
+                    },
+                    {
+                        image: 'https://i.namu.wiki/i/468hRLNzu1N19E8r0s7nrmB6_X4ZTdy5h8AUZSDgUKuHByPrIhgcUIcULqW6_tGNWeLY3gBksuqGT3zI2Ze_Zw.webp', // 사자 이미지 URL
+                        correct: 'Lion'
+                    },
+                    {
+                        image: 'https://i.namu.wiki/i/tRzIs0br_ApCxZ39TQPgikwraB1eNZ_LoSuPKW3AQNcMuqJAr2OPdtFS45h7qy8T5BykgxnsGQ-0BcEHCIOvDdfgUnls7mLd5cHUBdlU5qrV6XllmXfrr7o7qeZM6vvgG4Br_JDZiyxA_lem68N-aw.webp', // 호랑이 이미지 URL
+                        correct: 'Tiger'
+                    },
+                    {
+                        image: 'https://i.namu.wiki/i/HBkzfaLd_nixpGLmUdE_1YIqewfbkqa94XVuo73zxdmaSqlDnDsVYZq0fwePMGtBMOUbMDlOmnyClErB4s_SW0hS8VOTVeyjrKB_GbuXpLu-m8otGknOIKzjoSf5nt3BjwbvVRHVroaTJvOqPopPGQ.webp', // 호랑이 이미지 URL
+                        correct: 'Leopard'
+                    },
+                    {
+                        image: 'https://i.namu.wiki/i/Qt_2RsJ9TxzEcs_g3-rDGn4fTZezVXf7FtM5D4lsb5Aojx8B44oezAal_V5xJRbY3AENw4N9fcYk8lBYFjVxEtnOIl1zO48BFY0VxoHpdUDLBxJ3XcPU4mexZ8iqETjuR-yGqqImlLDAorrEDSh16Q.webp', // 호랑이 이미지 URL
+                        correct: 'Zebra'
+                    },
+                    {
+                        image: 'https://i.namu.wiki/i/Y86HkDKrrE_vW3b6AuQoT1zg3U1dG5WvkwokYNU-UJEgpvQwLIf-QW8ibGOjyckcBbRkDhrM31S8Q3rCRF93zpz7_j5jIP61_geHY66UrPA7PYjWXyHeqrPha9gF8vcAaw8dHZnX-wKiNBoUAaZWDg.webp', // 호랑이 이미지 URL
+                        correct: 'Giraffe'
+                    },
+                    {
+                        image: 'https://i.namu.wiki/i/WuMKuSPgux_n4oNyquSIr1t1xdR7Xupc8OUv99ygRJd_MkNhiVkUBVhbn1Ft5OCjeRuNtVrGe04KPStSGxIklE-MXBWYL0dYBcIZvICmxtmiU4prtqIXfNOs3FhKoOvW99BijqNxDqUG5m64LXAZrA.webp', // 호랑이 이미지 URL
+                        correct: 'Elephant'
+                    },                    
+                    {
+                        image: 'https://i.namu.wiki/i/qfgH45GTnahnkp8xEH79n4sEmBKaMlN8QYr52jFlK4WvEtdrnCyM0sQWa40uWvZv3nVpadVX5_JRdDeyOtauLgTwtHM17drrCWNWgYIdfY0XDDt7BL6kl4sb3zR_ILTWu11zTW0T--a_yxKYjPSEaA.webp', // 호랑이 이미지 URL
+                        correct: 'Bear'
+                    },                    
+                    {
+                        image: 'https://i.namu.wiki/i/v8ERLqt6DLB1Nb_g0WEBqM09Dq4odzMuCdk99oQ2m5Uj2QIfJ-yjaZT7MEGNCE1bF-G5rB4kmhHdVvVGJ2c8FWmc7Gf-JZ0chPF36-VpRJv4ZuYFHuXZ2CqeWOmMwzv1OLJgS4QkSpuofEwSvITKfQ.webp', // 호랑이 이미지 URL
+                        correct: 'Horse'
+                    },                    
+                    {
+                        image: 'https://i.namu.wiki/i/rdlBNiZcb1lpZxhWfsCKRDMibXOAYJj83FrHpJa2oXvkqB-ov6k4qA8kESSMC5GdEDdObb5GXD5C4pjg9ZDMKd9Q8vJ0HZVIIauJscOZ6JRu9ifRXzTsTVI83KDp1scglzkNDtSVF--SWn_E7PiA8A.webp', // 호랑이 이미지 URL
+                        correct: 'Kangaroo'
+                    },                    
+                    {
+                        image: 'https://i.namu.wiki/i/CXZiv7dev4gveckKOFVs7tuiZBJxXS-9SuK3Y7xHaQ2ZG1xtAHK8G3RxDH4DxPRtJRkiaiKS8Qrf_G44wBGLhKakzTUPv5VpszUYUphdZM3VoBRwbu5oIGA6-w9VuqfwzkTYrlKW2uzdiA1ntoKldQ.webp', // 호랑이 이미지 URL
+                        correct: 'Panda'
+                    },                    
+                    {
+                        image: 'https://i.namu.wiki/i/mQtxZ8ahVXzUtonM5dBpdrLqGKcXdRM-aIrgYjNHcxoMiLIxhuSTzasbrIpzP7BGQW6es3ElXXzmRkaXnD2k65DCrT60Za_4FQ2pBCe-MDxxIST3scyhVV2Kivm6VNNwZLOFcfItQVEISb70fmwG4w.webp', // 호랑이 이미지 URL
+                        correct: 'Wolf'
+                    },                    
+                    {
+                        image: 'https://i.namu.wiki/i/xsQlzpXNOnCW2JUu7WHP1Efg8Cb1TURJaByGoxNFHm8hXhLlQW-1BUO2rW0Q2607GNpsG4BdhJHwRyCYcSk_tV7sGaE-UDZJMF3wjgo1-35EVUUQ3uESvknHdfL2OQwM3mEWEazicdV1xFx_gJxJ8Q.webp', // 호랑이 이미지 URL
+                        correct: 'Fox'
+                    },                    
+                    {
+                        image: 'https://i.namu.wiki/i/2xgbJAk3iCaB-0jH2d12IfU0PxpVjiq2OL7SvknepNNUeIbGjt8Ouv5qkHa_Scabsy2v0V48qSjaEWh-sBsHY2icnDJ_6x6hbeWKHWF9U98JhXNnGrsk-inG36pRzX3yNRuIRzqgKAJXuo5mvdRXzg.webp', // 호랑이 이미지 URL
+                        correct: 'Deer'
+                    },                    
+                    {
+                        image: 'https://i.namu.wiki/i/6DbcsXWhfMtVbg1kOnSsdZufwXnS7YxCvA6sjNwQnezBsGt58Z4R_4Z2QQd9fg6c1eR13cX0DUeIvU1disGj3oBn-Q9cGVcw1GSEdSr5ATJSmkZ76xVQwffUGCl7QD-j3DqyJSg7zgTVDDTBV8BJow.webp', // 호랑이 이미지 URL
+                        correct: 'Rhinoceros'
+                    },                    
+                    {
+                        image: 'https://i.namu.wiki/i/HzfauxYBD-j36ZAGqM5YKRVI2455SFrbF0UXoDUCYDCLNWIGn3j0sxSZWTp4y6nooYJZmxCFtlJdiDZKjeb1h8DtQVqN9PyZhKh8zbWOCjDc747CyusQwcbtXImc_dV-lXLGLFxOD5se1EvZ-Q2kxA.webp', // 호랑이 이미지 URL
+                        correct: 'Cheetah'
+                    },                    
+                    {
+                        image: 'https://i.namu.wiki/i/rrxA50i8Uy92YBd2NeVQPU21jcwDcbvi9IkCe1hM3CFU5kSt5ENW4ussEVDih2mNq6QPQaW-aUTnCQcO-M1UcNVewl-8dr0em9XZnYC1ilamzjJOrq_vlxsM5x41TE0A9vdRsdD3u4lhACOyGNyG0A.webp', // 호랑이 이미지 URL
+                        correct: 'Hyena'
+                    },                    
+                    {
+                        image: 'https://i.namu.wiki/i/xj_kOtidlIO-7bOjIOm3t2Gk7_bN3Lz_xVdDccMOw3YZbAUpCS9vSv0MTqpA5KN1LAMivv5pECNR363dfgZdCqxtbZv3dPenK9syAX1XXevY6crpQW914Xhu8MZPTpH43bfSESnYvlNzYeup1JwP-w.webp', // 호랑이 이미지 URL
+                        correct: 'Buffalo'
+                    },                    
+                    {
+                        image: 'https://i.namu.wiki/i/Uv-XWTLTi_qKxFN1C4eDnR9PEoonI4PBKM3_nfgD9SW4nFLx3RCSg5PcdwXZvBYv9DF5oibLWbRfuz_LEU5HPyrypLX5ErcN0y2zZj4fpVad4Ou_FFozp5TC77AgqZKw0418BrKWGJ27ypWmk1UwXQ.webp', // 호랑이 이미지 URL
+                        correct: 'Chimpanzee'
+                    },                    
+                    {
+                        image: 'https://i.namu.wiki/i/1fw5sMXvG6c98Y3ByqXQeJmcQxx4bHAbQHQDZclg_2sZa2_sXxLqax4ZsS_PZ8TkRnTBF9vZ1XsRCtGvVLk37mjpvTUwF2PGlqdusCXa5R22dpFbAa6fqt2CClE4KSiI-sZyvX9uduWi5ROMlOBm3g.webp', // 호랑이 이미지 URL
+                        correct: 'Hippopotamus'
+                    },                    
+                    {
+                        image: 'https://i.namu.wiki/i/hkAbRLythosLtWIdM8Pt2zJa8k2XvaLpFlk-Z_PLW11V-kDnKZEH43QKYFDRE4bTn9lPzI3xof4-C74k6v-dAF7pwwsxUy4cADV0A1bWMVQ3MUU53NDpRy4FudpwHVXY4_vfZjGYY3Y33SOMyWUlTg.webp', // 호랑이 이미지 URL
+                        correct: 'Otter'
+                    },                    
+                    // 더 많은 쉬운 동물 질문을 추가하세요
+                ],            
+            foods: [
+                    {
+                        image: 'https://i.namu.wiki/i/_U7yUxujPqPCcJeM2XySAxpZVTjzRXMS6o7IQCR0QMvp0C2Vq6OcjOWxt9KfHIwo19a2NEZUkdzq5pCu2A3y6rnvfKNODXFS1Hmc3BCwjpbE12gEPULcHCLOHaQ9JzSMYHtOP8aqyLfc5Qb7K-ablg.webp', // 장미 이미지 URL
+                        correct: 'Kimchi'
+                    },
+                    {
+                        image: 'https://i.namu.wiki/i/mdldDcy1KK0f_vsiHdYtijwWIPaf2UboyKpeO-F7R7UyHtknCF2ODclBFqqkO-Y0UZakEupbkPMqHN3z6MKwT1JVzNawSRQPIuCs0jLF01jfrYRQ5YYAbBcnMI_k4zfpzGY-dLaSF2BhVLRWnHg5IQ.webp', // 장미 이미지 URL
+                        correct: 'Hotdog'
+                    },
+                    {
+                        image: 'https://i.namu.wiki/i/Ua87tA4R8ZNavh7rPR_G8WXHK2UmUfG8CAw88JgU4G9vHc9riURs0xv2IbCtOPE2cpVP7xO025W7gbvd3Z1kvOZgZmlFQw2M7pgKV5Pr7TTss8xEI7qa5MawDSMpcjnNsPFXG0r-RQ1HLvhRNxeLjg.webp', // 장미 이미지 URL
+                        correct: 'Sushi'
+                    },
+                    {
+                        image: 'https://i.namu.wiki/i/tzYIDmRk-woWJS7pP6KSRsZ0mR7XnULitVrA3CT2SP7SivY1DPZfDV5bLVSorUnBGj4wluwL_fMHS1V2BZBQzvxAuHoz68oy27Z4Uq9j-x1gOAuZDg8kNqyro51yZEyVDbCs9btQh_UftzBWjoV9MQ.webp', // 장미 이미지 URL
+                        correct: 'Toast'
+                    },
+                    {
+                        image: 'https://i.namu.wiki/i/Q8r9mDek4thuVo1Wdkf1V1is5CbPc7IJtfgKNRnAjiPgrFC--hIHQLR5gw_a_hCDpkGTCl6yteykzk52QwNHca8WFRGSu4mYZvpyIWy4YRN10rzTUPJj_HSKYAwy_ENVHI-PKbRtAtay4Hx2r8pN1A.webp', // 장미 이미지 URL
+                        correct: 'Waffle'
+                    },
+                    {
+                        image: 'https://i.namu.wiki/i/yrri2W-YcCoLN2siR-yGRRrd9KdjW8bMSeug90hIwxm-ESohbqn8HhIU9X7ZHWh_HIOOYI-CizdZPUmPeI2746J4g5iAmTaIrZJviSC5fiO1ZHmChKQQSx__Va6O-EGZLjHmSb1kId-ahu3MXRmv5A.webp', // 장미 이미지 URL
+                        correct: 'Butter'
+                    },
+                    {
+                        image: 'https://i.namu.wiki/i/kKYCgofqwaW3698Is25877f01IuMqTzcuf6Cj8R7n2pDvXSMMXgUVSjPCco_He4M0BFps0ErJ2VinU4_JxESPipEVTxFnN1tZQPiDkABuCtSv3vQCzmJFPLiaICPRbvO9vIHxg1SCnv3rSqz0khk6Q.webp', // 장미 이미지 URL
+                        correct: 'Popcorn'
+                    },
+                    {
+                        image: 'https://i.namu.wiki/i/wurBlkkxmoyZ4CB4uxvyJXyUwmg5a6-L4EN2KzFXVH5nP75-EkZdG4_LDe9SHwUdeyKifsFJOwDsg0fId6KTutnPFDvrW2D6pD72MD6Oqixt8PmswgaXzX1YMZCXhC205q6pl3YGCsaMeWG9gi5zpA.webp', // 장미 이미지 URL
+                        correct: 'Candy'
+                    },
+                    {
+                        image: 'https://i.namu.wiki/i/bcdg01nzx9lf6Edn-VTP1q90iAxM13FWxnKwuKN_ma78gd6gBnFLead_mX69KjbZ7WpeBc2y4bWlCGIInGI6kZ0na8_g3fS7qRfYCYXyQtR2RxZgSbyZW1mqiXEBa0ZdX6g6yy9burQlSIkQtErEtw.webp', // 장미 이미지 URL
+                        correct: 'Chocolate'
+                    },
+                    {
+                        image: 'https://i.namu.wiki/i/EgAKypaN77zmH_cxr-W0APXw4XEZlY7i_x9wAH2fY8Xvlx-loYUC9jWRvWo2b--vVbYgxNvxTVCctXHRn9VpkqVCFCmUh9kcM82mL7daxbQfIGMoTpVeb1T3QqqTc55PPtleKz0-qY7IpY-6c6f_vA.webp', // 장미 이미지 URL
+                        correct: 'Cake'
+                    },
+                    {
+                        image: 'https://i.namu.wiki/i/IoAsFfGFJMOKbnO1l4rF64w5xf6S3TF4_qU5GGKlz69cqBC2R7DZTLhyk4cVt6D-s1Fvquc2uwhBF8RlnAUcca8fTt1LVA-Vzsv-IK_DawFskHBnwZej5xPf5c1e0LgYyuU5wXJ2jBpeoaBqOFg4QQ.webp', // 장미 이미지 URL
+                        correct: 'IceCream'
+                    },
+                    {
+                        image: 'https://i.namu.wiki/i/BsUDG3nAy17MJl8pvZFe_jnyB4cnunm-OgdBoMt-7gEfw90oA8EVkGQ5LAUjPsA21bIV9S4MUsJjV6yeAj3jbve97XdLKci12amjEY7VobvazmADOVup2JY4FJcvQscy7xz-vmE85baEXvIP3I34zw.webp', // 장미 이미지 URL
+                        correct: 'Broccoli'
+                    },
+                    {
+                        image: 'https://i.namu.wiki/i/Q9OqbdRky3Ji6iGgDVWjL_VL0m7juDVOM3oe9gHx_j5fsrl87kimZVKe6_4XkhJkfMhOi3KVNN-u9oCvJbdq7dh7T7GFZnX2tbER-elzaWKYvx3iKK6CicS7IhEihJ2bSN8s_JkohkhXJG73SkZV6w.webp', // 장미 이미지 URL
+                        correct: 'Cucumber'
+                    },
+                    {
+                        image: 'https://i.namu.wiki/i/gSJ3kdLkUF4jgjpxeBc_W5NRa01pqob6ADSYjWQ1ez76RFXRGL6uxBHiFTIbECebG72Z4k9vM-GX-VBh_JMtpD0ICaY5rmFR4-RP3Q6yeisJPmBhUy-qimJNgEXsITVOVblZskMH6HsgTQYoW9ymJg.webp', // 장미 이미지 URL
+                        correct: 'Tomato'
+                    },
+                    {
+                        image: 'https://i.namu.wiki/i/K_yXQhh1ZNlbNtBCsgF9MIU2Xe8po7ZdBTCU8MZif2Y0ZMuAwh-Q0oyJ2fuTgXSADo9CJpdUoc3SOzF0eNXew6VngWA_GJrZ38OxTDCIY5G7vgIZNrKVysbjgNRtS3MR4_IjVCLXFuP254mUcz1GWg.webp', // 장미 이미지 URL
+                        correct: 'Potato'
+                    },
+                    {
+                        image: 'https://i.namu.wiki/i/REX0ah9WuEaa_XBsRi3JN9sZI4hoWDzPz_Ff65BzabKUJCsGdgsIliH6HvH79uPYygOyIAloB9Lt7oRHXRbf228t7mDiRHEnQPsP7abVHrKZS6Qi5Slqn45_34bZHM2foAQGfuY1ALr3x9UO_nbimw.webp', // 장미 이미지 URL
+                        correct: 'Carrot'
+                    },
+                    {
+                        image: 'https://i.namu.wiki/i/v1oewgOV4rBzNDxfzf1JJYl0mWAI5b3hZ9SyI-xm2WBKDdWNOib0S1EFNeLh5GdFwyGAKmCghu6_zdq_EkYPdNdRlXMrNv35D0Aip8P1GlIzgxLPUoYHPyOPcWr1Z2CWX6KGnrCGMh_QvSC_-66e9g.webp', // 장미 이미지 URL
+                        correct: 'Pineapple'
+                    },
+                    {
+                        image: 'https://i.namu.wiki/i/cFfLgNl3SW4kAcWmZ_vXKkHWQpIgftbCe_DKBImvhE-dXUeUmDhXDAw572UU9rtaPyb5z3u7jFtvNODlXVlC9dJj6p-PnsnZ4nxi6OqWyJCyDCYAZLvBeSDJO61--YPHApFJaQo9SMUDZNBR_FUAFw.webp', // 장미 이미지 URL
+                        correct: 'Watermelon'
+                    },
+                    {
+                        image: 'https://i.namu.wiki/i/gTBbVa5U7wni1yUjLJiRqmlV_FQeXM_ht5FHNMI9caLmrCCn4L_Vf65U5HYS08e3cYJPxVQMKY5448G1TCRA7iXR41vMAkvICJC1PiFWn9Bi7M4D83PpdTnZG5d8FrouWBf2at_1r1YXw4Mi1uxjTA.jpg', // 장미 이미지 URL
+                        correct: 'Strawberry'
+                    },
+                    {
+                        image: 'https://i.namu.wiki/i/IfUjXRLzjH11ax78AfF-75nJJ3wDMMbwdLfoLB9EAD77246jg1IQxBVG-f5kpeBDwqh0H5danQJe4jNTwsCBzdE35eRC213YRFumZRkt9tOIzWs5C6-voAejoHk_j6bAtMx_i-FPd0WQBhqpwxVqBA.webp', // 장미 이미지 URL
+                        correct: 'Mango'
+                    },
+                    {
+                        image: 'https://i.namu.wiki/i/aLyjabAEau_CYA1qzhHTKpO6ahPmnX9SIAPQfm0g0Jfg-vAiDZII3M_92IXUoBLkZeBDrp42laFKMslqNmElNgYb6ykB7n-B0NXRS6SMgBoIsgXpfpQAMkXYFqyYEzml_VGwsagKhZZMJ5SmLhFKpA.webp', // 장미 이미지 URL
+                        correct: 'Orange'
+                    },
+                    {
+                        image: 'https://i.namu.wiki/i/IVyhiAMCBwB-WEDmTyCy4dPOjIV40V4VAj1KtA_Fyg-YZxgdJ-NY_9UB6r4y9LtMSgfMRY0d5HFyzxY9uN7iT-cJlrCAaAUxkMUJpesvQy6j8UVMC_n9sdJjW92rgEk_S7wDFDIUK9HB2lM3-FioEw.webp', // 장미 이미지 URL
+                        correct: 'Grape'
+                    },
+                    {
+                        image: 'https://i.namu.wiki/i/-LLN5m5gGkxNe8nKqgUtnSbwvQUo8HqL1umA2VnNgJODpw8yHBxInpOFu02hLh-WLvYdFnhtu84V9Gyq75RuVtTnxTSb6cEr58xJPZ520swZW6nLOKKEz28ShEqrxuy6PH8KqTgVeKlfuBfSUMt6vw.webp', // 장미 이미지 URL
+                        correct: 'Banana'
+                    },
+                    {
+                        image: 'https://i.namu.wiki/i/Qpfkjm9jsBKdNiVdpDiBeUMixmVhDO312BZYSublzr3JoDIwRuT0BdJ3D1-31Pa0GwCx3SXfe2j-ihtw7NUg1tcpDB3_7MuyR9mcpHIo4Qh3E5voOuITiknXHV-A-7NoouyFzm5fwmETDYTBL9Llcg.webp', // 장미 이미지 URL
+                        correct: 'Apple'
+                    },
+                    {
+                        image: 'https://i.namu.wiki/i/IoFxPpc6v3sMglr1acwaHvp1z5Wpp4nQeC0yIpunvD8i46egZgI0_j-Vy2mdkSA6EZSmde3BkgVHjzNeX9Sb2zV3ThaET6gI1OpunPcZXZ00nbdPoWn1gPY61A3XpXd3tpZ_gSdtt20TDiVR5EJXiA.webp', // 장미 이미지 URL
+                        correct: 'Beef'
+                    },
+                    {
+                        image: 'https://i.namu.wiki/i/0O-yGO5Bd-mScI3TLfawyYqJif6u7bRmJBb74RZa3borZO4JpFVi1magBsz2TcgV65I9Ra_WgXsZ5RszFydfrSjX996nlnz2sR8fsnmxPBTkNY0Yu44dui1GzKs2LDq3NAeV-__5B3ZJP9SWe6Wcuw.webp', // 장미 이미지 URL
+                        correct: 'Chicken'
+                    },
+                    {
+                        image: 'https://i.namu.wiki/i/8JTyxlJifeWoS9ebqpQXn-0Sl5PbDo7plizifBcRWMwFVJXRaGIJGgAQnBr75Ae5nkxdbbximyZJO-HT5Ak1TJ2NtIgt7K2QhhYoC9vnsA_QiECLvB7-DQLoyBHjkK0bIY0hRJfQnlVL00abYtxoVA.webp', // 장미 이미지 URL
+                        correct: 'Egg'
+                    },
+                    {
+                        image: 'https://i.namu.wiki/i/I5tq_YbPxrlVBghvtTsbmpl15nS_HOZCzd4nCJ4o60a71efrTK9La9syz7qwU120YeFKgX4oD5XbFE5LXe_rDTw2Dn4Dne_PWuQxOl0mz8xnHqxhSPGpDOkSmwtVaA3JSu6stMb2KOS1marPStGUww.webp', // 장미 이미지 URL
+                        correct: 'Yogurt'
+                    },
+                    {
+                        image: 'https://i.namu.wiki/i/ajSXowtN1Wpul6hUi7ah74CBsbp3abfX-4d--KLW7SoerpDHX2q1JnvaREKJ0P9uflHn3sprllR4dTu9C2I1lm0yEGmb3i9ZqUZ_OYnUoyxDfDOScZoe4CVnnUdwvnZHGVhVz4pWDZ63kRTRI7hqNQ.webp', // 장미 이미지 URL
+                        correct: 'Cheese'
+                    },
+                    {
+                        image: 'https://i.namu.wiki/i/43E_mFs0BRYiZUdszGdFqzAUfvhQgYideODYi8AzXKB4Bi9TOg4sRjPih2Yi8gNdCTpgAGi4qBcPgLyKL5Ojze8Atp39EBELsOTv6-RU_gDVPzOrRvN9EhH_ke1hp8oDp5iSChSbiNZC1XOtnOMQ4Q.webp', // 장미 이미지 URL
+                        correct: 'Milk'
+                    },
+                    {
+                        image: 'https://i.namu.wiki/i/kcCHArhO6DW-FAOCaXw_RXPUnoibY0QzP3Yh9lfaIKz-0taXE2qfitjb7SmHMxB_g6kWV7vXIVootjAl0qYV7NZZpBjnmbHsnQ4ba8UdTFfRHr-HHVuBI1repx4WcI5nSUjLWrtut1PZk4kgIW0NIw.webp', // 장미 이미지 URL
+                        correct: 'Noodles'
+                    },
+                    {
+                        image: 'https://i.namu.wiki/i/gGBXbjnCDEPtKDD0uExxmDZafTFBAiqq0E9TTJTVVnQy3ClHFs3TpNj4hyVn-XIdAH4e9IxzVJdiD8_8WzJ-UtNt6BoCFMDb5yBcEBHSNi7-c9EMiqxxztYRz4rEQGCC_eWQpPeL5ZS7DJjVfkJOhg.webp', // 장미 이미지 URL
+                        correct: 'Pizza'
+                    },
+                    {
+                        image: 'https://i.namu.wiki/i/ExQu3o4bMsbnb5b1Ryfn7btOK2Zrj1h1nOV6g1KFTNZFEEG-dHM6H6V41o3l_KXAzSYYR58QN7wxGwxh03V2AOiIE7zOynCmInDbtYhzvS2R1Z3asXOEqrTEILp5JXW2lZa6UmvvTvIbRRVgFbodUg.webp', // 장미 이미지 URL
+                        correct: 'Hamburger'
+                    },
+                    {
+                        image: 'https://i.namu.wiki/i/hF6D1nWDwzS6lOfaE5Yyz7OF8BlzbMztyI44IZelYIFT1TI_2DMxdM7d180chG3LjYv2PA2EDtNrx-8uMrxWNktlT88kbT_f4AUhr2nwQ5zrAX94bIYgQjOBGdlvxnl2W8_cpF0xxrAEaCpL4Fl76g.webp', // 장미 이미지 URL
+                        correct: 'Pasta'
+                    },
+                    {
+                        image: 'https://i.namu.wiki/i/EsT2SjnQyhneQM9ceJ4UOEO23xECBBw1bqwmBmsdcr1gwzXrqQ-aI4jw20Nzw0_voppC6n5fam4JCFiDpVMujkCHugxr7VAQJMvEMe5b1sM_1-3u50H9eFLpTQwi92wjbC3NeHmXaJbdBmrjukCWzA.webp', // 장미 이미지 URL
+                        correct: 'Sandwich'
+                    },
+                    // 더 많은 쉬운 식물 질문을 추가하세요
+                ]   
         };
