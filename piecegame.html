@@ -3,38 +3,27 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>스마트폰 그림 맞추기 게임</title>
-    <link rel="stylesheet" href="piecestyles.css">
+    <title>단어 연결 게임</title>
+    <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    <header>
-        <h1>그림 맞추기 게임</h1>
-    </header>
-    <main>
-        <section id="setup">
-            <div class="image-select-container">
-                <select id="imageSelect">
-                    <option value="images/matchgame4.jpg">예제 1</option>
-                    <option value="images/matchgame4.jpg">예제 2</option>
-                    <option value="images/matchgame4.jpg">예제 3</option>
-                </select>
-            </div>
-            <div class="difficulty-select-container">
-                <select id="difficultySelect">
-                    <option value="12">쉬움 (12 조각)</option>
-                    <option value="24">중간 (24 조각)</option>
-                    <option value="28">어려움 (28 조각)</option>
-                </select>
-            </div>
-            <button id="startGame">게임 시작</button>
-        </section>
-        <section id="gameArea" class="hidden">
-            <canvas id="puzzleCanvas"></canvas>
-        </section>
-    </main>
-    <footer>
-        <p>&copy; 2024 그림 맞추기 게임. 모두의 즐거움을 위해!</p>
-    </footer>
-    <script src="piecescript.js"></script>
+    <h1>단어 연결 게임</h1>
+    <p>난이도를 선택하세요:</p>
+    <select id="difficulty">
+        <option value="easy">Easy (5x5, 5단어)</option>
+        <option value="medium">Medium (7x7, 7단어)</option>
+        <option value="hard">Hard (9x9, 9단어)</option>
+    </select>
+    <button id="start-game">게임 시작</button>
+    <div class="game-container">
+        <div id="grid" class="grid"></div>
+        <div id="word-list" class="word-list">
+            <h2>찾을 단어</h2>
+            <ul id="words-to-find"></ul>
+        </div>
+    </div>
+    <p id="timer">걸린 시간: 0초</p>
+    <p id="result"></p>
+    <script src="script.js"></script>
 </body>
 </html>
