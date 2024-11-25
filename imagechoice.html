@@ -844,20 +844,20 @@
 
         // 보기 선택 함수
         function selectOption(selectedOption, button) {
-            const currentQuestion = filteredQuestions[currentQuestionIndex];
+            const currentQuestion = questions[currentQuestionIndex];
             clearInterval(countdownInterval); // 선택 시 카운트다운 중지
             
     					let correctScore, incorrectScore;
-					    if (difficulty === 'easy') {
-					        correctScore = 10;
-					        incorrectScore = -2;
-					    } else if (difficulty === 'medium') {
-				        correctScore = 20;
-					        incorrectScore = -4;
-					    } else if (difficulty === 'hard') {
-					        correctScore = 30;
-					        incorrectScore = -8;
-					    }
+				 	   if (difficulty === 'easy') {
+				  	      correctScore = 10;
+				  	      incorrectScore = -2;
+				  	  } else if (difficulty === 'medium') {
+				  	      correctScore = 20;
+				  	      incorrectScore = -4;
+				  	  } else if (difficulty === 'hard') {
+				  	      correctScore = 30;
+				  	      incorrectScore = -8;
+				  	  }
 						 if (selectedOption === currentQuestion.correct) {
                 // 정답
                 score += correctScore;
