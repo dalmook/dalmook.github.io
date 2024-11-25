@@ -12,6 +12,7 @@ const firebaseConfig = {
 firebase.initializeApp(firebaseConfig);
 const db = firebase.firestore();
 
+// DOM 요소 선택
 const grid = document.getElementById("grid");
 const wordList = document.getElementById("words-to-find");
 const result = document.getElementById("result");
@@ -319,13 +320,16 @@ document.getElementById("submit-name").addEventListener("click", () => {
     });
 });
 
-// 리더보드 표시 함수
+// 리더보드 표시 함수 수정
 function showLeaderboard() {
+    console.log("showLeaderboard 함수 호출됨"); // 디버깅용
+
     const leaderboard = document.getElementById("leaderboard");
     const leaderboardBody = document.getElementById("leaderboard-body");
     leaderboardBody.innerHTML = ""; // 기존 데이터 초기화
 
     const difficulty = difficultySelect.value;
+    console.log("현재 난이도:", difficulty); // 디버깅용
 
     db.collection("leaderboard")
         .where("difficulty", "==", difficulty)
@@ -333,44 +337,60 @@ function showLeaderboard() {
         .limit(10) // 상위 10개만 표시
         .get()
         .then((querySnapshot) => {
-            querySnapshot.forEach((doc, index) => {
-                const data = doc.data();
+            console.log(`Firestore에서 ${querySnapshot.size}개의 기록을 가져옴`); // 디버깅용
+            if (querySnapshot.empty) {
+                console.log("해당 난이도에 대한 기록이 없음");
                 const tr = document.createElement("tr");
-
-                const rankTd = document.createElement("td");
-                rankTd.textContent = index + 1;
-                tr.appendChild(rankTd);
-
-                const nameTd = document.createElement("td");
-                nameTd.textContent = data.name;
-                tr.appendChild(nameTd);
-
-                const difficultyTd = document.createElement("td");
-                difficultyTd.textContent = data.difficulty;
-                tr.appendChild(difficultyTd);
-
-                const timeTd = document.createElement("td");
-                timeTd.textContent = data.time;
-                tr.appendChild(timeTd);
-
+                const td = document.createElement("td");
+                td.colSpan = 4;
+                td.textContent = "기록이 없습니다.";
+                tr.appendChild(td);
                 leaderboardBody.appendChild(tr);
-            });
+            } else {
+                querySnapshot.forEach((doc, index) => {
+                    const data = doc.data();
+                    console.log(`Record ${index + 1}:`, data); // 디버깅용
+
+                    const tr = document.createElement("tr");
+
+                    const rankTd = document.createElement("td");
+                    rankTd.textContent = index + 1;
+                    tr.appendChild(rankTd);
+
+                    const nameTd = document.createElement("td");
+                    nameTd.textContent = data.name;
+                    tr.appendChild(nameTd);
+
+                    const difficultyTd = document.createElement("td");
+                    difficultyTd.textContent = data.difficulty;
+                    tr.appendChild(difficultyTd);
+
+                    const timeTd = document.createElement("td");
+                    timeTd.textContent = data.time;
+                    tr.appendChild(timeTd);
+
+                    leaderboardBody.appendChild(tr);
+                });
+            }
 
             leaderboard.style.display = "block"; // 리더보드 표시
+            console.log("리더보드가 화면에 표시됨"); // 디버깅용
         })
         .catch((error) => {
-            console.error("Error getting documents: ", error);
+            console.error("Firestore에서 문서를 가져오는 중 오류 발생: ", error);
         });
 }
 
-// 리더보드 닫기 버튼 이벤트
+// 리더보드 닫기 버튼 이벤트 리스너 추가
 document.getElementById("close-leaderboard").addEventListener("click", () => {
+    console.log("리더보드 닫기 버튼 클릭됨"); // 디버깅용
     document.getElementById("leaderboard").style.display = "none"; // 리더보드 숨기기
 });
 
-// "기록 보기" 버튼 이벤트
+// "기록 보기" 버튼 이벤트 리스너 추가
 viewLeaderboardButton.addEventListener("click", () => {
-    showLeaderboard(); // 리더보드 표시
+    console.log("기록 보기 버튼 클릭됨"); // 디버깅용
+    showLeaderboard(); // 리더보드 표시 함수 호출
 });
 
 // 선택 초기화
