@@ -90,6 +90,17 @@
             background-size: cover;
             background-position: center;
         }
+        /* 카드 회전 애니메이션 (선택 사항) */
+        .card {
+            transition: transform 0.6s;
+            transform-style: preserve-3d;
+            position: relative;
+            cursor: pointer;
+        }
+
+        .card.flip {
+            transform: rotateY(180deg);
+        }        
         .card-content {
             position: absolute;
             top: 0;
