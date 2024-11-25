@@ -20,15 +20,41 @@ header {
     background-color: #FF6F61;
     padding: 20px 0;
     text-align: center;
+    position: relative;
 }
 
+/* 흔들리는 이미지 컨테이너 */
+.swing-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 20px; /* 텍스트와 이미지 간의 간격 */
+}
+
+.swing {
+    width: 50px;
+    height: 50px;
+    animation: swing 3s ease-in-out infinite; /* 애니메이션 적용 */
+}
+
+/* 좌측 이미지 추가 효과 */
+.swing-left {
+    transform-origin: center right;
+}
+
+/* 우측 이미지 추가 효과 */
+.swing-right {
+    transform-origin: center left;
+}
+
+/* 텍스트 스타일 */
 header h1 {
     font-size: 2.5em;
     color: #fff;
     animation: bounce 2s infinite;
 }
 
-/* 메인 갤러리 스타일 수정 */
+/* 메인 갤러리 */
 main {
     flex: 1;
     padding: 10px;
@@ -36,7 +62,7 @@ main {
 
 .gallery {
     display: grid;
-    grid-template-columns: repeat(4, 1fr);
+    grid-template-columns: repeat(3, 1fr); /* 3열 설정 */
     gap: 10px;
     padding: 10px;
 }
@@ -47,7 +73,7 @@ main {
     padding-top: 100%; /* 정사각형 비율 유지 */
     overflow: hidden;
     border-radius: 10px;
-    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
     transition: transform 0.3s;
 }
 
@@ -82,28 +108,43 @@ footer {
     font-size: 0.9em;
 }
 
-/* 애니메이션 */
-@keyframes bounce {
-    0%, 20%, 50%, 80%, 100% {
-        transform: translateY(0); 
+/* 흔들리는 애니메이션 */
+@keyframes swing {
+    0% {
+        transform: rotate(0deg);
     }
-    40% { 
-        transform: translateY(-10px); 
+    25% {
+        transform: rotate(-10deg);
     }
-    60% { 
-        transform: translateY(-5px); 
+    50% {
+        transform: rotate(0deg);
+    }
+    75% {
+        transform: rotate(10deg);
+    }
+    100% {
+        transform: rotate(0deg);
     }
 }
 
-/* 반응형 디자인 조정 */
+/* 바운스 애니메이션 */
+@keyframes bounce {
+    0%, 20%, 50%, 80%, 100% {
+        transform: translateY(0);
+    }
+    40% {
+        transform: translateY(-10px);
+    }
+    60% {
+        transform: translateY(-5px);
+    }
+}
+
+/* 반응형 디자인 */
 @media (max-width: 600px) {
     .gallery {
-        grid-template-columns: repeat(3, 1fr);
+        grid-template-columns: repeat(3, 1fr); /* 작은 화면에서 3열 */
         gap: 8px;
-    }
-
-    .gallery a {
-        padding-top: 100%; /* 정사각형 비율 유지 */
     }
 
     .gallery span {
@@ -112,13 +153,5 @@ footer {
 
     header h1 {
         font-size: 2em;
-    }
-}
-
-/* 화면이 더 작을 경우, 예를 들어 작은 모바일 기기에서는 3열로 변경 */
-@media (max-width: 400px) {
-    .gallery {
-        grid-template-columns: repeat(3, 1fr);
-        gap: 6px;
     }
 }
