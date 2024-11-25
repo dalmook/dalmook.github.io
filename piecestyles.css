@@ -63,3 +63,42 @@ h1 {
     text-decoration: line-through;
     color: green;
 }
+/* 이름 입력 폼 중앙 배치 */
+#name-form {
+    display: none; /* 초기 숨김 상태 유지 */
+    position: fixed; /* 화면 고정 위치 */
+    top: 50%; /* 수직 중앙 */
+    left: 50%; /* 수평 중앙 */
+    transform: translate(-50%, -50%); /* 정확한 중앙 정렬 */
+    background-color: rgba(255, 255, 255, 0.95); /* 배경색 및 투명도 */
+    padding: 30px; /* 내부 여백 */
+    border: 2px solid #ccc; /* 테두리 */
+    border-radius: 10px; /* 모서리 둥글게 */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* 그림자 효과 */
+    z-index: 1000; /* 다른 요소보다 위에 표시 */
+    width: 80%;
+    max-width: 400px; /* 최대 너비 설정 */
+    text-align: center; /* 텍스트 중앙 정렬 */
+}
+
+/* 이름 입력 폼 내부 요소 스타일 */
+#name-form input {
+    width: 80%;
+    padding: 10px;
+    font-size: 16px;
+    margin-bottom: 15px;
+}
+
+#name-form button {
+    padding: 10px 20px;
+    font-size: 16px;
+    background-color: #FF6F61;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+#name-form button:hover {
+    background-color: #e65b50;
+}
