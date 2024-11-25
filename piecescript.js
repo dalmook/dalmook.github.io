@@ -43,6 +43,12 @@ function generateGame() {
     gridSize = difficulties[difficulty].gridSize;
     wordCount = difficulties[difficulty].wordCount;
 
+    // 기존 난이도 클래스 제거
+    grid.classList.remove('easy', 'medium', 'hard');
+
+    // 현재 난이도 클래스 추가
+    grid.classList.add(difficulty);    
+
     // 단어 목록과 그리드 초기화
     wordsToFind = generateWords(wordCount);
     gridWords = generateGridWithWords(gridSize, wordsToFind);
