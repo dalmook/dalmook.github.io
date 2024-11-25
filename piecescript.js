@@ -69,7 +69,7 @@ function generateGame() {
 
 // 랜덤한 단어 생성
 function generateWords(count) {
-    const sampleWords = ["감독자", "평범", "환회", "독자", "탐험", "구조", "소망", "화학", "정직"];
+    const sampleWords = ["감독자", "평범", "환희", "독자", "탐험", "구조", "소망", "화학", "정직","나노시티"];
     return sampleWords.slice(0, count);
 }
 
