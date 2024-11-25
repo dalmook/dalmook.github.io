@@ -68,7 +68,7 @@
             justify-content: center;
             padding: 10px;
             max-width: 100%;
-            margin: 0 auto 20px;
+            margin: 0 auto 10px;
         }
         .game-board.easy {
             grid-template-columns: repeat(4, 1fr);
@@ -87,8 +87,9 @@
             cursor: pointer;
             border-radius: 10px;
             transition: transform 0.3s, background-color 0.3s;
-            background-size: cover;
-            background-position: center;
+            background-size: contain; /* 이미지를 비율을 유지하며 카드 크기 내에 맞춤 */
+            background-position: center; /* 이미지를 중앙에 위치시킴 */
+            background-repeat: no-repeat; /* 이미지 반복 제거 */
         }
         .card-content {
             position: absolute;
