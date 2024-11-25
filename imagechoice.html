@@ -846,9 +846,21 @@
         function selectOption(selectedOption, button) {
             const currentQuestion = filteredQuestions[currentQuestionIndex];
             clearInterval(countdownInterval); // 선택 시 카운트다운 중지
-            if (selectedOption === currentQuestion.correct) {
+            
+    					let correctScore, incorrectScore;
+					    if (difficulty === 'easy') {
+					        correctScore = 10;
+					        incorrectScore = -2;
+					    } else if (difficulty === 'medium') {
+				        correctScore = 20;
+					        incorrectScore = -4;
+					    } else if (difficulty === 'hard') {
+					        correctScore = 30;
+					        incorrectScore = -8;
+					    }
+						 if (selectedOption === currentQuestion.correct) {
                 // 정답
-                score += 10;
+                score += correctScore;
                 scoreDisplay.textContent = `점수: ${score}`;
                 feedback.innerHTML = '⭕';
                 button.style.backgroundColor = '#32cd32'; // 녹색
@@ -864,7 +876,7 @@
             
             } else {
                 // 오답
-                score -= 2;
+                score -= incorrectScore;
                 scoreDisplay.textContent = `점수: ${score}`;
                 feedback.innerHTML = '❌';
                 button.style.backgroundColor = '#ff4d4d'; // 빨간색
