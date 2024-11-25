@@ -35,6 +35,7 @@ h1 {
     cursor: pointer;
     user-select: none;
     transition: background-color 0.2s;
+    touch-action: none; /* 터치 기본 동작 방지 */
 }
 
 .grid div.selected {
