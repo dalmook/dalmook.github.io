@@ -230,6 +230,32 @@
         .animate-incorrect {
             animation: incorrectAnimation 1s ease-out forwards;
         }
+        .category-button, .difficulty-button {
+            padding: 10px 15px;
+            margin: 5px;
+            font-size: 1em;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            background-color: #87cefa;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .category-button:hover, .difficulty-button:hover {
+            background-color: #00bfff;
+        }
+
+        #categoryButtons, #difficultyButtons {
+            display: flex;
+            justify-content: center;
+            margin: 10px 0;
+        }
+        .selected {
+            background-color: #ffa500;
+            color: white;
+        }
+
+
     </style>
     
     <!-- Firebase SDK 추가 -->
@@ -241,24 +267,15 @@
 <body>
     <h1>그림 퀴즈 게임</h1>
     <!-- 게임 시작 섹션 -->
-    <div id="controls">
-        <!-- 카테고리 선택 -->
-        <label for="categorySelect">카테고리 선택:</label>
-        <select id="categorySelect">
-            <option value="">-- 선택하세요 --</option>
-            <option value="animals">동물</option>
-            <option value="plants">식물</option>
-            <!-- 추가 카테고리 옵션을 여기에 추가 -->
-        </select>
-        
-        <!-- 난이도 선택 -->
-        <label for="difficultySelect">난이도 선택:</label>
-        <select id="difficultySelect">
-            <option value="">-- 선택하세요 --</option>
-            <option value="easy">쉬움</option>
-            <option value="medium">보통</option>
-            <option value="hard">어려움</option>
-        </select>
+    <div id="categoryButtons">
+        <button class="category-button" data-category="animals">동물</button>
+        <button class="category-button" data-category="plants">식물</button>
+    </div>
+    <div id="difficultyButtons">
+        <button class="difficulty-button" data-difficulty="easy">쉬움</button>
+        <button class="difficulty-button" data-difficulty="medium">보통</button>
+        <button class="difficulty-button" data-difficulty="hard">어려움</button>
+    </div>
         
         <!-- 게임 시작 버튼 -->
         <button id="startQuizGame">게임 시작</button>
@@ -473,8 +490,8 @@
         let score = 0;
         let countdown = 3; // 초기 카운트다운 시간
         let countdownInterval;
-        let selectedCategory = '';
-        let selectedDifficulty = '';
+        let selectedCategory = null;
+        let selectedDifficulty = null;
         let filteredQuestions = []; // 선택된 카테고리와 난이도에 맞는 질문들
     
         const startQuizButton = document.getElementById('startQuizGame');
@@ -498,7 +515,23 @@
     
         const correctSoundEffect = document.getElementById('correctSoundEffect');
         const incorrectSound = document.getElementById('incorrectSound');
-    
+        // 카테고리 버튼 클릭 이벤트
+        document.querySelectorAll('.category-button').forEach(button => {
+            button.addEventListener('click', (event) => {
+                selectedCategory = event.target.dataset.category;
+                document.querySelectorAll('.category-button').forEach(btn => btn.classList.remove('selected'));
+                event.target.classList.add('selected');
+            });
+        });
+
+        // 난이도 버튼 클릭 이벤트
+        document.querySelectorAll('.difficulty-button').forEach(button => {
+            button.addEventListener('click', (event) => {
+                selectedDifficulty = event.target.dataset.difficulty;
+                document.querySelectorAll('.difficulty-button').forEach(btn => btn.classList.remove('selected'));
+                event.target.classList.add('selected');
+            });
+        });
         // 게임 시작 버튼 이벤트
         startQuizButton.addEventListener('click', () => {
             // 카테고리와 난이도가 선택되었는지 확인
