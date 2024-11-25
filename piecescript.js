@@ -11,6 +11,7 @@ let gridSize = 5; // 기본 크기
 let wordCount = 5; // 기본 단어 개수
 let isDragging = false;
 let selectedIndexes = [];
+let selectedDirection = { row: 0, col: 0 }; // 드래그 방향 저장
 let selectedWord = "";
 let startTime, timerInterval;
 
@@ -120,18 +121,43 @@ function placeWord(grid, word, row, col, direction) {
 }
 
 // 그리드 생성
+// 그리드 생성
 function createGrid() {
-  grid.style.gridTemplateColumns = `repeat(${gridSize}, 1fr)`;
-  gridWords.forEach((letter, index) => {
-    const cell = document.createElement("div");
-    cell.textContent = letter;
-    cell.dataset.index = index;
-    cell.addEventListener("mousedown", () => startDragging(index, cell));
-    cell.addEventListener("mouseover", () => dragOver(index, cell));
-    cell.addEventListener("mouseup", stopDragging);
-    grid.appendChild(cell);
-  });
-}
+    grid.style.gridTemplateColumns = `repeat(${gridSize}, 1fr)`;
+    gridWords.forEach((letter, index) => {
+      const cell = document.createElement("div");
+      cell.textContent = letter;
+      cell.dataset.index = index;
+      
+      // 마우스 이벤트
+      cell.addEventListener("mousedown", () => startDragging(index, cell));
+      cell.addEventListener("mouseover", () => dragOver(index, cell));
+      cell.addEventListener("mouseup", stopDragging);
+      
+      // 터치 이벤트
+      cell.addEventListener("touchstart", (e) => {
+        e.preventDefault(); // 기본 터치 동작 방지
+        startDragging(index, cell);
+      }, { passive: false });
+      
+      cell.addEventListener("touchmove", (e) => {
+        e.preventDefault(); // 기본 터치 동작 방지
+        const touch = e.touches[0];
+        const target = document.elementFromPoint(touch.clientX, touch.clientY);
+        if (target && target.classList.contains("grid")) {
+          const targetIndex = parseInt(target.dataset.index, 10);
+          dragOver(targetIndex, target);
+        }
+      }, { passive: false });
+      
+      cell.addEventListener("touchend", () => {
+        stopDragging();
+      });
+      
+      grid.appendChild(cell);
+    });
+  }
+  
 
 // 단어 목록 생성
 function createWordList() {
@@ -171,38 +197,37 @@ function stopDragging() {
 }
 
 // 유효한 이동인지 확인
-// 유효한 이동인지 확인
 function isValidMove(lastIndex, currentIndex) {
-  const lastRow = Math.floor(lastIndex / gridSize);
-  const lastCol = lastIndex % gridSize;
-  const currentRow = Math.floor(currentIndex / gridSize);
-  const currentCol = currentIndex % gridSize;
-
-  // 현재 선택된 방향이 없다면 첫 번째 이동에서 방향 결정
-  if (selectedIndexes.length === 1) {
+    const lastRow = Math.floor(lastIndex / gridSize);
+    const lastCol = lastIndex % gridSize;
+    const currentRow = Math.floor(currentIndex / gridSize);
+    const currentCol = currentIndex % gridSize;
+  
+    // 현재 선택된 방향이 없다면 첫 번째 이동에서 방향 결정
+    if (selectedIndexes.length === 1) {
+      const rowDiff = currentRow - lastRow;
+      const colDiff = currentCol - lastCol;
+  
+      if (Math.abs(rowDiff) <= 1 && Math.abs(colDiff) <= 1) {
+        // 가로, 세로, 대각선 방향인지 확인
+        if (rowDiff === 0 || colDiff === 0 || Math.abs(rowDiff) === Math.abs(colDiff)) {
+          selectedDirection = { row: rowDiff, col: colDiff }; // 방향 저장
+          return true;
+        }
+      }
+      return false;
+    }
+  
+    // 이후 이동에서는 저장된 방향과 일치하는지 확인
+    const prevDirection = selectedDirection;
     const rowDiff = currentRow - lastRow;
     const colDiff = currentCol - lastCol;
-
-    if (Math.abs(rowDiff) <= 1 && Math.abs(colDiff) <= 1) {
-      // 가로, 세로, 대각선 방향인지 확인
-      if (rowDiff === 0 || colDiff === 0 || Math.abs(rowDiff) === Math.abs(colDiff)) {
-        selectedDirection = { row: rowDiff, col: colDiff }; // 방향 저장
-        return true;
-      }
-    }
-    return false;
+  
+    return (
+      rowDiff === prevDirection.row &&
+      colDiff === prevDirection.col
+    );
   }
-
-  // 이후 이동에서는 저장된 방향과 일치하는지 확인
-  const prevDirection = selectedDirection;
-  const rowDiff = currentRow - lastRow;
-  const colDiff = currentCol - lastCol;
-
-  return (
-    rowDiff === prevDirection.row &&
-    colDiff === prevDirection.col
-  );
-}
 
 // 단어 확인
 function checkWord() {
