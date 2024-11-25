@@ -68,7 +68,7 @@
             justify-content: center;
             padding: 10px;
             max-width: 100%;
-            margin: 0 auto;            
+            margin: 0 auto 20px;
         }
         .game-board.easy {
             grid-template-columns: repeat(4, 1fr);
@@ -87,9 +87,8 @@
             cursor: pointer;
             border-radius: 10px;
             transition: transform 0.3s, background-color 0.3s;
-            background-size: contain; /* 이미지를 비율을 유지하며 카드 크기 내에 맞춤 */
-            background-position: center; /* 이미지를 중앙에 위치시킴 */
-            background-repeat: no-repeat; /* 이미지 반복 제거 */
+            background-size: cover;
+            background-position: center;
         }
         .card-content {
             position: absolute;
@@ -130,19 +129,19 @@
             width: 80px;
             margin-bottom: 20px;
         }
+        /* 기록 섹션 스타일 (모달) */
         #recordSection {
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background-color: rgba(0,0,0,0.5);
+            background-color: rgba(0, 0, 0, 0.5); /* 반투명 배경 */
             display: none;
-            justify-content: center;
             align-items: center;
+            justify-content: center;
             z-index: 1000;
         }
-
         #recordContent {
             background-color: #fff;
             padding: 20px;
@@ -154,106 +153,100 @@
             box-shadow: 0 5px 15px rgba(0,0,0,0.3);
             animation: fadeIn 0.3s ease-out;
         }
-
-        /* 기록 보기 버튼 스타일 */
-        #viewRecordsButton {
-            font-size: 0.8em;
-            padding: 3px 6px;
-            border: 1px solid #ccc;
-            background-color: #ffa500;
-            color: white;
-            border-radius: 5px;
-            cursor: pointer;
-            margin-left: 10px;
-        }
-
-        #viewRecordsButton:hover {
-            background-color: #ff8c00;
-        }
-
-        /* 애니메이션 */
+        
         @keyframes fadeIn {
-            from { opacity: 0; transform: scale(0.8); }
+            from { opacity: 0; transform: scale(0.9); }
             to { opacity: 1; transform: scale(1); }
         }
-
-        /* 카드 회전 애니메이션 (선택 사항) */
-        .card {
-            transition: transform 0.6s;
-            transform-style: preserve-3d;
-            position: relative;
-            cursor: pointer;
-        }
-
-        .card.flip {
-            transform: rotateY(180deg);
-        }
-
-        .card-content {
-            position: absolute;
+        #recordTable {
             width: 100%;
-            height: 100%;
-            backface-visibility: hidden;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            font-size: 2em;
-            color: white;
+            border-collapse: collapse;
+            margin: 10px 0;
+            max-height: 200px;
+            overflow-y: auto;
         }
-
-        /* 게임 보드 스타일 (간략화) */
-        .game-board {
-            display: grid;
-            gap: 10px;
-            margin-top: 20px;
+        #recordTable th, #recordTable td {
+            border: 1px solid #ccc;
+            padding: 8px;
+            text-align: center;
         }
-
-        .game-board.easy {
-            grid-template-columns: repeat(4, 1fr);
+        /* 미디어 쿼리로 화면 크기에 맞게 조정 */
+        @media (max-width: 1200px) {
+            /* 큰 화면에서도 카드가 너무 크지 않도록 조정 */
+            .game-board.easy .card, .game-board.medium .card, .game-board.hard .card {
+                padding-top: 100%;
+            }
         }
-
-        .game-board.medium {
-            grid-template-columns: repeat(6, 1fr);
+        @media (max-width: 992px) {
+            /* 태블릿 및 중간 크기 화면용 설정 */
+            h1 {
+                font-size: 1.8em;
+            }
+            #controls > * {
+                max-width: 90%;
+            }
+            #wordDisplay {
+                font-size: 1.2em;
+            }
         }
-
-        .game-board.hard {
-            grid-template-columns: repeat(8, 1fr);
+        @media (max-width: 768px) {
+            /* 스마트폰 세로 화면용 설정 */
+            h1 {
+                font-size: 1.5em;
+            }
+            #controls > * {
+                max-width: 100%;
+            }
+            #wordDisplay {
+                font-size: 1em;
+            }
+            /* 카드 간격 줄이기 */
+            #gameBoard {
+                gap: 5px;
+                padding: 5px;
+            }
         }
-
-        /* 카드 스타일 */
-        .card {
-            width: 100%;
-            padding-bottom: 100%; /* 정사각형 유지 */
-            position: relative;
-            background-color: #333;
-            border-radius: 10px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+        /* 가로 모드일 때 그리드 레이아웃 조정 */
+        @media (orientation: landscape) {
+            /* 쉬움 난이도: 4x4 -> 6x4 */
+            .game-board.easy {
+                grid-template-columns: repeat(6, 1fr); /* 예시: 컬럼 수를 늘려 더 넓은 레이아웃 */
+            }
+        
+            /* 보통 난이도: 6x6 -> 8x6 */
+            .game-board.medium {
+                grid-template-columns: repeat(8, 1fr); /* 컬럼 수를 8로 늘려 가로 공간 활용 */
+            }
+        
+            /* 어려움 난이도: 8x8 -> 10x8 */
+            .game-board.hard {
+                grid-template-columns: repeat(10, 1fr); /* 컬럼 수를 10으로 늘려 더 넓은 레이아웃 */
+            }
+        
+            /* 카드 크기 조정 (선택 사항) */
+            .game-board.easy .card,
+            .game-board.medium .card,
+            .game-board.hard .card {
+                padding-top: 100%; /* 필요에 따라 비율 조정 가능 */
+            }
         }
-
-        .card img {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            border-radius: 10px;
+        @keyframes countdown-animation {
+            0% {
+                transform: scale(1);
+                opacity: 1;
+                color: red;
+            }
+            50% {
+                transform: scale(1.5);
+                opacity: 0.8;
+                color: orange;
+            }
+            100% {
+                transform: scale(0.8);
+                opacity: 0;
+                color: yellow;
+            }
         }
-
-        .card-content {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0,0,0,0.6);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            font-size: 2em;
-            color: white;
-            border-radius: 10px;
-        }
-
         /* 카운트다운 오버레이 스타일 */
         #countdownOverlay {
             position: fixed;
@@ -261,117 +254,37 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background-color: rgba(0,0,0,0.8);
+            background-color: rgba(0, 0, 0, 0.7); /* 반투명 검정 배경 */
             display: none;
-            justify-content: center;
             align-items: center;
-            z-index: 2000;
+            justify-content: center;
+            z-index: 2000; /* 다른 요소들보다 위에 표시 */
         }
 
         #countdownNumber {
+            color: white;
             font-size: 5em;
-            color: white;
-            animation: fade 1s infinite;
+            font-weight: bold;
+            animation: countdownFade 1s ease-in-out forwards;
         }
 
-        @keyframes fade {
-            0% { opacity: 1; }
-            50% { opacity: 0.5; }
-            100% { opacity: 1; }
+        @keyframes countdownFade {
+            from { opacity: 1; transform: scale(1); }
+            to { opacity: 0; transform: scale(1.5); }
         }
-
-        /* 성공 메시지 스타일 */
-        #successMessage {
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            background-color: #fff;
-            padding: 30px;
-            border-radius: 10px;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
-            display: none;
-            text-align: center;
-            z-index: 2000;
-        }
-
-        #successMessage img {
-            width: 100px;
-            height: 100px;
-        }
-
-        #successMessage button {
-            margin-top: 20px;
-            padding: 10px 20px;
-            font-size: 1em;
-            border: none;
-            background-color: #28a745;
-            color: white;
-            border-radius: 5px;
-            cursor: pointer;
-        }
-
-        #successMessage button:hover {
-            background-color: #218838;
-        }
-
-        /* 기록 섹션 스타일 (모달) */
-        #recordSection {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0,0,0,0.5);
-            display: none;
-            justify-content: center;
-            align-items: center;
-            z-index: 1000;
-        }
-
-        #recordContent {
-            background-color: #fff;
-            padding: 20px;
-            border-radius: 10px;
-            width: 90%;
-            max-width: 500px;
-            max-height: 80%;
-            overflow-y: auto;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
-            animation: fadeIn 0.3s ease-out;
-        }
-
-        /* 기록 테이블 스타일 */
-        #recordTable {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 10px;
-        }
-
-        #recordTable th, #recordTable td {
-            border: 1px solid #ddd;
-            padding: 8px;
-            text-align: center;
-        }
-
-        #recordTable th {
-            background-color: #f2f2f2;
-        }
-
-        /* 기록 보기 버튼 스타일 */
         #viewRecordsButton {
-            font-size: 0.8em;
-            padding: 5px 10px;
-            border: 1px solid #ccc;
-            background-color: #ffa500;
-            color: white;
-            border-radius: 5px;
-            cursor: pointer;
-            margin-left: 10px;
+        font-size: 0.8em;
+        padding: 5px 10px;
+        border: 1px solid #ccc;
+        background-color: #ffa500;
+        color: white;
+        border-radius: 5px;
+        cursor: pointer;
+        margin-left: 10px;
         }
 
         #viewRecordsButton:hover {
-            background-color: #ff8c00;
+        background-color: #ff8c00;
         }
     </style>
     
