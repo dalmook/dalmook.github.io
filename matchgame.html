@@ -470,91 +470,91 @@
         }
 
         // 그림 짝맞추기 게임 초기화 함수
-function initializeMatchingGame() {
-    // 난이도에 따른 정답 노출 시간 (밀리초)
-    let revealTime = 1500; // 기본값 (쉬움)
-    const currentDifficulty = difficultySelect.value;
-    switch (currentDifficulty) {
-        case 'easy':
-            revealTime = 1500; // 1.5초
-            break;
-        case 'medium':
-            revealTime = 2000; // 2초
-            break;
-        case 'hard':
-            revealTime = 3000; // 3초
-            break;
-        default:
-            revealTime = 1500; // 기본값
-    }
-
-    // 기존 초기화 로직
-    selectedCategory = categorySelectMatching.value;
-    gameBoard.classList.remove('easy', 'medium', 'hard');
-    switch (currentDifficulty) {
-        case 'easy':
-            pairsCount = 8; 
-            gameBoard.classList.add('easy');
-            break;
-        case 'medium':
-            pairsCount = 18; 
-            gameBoard.classList.add('medium');
-            break;
-        case 'hard':
-            pairsCount = 32; 
-            gameBoard.classList.add('hard');
-            break;
-        default:
-            pairsCount = 8;
-            gameBoard.classList.add('easy');
-    }
-
-    const categoryItems = categories[selectedCategory];
-    if (!categoryItems || categoryItems.length < pairsCount) {
-        alert('선택한 카테고리에 충분한 아이템이 없습니다.');
-        return;
-    }
-
-    const shuffled = shuffleArray([...categoryItems]);
-    const selectedItems = shuffled.slice(0, pairsCount);
-    gameImages = [...selectedItems, ...selectedItems];
-    gameImages = shuffleArray(gameImages);
-
-    gameBoard.innerHTML = '';
-    gameImages.forEach((item, index) => {
-        const card = document.createElement('div');
-        card.classList.add('card');
-        card.dataset.image = item.image;
-        card.dataset.name = item.name;
-
-        // 카드 뒷면 설정
-        card.style.backgroundImage = `url("${item.image}")`; // 정답 표시
-        card.style.backgroundSize = 'cover';
-        card.style.backgroundPosition = 'center';
-
-        const cardContent = document.createElement('div');
-        cardContent.classList.add('card-content');
-        cardContent.innerHTML = '❓'; // 숨길 때 나타낼 내용
-        card.appendChild(cardContent);
-        gameBoard.appendChild(card);
-    });
-
-    // 모든 카드를 뒤집기 전에 정답을 일정 시간 보여줌
-    setTimeout(() => {
-        gameBoard.querySelectorAll('.card').forEach(card => {
-            card.style.backgroundImage = 'url("https://cdn-icons-png.flaticon.com/512/929/929500.png")'; // 카드 뒷면
-            card.querySelector('.card-content').style.display = 'flex'; // 물음표 표시
-        });
-    }, revealTime);
-
-    // 점수 및 상태 초기화
-    score = 0;
-    matchedPairs = 0;
-    scoreDisplay.textContent = `점수: ${score}`;
-    wordDisplay.textContent = '';
-    recordSection.style.display = 'none';
-    successMessage.style.display = 'none';
-}
+        function initializeMatchingGame() {
+            // 난이도에 따른 정답 노출 시간 (밀리초)
+            let revealTime = 1500; // 기본값 (쉬움)
+            const currentDifficulty = difficultySelect.value;
+            switch (currentDifficulty) {
+                case 'easy':
+                    revealTime = 1500; // 1.5초
+                    break;
+                case 'medium':
+                    revealTime = 2000; // 2초
+                    break;
+                case 'hard':
+                    revealTime = 3000; // 3초
+                    break;
+                default:
+                    revealTime = 1500; // 기본값
+            }
+        
+            // 기존 초기화 로직
+            selectedCategory = categorySelectMatching.value;
+            gameBoard.classList.remove('easy', 'medium', 'hard');
+            switch (currentDifficulty) {
+                case 'easy':
+                    pairsCount = 8; 
+                    gameBoard.classList.add('easy');
+                    break;
+                case 'medium':
+                    pairsCount = 18; 
+                    gameBoard.classList.add('medium');
+                    break;
+                case 'hard':
+                    pairsCount = 32; 
+                    gameBoard.classList.add('hard');
+                    break;
+                default:
+                    pairsCount = 8;
+                    gameBoard.classList.add('easy');
+            }
+        
+            const categoryItems = categories[selectedCategory];
+            if (!categoryItems || categoryItems.length < pairsCount) {
+                alert('선택한 카테고리에 충분한 아이템이 없습니다.');
+                return;
+            }
+        
+            const shuffled = shuffleArray([...categoryItems]);
+            const selectedItems = shuffled.slice(0, pairsCount);
+            gameImages = [...selectedItems, ...selectedItems];
+            gameImages = shuffleArray(gameImages);
+        
+            gameBoard.innerHTML = '';
+            gameImages.forEach((item, index) => {
+                const card = document.createElement('div');
+                card.classList.add('card');
+                card.dataset.image = item.image;
+                card.dataset.name = item.name;
+            
+                // 카드 뒷면 설정
+                card.style.backgroundImage = `url("${item.image}")`; // 정답 표시
+                card.style.backgroundSize = 'cover';
+                card.style.backgroundPosition = 'center';
+            
+                const cardContent = document.createElement('div');
+                cardContent.classList.add('card-content');
+                cardContent.innerHTML = '❓'; // 숨길 때 나타낼 내용
+                card.appendChild(cardContent);
+                gameBoard.appendChild(card);
+            });
+        
+            // 모든 카드를 뒤집기 전에 정답을 일정 시간 보여줌
+            setTimeout(() => {
+                gameBoard.querySelectorAll('.card').forEach(card => {
+                    card.style.backgroundImage = 'url("https://cdn-icons-png.flaticon.com/512/929/929500.png")'; // 카드 뒷면
+                    card.querySelector('.card-content').style.display = 'flex'; // 물음표 표시
+                });
+            }, revealTime);
+        
+            // 점수 및 상태 초기화
+            score = 0;
+            matchedPairs = 0;
+            scoreDisplay.textContent = `점수: ${score}`;
+            wordDisplay.textContent = '';
+            recordSection.style.display = 'none';
+            successMessage.style.display = 'none';
+        }
 
         // 그림 짝맞추기 게임 카드 뒤집기 함수
         function flipCard() {
