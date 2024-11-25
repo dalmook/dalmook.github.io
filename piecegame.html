@@ -17,7 +17,10 @@
         <option value="medium">Medium (7x7, 7단어)</option>
         <option value="hard">Hard (9x9, 9단어)</option>
     </select>
+    <!-- "게임 시작" 버튼 옆에 "기록 보기" 버튼 추가 -->
     <button id="start-game">게임 시작</button>
+    <button id="view-leaderboard">기록 보기</button>
+    
     <div class="game-container">
         <div id="grid" class="grid"></div>
         <div id="word-list" class="word-list">
@@ -29,6 +32,7 @@
     <p id="result"></p>
 
     <!-- 이름 입력 폼 (숨김 상태) -->
+    <div id="overlay" style="display: none;"></div> <!-- 오버레이 추가 -->
     <div id="name-form" style="display: none;">
         <h2>게임 완료!</h2>
         <p>이름을 입력하세요:</p>
@@ -39,6 +43,7 @@
     <!-- 리더보드 섹션 -->
     <div id="leaderboard" style="display: none;">
         <h2>리더보드</h2>
+        <button id="close-leaderboard">닫기</button> <!-- 리더보드 닫기 버튼 추가 -->
         <table>
             <thead>
                 <tr>
