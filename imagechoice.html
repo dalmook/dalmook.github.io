@@ -847,20 +847,10 @@
             const currentQuestion = questions[currentQuestionIndex];
             clearInterval(countdownInterval); // 선택 시 카운트다운 중지
             
-    					let correctScore, incorrectScore;
-				 	   if (difficulty === 'easy') {
-				  	      correctScore = 10;
-				  	      incorrectScore = -2;
-				  	  } else if (difficulty === 'medium') {
-				  	      correctScore = 20;
-				  	      incorrectScore = -4;
-				  	  } else if (difficulty === 'hard') {
-				  	      correctScore = 30;
-				  	      incorrectScore = -8;
-				  	  }
+
 						 if (selectedOption === currentQuestion.correct) {
                 // 정답
-                score += correctScore;
+                score += 10;
                 scoreDisplay.textContent = `점수: ${score}`;
                 feedback.innerHTML = '⭕';
                 button.style.backgroundColor = '#32cd32'; // 녹색
@@ -876,7 +866,7 @@
             
             } else {
                 // 오답
-                score -= incorrectScore;
+                score -= -2;
                 scoreDisplay.textContent = `점수: ${score}`;
                 feedback.innerHTML = '❌';
                 button.style.backgroundColor = '#ff4d4d'; // 빨간색
@@ -917,7 +907,7 @@
         function markAsIncorrect() {                       
             const currentQuestion = filteredQuestions[currentQuestionIndex];
             // speakText(currentQuestion.correct); // 제거 (이미 displayCorrectAnswer에서 음성 출력)
-            score -= incorrectScore;
+            score -= -2;
             scoreDisplay.textContent = `점수: ${score}`;
             feedback.innerHTML = '❌';
             // 모든 보기 버튼 비활성화 및 정답 표시
