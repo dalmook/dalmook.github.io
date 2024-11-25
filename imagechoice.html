@@ -338,19 +338,22 @@
         // 카테고리별 옵션 풀 정의
         const optionPools = {
             animals: ['Tiger', 'Elephant', 'Lion', 'Giraffe', 'Zebra', 'Kangaroo', 'Panda', 'Dolphin', 'Whale', 'Shark',
-                'Cheetah', 'Wolf', 'Fox', 'Bear', 'Rabbit', 'Deer', 'Horse', 'Sheep', 'Goat', 'Pig',
-                'Dog', 'Cat', 'Mouse', 'Rat', 'Squirrel', 'Eagle', 'Owl', 'Parrot', 'Penguin', 'Flamingo',
-                'Camel', 'Crocodile', 'Turtle', 'Frog', 'Snake', 'Lizard', 'Butterfly', 'Bee', 'Ant', 'Octopus',
-                'Crab', 'Jellyfish', 'Starfish', 'Seal', 'Walrus', 'Peacock', 'Turkey', 'Chicken', 'Duck', 'Goose'],
+     'Cheetah', 'Wolf', 'Fox', 'Bear', 'Rabbit', 'Deer', 'Horse', 'Sheep', 'Goat', 'Pig',
+     'Dog', 'Cat', 'Mouse', 'Rat', 'Squirrel', 'Eagle', 'Owl', 'Parrot', 'Penguin', 'Flamingo',
+     'Camel', 'Crocodile', 'Turtle', 'Frog', 'Snake', 'Lizard', 'Butterfly', 'Bee', 'Ant', 'Octopus',
+     'Crab', 'Jellyfish', 'Starfish', 'Seal', 'Walrus', 'Peacock', 'Turkey', 'Chicken', 'Duck', 'Goose'],
             foods: ['Pizza', 'Hamburger', 'Pasta', 'Sandwich', 'Rice', 'Noodles', 'Soup', 'Salad', 'Bread', 'Cheese',
-                'Milk', 'Yogurt', 'Egg', 'Chicken', 'Beef', 'Fish', 'Shrimp', 'Apple', 'Banana', 'Grape',
-                'Orange', 'Mango', 'Strawberry', 'Watermelon', 'Pineapple', 'Carrot', 'Potato', 'Tomato', 'Cucumber', 'Broccoli',
-                'Ice Cream', 'Cake', 'Chocolate', 'Candy', 'Cookie', 'Popcorn', 'Chips', 'Honey', 'Butter', 'Jam',
-                'Pancake', 'Waffle', 'Toast', 'Sushi', 'Dumpling', 'Taco', 'Hotdog', 'Cereal', 'Juice', 'Smoothie', 'Kimchi']
+     'Milk', 'Yogurt', 'Egg', 'Chicken', 'Beef', 'Fish', 'Shrimp', 'Apple', 'Banana', 'Grape',
+     'Orange', 'Mango', 'Strawberry', 'Watermelon', 'Pineapple', 'Carrot', 'Potato', 'Tomato', 'Cucumber', 'Broccoli',
+     'Ice Cream', 'Cake', 'Chocolate', 'Candy', 'Cookie', 'Popcorn', 'Chips', 'Honey', 'Butter', 'Jam',
+     'Pancake', 'Waffle', 'Toast', 'Sushi', 'Dumpling', 'Taco', 'Hotdog', 'Cereal', 'Juice', 'Smoothie','Kimchi']
         };
 
         // 질문 데이터 (카테고리별로 분류, 난이도별로는 분류하지 않음)
-        let questions = {};
+
+        
+
+
 
         // 변수 초기화
         let currentQuestionIndex = 0;
@@ -378,36 +381,17 @@
         const submitRecordButton = document.getElementById('submitRecordButton');
         const recordTableBody = document.getElementById('recordTable').querySelector('tbody');
         const closeRecordSectionButton = document.getElementById('closeRecordSection');
+        // const backToGameButton = document.getElementById('backToGameButton'); // 제거
         
         const correctSoundEffect = document.getElementById('correctSoundEffect');
         const incorrectSound = document.getElementById('incorrectSound');
-
-        // 질문 데이터 로드 함수
-        async function loadQuestions() {
-            try {
-                const response = await fetch('imagechoicedata.json');
-                if (!response.ok) {
-                    throw new Error('JSON 파일을 불러오는 데 실패했습니다.');
-                }
-                questions = await response.json();
-                console.log('질문 데이터가 성공적으로 로드되었습니다.');
-            } catch (error) {
-                console.error('질문 데이터 로드 오류:', error);
-                alert('질문 데이터를 불러오는 데 문제가 발생했습니다.');
-            }
-        }
-
-        // 페이지 로드 시 질문 데이터 로드
-        window.addEventListener('DOMContentLoaded', async () => {
-            await loadQuestions();
-        });
-
+    
         // 게임 시작 버튼 이벤트
         startQuizButton.addEventListener('click', () => {
             // 카테고리와 난이도가 선택되었는지 확인
             selectedCategory = document.getElementById('categorySelect').value;
             selectedDifficulty = document.getElementById('difficultySelect').value;
-
+    
             if (!selectedCategory) {
                 alert('카테고리를 선택하세요!');
                 return;
@@ -416,7 +400,7 @@
                 alert('난이도를 선택하세요!');
                 return;
             }
-
+    
             // 선택된 카테고리에 맞는 질문들 필터링
             if (questions[selectedCategory]) {
                 filteredQuestions = [...questions[selectedCategory]];
@@ -424,7 +408,7 @@
                 alert('선택한 카테고리에 맞는 질문이 없습니다.');
                 return;
             }
-
+    
             // 퀴즈 시작
             startQuizGame();
         });
@@ -455,19 +439,14 @@
             currentQuestionIndex = 0;
             score = 0;
             filteredQuestions = selectedQuestions; // 선택된 문제를 저장
-            scoreDisplay.textContent = `점수: ${score}`;
+            scoreDisplay.textContent = 점수: ${score};
             quizContainer.style.display = 'flex';
             startQuizButton.disabled = true;
             loadQuestion();
         }
-
+    
         // 질문 로드 함수 수정
         function loadQuestion() {
-            if (currentQuestionIndex >= filteredQuestions.length) {
-                endQuiz();
-                return;
-            }
-
             // 난이도에 따라 시간 설정
             if (selectedDifficulty === 'easy') {
                 countdown = 5; // 쉬움: 5초
@@ -477,8 +456,13 @@
                 countdown = 2; // 어려움: 2초
             }
             
+            if (currentQuestionIndex >= filteredQuestions.length) {
+                endQuiz();
+                return;
+            }
+
             const currentQuestion = filteredQuestions[currentQuestionIndex];
-            questionImage.style.backgroundImage = `url("${currentQuestion.image}")`;
+            questionImage.style.backgroundImage = url("${currentQuestion.image}");
             feedback.innerHTML = ''; // 피드백 초기화
             correctAnswerDiv.innerHTML = ''; // 정답 표시 초기화
             correctAnswerDiv.style.display = 'none'; // 정답 표시 숨김
@@ -511,11 +495,11 @@
             });
         
             // 카운트다운 초기화
-            feedback.innerHTML = `${countdown}초`;
+            feedback.innerHTML = ${countdown}초;
             countdownInterval = setInterval(() => {
                 countdown--;
                 if (countdown > 0) {
-                    feedback.innerHTML = `${countdown}초`;
+                    feedback.innerHTML = ${countdown}초;
                 } else {
                     clearInterval(countdownInterval);
                     markAsIncorrect(); // 시간이 초과되면 오답 처리
@@ -524,129 +508,131 @@
         }
 
         // 보기 선택 함수
-        function selectOption(selectedOption, button) {
-            const currentQuestion = filteredQuestions[currentQuestionIndex];
-            clearInterval(countdownInterval); // 선택 시 카운트다운 중지
+// 보기 선택 함수
+function selectOption(selectedOption, button) {
+    const currentQuestion = filteredQuestions[currentQuestionIndex];
+    clearInterval(countdownInterval); // 선택 시 카운트다운 중지
 
-            // 난이도에 따른 점수 설정
-            let correctScore, incorrectScore;
-            if (selectedDifficulty === 'easy') {
-                correctScore = 10;
-                incorrectScore = -2;
-            } else if (selectedDifficulty === 'medium') {
-                correctScore = 20;
-                incorrectScore = -4;
-            } else if (selectedDifficulty === 'hard') {
-                correctScore = 30;
-                incorrectScore = -8;
+    // 난이도에 따른 점수 설정
+    let correctScore, incorrectScore;
+    if (selectedDifficulty === 'easy') {
+        correctScore = 10;
+        incorrectScore = -2;
+    } else if (selectedDifficulty === 'medium') {
+        correctScore = 20;
+        incorrectScore = -4;
+    } else if (selectedDifficulty === 'hard') {
+        correctScore = 30;
+        incorrectScore = -8;
+    }
+
+    if (selectedOption === currentQuestion.correct) {
+        // 정답
+        score += correctScore;
+        scoreDisplay.textContent = 점수: ${score};
+        feedback.innerHTML = '⭕';
+        button.style.backgroundColor = '#32cd32'; // 녹색
+        correctSoundEffect.play();
+
+        // 애니메이션 클래스 추가
+        feedback.classList.add('animate-correct');
+
+        // 애니메이션이 끝난 후 클래스 제거
+        feedback.addEventListener('animationend', () => {
+            feedback.classList.remove('animate-correct');
+        }, { once: true });
+
+    } else {
+        // 오답
+        score += incorrectScore; // 예: easy는 -2
+        scoreDisplay.textContent = 점수: ${score};
+        feedback.innerHTML = '❌';
+        button.style.backgroundColor = '#ff4d4d'; // 빨간색
+        incorrectSound.play();
+
+        // 정답 밑줄 표시
+        Array.from(optionsContainer.children).forEach(btn => {
+            if (btn.textContent === currentQuestion.correct) {
+                btn.classList.add('correct-answer');
             }
+        });
 
-            if (selectedOption === currentQuestion.correct) {
-                // 정답
-                score += correctScore;
-                scoreDisplay.textContent = `점수: ${score}`;
-                feedback.innerHTML = '⭕';
-                button.style.backgroundColor = '#32cd32'; // 녹색
-                correctSoundEffect.play();
+        // 애니메이션 클래스 추가
+        feedback.classList.add('animate-incorrect');
 
-                // 애니메이션 클래스 추가
-                feedback.classList.add('animate-correct');
+        // 애니메이션이 끝난 후 클래스 제거
+        feedback.addEventListener('animationend', () => {
+            feedback.classList.remove('animate-incorrect');
+        }, { once: true });
+    }
 
-                // 애니메이션이 끝난 후 클래스 제거
-                feedback.addEventListener('animationend', () => {
-                    feedback.classList.remove('animate-correct');
-                }, { once: true });
-
-            } else {
-                // 오답
-                score += incorrectScore; // 예: easy는 -2
-                scoreDisplay.textContent = `점수: ${score}`;
-                feedback.innerHTML = '❌';
-                button.style.backgroundColor = '#ff4d4d'; // 빨간색
-                incorrectSound.play();
-
-                // 정답 밑줄 표시
-                Array.from(optionsContainer.children).forEach(btn => {
-                    if (btn.textContent === currentQuestion.correct) {
-                        btn.classList.add('correct-answer');
-                    }
-                });
-
-                // 애니메이션 클래스 추가
-                feedback.classList.add('animate-incorrect');
-
-                // 애니메이션이 끝난 후 클래스 제거
-                feedback.addEventListener('animationend', () => {
-                    feedback.classList.remove('animate-incorrect');
-                }, { once: true });
-            }
-
-            // 모든 보기 버튼 비활성화 및 정답 표시
-            Array.from(optionsContainer.children).forEach(btn => {
-                btn.disabled = true;
-                if (btn.textContent === currentQuestion.correct) {
-                    btn.style.backgroundColor = '#32cd32'; // 정답 표시
-                }
-            });
-
-            // 정답 표시
-            displayCorrectAnswer(currentQuestion.correct);
-
-            setTimeout(() => {
-                nextQuestion();
-            }, 2000); // 2초 후 다음 질문으로 이동 (정답 표시 시간 포함)
+    // 모든 보기 버튼 비활성화 및 정답 표시
+    Array.from(optionsContainer.children).forEach(btn => {
+        btn.disabled = true;
+        if (btn.textContent === currentQuestion.correct) {
+            btn.style.backgroundColor = '#32cd32'; // 정답 표시
         }
+    });
 
-        // 시간 초과 시 오답 처리 함수
-        function markAsIncorrect() {                       
-            const currentQuestion = filteredQuestions[currentQuestionIndex];
-            
-            // 난이도에 따른 오답 점수 설정
-            let incorrectScore;
-            if (selectedDifficulty === 'easy') {
-                incorrectScore = -2;
-            } else if (selectedDifficulty === 'medium') {
-                incorrectScore = -4;
-            } else if (selectedDifficulty === 'hard') {
-                incorrectScore = -8;
-            }
+    // 정답 표시
+    displayCorrectAnswer(currentQuestion.correct);
 
-            score += incorrectScore;
-            scoreDisplay.textContent = `점수: ${score}`;
-            feedback.innerHTML = '❌';
-            
-            // 모든 보기 버튼 비활성화 및 정답 표시
-            Array.from(optionsContainer.children).forEach(btn => {
-                btn.disabled = true;
-                if (btn.textContent === currentQuestion.correct) {
-                    btn.style.backgroundColor = '#32cd32'; // 정답 표시
-                    btn.classList.add('correct-answer'); // 정답 밑줄 표시
-                }
-            });
-            
-            incorrectSound.play();
+    setTimeout(() => {
+        nextQuestion();
+    }, 2000); // 2초 후 다음 질문으로 이동 (정답 표시 시간 포함)
+}
 
-            // 애니메이션 클래스 추가
-            feedback.classList.add('animate-incorrect');
-
-            // 애니메이션이 끝난 후 클래스 제거
-            feedback.addEventListener('animationend', () => {
-                feedback.classList.remove('animate-incorrect');
-            }, { once: true });
-
-            // 정답 표시
-            displayCorrectAnswer(currentQuestion.correct);
-
-            // 2초 후 다음 질문으로 이동
-            setTimeout(() => {
-                nextQuestion();
-            }, 2000);
-        }
+// 시간 초과 시 오답 처리 함수
+function markAsIncorrect() {                       
+    const currentQuestion = filteredQuestions[currentQuestionIndex];
     
+    // 난이도에 따른 오답 점수 설정
+    let incorrectScore;
+    if (selectedDifficulty === 'easy') {
+        incorrectScore = -2;
+    } else if (selectedDifficulty === 'medium') {
+        incorrectScore = -4;
+    } else if (selectedDifficulty === 'hard') {
+        incorrectScore = -8;
+    }
+
+    score += incorrectScore;
+    scoreDisplay.textContent = 점수: ${score};
+    feedback.innerHTML = '❌';
+    
+    // 모든 보기 버튼 비활성화 및 정답 표시
+    Array.from(optionsContainer.children).forEach(btn => {
+        btn.disabled = true;
+        if (btn.textContent === currentQuestion.correct) {
+            btn.style.backgroundColor = '#32cd32'; // 정답 표시
+            btn.classList.add('correct-answer'); // 정답 밑줄 표시
+        }
+    });
+    
+    incorrectSound.play();
+
+    // 애니메이션 클래스 추가
+    feedback.classList.add('animate-incorrect');
+
+    // 애니메이션이 끝난 후 클래스 제거
+    feedback.addEventListener('animationend', () => {
+        feedback.classList.remove('animate-incorrect');
+    }, { once: true });
+
+    // 정답 표시
+    displayCorrectAnswer(currentQuestion.correct);
+
+    // 2초 후 다음 질문으로 이동
+    setTimeout(() => {
+        nextQuestion();
+    }, 2000);
+}
+
+
         // 정답 표시 함수
         function displayCorrectAnswer(correctAnswer) {
             const message = correctAnswer; // 정답 단어만 읽도록 수정
-            correctAnswerDiv.innerHTML = `정답: ${message}`;
+            correctAnswerDiv.innerHTML = 정답: ${message};
             correctAnswerDiv.style.display = 'block';
         
             // 텍스트 음성 변환 (선택 사항)
@@ -664,6 +650,7 @@
             }
         }
         
+
         // 다음 질문으로 이동 함수
         function nextQuestion() {
             currentQuestionIndex++;
@@ -744,11 +731,11 @@
         function addRecordToTable(record) {
             const row = document.createElement('tr');
             const date = record.timestamp ? record.timestamp.toDate().toLocaleString() : 'N/A';
-            row.innerHTML = `
+            row.innerHTML = 
                 <td>${record.name}</td>
                 <td>${record.score}</td>
                 <td>${date}</td>
-            `;
+            ;
             recordTableBody.appendChild(row);
         }
 
@@ -756,7 +743,7 @@
         function restartGame() {
             currentQuestionIndex = 0; // 질문 인덱스 초기화
             score = 0;                 // 점수 초기화
-            scoreDisplay.textContent = `점수: ${score}`;
+            scoreDisplay.textContent = 점수: ${score};
             recordSection.style.display = 'none';    // 기록 섹션 숨기기
             successMessage.style.display = 'none';    // 성공 메시지 숨기기
             playerNameInput.value = '';               // 이름 입력 필드 초기화
