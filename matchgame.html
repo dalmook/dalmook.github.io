@@ -121,6 +121,30 @@
             background-color: #32cd32 !important;
             cursor: default;
         }
+        /* 카운트다운 오버레이 스타일 */
+        #countdownOverlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.8);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 2000;
+        }
+
+        #countdownNumber {
+            font-size: 5em;
+            color: white;
+            animation: fade 1s infinite;
+        }
+        @keyframes fade {
+            0% { opacity: 1; }
+            50% { opacity: 0.5; }
+            100% { opacity: 1; }
+        }
         /* 성공 메시지 스타일 */
         #successMessage {
             position: fixed;
@@ -241,27 +265,6 @@
                 padding-top: 100%; /* 필요에 따라 비율 조정 가능 */
             }
         }
-
-        /* 카운트다운 오버레이 스타일 */
-        #countdownOverlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0,0,0,0.8);
-            display: none;
-            justify-content: center;
-            align-items: center;
-            z-index: 2000;
-        }
-
-        #countdownNumber {
-            font-size: 5em;
-            color: white;
-            animation: fade 1s infinite;
-        }
-
         #viewRecordsButton {
         font-size: 0.8em;
         padding: 5px 10px;
