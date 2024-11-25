@@ -5,6 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>단어 연결 게임</title>
     <link rel="stylesheet" href="piecestyles.css">
+    <!-- Firebase SDK 추가 -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js"></script>
 </head>
 <body>
     <h1>단어 연결 게임</h1>
@@ -24,6 +27,33 @@
     </div>
     <p id="timer">걸린 시간: 0초</p>
     <p id="result"></p>
+
+    <!-- 이름 입력 폼 (숨김 상태) -->
+    <div id="name-form" style="display: none;">
+        <h2>게임 완료!</h2>
+        <p>이름을 입력하세요:</p>
+        <input type="text" id="player-name" placeholder="이름">
+        <button id="submit-name">제출</button>
+    </div>
+
+    <!-- 리더보드 섹션 -->
+    <div id="leaderboard" style="display: none;">
+        <h2>리더보드</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>순위</th>
+                    <th>이름</th>
+                    <th>난이도</th>
+                    <th>걸린 시간 (초)</th>
+                </tr>
+            </thead>
+            <tbody id="leaderboard-body">
+                <!-- 리더보드 데이터 삽입 -->
+            </tbody>
+        </table>
+    </div>
+
     <script src="piecescript.js"></script>
 </body>
 </html>
