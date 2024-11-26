@@ -454,7 +454,6 @@
         
                 // 페이지 로드 시 Firestore 기록 불러오기
                 window.onload = async function() {
-                    await loadCategories(); // categories.json 불러오기
                     loadRecordsFromFirestore();
                     // initializeMatchingGame(); // 이 줄을 제거하거나 주석 처리하세요.
                 };
