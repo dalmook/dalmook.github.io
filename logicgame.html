@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Logic Game</title>
+    <link rel="stylesheet" href="logicgamestyles.css">
+    <!-- Firebase SDK 추가 -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js"></script>
+    <script src="logicgamefirebaseConfig.js"></script> <!-- Firebase 설정 -->
+</head>
+<body>
+    <h1>Logic Game</h1>
+    
+    <!-- 난이도 선택 추가 -->
+    <p>난이도를 선택하세요:</p>
+    <select id="difficultySelect">
+        <option value="easy">Easy</option>
+        <option value="medium">Medium</option>
+        <option value="hard">Hard</option>
+    </select>
+    
+    <p>아래 시퀀스에서 '?'에 들어갈 숫자를 입력하세요:</p>
+    <div id="sequence" class="sequence">2 4 ? 8 10</div>
+    <input type="number" id="answerInput" placeholder="숫자를 입력하세요">
+    <button id="submitAnswerButton">제출</button>
+    <p id="result"></p>
+    <p id="score">점수: 0</p>
+    <p id="timer">걸린 시간: 0초</p>
+    
+    <button id="saveRecordButton">기록 저장</button>
+    <button id="viewRecordsButton">기록 보기</button>
+
+    <!-- 기록 보기 섹션 (숨김 상태) -->
+    <div id="recordSection" style="display: none;">
+        <h2>게임 기록</h2>
+        <table id="recordTable">
+            <thead>
+                <tr>
+                    <th>순위</th>
+                    <th>난이도</th>
+                    <th>이름</th>
+                    <th>점수</th>
+                    <th>시간</th>
+                    <th>날짜</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- 기록이 여기에 추가됩니다 -->
+            </tbody>
+        </table>
+        <button id="closeRecordsButton">닫기</button>
+    </div>
+
+    <!-- 오버레이 및 이름 입력 폼 (숨김 상태) -->
+    <div id="overlay" style="display: none;"></div>
+    <div id="name-form" style="display: none;">
+        <h2>게임 완료!</h2>
+        <p>이름을 입력하세요:</p>
+        <input type="text" id="playerName" placeholder="이름">
+        <button id="saveNameButton">제출</button>
+    </div>
+
+    <script src="logicgamelogic.js"></script>
+</body>
+</html>
