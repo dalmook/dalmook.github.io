@@ -9,6 +9,26 @@
         "sequence": "5 10 ? 20 25",
         "answer": 15,
         "description": "5의 배수입니다."
+      },
+      {
+        "sequence": "1 2 ? 4 5",
+        "answer": 3,
+        "description": "1씩 증가하는 수열입니다."
+      },
+      {
+        "sequence": "10 20 ? 40 50",
+        "answer": 30,
+        "description": "10의 배수입니다."
+      },
+      {
+        "sequence": "7 14 ? 28 35",
+        "answer": 21,
+        "description": "7의 배수입니다."
+      },
+      {
+        "sequence": "3 6 ? 12 15",
+        "answer": 9,
+        "description": "3의 배수입니다."
       }
     ],
     "medium": [
@@ -21,6 +41,26 @@
         "sequence": "2 4 ? 8 10",
         "answer": 6,
         "description": "2의 배수입니다."
+      },
+      {
+        "sequence": "4 8 ? 16 20",
+        "answer": 12,
+        "description": "4의 배수입니다."
+      },
+      {
+        "sequence": "5 10 ? 20 25",
+        "answer": 15,
+        "description": "5의 배수입니다."
+      },
+      {
+        "sequence": "6 12 ? 24 30",
+        "answer": 18,
+        "description": "6의 배수입니다."
+      },
+      {
+        "sequence": "7 14 ? 28 35",
+        "answer": 21,
+        "description": "7의 배수입니다."
       }
     ],
     "hard": [
@@ -33,7 +73,28 @@
         "sequence": "1 1 2 ? 5",
         "answer": 3,
         "description": "피보나치 수열입니다."
+      },
+      {
+        "sequence": "2 4 6 ? 10",
+        "answer": 8,
+        "description": "짝수 수열입니다."
+      },
+      {
+        "sequence": "5 10 15 ? 25",
+        "answer": 20,
+        "description": "5의 배수입니다."
+      },
+      {
+        "sequence": "9 81 ? 6561 43046721",
+        "answer": 729,
+        "description": "9의 제곱수 패턴입니다."
+      },
+      {
+        "sequence": "1 1 2 ? 5",
+        "answer": 3,
+        "description": "피보나치 수열입니다."
       }
+
     ]
   }
   
