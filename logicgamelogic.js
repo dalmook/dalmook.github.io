@@ -135,18 +135,21 @@ function selectRandomQuestion() {
     // 선택된 질문을 목록에서 제거하여 중복 출제를 방지
     selectedQuestions[difficulty].splice(randomIndex, 1);
 }
+
 // 아이콘을 HTML로 대체하는 함수
 function replaceQuestionWithIcon(sequence) {
-    // Font Awesome 아이콘을 사용한다고 가정
-    return sequence.replace("[QUESTION]", '<i class="fas fa-question-circle question-icon"></i>');
+    const replacedSequence = sequence.replace("[QUESTION]", '<i class="fas fa-question-circle question-icon"></i>');
+    console.log("Original Sequence:", sequence);
+    console.log("Formatted Sequence:", replacedSequence);
+    return replacedSequence;
 }
-// 시퀀스 표시 함수 수정
+
+// 시퀀스 표시 함수
 function displaySequence() {
     if (!currentQuestion) return;
     const formattedSequence = replaceQuestionWithIcon(currentQuestion.sequence);
     sequenceElement.innerHTML = formattedSequence;
 }
-
 
 // 정답 제출 함수
 submitAnswerButton.addEventListener("click", () => {
@@ -154,13 +157,14 @@ submitAnswerButton.addEventListener("click", () => {
         alert("문제가 로드되지 않았습니다.");
         return;
     }
-    const userAnswer = parseFloat(answerInput.value);
-    if (isNaN(userAnswer)) {
-        alert("숫자를 입력하세요!");
+    const userAnswer = answerInput.value.trim();
+    if (!userAnswer) {
+        alert("답을 입력하세요!");
         return;
     }
 
-    if (userAnswer === currentQuestion.answer) {
+    // 정답을 문자열로 비교 (대소문자 무시)
+    if (userAnswer.toLowerCase() === String(currentQuestion.answer).toLowerCase()) {
         resultElement.textContent = "정답입니다!";
         resultElement.style.color = "green";
         resultElement.classList.add("correct");
@@ -280,7 +284,7 @@ function showLeaderboard() {
                 console.log("기록이 없습니다.");
                 const tr = document.createElement("tr");
                 const td = document.createElement("td");
-                td.colSpan = 6;
+                td.colSpan = 5; // Rank 삭제로 컬럼 수 조정
                 td.textContent = "기록이 없습니다.";
                 tr.appendChild(td);
                 recordTableBody.appendChild(tr);
@@ -290,6 +294,11 @@ function showLeaderboard() {
                     console.log(`기록 ${index + 1}:`, data);
 
                     const tr = document.createElement("tr");
+
+                    // Rank는 이제 포함하지 않으므로 삭제
+                    // const rankTd = document.createElement("td");
+                    // rankTd.textContent = index + 1; // 순위 표시
+                    // tr.appendChild(rankTd);
 
                     const difficultyTd = document.createElement("td");
                     difficultyTd.textContent = data.difficulty;
