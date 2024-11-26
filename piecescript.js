@@ -66,6 +66,7 @@ backToGameButton.addEventListener('click', () => {
 // 기록 저장 버튼 이벤트
 saveRecordButton.addEventListener('click', () => {
     const playerName = document.getElementById('playerName').value.trim();
+    console.log(`Submitted name: "${playerName}"`);
     if (!playerName) {
         alert('이름을 입력하세요!');
         return;
@@ -95,6 +96,7 @@ saveRecordButton.addEventListener('click', () => {
 
 // 기록 저장 함수 (Firestore에 저장)
 function saveRecord(record) {
+    console.log("Saving record:", record);
     return db.collection('gameRecords').add(record)
         .then(() => {
             console.log('게임 기록이 성공적으로 저장되었습니다.');
@@ -107,28 +109,42 @@ function saveRecord(record) {
 
 // Firestore에서 기록 불러오기
 function loadRecordsFromFirestore() {
+    console.log("Loading records from Firestore...");
     db.collection('gameRecords').orderBy('score', 'desc').onSnapshot((snapshot) => { // 점수 기준 내림차순
         snapshot.docChanges().forEach((change) => {
             if (change.type === 'added') {
                 const record = change.doc.data();
+                console.log("New record added:", record);
                 addRecordToTable(record);
             }
         });
+    }, (error) => {
+        console.error("Error loading records from Firestore:", error);
     });
 }
 
 // 기록 테이블에 기록 추가 함수
 function addRecordToTable(record) {
+    console.log("Adding record to table:", record);
     const row = document.createElement('tr');
     const date = record.timestamp ? record.timestamp.toDate().toLocaleString() : 'N/A';
     row.innerHTML = `
+        <td></td> <!-- 순위 컬럼은 나중에 추가 -->
         <td>${record.category}</td>
         <td>${record.difficulty}</td>
         <td>${record.name}</td>
         <td>${record.score}</td>
         <td>${date}</td>
     `;
+    // Append the row
     recordTableBody.appendChild(row);
+
+    // Update rank column
+    const rows = recordTableBody.querySelectorAll('tr');
+    rows.forEach((row, index) => {
+        const rankCell = row.querySelector('td');
+        rankCell.textContent = index + 1;
+    });
 
     // 테이블 끝으로 스크롤 이동
     row.scrollIntoView({ behavior: 'smooth', block: 'end' });
@@ -136,10 +152,10 @@ function addRecordToTable(record) {
 
 // 리더보드 표시 함수
 function showLeaderboard() {
-    console.log("showLeaderboard 함수 호출됨"); // 디버깅용
+    console.log("showLeaderboard 함수 호출됨");
 
     const difficulty = difficultySelect.value;
-    console.log("현재 난이도:", difficulty); // 디버깅용
+    console.log("현재 난이도:", difficulty);
 
     db.collection("gameRecords")
         .where("difficulty", "==", difficulty)
@@ -147,7 +163,7 @@ function showLeaderboard() {
         .limit(10) // 상위 10개만 표시
         .get()
         .then((querySnapshot) => {
-            console.log(`Firestore에서 ${querySnapshot.size}개의 기록을 가져옴`); // 디버깅용
+            console.log(`Firestore에서 ${querySnapshot.size}개의 기록을 가져옴`);
             recordTableBody.innerHTML = ""; // 기존 데이터 초기화
 
             if (querySnapshot.empty) {
@@ -159,14 +175,15 @@ function showLeaderboard() {
                 tr.appendChild(td);
                 recordTableBody.appendChild(tr);
             } else {
-                querySnapshot.forEach((doc, index) => {
+                let rank = 1;
+                querySnapshot.forEach((doc) => {
                     const data = doc.data();
-                    console.log(`Record ${index + 1}:`, data); // 디버깅용
+                    console.log(`Record ${rank}:`, data);
 
                     const tr = document.createElement("tr");
 
                     const rankTd = document.createElement("td");
-                    rankTd.textContent = index + 1;
+                    rankTd.textContent = rank;
                     tr.appendChild(rankTd);
 
                     const categoryTd = document.createElement("td");
@@ -190,11 +207,12 @@ function showLeaderboard() {
                     tr.appendChild(dateTd);
 
                     recordTableBody.appendChild(tr);
+                    rank++;
                 });
             }
 
             recordSection.style.display = 'flex'; // 기록 섹션 표시
-            console.log("리더보드가 화면에 표시됨"); // 디버깅용
+            console.log("리더보드가 화면에 표시됨");
         })
         .catch((error) => {
             console.error("Firestore에서 문서를 가져오는 중 오류 발생: ", error);
@@ -352,6 +370,36 @@ function createGrid() {
             stopDragging();
         }
     });
+
+    // 터치 이벤트 핸들러 추가
+    grid.querySelectorAll('.grid-item').forEach((cell) => {
+        const index = parseInt(cell.dataset.index, 10);
+
+        cell.addEventListener("touchstart", (e) => {
+            console.log("touchstart", index);
+            e.preventDefault();
+            startDragging(index, cell);
+        });
+
+        cell.addEventListener("touchmove", (e) => {
+            if (!isDragging) return;
+            console.log("touchmove", index);
+            const touch = e.touches[0];
+            const target = document.elementFromPoint(touch.clientX, touch.clientY);
+
+            if (target && target.classList.contains("grid-item")) {
+                const targetIndex = parseInt(target.dataset.index, 10);
+                if (!selectedIndexes.includes(targetIndex) && isValidMove(selectedIndexes[selectedIndexes.length - 1], targetIndex)) {
+                    dragOver(targetIndex, target);
+                }
+            }
+        });
+
+        cell.addEventListener("touchend", () => {
+            console.log("touchend");
+            stopDragging();
+        });
+    });
 }
 
 // 단어 목록 생성
@@ -366,6 +414,7 @@ function createWordList() {
 
 // 드래그 시작 (포인터용)
 function startDragging(index, cell) {
+    console.log(`startDragging: ${index}`);
     isDragging = true;
     selectedIndexes = [index];
     selectedWord = gridWords[index];
@@ -374,6 +423,7 @@ function startDragging(index, cell) {
 
 // 드래그 중 (포인터용)
 function dragOver(index, cell) {
+    console.log(`dragOver: ${index}`);
     selectedIndexes.push(index);
     selectedWord += gridWords[index];
     cell.classList.add("selected");
@@ -381,6 +431,7 @@ function dragOver(index, cell) {
 
 // 드래그 종료 (포인터용)
 function stopDragging() {
+    console.log("stopDragging");
     if (!isDragging) return;
     isDragging = false;
     checkWord();
@@ -414,14 +465,21 @@ function isValidMove(lastIndex, currentIndex) {
     const rowDiff = currentRow - Math.floor(lastIndex / gridSize);
     const colDiff = currentCol - (lastIndex % gridSize);
 
-    return (
+    const valid = (
         rowDiff === prevDirection.row &&
         colDiff === prevDirection.col
     );
+
+    if (valid) {
+        return true;
+    } else {
+        return false;
+    }
 }
 
 // 단어 확인
 function checkWord() {
+    console.log(`checkWord: ${selectedWord}`);
     const wordIndex = wordsToFind.indexOf(selectedWord);
     if (wordIndex !== -1) {
         result.textContent = `정답! ${selectedWord}`;
@@ -456,12 +514,14 @@ function checkWord() {
 
 // 이름 입력 폼 표시 함수
 function showNameForm() {
+    console.log("showNameForm");
     document.getElementById("overlay").style.display = "block"; // 오버레이 표시
     document.getElementById("name-form").style.display = "block"; // 이름 입력 폼 표시
 }
 
 // 선택 초기화
 function resetSelection() {
+    console.log("resetSelection");
     selectedIndexes = [];
     selectedWord = "";
     selectedDirection = { row: 0, col: 0 };
@@ -472,6 +532,7 @@ function resetSelection() {
 
 // 타이머 시작
 function startTimer() {
+    console.log("startTimer");
     startTime = Date.now();
     clearInterval(timerInterval);
     timerInterval = setInterval(() => {
@@ -485,11 +546,13 @@ startButton.addEventListener("click", generateGame);
 
 // 난이도 변경 시 리더보드 업데이트
 difficultySelect.addEventListener("change", () => {
+    console.log("난이도 변경됨:", difficultySelect.value);
     showLeaderboard();
 });
 
 // Firestore에서 기록 불러오기 함수 호출
 window.onload = async function() {
+    console.log("window.onload");
     await loadCategories(); // categories.json 불러오기 (함수가 정의되어 있어야 합니다)
     loadRecordsFromFirestore();
     // initializeMatchingGame(); // 이 줄을 제거하거나 주석 처리하세요.
@@ -497,12 +560,13 @@ window.onload = async function() {
 
 // Placeholder functions - define these appropriately
 function loadCategories() {
+    console.log("loadCategories");
     // Implement loading categories if necessary
     return Promise.resolve();
 }
 
 function startMatchingGame() {
+    console.log("startMatchingGame");
     // Implement game initialization
     generateGame();
 }
-
