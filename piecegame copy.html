@@ -408,15 +408,15 @@
                     }
                 
                     // 타이머에서 초 단위 추출
-                    const elapsedTimeMatch = timerDisplay.textContent.match(/(\d+)초/);
                     const elapsedTime = elapsedTimeMatch ? parseInt(elapsedTimeMatch[1], 10) : 0;
                 
                     // 기록 생성
                     const newRecord = {
-                        difficulty: difficultySelect.value,
-                        name: playerName,
-                        score: elapsedTime, // 수정된 점수 할당
-                        timestamp: firebase.firestore.FieldValue.serverTimestamp() // 기록 시간
+                      difficulty: difficultySelect.value, // 난이도
+                      name: playerName,                   // 플레이어 이름
+                      score: score,                       // 점수
+                      time: elapsedTime,                  // 걸린 시간
+                      timestamp: firebase.firestore.FieldValue.serverTimestamp() // 기록 시간
                     };
         
                     // Firestore에 기록 저장
