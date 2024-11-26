@@ -250,7 +250,7 @@
         
             /* 보통 난이도: 6x6 -> 8x6 */
             .game-board.medium {
-                grid-template-columns: repeat(8, 1fr); /* 컬럼 수를 8로 늘려 가로 공간 활용 */
+                grid-template-columns: repeat(8, 1fr); /* 컬럼 수를 8으로 늘려 가로 공간 활용 */
             }
         
             /* 어려움 난이도: 8x8 -> 10x8 */
@@ -374,6 +374,12 @@
         
         // 카테고리 데이터를 저장할 변수
         let categories = {};
+
+        // Web Speech API 지원 여부 확인
+        const speechSupported = 'speechSynthesis' in window && 'SpeechSynthesisUtterance' in window;
+        if (!speechSupported) {
+            console.warn('Web Speech API가 지원되지 않습니다. 음성 기능이 비활성화됩니다.');
+        }
 
         // 변수 초기화
         let selectedCategory = 'animals';
@@ -555,7 +561,7 @@
                 cardContent.style.display = 'none'; // ❓ 숨김
             });
 
-            // 1초 후에 모든 카드를 뒷면으로 숨김
+            // 1.5초 후에 모든 카드를 뒷면으로 숨김
             setTimeout(() => {
                 gameImages.forEach((item, index) => {
                     const card = gameBoard.children[index];
@@ -583,10 +589,12 @@
             const cardContent = this.querySelector('.card-content');
             cardContent.style.display = 'none';
 
-            // 클릭한 카드의 단어와 설명을 읽어줍니다. 현재 카테고리를 함께 전달
-            speakWord(this.dataset.name, selectedCategory);
+            // Web Speech API가 지원되는 경우에만 단어 읽기
+            if (speechSupported) {
+                speakWord(this.dataset.name, selectedCategory);
+            }
 
-            // 클릭한 카드의 이름과 설명을 점수 아래에 표시
+            // 클릭한 카드의 단어와 설명을 점수 아래에 표시
             if (this.dataset.desc) {
                 displayWord(`${this.dataset.name} (${this.dataset.desc})`);
             } else {
@@ -777,6 +785,11 @@
 
         // 단어 소리 내어 읽기 함수
         function speakWord(word, category) {
+            if (!speechSupported) {
+                // Web Speech API가 지원되지 않으면 함수를 종료
+                return;
+            }
+
             const utterance = new SpeechSynthesisUtterance(word);
             
             // 카테고리에 따라 언어 설정
@@ -817,14 +830,18 @@
         // 특정 효과음 재생 함수
         function playCharacterSound(url) {
             const audio = new Audio(url);
-            audio.play();
+            audio.play().catch((error) => {
+                console.error('캐릭터 소리 재생 실패:', error);
+            });
         }
         
         // 짝이 최종 맞았을 때 소리 재생 함수
         function playCorrectSoundEffect() {
             const correctSoundEffect = document.getElementById('correctSoundEffect');
             correctSoundEffect.currentTime = 0;
-            correctSoundEffect.play();
+            correctSoundEffect.play().catch((error) => {
+                console.error('정답 소리 재생 실패:', error);
+            });
         }
         
         // 게임 재시작 버튼 이벤트
