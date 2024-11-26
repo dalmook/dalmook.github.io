@@ -1,7 +1,7 @@
 // logicgamelogic.js
 
 // Firebase 초기화는 logicgamefirebaseConfig.js에서 이미 완료되었습니다.
-// db 변수는 firebase.firestore()로 초기화됨
+// db 변수는 window.db로 초기화됨
 
 // DOM 요소 선택
 const sequenceElement = document.getElementById("sequence");
@@ -325,7 +325,22 @@ function hideNameForm() {
     playerNameInput.value = "";
 }
 
-// 페이지 로드 시 게임 시작
+// 테스트용 Firestore 읽기 함수 (선택 사항)
+function testFirestoreRead() {
+    db.collection("gameRecords").get()
+        .then((snapshot) => {
+            console.log("가져온 기록 개수:", snapshot.size);
+            snapshot.forEach((doc) => {
+                console.log("기록 데이터:", doc.data());
+            });
+        })
+        .catch((error) => {
+            console.error("Firestore에서 기록 불러오기 실패:", error.message, error.code, error);
+        });
+}
+
+// 페이지 로드 시 게임 시작 및 테스트 함수 호출
 window.onload = () => {
     generateGame();
+    // testFirestoreRead(); // 필요 시 주석 해제
 };
