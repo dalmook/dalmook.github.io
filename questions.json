@@ -1,0 +1,39 @@
+{
+    "easy": [
+      {
+        "sequence": "2 4 ? 8 10",
+        "answer": 6,
+        "description": "2의 배수입니다."
+      },
+      {
+        "sequence": "5 10 ? 20 25",
+        "answer": 15,
+        "description": "5의 배수입니다."
+      }
+    ],
+    "medium": [
+      {
+        "sequence": "3 6 ? 12 15",
+        "answer": 9,
+        "description": "3의 배수입니다."
+      },
+      {
+        "sequence": "2 4 ? 8 10",
+        "answer": 6,
+        "description": "2의 배수입니다."
+      }
+    ],
+    "hard": [
+      {
+        "sequence": "1 √1 ? √9 3",
+        "answer": 2,
+        "description": "제곱근 패턴입니다."
+      },
+      {
+        "sequence": "1 1 2 ? 5",
+        "answer": 3,
+        "description": "피보나치 수열입니다."
+      }
+    ]
+  }
+  
