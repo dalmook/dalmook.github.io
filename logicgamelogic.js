@@ -30,10 +30,15 @@ let questionsData = {
     medium: [],
     hard: []
 };
+let selectedQuestions = {
+    easy: [],
+    medium: [],
+    hard: []
+};
 
 // 난이도 선택 이벤트 리스너
 difficultySelect.addEventListener("change", () => {
-    difficulty = difficultySelect.value;
+    const difficulty = difficultySelect.value;
     console.log("선택된 난이도:", difficulty);
     generateGame(); // 난이도가 변경되면 게임을 재생성
 });
@@ -43,6 +48,7 @@ function generateGame() {
     resetGame();
     loadQuestions()
         .then(() => {
+            selectRandomQuestions(); // 5문제씩 랜덤 선택
             selectRandomQuestion();
             displaySequence();
             startTimer();
@@ -79,17 +85,42 @@ async function loadQuestions() {
     console.log("질문 데이터 로드됨:", questionsData);
 }
 
+// 랜덤으로 각 난이도별 5문제 선택 함수
+function selectRandomQuestions() {
+    const difficulties = ["easy", "medium", "hard"];
+    difficulties.forEach((difficulty) => {
+        const questions = questionsData[difficulty];
+        if (questions.length <= 5) {
+            selectedQuestions[difficulty] = [...questions]; // 질문이 5개 이하인 경우 모두 사용
+        } else {
+            selectedQuestions[difficulty] = getRandomSubset(questions, 5);
+        }
+    });
+    console.log("선택된 질문들:", selectedQuestions);
+}
+
+// 주어진 배열에서 랜덤하게 'count'개의 요소를 선택하는 유틸리티 함수
+function getRandomSubset(array, count) {
+    const shuffled = array.sort(() => 0.5 - Math.random());
+    return shuffled.slice(0, count);
+}
+
 // 난이도에 따른 랜덤 질문 선택 함수
 function selectRandomQuestion() {
     const difficulty = difficultySelect.value;
-    const questions = questionsData[difficulty];
+    const questions = selectedQuestions[difficulty];
     if (!questions || questions.length === 0) {
-        alert(`선택된 난이도(${difficulty})에 사용할 수 있는 질문이 없습니다.`);
+        alert(`모든 질문을 완료했습니다! 게임을 종료합니다.`);
+        // 게임을 종료하거나 초기화할 수 있습니다.
+        resetGame();
         return;
     }
     const randomIndex = Math.floor(Math.random() * questions.length);
     currentQuestion = questions[randomIndex];
     console.log("선택된 질문:", currentQuestion);
+    
+    // 선택된 질문을 목록에서 제거하여 중복 출제를 방지
+    selectedQuestions[difficulty].splice(randomIndex, 1);
 }
 
 // 시퀀스 표시 함수
@@ -123,6 +154,7 @@ submitAnswerButton.addEventListener("click", () => {
         resultElement.classList.add("incorrect");
         resultElement.classList.remove("correct");
     }
+
 
     scoreElement.textContent = `점수: ${score}`;
     selectNewQuestion();
