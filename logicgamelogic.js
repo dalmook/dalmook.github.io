@@ -1,6 +1,6 @@
 // logicgamelogic.js
 
-// Firebase 초기화는 firebaseConfig.js에서 이미 완료되었습니다.
+// Firebase 초기화는 logicgamefirebaseConfig.js에서 이미 완료되었습니다.
 // db 변수는 firebase.firestore()로 초기화됨
 
 // DOM 요소 선택
@@ -48,7 +48,7 @@ function generateGame() {
     resetGame();
     loadQuestions()
         .then(() => {
-            selectRandomQuestions(); // 5문제씩 랜덤 선택
+            selectRandomQuestions(); // 각 난이도별로 5문제 랜덤 선택
             selectRandomQuestion();
             displaySequence();
             startTimer();
@@ -76,13 +76,18 @@ async function loadQuestions() {
         // 이미 로드된 경우 다시 로드하지 않음
         return;
     }
-    const response = await fetch('questions.json');
-    if (!response.ok) {
-        throw new Error('JSON 파일을 불러오는 데 실패했습니다.');
+    try {
+        const response = await fetch('questions.json');
+        if (!response.ok) {
+            throw new Error('JSON 파일을 불러오는 데 실패했습니다.');
+        }
+        const data = await response.json();
+        questionsData = data;
+        console.log("질문 데이터 로드됨:", questionsData);
+    } catch (error) {
+        console.error("질문 로드 오류:", error);
+        throw error;
     }
-    const data = await response.json();
-    questionsData = data;
-    console.log("질문 데이터 로드됨:", questionsData);
 }
 
 // 랜덤으로 각 난이도별 5문제 선택 함수
@@ -90,6 +95,11 @@ function selectRandomQuestions() {
     const difficulties = ["easy", "medium", "hard"];
     difficulties.forEach((difficulty) => {
         const questions = questionsData[difficulty];
+        if (!questions || questions.length === 0) {
+            console.warn(`난이도 ${difficulty}에 질문이 없습니다.`);
+            selectedQuestions[difficulty] = [];
+            return;
+        }
         if (questions.length <= 5) {
             selectedQuestions[difficulty] = [...questions]; // 질문이 5개 이하인 경우 모두 사용
         } else {
@@ -111,16 +121,15 @@ function selectRandomQuestion() {
     const questions = selectedQuestions[difficulty];
     if (!questions || questions.length === 0) {
         alert(`모든 질문을 완료했습니다! 게임을 종료합니다.`);
-        // 게임을 종료하거나 초기화할 수 있습니다.
-        resetGame();
+        recordSection.style.display = "none"; // 기록 섹션 숨기기
         return;
     }
     const randomIndex = Math.floor(Math.random() * questions.length);
     currentQuestion = questions[randomIndex];
     console.log("선택된 질문:", currentQuestion);
     
-    // 선택된 질문을 목록에서 제거하여 중복 출제를 방지
-    selectedQuestions[difficulty].splice(randomIndex, 1);
+    // 선택된 질문을 목록에서 제거하여 중복 출제를 방지 (선택 사항)
+    // selectedQuestions[difficulty].splice(randomIndex, 1);
 }
 
 // 시퀀스 표시 함수
@@ -141,7 +150,6 @@ submitAnswerButton.addEventListener("click", () => {
         return;
     }
 
-    // 결과 메시지에 클래스 추가하여 애니메이션 적용
     if (userAnswer === currentQuestion.answer) {
         resultElement.textContent = "정답입니다!";
         resultElement.style.color = "green";
@@ -154,7 +162,6 @@ submitAnswerButton.addEventListener("click", () => {
         resultElement.classList.add("incorrect");
         resultElement.classList.remove("correct");
     }
-
 
     scoreElement.textContent = `점수: ${score}`;
     selectNewQuestion();
@@ -211,7 +218,7 @@ saveNameButton.addEventListener("click", () => {
             hideNameForm();
         })
         .catch((error) => {
-            console.error("기록 저장 실패:", error);
+            console.error("기록 저장 실패:", error.message, error.code, error);
             alert("기록 저장 중 오류가 발생했습니다.");
         });
 });
@@ -241,15 +248,19 @@ closeRecordsButton.addEventListener("click", () => {
 // 리더보드 표시 함수
 function showLeaderboard() {
     const difficulty = difficultySelect.value;
+    console.log("선택된 난이도:", difficulty);
+
     db.collection("gameRecords")
         .where("difficulty", "==", difficulty) // 현재 난이도 필터
         .orderBy("score", "desc") // 점수 기준 내림차순
         .limit(10) // 상위 10개만 표시
         .get()
         .then((snapshot) => {
+            console.log("가져온 기록 개수:", snapshot.size);
             recordTableBody.innerHTML = ""; // 기존 데이터 초기화
 
             if (snapshot.empty) {
+                console.log("기록이 없습니다.");
                 const tr = document.createElement("tr");
                 const td = document.createElement("td");
                 td.colSpan = 6;
@@ -259,6 +270,8 @@ function showLeaderboard() {
             } else {
                 snapshot.forEach((doc, index) => {
                     const data = doc.data();
+                    console.log(`기록 ${index + 1}:`, data);
+
                     const tr = document.createElement("tr");
 
                     const rankTd = document.createElement("td");
@@ -298,7 +311,6 @@ function showLeaderboard() {
             alert("기록을 불러오는 중 오류가 발생했습니다.");
         });
 }
-
 
 // 이름 입력 폼 표시 함수
 function showNameForm() {
