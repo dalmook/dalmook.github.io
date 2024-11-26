@@ -12,7 +12,8 @@ body {
     margin: 20px 0;
 }
 
-input[type="number"] {
+input[type="number"],
+input[type="text"] {
     padding: 10px;
     font-size: 16px;
     width: 200px;
@@ -25,57 +26,54 @@ button {
     cursor: pointer;
 }
 
-        /* 기록 섹션 스타일 (모달) */
-        #recordSection {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.5); /* 반투명 배경 */
-            display: none;
-            align-items: center;
-            justify-content: center;
-            z-index: 1000;
-        }
-        #recordContent {
-            background-color: #fff;
-            padding: 20px;
-            border-radius: 10px;
-            width: 90%;
-            max-width: 500px;
-            max-height: 80%; /* 높이 제한 추가 */
-            overflow-y: auto; /* 스크롤 추가 */
-            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
-            animation: fadeIn 0.3s ease-out;
-        }        
+#recordSection {
+    display: none; /* 초기 숨김 상태 */
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: rgba(255, 255, 255, 0.95);
+    padding: 20px;
+    border: 2px solid #ccc;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    z-index: 1002; /* 오버레이보다 위에 표시 */
+    width: 90%;
+    max-width: 600px;
+    text-align: center;
+    overflow-y: auto; /* 내용이 많을 경우 스크롤 */
+    max-height: 80vh; /* 최대 높이 설정 */
+}
 
-        #recordTable {
-            width: 100%;
-            border-collapse: collapse;
-            margin: 10px 0;
-            max-height: 200px;
-            overflow-y: auto;
-        }
-        #recordTable th, #recordTable td {
-            border: 1px solid #ccc;
-            padding: 8px;
-            text-align: center;
-        }
-        #viewRecordsButton {
-            font-size: 0.8em;
-            padding: 5px 10px;
-            border: 1px solid #ccc;
-            background-color: #ffa500;
-            color: white;
-            border-radius: 5px;
-            cursor: pointer;
-            margin-left: 10px;
-            }
-    
-            #viewRecordsButton:hover {
-            background-color: #ff8c00;
-            }
+#recordTable {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+}
+
+#recordTable th, #recordTable td {
+    border: 1px solid #ccc;
+    padding: 10px;
+    text-align: center;
+}
+
+#recordTable th {
+    background-color: #f2f2f2;
+}
+
+#closeRecordsButton {
+    padding: 10px 20px;
+    background-color: #FF6F61;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-top: 10px;
+}
+
+#closeRecordsButton:hover {
+    background-color: #e65b50;
+}
 
 /* 오버레이 스타일 */
 #overlay {
@@ -106,7 +104,6 @@ button {
     max-width: 400px;
     text-align: center;
 }
-
 
 #name-form input {
     width: 80%;
@@ -145,13 +142,8 @@ button {
         width: 95%;
         max-width: 90%;
     }
-    #name-form {
-        top: 20%; /* 더욱 상단으로 위치 조정 */
-        transform: translate(-50%, -20%);
-        width: 90%;
-        max-width: 300px;
-    }
 }
+
 /* 예시: 결과 메시지에 애니메이션 추가 */
 @keyframes fadeIn {
     from { opacity: 0; }
@@ -161,3 +153,4 @@ button {
 #result {
     animation: fadeIn 0.5s ease-in-out;
 }
+
