@@ -134,7 +134,20 @@
         // 랜덤한 단어 생성
         function generateWords(count) {
           const sampleWords = ["감독자", "평범", "환희", "독자", "탐험", "구조", "소망", "화학", "정직","나노시티","롯데캐슬","뱀놀이터","용기","파스타","김치","김밥","용서","겨울","눈사람","과학자","전화기","기찻길","모니터","방구","코딱지","티니핑","카봇","번개맨","번개걸","운동회","이화어학원"];
-          return sampleWords.slice(0, count);
+          // 배열을 무작위로 섞기
+          const shuffledWords = shuffle(sampleWords);
+          
+          // 섞인 배열에서 원하는 개수만큼 선택
+          return shuffledWords.slice(0, count);
+        }
+        
+        // 배열을 무작위로 섞는 함수 (Fisher-Yates 알고리즘)
+        function shuffle(array) {
+          for (let i = array.length - 1; i > 0; i--) {
+            const randomIndex = Math.floor(Math.random() * (i + 1));
+            [array[i], array[randomIndex]] = [array[randomIndex], array[i]]; // 요소 교환
+          }
+          return array;
         }
         
         // 찾을 단어를 포함한 그리드 생성
