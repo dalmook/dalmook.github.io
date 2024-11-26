@@ -121,7 +121,8 @@ function selectRandomQuestion() {
     const questions = selectedQuestions[difficulty];
     if (!questions || questions.length === 0) {
         alert(`모든 질문을 완료했습니다! 게임을 종료합니다.`);
-        recordSection.style.display = "none"; // 기록 섹션 숨기기
+        // recordSection.style.display = "none"; // 기록 섹션 숨기기
+        showNameForm();
         return;
     }
     const randomIndex = Math.floor(Math.random() * questions.length);
