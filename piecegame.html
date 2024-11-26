@@ -5,9 +5,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>단어 연결 게임</title>
     <link rel="stylesheet" href="piecestyles.css">
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <!-- Firebase Firestore -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
 </head>
 <body>
-    <h1>단어 연결 게임</h1>
+    <h1>단어 연결 게임
+        <button id="viewRecordsButton">기록 보기</button>
+    </h1>
     <p>난이도를 선택하세요:</p>
     <select id="difficulty">
         <option value="easy">Easy (5x5, 5단어)</option>
@@ -21,6 +26,192 @@
             <h2>찾을 단어</h2>
             <ul id="words-to-find"></ul>
         </div>
+    <!-- 기록 섹션 (모달) -->
+    <div id="recordSection">
+        <div id="recordContent">
+            <h2>🎉 클리어 기록 저장 🎉</h2>
+            <label for="playerName">이름을 입력하세요:</label>
+            <input type="text" id="playerName" placeholder="이름">
+            <button id="saveRecordButton">저장</button>
+            <h3>기록 보기</h3>
+            <table id="recordTable">
+                <thead>
+                    <tr>
+                        <th>카테고리</th>
+                        <th>난이도</th>
+                        <th>이름</th>
+                        <th>점수</th>
+                        <th>날짜</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- 기록이 여기에 추가됩니다 -->
+                </tbody>
+            </table>
+            <button id="backToGameButton">게임으로 돌아가기</button>
+        </div>
+    </div>
+
+    <script>
+        // Firebase 초기화 (Firebase 콘솔에서 얻은 설정 정보로 대체)
+        const firebaseConfig = {
+            apiKey: "AIzaSyBeCVOghDQw8hPdp0JrHovXcU7d7aKmmFE",
+            authDomain: "piecechoice.firebaseapp.com",
+            projectId: "piecechoice",
+            storageBucket: "piecechoice.firebasestorage.app",
+            messagingSenderId: "1048561191876",
+            appId: "1:1048561191876:web:43e94b515fd260aceb7291"
+        };
+        
+        // Firebase 초기화
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+        
+        const scoreDisplay = document.getElementById('score');
+
+        const restartButton = document.getElementById('restartButton');
+
+        const recordSection = document.getElementById('recordSection');
+        const saveRecordButton = document.getElementById('saveRecordButton');
+        const backToGameButton = document.getElementById('backToGameButton');
+        const recordTableBody = document.getElementById('recordTable').querySelector('tbody');
+
+        const viewRecordsButton = document.getElementById('viewRecordsButton');
+
+        // 기록 보기 버튼 이벤트 리스너 추가
+        viewRecordsButton.addEventListener('click', () => {
+            recordSection.style.display = 'flex'; // 기록 섹션 열기
+        });
+
+        // 새로운 게임 시작 함수
+        function startMatchingGame() {
+            // 카운트다운 오버레이 표시
+            countdownOverlay.style.display = 'flex';
+            countdownNumber.textContent = '2';
+            
+            let countdown = 2;
+            isProcessing = true; // 사용자 상호작용 일시 비활성화
+            
+            const countdownInterval = setInterval(() => {
+                countdown--;
+                if (countdown > 0) {
+                    countdownNumber.textContent = countdown;
+                    // 애니메이션 재시작
+                    countdownNumber.classList.remove('fade');
+                    void countdownNumber.offsetWidth; // 리플로우를 강제하여 애니메이션 재시작
+                    countdownNumber.classList.add('fade');
+                } else {
+                    clearInterval(countdownInterval);
+                    countdownOverlay.style.display = 'none';
+                    initializeMatchingGame();
+                }
+            }, 1000);
+            
+            // 카운트다운 동안 이미지와 음성 미리 로드
+            preloadResources();
+        }
+
+
+        // 기록 저장 함수 (Firestore에 저장)
+        function saveRecord(record) {
+            return db.collection('gameRecords').add(record)
+                .then(() => {
+                    console.log('게임 기록이 성공적으로 저장되었습니다.');
+                })
+                .catch((error) => {
+                    console.error('게임 기록 저장 중 오류 발생: ', error);
+                    throw error; // 에러를 상위로 전달
+                });
+        }
+
+        // 기록 저장 버튼 이벤트
+        saveRecordButton.addEventListener('click', () => {
+            const playerName = document.getElementById('playerName').value.trim();
+            if (!playerName) {
+                alert('이름을 입력하세요!');
+                return;
+            }
+
+            // 기록 생성
+            const newRecord = {
+                category: selectedCategory,
+                difficulty: difficultySelect.value,
+                name: playerName,
+                score: score,
+                timestamp: firebase.firestore.FieldValue.serverTimestamp() // 기록 시간
+            };
+
+            // Firestore에 기록 저장
+            saveRecord(newRecord).then(() => {
+                // 이름 입력 필드 숨기고 기록 테이블 표시
+                document.getElementById('playerName').style.display = 'none';
+                saveRecordButton.style.display = 'none';
+            }).catch((error) => {
+                console.error('게임 기록 저장 중 오류 발생: ', error);
+                alert('기록 저장에 실패했습니다. 다시 시도해주세요.');
+            });
+        });
+
+        // 게임으로 돌아가기 버튼 이벤트
+        backToGameButton.addEventListener('click', () => {
+            recordSection.style.display = 'none';
+            // 이름 입력 필드와 저장 버튼 다시 보이게 설정
+            document.getElementById('playerName').style.display = 'block';
+            saveRecordButton.style.display = 'block';
+            // 게임 초기화
+            startMatchingGame(); // 새 게임 시작
+        });
+
+        // Firestore에서 기록 불러오기
+        function loadRecordsFromFirestore() {
+            db.collection('gameRecords').orderBy('score', 'desc').onSnapshot((snapshot) => { // 점수 기준 내림차순
+                snapshot.docChanges().forEach((change) => {
+                    if (change.type === 'added') {
+                        const record = change.doc.data();
+                        addRecordToTable(record);
+                    }
+                });
+            });
+        }
+
+        // 기록 테이블에 기록 추가 함수
+        function addRecordToTable(record) {
+            const recordTableBody = document.getElementById('recordTable').querySelector('tbody');
+            const row = document.createElement('tr');
+            const date = record.timestamp ? record.timestamp.toDate().toLocaleString() : 'N/A';
+            row.innerHTML = `
+                <td>${record.category}</td>
+                <td>${record.difficulty}</td>
+                <td>${record.name}</td>
+                <td>${record.score}</td>
+                <td>${date}</td>
+            `;
+            recordTableBody.appendChild(row);
+
+            // 테이블 끝으로 스크롤 이동
+            recordTableBody.scrollIntoView({ behavior: 'smooth', block: 'end' });
+        }
+
+        // 페이지 로드 시 Firestore 기록 불러오기
+        window.onload = async function() {
+            await loadCategories(); // categories.json 불러오기
+            loadRecordsFromFirestore();
+            // initializeMatchingGame(); // 이 줄을 제거하거나 주석 처리하세요.
+        };
+
+    
+        // 게임 재시작 버튼 이벤트
+        restartButton.addEventListener('click', () => {
+            restartGame();
+        });
+
+        // 게임 재시작 함수
+        function restartGame() {
+            startMatchingGame();
+            successMessage.style.display = 'none';
+        }
+
+    </script>
     </div>
     <p id="timer">걸린 시간: 0초</p>
     <p id="result"></p>
