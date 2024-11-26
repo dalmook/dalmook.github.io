@@ -3,13 +3,23 @@
 /* 기본 스타일 */
 body {
     font-family: Arial, sans-serif;
-    text-align: center;
+    background-color: #f0f0f0;
+    margin: 0;
     padding: 20px;
+    text-align: center;
+}
+
+h1 {
+    color: #333;
 }
 
 .sequence {
     font-size: 24px;
     margin: 20px 0;
+    padding: 10px;
+    background-color: #fff;
+    border: 2px solid #ccc;
+    border-radius: 5px;
 }
 
 input[type="number"],
@@ -17,74 +27,90 @@ input[type="text"] {
     padding: 10px;
     font-size: 16px;
     width: 200px;
+    margin-bottom: 10px;
+    border: 2px solid #ccc;
+    border-radius: 5px;
 }
 
 button {
     padding: 10px 20px;
     font-size: 16px;
-    margin: 10px;
+    margin: 5px;
+    border: none;
+    border-radius: 5px;
     cursor: pointer;
+    transition: background-color 0.3s ease;
 }
 
+button:hover {
+    opacity: 0.8;
+}
+
+/* 버튼 색상 */
+#submitAnswerButton {
+    background-color: #4CAF50; /* 녹색 */
+    color: white;
+}
+
+#saveRecordButton {
+    background-color: #2196F3; /* 파란색 */
+    color: white;
+}
+
+#viewRecordsButton {
+    background-color: #FF9800; /* 주황색 */
+    color: white;
+}
+
+#closeRecordsButton {
+    background-color: #9E9E9E; /* 회색 */
+    color: white;
+}
+
+/* 기록 보기 섹션 스타일 */
 #recordSection {
-    display: none; /* 초기 숨김 상태 */
     position: fixed;
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
     background-color: rgba(255, 255, 255, 0.95);
-    padding: 20px;
+    padding: 30px;
     border: 2px solid #ccc;
     border-radius: 10px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-    z-index: 1002; /* 오버레이보다 위에 표시 */
+    z-index: 1001; /* 오버레이보다 위에 표시 */
     width: 90%;
     max-width: 600px;
-    text-align: center;
-    overflow-y: auto; /* 내용이 많을 경우 스크롤 */
-    max-height: 80vh; /* 최대 높이 설정 */
+    display: none; /* 초기 숨김 상태 */
 }
 
-#recordTable {
+#recordSection table {
     width: 100%;
     border-collapse: collapse;
-    margin-top: 20px;
+    margin-bottom: 20px;
 }
 
-#recordTable th, #recordTable td {
-    border: 1px solid #ccc;
-    padding: 10px;
-    text-align: center;
+#recordSection th,
+#recordSection td {
+    border: 1px solid #ddd;
+    padding: 8px;
 }
 
-#recordTable th {
+#recordSection th {
     background-color: #f2f2f2;
-}
-
-#closeRecordsButton {
-    padding: 10px 20px;
-    background-color: #FF6F61;
-    color: white;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    margin-top: 10px;
-}
-
-#closeRecordsButton:hover {
-    background-color: #e65b50;
+    color: #333;
 }
 
 /* 오버레이 스타일 */
 #overlay {
-    display: none; /* 초기 숨김 상태 */
     position: fixed;
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
-    background-color: rgba(0, 0, 0, 0.5); /* 반투명 검은색 배경 */
-    z-index: 1000; /* 기록 섹션보다 아래에 표시 */
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: 1000;
+    display: none; /* 초기 숨김 상태 */
 }
 
 /* 이름 입력 폼 스타일 */
@@ -93,7 +119,7 @@ button {
     position: fixed;
     top: 15%; /* 상단에서 15% 위치로 변경 */
     left: 50%;
-    transform: translate(-50%, -15%); /* Y축 이동을 -15%로 변경 */
+    transform: translate(-50%, -15%);
     background-color: rgba(255, 255, 255, 0.95);
     padding: 30px;
     border: 2px solid #ccc;
@@ -105,52 +131,66 @@ button {
     text-align: center;
 }
 
-#name-form input {
-    width: 80%;
-    padding: 10px;
-    font-size: 16px;
-    margin-bottom: 15px;
+#name-form h2 {
+    margin-top: 0;
+    color: #333;
+}
+
+#name-form p {
+    margin: 15px 0;
+    color: #555;
+}
+
+/* 버튼 그룹 스타일 */
+.button-group {
+    display: flex;
+    justify-content: center;
+    gap: 10px; /* 버튼 간 간격 */
+    margin-top: 20px;
 }
 
 #name-form button {
     padding: 10px 20px;
-    font-size: 16px;
-    background-color: #FF6F61;
-    color: white;
     border: none;
     border-radius: 5px;
     cursor: pointer;
+    font-size: 16px;
 }
 
-#name-form button:hover {
-    background-color: #e65b50;
+#saveNameButton {
+    background-color: #4CAF50; /* 녹색 */
+    color: white;
 }
-/* 미디어 쿼리를 사용한 반응형 디자인 예시 */
+
+#goBackButton {
+    background-color: #f44336; /* 빨간색 */
+    color: white;
+}
+
+/* 모바일 환경 대응 */
 @media (max-width: 600px) {
+    #name-form {
+        top: 10%; /* 더욱 상단으로 위치 조정 */
+        transform: translate(-50%, -10%);
+        width: 90%;
+        max-width: 300px;
+    }
+
     .sequence {
         font-size: 20px;
     }
+
     input[type="number"],
     input[type="text"] {
-        width: 150px;
+        width: 80%;
     }
+
     button {
-        padding: 8px 16px;
-        font-size: 14px;
+        width: 100%;
+        margin: 10px 0;
     }
-    #recordSection {
-        width: 95%;
-        max-width: 90%;
+
+    .button-group {
+        flex-direction: column;
     }
 }
-
-/* 예시: 결과 메시지에 애니메이션 추가 */
-@keyframes fadeIn {
-    from { opacity: 0; }
-    to { opacity: 1; }
-}
-
-#result {
-    animation: fadeIn 0.5s ease-in-out;
-}
-
