@@ -55,12 +55,12 @@
     <p id="result"></p>
     <script>
         const firebaseConfig = {
-            apiKey: "AIzaSyD1q6j9lxXgMC_Kus3FuTarRZYT4-Yfg6I",
-            authDomain: "testdalbong-5ea3f.firebaseapp.com",
-            projectId: "testdalbong-5ea3f",
-            storageBucket: "testdalbong-5ea3f.firebasestorage.app",
-            messagingSenderId: "468413638970",
-            appId: "1:468413638970:web:4e1d6468a310812718c803"
+            apiKey: "AIzaSyBeCVOghDQw8hPdp0JrHovXcU7d7aKmmFE",
+            authDomain: "piecechoice.firebaseapp.com",
+            projectId: "piecechoice",
+            storageBucket: "piecechoice.firebasestorage.app",
+            messagingSenderId: "1048561191876",
+            appId: "1:1048561191876:web:43e94b515fd260aceb7291"
         };
         
             // Firebase 초기화
@@ -98,13 +98,9 @@
         
         
         // 기록 보기 버튼 이벤트 리스너 추가
-        // 기록 보기 버튼 이벤트 리스너
         viewRecordsButton.addEventListener('click', () => {
-            const recordSection = document.getElementById('recordSection');
-            recordSection.style.display = 'block'; // 기록 섹션 표시
-            loadRecordsFromFirestore(); // 기록 불러오기
+            recordSection.style.display = 'flex'; // 기록 섹션 열기
         });
-
         // 난이도 설정
         const difficulties = {
           easy: { gridSize: 5, wordCount: 5 },
