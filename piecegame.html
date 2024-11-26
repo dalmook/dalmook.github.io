@@ -403,21 +403,15 @@
                     };
         
                     // Firestore에 기록 저장
-                    saveRecord(newRecord)
-                        .then(() => {
-                            alert('기록이 저장되었습니다!');
-                            document.getElementById('name-form').style.display = 'none'; // 이름 입력 폼 숨기기
-                        
-                            // 저장 성공 시 기록 섹션 표시 및 데이터 로드
-                            const recordSection = document.getElementById('recordSection');
-                            recordSection.style.display = 'block'; // 기록 섹션 표시
-                            loadRecordsFromFirestore(); // Firestore에서 기록 불러오기
-                        })
-                        .catch((error) => {
-                            console.error('기록 저장 실패:', error);
-                            alert('기록 저장 중 오류가 발생했습니다.');
-                        });
-                });
+                    saveRecord(newRecord).then(() => {
+                      // 이름 입력 필드 숨기고 기록 테이블 표시
+                      document.getElementById('playerName').style.display = 'none';
+                      saveRecordButton.style.display = 'none';
+                  }).catch((error) => {
+                      console.error('게임 기록 저장 중 오류 발생: ', error);
+                      alert('기록 저장에 실패했습니다. 다시 시도해주세요.');
+                  });
+              });
         
                 // 게임으로 돌아가기 버튼 이벤트
                 backToGameButton.addEventListener('click', () => {
