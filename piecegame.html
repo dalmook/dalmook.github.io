@@ -454,8 +454,7 @@
         
                 // 페이지 로드 시 Firestore 기록 불러오기
                 window.onload = async function() {
-                    await loadCategories(); // categories.json 불러오기
-                    //loadRecordsFromFirestore();
+                    loadRecordsFromFirestore();
                     // initializeMatchingGame(); // 이 줄을 제거하거나 주석 처리하세요.
                 };
         
@@ -464,19 +463,7 @@
         
         // 초기 게임 생성
         generateGame();
-        async function loadCategories() {
-            try {
-                const response = await fetch('categories.json');
-                if (!response.ok) {
-                    throw new Error(`HTTP error! status: ${response.status}`);
-                }
-                categories = await response.json();
-                console.log('Categories loaded:', categories);
-            } catch (error) {
-                console.error('Failed to load categories:', error);
-                alert('카테고리 데이터를 불러오지 못했습니다. 페이지를 새로고침 해주세요.');
-            }
-        }        
+ 
     </script>
 </body>
 </html>
