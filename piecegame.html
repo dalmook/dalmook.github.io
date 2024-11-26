@@ -107,7 +107,7 @@
           medium: { gridSize: 7, wordCount: 7 },
           hard: { gridSize: 9, wordCount: 9 },
         };
-        
+     
         // 난이도에 따라 그리드와 단어 생성
         function generateGame() {
           const difficulty = difficultySelect.value;
@@ -412,7 +412,11 @@
                         alert('기록 저장에 실패했습니다. 다시 시도해주세요.');
                     });
                 });
-        
+                function startMatchingGame() {
+                    console.log("startMatchingGame");
+                    // Implement game initialization
+                    generateGame();
+                }        
                 // 게임으로 돌아가기 버튼 이벤트
                 backToGameButton.addEventListener('click', () => {
                     recordSection.style.display = 'none';
@@ -421,8 +425,7 @@
                     saveRecordButton.style.display = 'block';
                     // 게임 초기화
                     startMatchingGame(); // 새 게임 시작
-                });
-        
+                });      
                 // Firestore에서 기록 불러오기
                 function loadRecordsFromFirestore() {
                     db.collection('gameRecords').orderBy('score', 'desc').onSnapshot((snapshot) => { // 점수 기준 내림차순
@@ -454,17 +457,14 @@
         
                 // 페이지 로드 시 Firestore 기록 불러오기
                 window.onload = async function() {
-                    await loadCategories(); // categories.json 불러오기
                     loadRecordsFromFirestore();
                     // initializeMatchingGame(); // 이 줄을 제거하거나 주석 처리하세요.
                 };
-        
         // 게임 시작 버튼 이벤트
         startButton.addEventListener("click", generateGame);
         
         // 초기 게임 생성
         generateGame();
-        
     </script>
 </body>
 </html>
