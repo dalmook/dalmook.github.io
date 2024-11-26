@@ -1,8 +1,3 @@
-// logicgamelogic.js
-
-// Firebase 초기화는 logicgamefirebaseConfig.js에서 이미 완료되었습니다.
-// db 변수는 window.db로 초기화됨
-
 // DOM 요소 선택
 const sequenceElement = document.getElementById("sequence");
 const answerInput = document.getElementById("answerInput");
@@ -19,15 +14,15 @@ const overlay = document.getElementById("overlay");
 const nameForm = document.getElementById("name-form");
 const playerNameInput = document.getElementById("playerName");
 const saveNameButton = document.getElementById("saveNameButton");
-const goBackButton = document.getElementById("goBackButton"); // 돌아가기 버튼
-const difficultySelect = document.getElementById("difficultySelect"); // 난이도 선택 요소
+const goBackButton = document.getElementById("goBackButton");
+const difficultySelect = document.getElementById("difficultySelect");
 
 // 게임 변수 초기화
 let currentQuestion = null;
 let score = 0;
 let startTime, timerInterval;
-let questionsAnswered = 0; // 질문 수 추적 변수 추가
-const totalQuestions = 5; // 게임당 총 질문 수
+let questionsAnswered = 0;
+const totalQuestions = 5;
 let questionsData = {
     easy: [],
     medium: [],
@@ -43,7 +38,7 @@ let selectedQuestions = {
 difficultySelect.addEventListener("change", () => {
     const difficulty = difficultySelect.value;
     console.log("선택된 난이도:", difficulty);
-    generateGame(); // 난이도가 변경되면 게임을 재생성
+    generateGame();
 });
 
 // 게임 생성 함수
@@ -51,7 +46,7 @@ function generateGame() {
     resetGame();
     loadQuestions()
         .then(() => {
-            selectRandomQuestions(); // 각 난이도별로 5문제 랜덤 선택
+            selectRandomQuestions();
             selectRandomQuestion();
             displaySequence();
             startTimer();
@@ -68,7 +63,7 @@ function resetGame() {
     answerInput.value = "";
     resultElement.textContent = "";
     score = 0;
-    questionsAnswered = 0; // 카운터 초기화
+    questionsAnswered = 0;
     scoreElement.textContent = `점수: ${score}`;
     clearInterval(timerInterval);
     timerDisplay.textContent = "걸린 시간: 0초";
@@ -77,7 +72,6 @@ function resetGame() {
 // JSON 파일에서 질문 로드 함수
 async function loadQuestions() {
     if (questionsData.easy.length > 0 || questionsData.medium.length > 0 || questionsData.hard.length > 0) {
-        // 이미 로드된 경우 다시 로드하지 않음
         return;
     }
     try {
@@ -105,7 +99,7 @@ function selectRandomQuestions() {
             return;
         }
         if (questions.length <= totalQuestions) {
-            selectedQuestions[difficulty] = [...questions]; // 질문이 5개 이하인 경우 모두 사용
+            selectedQuestions[difficulty] = [...questions];
         } else {
             selectedQuestions[difficulty] = getRandomSubset(questions, totalQuestions);
         }
@@ -124,7 +118,6 @@ function selectRandomQuestion() {
     const difficulty = difficultySelect.value;
     const questions = selectedQuestions[difficulty];
     if (!questions || questions.length === 0) {
-        // 모든 질문을 완료했을 때 이름 입력 폼 표시
         showNameForm();
         return;
     }
@@ -157,6 +150,7 @@ submitAnswerButton.addEventListener("click", () => {
         alert("문제가 로드되지 않았습니다.");
         return;
     }
+
     const userAnswer = answerInput.value.trim();
     if (!userAnswer) {
         alert("답을 입력하세요!");
@@ -294,11 +288,6 @@ function showLeaderboard() {
                     console.log(`기록 ${index + 1}:`, data);
 
                     const tr = document.createElement("tr");
-
-                    // Rank는 이제 포함하지 않으므로 삭제
-                    // const rankTd = document.createElement("td");
-                    // rankTd.textContent = index + 1; // 순위 표시
-                    // tr.appendChild(rankTd);
 
                     const difficultyTd = document.createElement("td");
                     difficultyTd.textContent = data.difficulty;
