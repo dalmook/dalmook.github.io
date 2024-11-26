@@ -97,10 +97,13 @@
         let selectedDirection = { row: 0, col: 0 }; // 드래그 방향 저장
         
         
-        // 기록 보기 버튼 이벤트 리스너 추가
+        // 기록 보기 버튼 이벤트 리스너
         viewRecordsButton.addEventListener('click', () => {
-            recordSection.style.display = 'flex'; // 기록 섹션 열기
+            const recordSection = document.getElementById('recordSection');
+            recordSection.style.display = 'block'; // 기록 섹션 표시
+            loadRecordsFromFirestore(); // 기록 불러오기
         });
+
         // 난이도 설정
         const difficulties = {
           easy: { gridSize: 5, wordCount: 5 },
