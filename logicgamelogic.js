@@ -135,14 +135,18 @@ function selectRandomQuestion() {
     // 선택된 질문을 목록에서 제거하여 중복 출제를 방지
     selectedQuestions[difficulty].splice(randomIndex, 1);
 }
-
-// 시퀀스 표시 함수
+// 아이콘을 HTML로 대체하는 함수
+function replaceQuestionWithIcon(sequence) {
+    // Font Awesome 아이콘을 사용한다고 가정
+    return sequence.replace("[QUESTION]", '<i class="fas fa-question-circle question-icon"></i>');
+}
+// 시퀀스 표시 함수 수정
 function displaySequence() {
     if (!currentQuestion) return;
-    sequenceElement.innerHTML = `2 4 <i class="fas fa-question-circle question-icon"></i> 8 10`;
-    // 또는 만약 시퀀스가 동적으로 변한다면:
-    // sequenceElement.innerHTML = formatSequence(currentQuestion.sequence);
+    const formattedSequence = replaceQuestionWithIcon(currentQuestion.sequence);
+    sequenceElement.innerHTML = formattedSequence;
 }
+
 
 // 정답 제출 함수
 submitAnswerButton.addEventListener("click", () => {
