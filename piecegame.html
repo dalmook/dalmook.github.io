@@ -63,9 +63,9 @@
             appId: "1:468413638970:web:4e1d6468a310812718c803"
         };
         
-        // Firebase 초기화
-        firebase.initializeApp(firebaseConfig);
-        const db = firebase.firestore();
+            // Firebase 초기화
+            firebase.initializeApp(firebaseConfig);
+            const db = firebase.firestore();
         
         const grid = document.getElementById("grid");
         const wordList = document.getElementById("words-to-find");
@@ -97,6 +97,7 @@
         let selectedDirection = { row: 0, col: 0 }; // 드래그 방향 저장
         
         
+        // 기록 보기 버튼 이벤트 리스너 추가
         // 기록 보기 버튼 이벤트 리스너
         viewRecordsButton.addEventListener('click', () => {
             const recordSection = document.getElementById('recordSection');
@@ -391,36 +392,30 @@
         
                 // 기록 저장 버튼 이벤트
                 saveRecordButton.addEventListener('click', () => {
-                    const playerName = playerNameInput.value.trim(); // 입력된 이름 가져오기
+                    const playerName = document.getElementById('playerName').value.trim();
                     if (!playerName) {
                         alert('이름을 입력하세요!');
-                        return; // 이름이 없으면 저장 중단
+                        return;
                     }
-                
+        
+                    // 기록 생성
                     const newRecord = {
-                        difficulty: difficultySelect.value, // 난이도
-                        name: playerName,                  // 이름
-                        score: score,                      // 점수
-                        timestamp: firebase.firestore.FieldValue.serverTimestamp() // 서버 타임스탬프
+                        difficulty: difficultySelect.value,
+                        name: playerName,
+                        score: score,
+                        timestamp: firebase.firestore.FieldValue.serverTimestamp() // 기록 시간
                     };
-                
+        
                     // Firestore에 기록 저장
-                    saveRecord(newRecord)
-                        .then(() => {
-                            alert('기록이 저장되었습니다!');
-                            document.getElementById('name-form').style.display = 'none'; // 이름 입력 폼 숨기기
-                
-                            // 저장 성공 시 기록 섹션 표시 및 데이터 로드
-                            const recordSection = document.getElementById('recordSection');
-                            recordSection.style.display = 'block'; // 기록 섹션 표시
-                            loadRecordsFromFirestore(); // Firestore에서 기록 불러오기
-                        })
-                        .catch((error) => {
-                            console.error('기록 저장 실패:', error);
-                            alert('기록 저장 중 오류가 발생했습니다.');
-                        });
+                    saveRecord(newRecord).then(() => {
+                        // 이름 입력 필드 숨기고 기록 테이블 표시
+                        document.getElementById('playerName').style.display = 'none';
+                        saveRecordButton.style.display = 'none';
+                    }).catch((error) => {
+                        console.error('게임 기록 저장 중 오류 발생: ', error);
+                        alert('기록 저장에 실패했습니다. 다시 시도해주세요.');
+                    });
                 });
-                
         
                 // 게임으로 돌아가기 버튼 이벤트
                 backToGameButton.addEventListener('click', () => {
