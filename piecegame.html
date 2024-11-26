@@ -75,7 +75,6 @@
         const timerDisplay = document.getElementById("timer");
         
         const matchingStartButton = document.getElementById('startMatchingGame');
-        const categorySelectMatching = document.getElementById('category');
         const difficultySelect = document.getElementById('difficulty');
         const gameBoard = document.getElementById('gameBoard');
         const scoreDisplay = document.getElementById('score');
@@ -397,7 +396,6 @@
         
                     // 기록 생성
                     const newRecord = {
-                        category: selectedCategory,
                         difficulty: difficultySelect.value,
                         name: playerName,
                         score: score,
@@ -443,7 +441,6 @@
                     const row = document.createElement('tr');
                     const date = record.timestamp ? record.timestamp.toDate().toLocaleString() : 'N/A';
                     row.innerHTML = `
-                        <td>${record.category}</td>
                         <td>${record.difficulty}</td>
                         <td>${record.name}</td>
                         <td>${record.score}</td>
