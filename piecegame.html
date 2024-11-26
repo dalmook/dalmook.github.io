@@ -412,7 +412,11 @@
                         alert('기록 저장에 실패했습니다. 다시 시도해주세요.');
                     });
                 });
-        
+                function startMatchingGame() {
+                    console.log("startMatchingGame");
+                    // Implement game initialization
+                    generateGame();
+                }        
                 // 게임으로 돌아가기 버튼 이벤트
                 backToGameButton.addEventListener('click', () => {
                     recordSection.style.display = 'none';
