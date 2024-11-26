@@ -21,6 +21,26 @@ h1 {
     border: 2px solid #ccc;
     border-radius: 5px;
 }
+/* 시퀀스에서 네모 박스 스타일 */
+.question-box {
+    display: inline-block;
+    width: 40px; /* 네모 크기 */
+    height: 40px; /* 네모 크기 */
+    background-color: #FF5722; /* 네모 배경색 */
+    color: #FFF; /* 네모 안의 텍스트 색상 */
+    border: 2px solid #FFC107; /* 테두리 */
+    text-align: center; /* 텍스트 중앙 정렬 */
+    line-height: 40px; /* 높이에 맞춘 텍스트 정렬 */
+    font-size: 24px; /* 텍스트 크기 */
+    font-weight: bold;
+    border-radius: 5px; /* 네모 모서리 둥글게 */
+    margin: 0 10px; /* 양쪽 간격 */
+}
+
+/* ? 텍스트 */
+.question-box::after {
+    content: "?";
+}
 
 input[type="number"],
 input[type="text"] {
