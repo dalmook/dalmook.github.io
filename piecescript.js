@@ -370,38 +370,7 @@ function createGrid() {
             stopDragging();
         }
     });
-
-    // 터치 이벤트 핸들러 추가
-    grid.querySelectorAll('.grid-item').forEach((cell) => {
-        const index = parseInt(cell.dataset.index, 10);
-
-        cell.addEventListener("touchstart", (e) => {
-            console.log("touchstart", index);
-            e.preventDefault();
-            startDragging(index, cell);
-        });
-
-        cell.addEventListener("touchmove", (e) => {
-            if (!isDragging) return;
-            console.log("touchmove", index);
-            const touch = e.touches[0];
-            const target = document.elementFromPoint(touch.clientX, touch.clientY);
-
-            if (target && target.classList.contains("grid-item")) {
-                const targetIndex = parseInt(target.dataset.index, 10);
-                if (!selectedIndexes.includes(targetIndex) && isValidMove(selectedIndexes[selectedIndexes.length - 1], targetIndex)) {
-                    dragOver(targetIndex, target);
-                }
-            }
-        });
-
-        cell.addEventListener("touchend", () => {
-            console.log("touchend");
-            stopDragging();
-        });
-    });
 }
-
 // 단어 목록 생성
 function createWordList() {
     wordsToFind.forEach((word) => {
@@ -465,16 +434,10 @@ function isValidMove(lastIndex, currentIndex) {
     const rowDiff = currentRow - Math.floor(lastIndex / gridSize);
     const colDiff = currentCol - (lastIndex % gridSize);
 
-    const valid = (
+    return (
         rowDiff === prevDirection.row &&
         colDiff === prevDirection.col
     );
-
-    if (valid) {
-        return true;
-    } else {
-        return false;
-    }
 }
 
 // 단어 확인
