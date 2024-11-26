@@ -39,7 +39,7 @@
                     <tr>
                         <th>난이도</th>
                         <th>이름</th>
-                        <th>점수</th>
+                        <th>시간(초)</th>
                         <th>날짜</th>
                     </tr>
                 </thead>
@@ -429,7 +429,7 @@
         
                 // Firestore에서 기록 불러오기
                 function loadRecordsFromFirestore() {
-                    db.collection('gameRecords').orderBy('score', 'desc').onSnapshot((snapshot) => { // 점수 기준 내림차순
+                    db.collection('gameRecords').orderBy('score', 'asc').onSnapshot((snapshot) => { // 점수 기준 내림차순
                         snapshot.docChanges().forEach((change) => {
                             if (change.type === 'added') {
                                 const record = change.doc.data();
