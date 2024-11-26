@@ -19,6 +19,7 @@ const overlay = document.getElementById("overlay");
 const nameForm = document.getElementById("name-form");
 const playerNameInput = document.getElementById("playerName");
 const saveNameButton = document.getElementById("saveNameButton");
+const goBackButton = document.getElementById("goBackButton"); // 돌아가기 버튼
 const difficultySelect = document.getElementById("difficultySelect"); // 난이도 선택 요소
 
 // 게임 변수 초기화
@@ -334,6 +335,12 @@ function hideNameForm() {
     nameForm.style.display = "none";
     playerNameInput.value = "";
 }
+
+// 돌아가기 버튼 이벤트 리스너
+goBackButton.addEventListener("click", () => {
+    hideNameForm();
+    generateGame(); // 게임을 재시작
+});
 
 // 페이지 로드 시 게임 시작
 window.onload = () => {
