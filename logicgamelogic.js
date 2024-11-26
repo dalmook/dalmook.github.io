@@ -139,7 +139,9 @@ function selectRandomQuestion() {
 // 시퀀스 표시 함수
 function displaySequence() {
     if (!currentQuestion) return;
-    sequenceElement.textContent = currentQuestion.sequence;
+    sequenceElement.innerHTML = `2 4 <i class="fas fa-question-circle question-icon"></i> 8 10`;
+    // 또는 만약 시퀀스가 동적으로 변한다면:
+    // sequenceElement.innerHTML = formatSequence(currentQuestion.sequence);
 }
 
 // 정답 제출 함수
