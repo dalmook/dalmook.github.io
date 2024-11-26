@@ -242,8 +242,8 @@ closeRecordsButton.addEventListener("click", () => {
 function showLeaderboard() {
     const difficulty = difficultySelect.value;
     db.collection("gameRecords")
-        .where("difficulty", "==", difficulty) // 현재 난이도에 맞게 필터링
-        .orderBy("score", "desc") // 점수 기준 내림차순 정렬
+        .where("difficulty", "==", difficulty) // 현재 난이도 필터
+        .orderBy("score", "desc") // 점수 기준 내림차순
         .limit(10) // 상위 10개만 표시
         .get()
         .then((snapshot) => {
@@ -257,13 +257,12 @@ function showLeaderboard() {
                 tr.appendChild(td);
                 recordTableBody.appendChild(tr);
             } else {
-                let rank = 1;
-                snapshot.forEach((doc) => {
+                snapshot.forEach((doc, index) => {
                     const data = doc.data();
                     const tr = document.createElement("tr");
 
                     const rankTd = document.createElement("td");
-                    rankTd.textContent = rank;
+                    rankTd.textContent = index + 1; // 순위 표시
                     tr.appendChild(rankTd);
 
                     const difficultyTd = document.createElement("td");
@@ -271,30 +270,31 @@ function showLeaderboard() {
                     tr.appendChild(difficultyTd);
 
                     const nameTd = document.createElement("td");
-                    nameTd.textContent = data.name;
+                    nameTd.textContent = data.name || "익명"; // 이름이 없으면 "익명" 표시
                     tr.appendChild(nameTd);
 
                     const scoreTd = document.createElement("td");
-                    scoreTd.textContent = data.score;
+                    scoreTd.textContent = data.score || 0; // 점수가 없으면 0 표시
                     tr.appendChild(scoreTd);
 
                     const timeTd = document.createElement("td");
-                    timeTd.textContent = `${data.time}초`;
+                    timeTd.textContent = `${data.time || 0}초`; // 시간이 없으면 0초 표시
                     tr.appendChild(timeTd);
 
                     const dateTd = document.createElement("td");
-                    dateTd.textContent = data.timestamp ? data.timestamp.toDate().toLocaleString() : "N/A";
+                    dateTd.textContent = data.timestamp
+                        ? data.timestamp.toDate().toLocaleString()
+                        : "N/A"; // 날짜 표시
                     tr.appendChild(dateTd);
 
                     recordTableBody.appendChild(tr);
-                    rank++;
                 });
             }
 
             recordSection.style.display = "block";
         })
         .catch((error) => {
-            console.error("Firestore에서 기록 불러오기 실패:", error);
+            console.error("Firestore에서 기록 불러오기 실패:", error.message, error.code, error);
             alert("기록을 불러오는 중 오류가 발생했습니다.");
         });
 }
