@@ -37,7 +37,6 @@
             <table id="recordTable">
                 <thead>
                     <tr>
-                        <th>카테고리</th>
                         <th>난이도</th>
                         <th>이름</th>
                         <th>점수</th>
@@ -52,7 +51,7 @@
         </div>
     </div>
     </div>
-    <p id="timer">걸린 시간: 0초</p>
+    <p id="score">걸린 시간: 0초</p>
     <p id="result"></p>
     <script>
         const firebaseConfig = {
@@ -75,13 +74,13 @@
         const timerDisplay = document.getElementById("timer");
         
         const matchingStartButton = document.getElementById('startMatchingGame');
-        const categorySelectMatching = document.getElementById('category');
         const difficultySelect = document.getElementById('difficulty');
         const gameBoard = document.getElementById('gameBoard');
         const scoreDisplay = document.getElementById('score');
         const wordDisplay = document.getElementById('wordDisplay');
         const recordSection = document.getElementById('recordSection');
         const saveRecordButton = document.getElementById('saveRecordButton');
+        const playerNameInput = document.getElementById('playerName');
         const backToGameButton = document.getElementById('backToGameButton');
         const recordTableBody = document.getElementById('recordTable').querySelector('tbody');
         const viewRecordsButton = document.getElementById('viewRecordsButton');
@@ -93,6 +92,7 @@
         let isDragging = false;
         let selectedIndexes = [];
         let selectedWord = "";
+        let score = 0;
         let startTime, timerInterval;
         let selectedDirection = { row: 0, col: 0 }; // 드래그 방향 저장
         
@@ -396,7 +396,6 @@
         
                     // 기록 생성
                     const newRecord = {
-                        category: selectedCategory,
                         difficulty: difficultySelect.value,
                         name: playerName,
                         score: score,
@@ -442,7 +441,6 @@
                     const row = document.createElement('tr');
                     const date = record.timestamp ? record.timestamp.toDate().toLocaleString() : 'N/A';
                     row.innerHTML = `
-                        <td>${record.category}</td>
                         <td>${record.difficulty}</td>
                         <td>${record.name}</td>
                         <td>${record.score}</td>
