@@ -1,484 +1,484 @@
 {
     "easy": [
   {
-    "sequence": "2 4 □ 8 10",
+    "sequence": "2 4 ? 8 10",
     "answer": 6,
     "description": "2의 배수입니다."
   },
   {
-    "sequence": "5 10 □ 20 25",
+    "sequence": "5 10 ? 20 25",
     "answer": 15,
     "description": "5의 배수입니다."
   },
   {
-    "sequence": "1 3 □ 7 9",
+    "sequence": "1 3 ? 7 9",
     "answer": 5,
     "description": "홀수의 순서입니다."
   },
   {
-    "sequence": "10 20 □ 40 50",
+    "sequence": "10 20 ? 40 50",
     "answer": 30,
     "description": "10씩 증가합니다."
   },
   {
-    "sequence": "100 90 □ 70 60",
+    "sequence": "100 90 ? 70 60",
     "answer": 80,
     "description": "10씩 감소합니다."
   },
   {
-    "sequence": "3 6 □ 12 15",
+    "sequence": "3 6 ? 12 15",
     "answer": 9,
     "description": "3의 배수입니다."
   },
   {
-    "sequence": "2 4 □ 10 12",
+    "sequence": "2 4 ? 10 12",
     "answer": 8,
     "description": "2의 배수 중 4 이상입니다."
   },
   {
-    "sequence": "50 40 □ 20 10",
+    "sequence": "50 40 ? 20 10",
     "answer": 30,
     "description": "10씩 감소합니다."
   },
   {
-    "sequence": "1 4 □ 16 25",
+    "sequence": "1 4 ? 16 25",
     "answer": 9,
     "description": "제곱수의 순서입니다."
   },
   {
-    "sequence": "7 14 □ 28 35",
+    "sequence": "7 14 ? 28 35",
     "answer": 21,
     "description": "7의 배수입니다."
   },
   {
-    "sequence": "1 2 □ 4 5",
+    "sequence": "1 2 ? 4 5",
     "answer": 3,
     "description": "자연수의 순서입니다."
   },
   {
-    "sequence": "8 16 □ 32 40",
+    "sequence": "8 16 ? 32 40",
     "answer": 24,
     "description": "8의 배수입니다."
   },
   {
-    "sequence": "1 1 □ 2 3",
+    "sequence": "1 1 ? 2 3",
     "answer": 1,
     "description": "피보나치 수열입니다."
   },
   {
-    "sequence": "6 12 □ 24 30",
+    "sequence": "6 12 ? 24 30",
     "answer": 18,
     "description": "6의 배수입니다."
   },
   {
-    "sequence": "3 6 □ 15 18",
+    "sequence": "3 6 ? 15 18",
     "answer": 12,
     "description": "3의 배수입니다."
   },
   {
-    "sequence": "9 18 □ 36 45",
+    "sequence": "9 18 ? 36 45",
     "answer": 27,
     "description": "9의 배수입니다."
   },
   {
-    "sequence": "4 8 □ 16 20",
+    "sequence": "4 8 ? 16 20",
     "answer": 12,
     "description": "4의 배수입니다."
   },
   {
-    "sequence": "5 15 □ 35 45",
+    "sequence": "5 15 ? 35 45",
     "answer": 25,
     "description": "5의 배수 중 5 이상입니다."
   },
   {
-    "sequence": "2 6 □ 14 18",
+    "sequence": "2 6 ? 14 18",
     "answer": 10,
     "description": "2씩 증가한 홀수 배수입니다."
   },
   {
-    "sequence": "10 30 □ 70 90",
+    "sequence": "10 30 ? 70 90",
     "answer": 50,
     "description": "10씩 증가합니다."
   },
   {
-    "sequence": "20 40 □ 80 100",
+    "sequence": "20 40 ? 80 100",
     "answer": 60,
     "description": "20의 배수입니다."
   },
   {
-    "sequence": "1 3 □ 7 9",
+    "sequence": "1 3 ? 7 9",
     "answer": 5,
     "description": "홀수의 순서입니다."
   },
   {
-    "sequence": "12 24 □ 48 60",
+    "sequence": "12 24 ? 48 60",
     "answer": 36,
     "description": "12의 배수입니다."
   },
   {
-    "sequence": "2 3 □ 5 7",
+    "sequence": "2 3 ? 5 7",
     "answer": 4,
     "description": "자연수 중 소수의 순서입니다."
   },
   {
-    "sequence": "50 45 □ 35 30",
+    "sequence": "50 45 ? 35 30",
     "answer": 40,
     "description": "5씩 감소합니다."
   },
   {
-    "sequence": "10 20 □ 40 50",
+    "sequence": "10 20 ? 40 50",
     "answer": 30,
     "description": "10의 배수입니다."
   },
   {
-    "sequence": "6 12 □ 24 30",
+    "sequence": "6 12 ? 24 30",
     "answer": 18,
     "description": "6의 배수입니다."
   },
   {
-    "sequence": "4 8 □ 16 20",
+    "sequence": "4 8 ? 16 20",
     "answer": 12,
     "description": "4의 배수입니다."
   },
   {
-    "sequence": "2 5 □ 11 14",
+    "sequence": "2 5 ? 11 14",
     "answer": 8,
     "description": "소수의 배수를 포함합니다."
   },
   {
-    "sequence": "1 1 □ 2 3",
+    "sequence": "1 1 ? 2 3",
     "answer": 1,
     "description": "피보나치 수열입니다."
   },
   {
-    "sequence": "8 16 □ 32 40",
+    "sequence": "8 16 ? 32 40",
     "answer": 24,
     "description": "8의 배수입니다."
   },
   {
-    "sequence": "3 9 □ 27 81",
+    "sequence": "3 9 ? 27 81",
     "answer": 27,
     "description": "3의 거듭제곱입니다."
   },
   {
-    "sequence": "5 25 □ 125 625",
+    "sequence": "5 25 ? 125 625",
     "answer": 125,
     "description": "5의 거듭제곱입니다."
   },
   {
-    "sequence": "7 14 □ 28 35",
+    "sequence": "7 14 ? 28 35",
     "answer": 21,
     "description": "7의 배수입니다."
   },
   {
-    "sequence": "9 18 □ 36 45",
+    "sequence": "9 18 ? 36 45",
     "answer": 27,
     "description": "9의 배수입니다."
   },
   {
-    "sequence": "20 30 □ 50 60",
+    "sequence": "20 30 ? 50 60",
     "answer": 40,
     "description": "10씩 증가합니다."
   },
   {
-    "sequence": "11 22 □ 44 55",
+    "sequence": "11 22 ? 44 55",
     "answer": 33,
     "description": "11의 배수입니다."
   },
   {
-    "sequence": "1 2 □ 4 8",
+    "sequence": "1 2 ? 4 8",
     "answer": 3,
     "description": "2의 배수를 포함한 간격 증가입니다."
   },
   {
-    "sequence": "12 24 □ 48 60",
+    "sequence": "12 24 ? 48 60",
     "answer": 36,
     "description": "12의 배수입니다."
   },
   {
-    "sequence": "4 8 □ 20 28",
+    "sequence": "4 8 ? 20 28",
     "answer": 16,
     "description": "4의 배수입니다."
   },
   {
-    "sequence": "50 60 □ 80 90",
+    "sequence": "50 60 ? 80 90",
     "answer": 70,
     "description": "10씩 증가합니다."
   },
   {
-    "sequence": "1 3 □ 7 11",
+    "sequence": "1 3 ? 7 11",
     "answer": 5,
     "description": "홀수의 순서입니다."
   },
   {
-    "sequence": "30 60 □ 120 150",
+    "sequence": "30 60 ? 120 150",
     "answer": 90,
     "description": "30의 배수입니다."
   },
   {
-    "sequence": "8 16 □ 32 48",
+    "sequence": "8 16 ? 32 48",
     "answer": 24,
     "description": "8의 배수입니다."
   },
   {
-    "sequence": "2 5 □ 11 17",
+    "sequence": "2 5 ? 11 17",
     "answer": 7,
     "description": "소수의 순서입니다."
   },
   {
-    "sequence": "4 6 □ 10 12",
+    "sequence": "4 6 ? 10 12",
     "answer": 8,
     "description": "짝수의 순서입니다."
   },
   {
-    "sequence": "9 18 □ 36 45",
+    "sequence": "9 18 ? 36 45",
     "answer": 27,
     "description": "9의 배수입니다."
   }
 ],
     "medium": [
   {
-    "sequence": "A B □ D E",
+    "sequence": "A B ? D E",
     "answer": "C",
     "description": "알파벳 순서입니다."
   },
   {
-    "sequence": "가 나 □ 라 마",
+    "sequence": "가 나 ? 라 마",
     "answer": "다",
     "description": "한글 순서입니다."
   },
   {
-    "sequence": "10 20 □ 40 50",
+    "sequence": "10 20 ? 40 50",
     "answer": 30,
     "description": "10씩 증가합니다."
   },
   {
-    "sequence": "2 4 □ 10 16",
+    "sequence": "2 4 ? 10 16",
     "answer": 6,
     "description": "2의 배수로 점점 증가합니다."
   },
   {
-    "sequence": "A C □ G I",
+    "sequence": "A C ? G I",
     "answer": "E",
     "description": "알파벳 중 2칸씩 건너뜁니다."
   },
   {
-    "sequence": "가 다 □ 마 사",
+    "sequence": "가 다 ? 마 사",
     "answer": "라",
     "description": "한글 중 2칸씩 건너뜁니다."
   },
   {
-    "sequence": "3 9 □ 27 81",
+    "sequence": "3 9 ? 27 81",
     "answer": 27,
     "description": "3의 거듭제곱입니다."
   },
   {
-    "sequence": "10 30 □ 70 90",
+    "sequence": "10 30 ? 70 90",
     "answer": 50,
     "description": "10씩 증가하며 2칸 건너뜁니다."
   },
   {
-    "sequence": "B C □ F G",
+    "sequence": "B C ? F G",
     "answer": "D",
     "description": "알파벳 순서입니다."
   },
   {
-    "sequence": "하 호 □ 흥 희",
+    "sequence": "하 호 ? 흥 희",
     "answer": "휴",
     "description": "한글 자음 순서입니다."
   },
   {
-    "sequence": "1 4 □ 16 25",
+    "sequence": "1 4 ? 16 25",
     "answer": 9,
     "description": "제곱수의 순서입니다."
   },
   {
-    "sequence": "100 90 □ 70 60",
+    "sequence": "100 90 ? 70 60",
     "answer": 80,
     "description": "10씩 감소합니다."
   },
   {
-    "sequence": "C D □ H I",
+    "sequence": "C D ? H I",
     "answer": "E",
     "description": "알파벳 순서입니다."
   },
   {
-    "sequence": "가 나 □ 마 바",
+    "sequence": "가 나 ? 마 바",
     "answer": "라",
     "description": "한글 순서입니다."
   },
   {
-    "sequence": "6 12 □ 24 30",
+    "sequence": "6 12 ? 24 30",
     "answer": 18,
     "description": "6의 배수입니다."
   },
   {
-    "sequence": "10 15 □ 25 30",
+    "sequence": "10 15 ? 25 30",
     "answer": 20,
     "description": "5씩 증가합니다."
   },
   {
-    "sequence": "라 마 □ 바 사",
+    "sequence": "라 마 ? 바 사",
     "answer": "바",
     "description": "한글 순서입니다."
   },
   {
-    "sequence": "4 8 □ 20 28",
+    "sequence": "4 8 ? 20 28",
     "answer": 16,
     "description": "2의 배수와 4의 배수가 혼합되었습니다."
   },
   {
-    "sequence": "가 다 □ 라 마",
+    "sequence": "가 다 ? 라 마",
     "answer": "라",
     "description": "한글 순서입니다."
   },
   {
-    "sequence": "A C □ G I",
+    "sequence": "A C ? G I",
     "answer": "E",
     "description": "알파벳 중 2칸씩 건너뜁니다."
   },
   {
-    "sequence": "9 18 □ 36 45",
+    "sequence": "9 18 ? 36 45",
     "answer": 27,
     "description": "9의 배수입니다."
   },
   {
-    "sequence": "가 라 □ 마 사",
+    "sequence": "가 라 ? 마 사",
     "answer": "다",
     "description": "한글 중 2칸씩 건너뜁니다."
   },
   {
-    "sequence": "12 24 □ 48 60",
+    "sequence": "12 24 ? 48 60",
     "answer": 36,
     "description": "12의 배수입니다."
   },
   {
-    "sequence": "B D □ H J",
+    "sequence": "B D ? H J",
     "answer": "F",
     "description": "알파벳 중 2칸씩 건너뜁니다."
   },
   {
-    "sequence": "하 호 □ 흥 희",
+    "sequence": "하 호 ? 흥 희",
     "answer": "휴",
     "description": "한글 자음 순서입니다."
   },
   {
-    "sequence": "7 14 □ 28 35",
+    "sequence": "7 14 ? 28 35",
     "answer": 21,
     "description": "7의 배수입니다."
   },
   {
-    "sequence": "가 나 □ 라 마",
+    "sequence": "가 나 ? 라 마",
     "answer": "다",
     "description": "한글 순서입니다."
   },
   {
-    "sequence": "100 90 □ 70 60",
+    "sequence": "100 90 ? 70 60",
     "answer": 80,
     "description": "10씩 감소합니다."
   },
   {
-    "sequence": "5 15 □ 35 45",
+    "sequence": "5 15 ? 35 45",
     "answer": 25,
     "description": "5의 배수 중 홀수입니다."
   },
   {
-    "sequence": "B F □ L P",
+    "sequence": "B F ? L P",
     "answer": "J",
     "description": "알파벳 중 3칸씩 건너뜁니다."
   },
   {
-    "sequence": "라 마 □ 사 아",
+    "sequence": "라 마 ? 사 아",
     "answer": "바",
     "description": "한글 순서입니다."
   },
   {
-    "sequence": "4 8 □ 20 28",
+    "sequence": "4 8 ? 20 28",
     "answer": 16,
     "description": "2의 배수와 4의 배수가 혼합되었습니다."
   },
   {
-    "sequence": "A B □ D F",
+    "sequence": "A B ? D F",
     "answer": "C",
     "description": "알파벳 순서입니다."
   },
   {
-    "sequence": "가 다 □ 라 마",
+    "sequence": "가 다 ? 라 마",
     "answer": "바",
     "description": "한글 순서입니다."
   },
   {
-    "sequence": "2 6 □ 14 18",
+    "sequence": "2 6 ? 14 18",
     "answer": 10,
     "description": "2씩 증가하는 짝수입니다."
   },
   {
-    "sequence": "A D □ G J",
+    "sequence": "A D ? G J",
     "answer": "F",
     "description": "알파벳 중 2칸씩 건너뜁니다."
   },
   {
-    "sequence": "10 30 □ 50 70",
+    "sequence": "10 30 ? 50 70",
     "answer": 50,
     "description": "10씩 증가하며 홀수만 포함합니다."
   },
   {
-    "sequence": "C F □ L O",
+    "sequence": "C F ? L O",
     "answer": "I",
     "description": "알파벳 중 3칸씩 건너뜁니다."
   },
   {
-    "sequence": "하 흥 □ 휴 희",
+    "sequence": "하 흥 ? 휴 희",
     "answer": "휴",
     "description": "한글 자음 순서입니다."
   },
   {
-    "sequence": "9 18 □ 27 36",
+    "sequence": "9 18 ? 27 36",
     "answer": 27,
     "description": "9의 배수입니다."
   },
   {
-    "sequence": "라 마 □ 바 사",
+    "sequence": "라 마 ? 바 사",
     "answer": "바",
     "description": "한글 순서입니다."
   },
   {
-    "sequence": "3 9 □ 21 27",
+    "sequence": "3 9 ? 21 27",
     "answer": 15,
     "description": "3의 배수입니다."
   },
   {
-    "sequence": "F G □ I K",
+    "sequence": "F G ? I K",
     "answer": "H",
     "description": "알파벳 순서입니다."
   },
   {
-    "sequence": "하 호 □ 흥 희",
+    "sequence": "하 호 ? 흥 희",
     "answer": "휴",
     "description": "한글 자음 순서입니다."
   },
   {
-    "sequence": "10 20 □ 40 50",
+    "sequence": "10 20 ? 40 50",
     "answer": 30,
     "description": "10씩 증가합니다."
   },
   {
-    "sequence": "가 라 □ 마 바",
+    "sequence": "가 라 ? 마 바",
     "answer": "다",
     "description": "한글 중 2칸씩 건너뜁니다."
   },
   {
-    "sequence": "6 12 □ 24 30",
+    "sequence": "6 12 ? 24 30",
     "answer": 18,
     "description": "6의 배수입니다."
   },
   {
-    "sequence": "10 15 □ 25 30",
+    "sequence": "10 15 ? 25 30",
     "answer": 20,
     "description": "5씩 증가합니다."
   },
   {
-    "sequence": "라 마 □ 사 아",
+    "sequence": "라 마 ? 사 아",
     "answer": "바",
     "description": "한글 순서입니다."
   }
@@ -486,105 +486,106 @@
 ,
     "hard": [
   {
-    "sequence": "2 4 8 16 32 64 128 256 □ 1024",
-    "answer": 512,
+    "sequence": "2 4 8 16 32 ? 128",
+    "answer": 64,
     "description": "각 숫자는 이전 숫자의 2배입니다."
   },
   {
-    "sequence": "3 6 12 24 48 96 192 □ 768 1536",
-    "answer": 384,
+    "sequence": "3 6 12 24 ? 96",
+    "answer": 48,
     "description": "각 숫자는 이전 숫자의 2배입니다."
   },
   {
-    "sequence": "1 1 2 3 5 8 13 21 □ 55",
-    "answer": 34,
+    "sequence": "1 1 2 3 5 ? 13",
+    "answer": 8,
     "description": "피보나치 수열입니다."
   },
   {
-    "sequence": "A C F J O U □",
-    "answer": "Z",
-    "description": "알파벳 간 간격이 2, 3, 4, 5, 6으로 점차 증가합니다."
+    "sequence": "A C F J ?",
+    "answer": "O",
+    "description": "알파벳 간 간격이 2, 3, 4로 점차 증가합니다."
   },
   {
-    "sequence": "가 나 다 라 마 바 사 아 자 □",
-    "answer": "차",
+    "sequence": "가 나 다 라 ? 마",
+    "answer": "라",
     "description": "한글 순서입니다."
   },
   {
-    "sequence": "10 20 40 80 160 320 640 1280 □ 5120",
-    "answer": 2560,
+    "sequence": "10 20 40 ? 160 320",
+    "answer": 80,
     "description": "각 숫자는 이전 숫자의 2배입니다."
   },
   {
-    "sequence": "2 3 6 11 18 27 38 51 □ 99",
-    "answer": 72,
+    "sequence": "2 3 6 11 ? 27",
+    "answer": 18,
     "description": "각 숫자는 n^2 + n 규칙에 따릅니다."
   },
   {
-    "sequence": "B D H N T □",
-    "answer": "Z",
-    "description": "알파벳 간 간격이 2, 4, 6, 8, 10으로 점차 증가합니다."
+    "sequence": "B D H ? R",
+    "answer": "N",
+    "description": "알파벳 간 간격이 2, 4, 6으로 점차 증가합니다."
   },
   {
-    "sequence": "5 10 15 25 40 65 105 □ 270 435",
-    "answer": 170,
+    "sequence": "5 10 15 25 ? 65",
+    "answer": 40,
     "description": "각 숫자는 앞의 두 숫자의 합입니다."
   },
   {
-    "sequence": "10 20 30 50 80 130 210 340 □ 890",
-    "answer": 550,
+    "sequence": "10 20 30 50 ? 130",
+    "answer": 80,
     "description": "각 숫자는 앞의 두 숫자의 합입니다."
   },
   {
-    "sequence": "1 4 9 16 25 36 49 □ 81 100",
-    "answer": 64,
+    "sequence": "1 4 9 16 ? 36",
+    "answer": 25,
     "description": "각 숫자는 자연수의 제곱입니다."
   },
   {
-    "sequence": "하 허 호 흐 히 흑 흥 휴 □ 흰",
-    "answer": "희",
+    "sequence": "하 허 호 흐 ? 희",
+    "answer": "히",
     "description": "한글 자음과 모음이 순서대로 바뀝니다."
   },
   {
-    "sequence": "2 3 5 8 12 17 23 30 □ 48",
-    "answer": 38,
+    "sequence": "2 3 5 8 12 ? 30",
+    "answer": 17,
     "description": "각 숫자는 이전 숫자에 1씩 증가하는 값을 더합니다."
   },
   {
-    "sequence": "A C E H K N R □",
-    "answer": "U",
-    "description": "알파벳 간 간격이 2, 2, 3, 3, 3, 4로 점차 증가합니다."
+    "sequence": "A C E H K ?",
+    "answer": "N",
+    "description": "알파벳 간 간격이 2, 2, 3으로 점차 증가합니다."
   },
   {
-    "sequence": "2 5 10 17 26 37 50 65 □ 101",
-    "answer": 82,
+    "sequence": "2 5 10 17 ? 37",
+    "answer": 26,
     "description": "각 숫자는 n^2 + 1입니다."
   },
   {
-    "sequence": "1 2 6 24 120 720 5040 40320 □ 362880",
-    "answer": 40320,
+    "sequence": "1 2 6 24 120 ?",
+    "answer": 720,
     "description": "각 숫자는 팩토리얼 값입니다 (n!)."
   },
   {
-    "sequence": "가 나 라 마 사 아 차 자 □ 타",
-    "answer": "카",
+    "sequence": "가 나 다 라 ? 마",
+    "answer": "바",
     "description": "한글 순서 중 두 칸씩 건너뜁니다."
   },
   {
-    "sequence": "10 12 15 19 24 30 37 45 □ 64",
-    "answer": 54,
+    "sequence": "10 12 15 19 ? 30",
+    "answer": 24,
     "description": "각 숫자는 이전 숫자에 점차 증가하는 값을 더합니다."
   },
   {
-    "sequence": "3 9 27 81 243 729 2187 6561 □ 59049",
-    "answer": 19683,
+    "sequence": "3 9 27 81 ? 729",
+    "answer": 243,
     "description": "각 숫자는 3의 거듭제곱입니다."
   },
   {
-    "sequence": "2 6 12 20 30 42 56 72 □ 110",
-    "answer": 90,
+    "sequence": "2 6 12 20 ? 42",
+    "answer": 30,
     "description": "각 숫자는 n^2 - n 규칙에 따릅니다."
   }
 ]
+
   }
   
