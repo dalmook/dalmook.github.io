@@ -25,6 +25,8 @@ const difficultySelect = document.getElementById("difficultySelect"); // 난이�
 let currentQuestion = null;
 let score = 0;
 let startTime, timerInterval;
+let questionsAnswered = 0; // 질문 수 추적 변수 추가
+const totalQuestions = 5; // 게임당 총 질문 수
 let questionsData = {
     easy: [],
     medium: [],
@@ -65,6 +67,7 @@ function resetGame() {
     answerInput.value = "";
     resultElement.textContent = "";
     score = 0;
+    questionsAnswered = 0; // 카운터 초기화
     scoreElement.textContent = `점수: ${score}`;
     clearInterval(timerInterval);
     timerDisplay.textContent = "걸린 시간: 0초";
@@ -100,10 +103,10 @@ function selectRandomQuestions() {
             selectedQuestions[difficulty] = [];
             return;
         }
-        if (questions.length <= 5) {
+        if (questions.length <= totalQuestions) {
             selectedQuestions[difficulty] = [...questions]; // 질문이 5개 이하인 경우 모두 사용
         } else {
-            selectedQuestions[difficulty] = getRandomSubset(questions, 5);
+            selectedQuestions[difficulty] = getRandomSubset(questions, totalQuestions);
         }
     });
     console.log("선택된 질문들:", selectedQuestions);
@@ -128,8 +131,8 @@ function selectRandomQuestion() {
     currentQuestion = questions[randomIndex];
     console.log("선택된 질문:", currentQuestion);
     
-    // 선택된 질문을 목록에서 제거하여 중복 출제를 방지 (선택 사항)
-    // selectedQuestions[difficulty].splice(randomIndex, 1);
+    // 선택된 질문을 목록에서 제거하여 중복 출제를 방지
+    selectedQuestions[difficulty].splice(randomIndex, 1);
 }
 
 // 시퀀스 표시 함수
@@ -164,7 +167,14 @@ submitAnswerButton.addEventListener("click", () => {
     }
 
     scoreElement.textContent = `점수: ${score}`;
-    selectNewQuestion();
+    questionsAnswered++; // 질문 수 증가
+
+    if (questionsAnswered >= totalQuestions) {
+        // 5문제를 모두 풀었을 때
+        showNameForm();
+    } else {
+        selectNewQuestion();
+    }
 });
 
 // 새로운 질문 선택 및 게임 진행 함수
@@ -274,6 +284,10 @@ function showLeaderboard() {
 
                     const tr = document.createElement("tr");
 
+                    const rankTd = document.createElement("td");
+                    rankTd.textContent = index + 1; // 순위 표시
+                    tr.appendChild(rankTd);
+
                     const difficultyTd = document.createElement("td");
                     difficultyTd.textContent = data.difficulty;
                     tr.appendChild(difficultyTd);
@@ -321,22 +335,7 @@ function hideNameForm() {
     playerNameInput.value = "";
 }
 
-// 테스트용 Firestore 읽기 함수 (선택 사항)
-function testFirestoreRead() {
-    db.collection("gameRecords").get()
-        .then((snapshot) => {
-            console.log("가져온 기록 개수:", snapshot.size);
-            snapshot.forEach((doc) => {
-                console.log("기록 데이터:", doc.data());
-            });
-        })
-        .catch((error) => {
-            console.error("Firestore에서 기록 불러오기 실패:", error.message, error.code, error);
-        });
-}
-
-// 페이지 로드 시 게임 시작 및 테스트 함수 호출
+// 페이지 로드 시 게임 시작
 window.onload = () => {
     generateGame();
-    // testFirestoreRead(); // 필요 시 주석 해제
 };
