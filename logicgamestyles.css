@@ -90,9 +90,9 @@ button {
 #name-form {
     display: none; /* 초기 숨김 상태 */
     position: fixed;
-    top: 50%;
+    top: 30%; /* 상단에서 30% 위치로 변경 */
     left: 50%;
-    transform: translate(-50%, -50%);
+    transform: translate(-50%, -30%); /* Y축 이동을 -30%로 변경 */
     background-color: rgba(255, 255, 255, 0.95);
     padding: 30px;
     border: 2px solid #ccc;
@@ -103,6 +103,7 @@ button {
     max-width: 400px;
     text-align: center;
 }
+
 
 #name-form input {
     width: 80%;
@@ -140,6 +141,12 @@ button {
     #recordSection {
         width: 95%;
         max-width: 90%;
+    }
+    #name-form {
+        top: 20%; /* 더욱 상단으로 위치 조정 */
+        transform: translate(-50%, -20%);
+        width: 90%;
+        max-width: 300px;
     }
 }
 /* 예시: 결과 메시지에 애니메이션 추가 */
