@@ -6,8 +6,8 @@
     <title>Logic Game</title>
     <link rel="stylesheet" href="logicgamestyles.css">
     <!-- Firebase SDK 추가 -->
-    <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js" defer></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js" defer></script>
     <script src="logicgamefirebaseConfig.js" defer></script> <!-- Firebase 설정 -->
 </head>
 <body>
@@ -38,7 +38,6 @@
         <table id="recordTable">
             <thead>
                 <tr>
-                    <th>순위</th>
                     <th>난이도</th>
                     <th>이름</th>
                     <th>점수</th>
@@ -59,7 +58,10 @@
         <h2>게임 완료!</h2>
         <p>이름을 입력하세요:</p>
         <input type="text" id="playerName" placeholder="이름">
-        <button id="saveNameButton">제출</button>
+        <div class="button-group">
+            <button id="saveNameButton">제출</button>
+            <button id="goBackButton">돌아가기</button>
+        </div>
     </div>
 
     <script src="logicgamelogic.js" defer></script>
