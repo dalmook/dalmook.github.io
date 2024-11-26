@@ -12,4 +12,4 @@ const firebaseConfig = {
 
 // Firebase 초기화
 firebase.initializeApp(firebaseConfig);
-const db = firebase.firestore();
+window.db = firebase.firestore(); // 글로벌 변수로 설정
