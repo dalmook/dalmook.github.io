@@ -91,9 +91,9 @@ button {
 #name-form {
     display: none; /* 초기 숨김 상태 */
     position: fixed;
-    top: 30%; /* 상단에서 30% 위치로 변경 */
+    top: 15%; /* 상단에서 15% 위치로 변경 */
     left: 50%;
-    transform: translate(-50%, -30%); /* Y축 이동을 -30%로 변경 */
+    transform: translate(-50%, -15%); /* Y축 이동을 -15%로 변경 */
     background-color: rgba(255, 255, 255, 0.95);
     padding: 30px;
     border: 2px solid #ccc;
