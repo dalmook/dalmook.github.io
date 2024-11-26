@@ -299,6 +299,7 @@ function showLeaderboard() {
         });
 }
 
+
 // 이름 입력 폼 표시 함수
 function showNameForm() {
     overlay.style.display = "block";
