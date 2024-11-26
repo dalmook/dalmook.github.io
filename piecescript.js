@@ -1,9 +1,28 @@
+const firebaseConfig = {
+    apiKey: "AIzaSyBeCVOghDQw8hPdp0JrHovXcU7d7aKmmFE",
+    authDomain: "piecechoice.firebaseapp.com",
+    projectId: "piecechoice",
+    storageBucket: "piecechoice.firebasestorage.app",
+    messagingSenderId: "1048561191876",
+    appId: "1:1048561191876:web:43e94b515fd260aceb7291"
+};
+
+    // Firebase 초기화
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
+
 const grid = document.getElementById("grid");
 const wordList = document.getElementById("words-to-find");
 const result = document.getElementById("result");
 const difficultySelect = document.getElementById("difficulty");
 const startButton = document.getElementById("start-game");
 const timerDisplay = document.getElementById("timer");
+
+const recordSection = document.getElementById('recordSection');
+const saveRecordButton = document.getElementById('saveRecordButton');
+const backToGameButton = document.getElementById('backToGameButton');
+const recordTableBody = document.getElementById('recordTable').querySelector('tbody');
+const viewRecordsButton = document.getElementById('viewRecordsButton');
 
 let wordsToFind = [];
 let gridWords = [];
@@ -254,6 +273,7 @@ function checkWord() {
     if (wordsToFind.length === 0) {
       clearInterval(timerInterval);
       result.textContent += " 모든 단어를 찾았습니다!";
+      showRecordSection();
     }
   } else {
     result.textContent = "오답입니다. 다시 시도하세요!";
@@ -280,6 +300,99 @@ function startTimer() {
     timerDisplay.textContent = `걸린 시간: ${elapsedTime}초`;
   }, 1000);
 }
+        
+
+// 성공 메시지 표시 및 기록 섹션 열기
+        function showRecordSection() {
+            recordSection.style.display = 'flex'; // 모달 표시
+        }
+
+        // 기록 저장 함수 (Firestore에 저장)
+        function saveRecord(record) {
+            return db.collection('gameRecords').add(record)
+                .then(() => {
+                    console.log('게임 기록이 성공적으로 저장되었습니다.');
+                })
+                .catch((error) => {
+                    console.error('게임 기록 저장 중 오류 발생: ', error);
+                    throw error; // 에러를 상위로 전달
+                });
+        }
+
+        // 기록 저장 버튼 이벤트
+        saveRecordButton.addEventListener('click', () => {
+            const playerName = document.getElementById('playerName').value.trim();
+            if (!playerName) {
+                alert('이름을 입력하세요!');
+                return;
+            }
+
+            // 기록 생성
+            const newRecord = {
+                category: selectedCategory,
+                difficulty: difficultySelect.value,
+                name: playerName,
+                score: score,
+                timestamp: firebase.firestore.FieldValue.serverTimestamp() // 기록 시간
+            };
+
+            // Firestore에 기록 저장
+            saveRecord(newRecord).then(() => {
+                // 이름 입력 필드 숨기고 기록 테이블 표시
+                document.getElementById('playerName').style.display = 'none';
+                saveRecordButton.style.display = 'none';
+            }).catch((error) => {
+                console.error('게임 기록 저장 중 오류 발생: ', error);
+                alert('기록 저장에 실패했습니다. 다시 시도해주세요.');
+            });
+        });
+
+        // 게임으로 돌아가기 버튼 이벤트
+        backToGameButton.addEventListener('click', () => {
+            recordSection.style.display = 'none';
+            // 이름 입력 필드와 저장 버튼 다시 보이게 설정
+            document.getElementById('playerName').style.display = 'block';
+            saveRecordButton.style.display = 'block';
+            // 게임 초기화
+            startMatchingGame(); // 새 게임 시작
+        });
+
+        // Firestore에서 기록 불러오기
+        function loadRecordsFromFirestore() {
+            db.collection('gameRecords').orderBy('score', 'desc').onSnapshot((snapshot) => { // 점수 기준 내림차순
+                snapshot.docChanges().forEach((change) => {
+                    if (change.type === 'added') {
+                        const record = change.doc.data();
+                        addRecordToTable(record);
+                    }
+                });
+            });
+        }
+
+        // 기록 테이블에 기록 추가 함수
+        function addRecordToTable(record) {
+            const recordTableBody = document.getElementById('recordTable').querySelector('tbody');
+            const row = document.createElement('tr');
+            const date = record.timestamp ? record.timestamp.toDate().toLocaleString() : 'N/A';
+            row.innerHTML = `
+                <td>${record.category}</td>
+                <td>${record.difficulty}</td>
+                <td>${record.name}</td>
+                <td>${record.score}</td>
+                <td>${date}</td>
+            `;
+            recordTableBody.appendChild(row);
+
+            // 테이블 끝으로 스크롤 이동
+            recordTableBody.scrollIntoView({ behavior: 'smooth', block: 'end' });
+        }
+
+        // 페이지 로드 시 Firestore 기록 불러오기
+        window.onload = async function() {
+            await loadCategories(); // categories.json 불러오기
+            loadRecordsFromFirestore();
+            // initializeMatchingGame(); // 이 줄을 제거하거나 주석 처리하세요.
+        };
 
 // 게임 시작 버튼 이벤트
 startButton.addEventListener("click", generateGame);
