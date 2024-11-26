@@ -274,10 +274,6 @@ function showLeaderboard() {
 
                     const tr = document.createElement("tr");
 
-                    const rankTd = document.createElement("td");
-                    rankTd.textContent = index + 1; // 순위 표시
-                    tr.appendChild(rankTd);
-
                     const difficultyTd = document.createElement("td");
                     difficultyTd.textContent = data.difficulty;
                     tr.appendChild(difficultyTd);
