@@ -34,6 +34,11 @@ let selectedWord = "";
 let startTime, timerInterval;
 let selectedDirection = { row: 0, col: 0 }; // 드래그 방향 저장
 
+
+// 기록 보기 버튼 이벤트 리스너 추가
+viewRecordsButton.addEventListener('click', () => {
+    recordSection.style.display = 'flex'; // 기록 섹션 열기
+});
 // 난이도 설정
 const difficulties = {
   easy: { gridSize: 5, wordCount: 5 },
