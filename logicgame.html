@@ -27,12 +27,17 @@
     <div id="sequence" class="sequence">
         2 4 [QUESTION] 8 10
     </div>
-    <!-- 선택지가 있는 경우를 위해 추가된 요소 -->
-    <div id="options" class="options" style="display: none;">
-        <!-- 선택지는 JavaScript에서 동적으로 추가됩니다 -->
-    </div>
+<!-- 선택지가 있는 경우를 위해 추가된 요소 -->
+<div id="options" class="options" style="display: none;">
+    <!-- 선택지는 JavaScript에서 동적으로 추가됩니다 -->
+</div>
+
+<!-- 선택지가 없는 경우의 입력 필드 -->
+<div id="input-container">
     <input type="text" id="answerInput" placeholder="숫자 또는 문자를 입력하세요">
-    <button id="submitAnswerButton">제출</button>
+</div>
+
+<button id="submitAnswerButton">제출</button>
     <p id="result"></p>
     <p id="score">점수: 0</p>
     <p id="timer">걸린 시간: 0초</p>
