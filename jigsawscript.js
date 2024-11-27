@@ -1,13 +1,13 @@
 // script.js
 
+import { db } from './logicgamefirebaseConfig.js';
+import { collection, addDoc, Timestamp, query, where, orderBy, limit, getDocs } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore.js";
+
 let selectedImage = null;
 let puzzlePieces = [];
 let numPieces = 4; // 기본 난이도: 4조각
 let timer = 0;
 let timerIntervalId = null;
-
-// 기록 저장을 위해 LocalStorage 사용 (Firebase를 원하시면 추가 설정 필요)
-const RECORDS_KEY = 'jigsawPuzzleRecords';
 
 // DOM 요소 선택
 const imageUploadInput = document.getElementById('imageUpload');
@@ -31,6 +31,7 @@ imageUploadInput.addEventListener('change', (e) => {
         reader.onload = function(event) {
             selectedImage = event.target.result;
             // 선택된 이미지를 표시 (필요 시 미리보기)
+            predefinedImages.forEach(image => image.classList.remove('selected'));
         };
         reader.readAsDataURL(file);
     } else {
@@ -77,6 +78,7 @@ startButton.addEventListener('click', () => {
 function generatePuzzle(imageSrc, piecesCount) {
     const img = new Image();
     img.src = imageSrc;
+    img.crossOrigin = "anonymous"; // CORS 문제 방지 (필요 시)
     img.onload = () => {
         const canvas = document.createElement('canvas');
         const ctx = canvas.getContext('2d');
@@ -102,7 +104,7 @@ function generatePuzzle(imageSrc, piecesCount) {
 
         ctx.drawImage(img, 0, 0, drawWidth, drawHeight);
 
-        // 조각 개수에 따른 행과 열 계산 (예: 4조각 = 2x2, 12조각 = 3x4, 24조각 = 4x6)
+        // 퍼즐 조각 개수에 따른 행과 열 계산
         let cols, rows;
         if (piecesCount === 4) {
             cols = 2;
@@ -168,7 +170,7 @@ function generatePuzzle(imageSrc, piecesCount) {
                     }
                 });
 
-                // 퍼즐 조각 클릭 시 위치 고정
+                // 퍼즐 조각 드래그 종료 시 퍼즐 완료 체크
                 pieceElement.addEventListener('dragend', checkPuzzleCompletion);
 
                 // 퍼즐 영역에 추가
@@ -199,11 +201,24 @@ function checkPuzzleCompletion() {
     // 모든 퍼즐 조각이 원래 위치에 근접하게 배치되었는지 확인
     let completed = true;
     puzzlePieces.forEach(piece => {
-        const x = parseFloat(piece.style.left) + (parseFloat(piece.getAttribute('data-x')) || 0);
-        const y = parseFloat(piece.style.top) + (parseFloat(piece.getAttribute('data-y')) || 0);
+        const originalLeft = parseFloat(piece.style.left);
+        const originalTop = parseFloat(piece.style.top);
+        const currentTransform = piece.style.transform;
 
-        const deltaX = Math.abs(x - parseFloat(piece.style.left));
-        const deltaY = Math.abs(y - parseFloat(piece.style.top));
+        let currentX = 0, currentY = 0;
+        if (currentTransform && currentTransform !== 'none') {
+            const transformValues = currentTransform.match(/translate([-\d.]+)px, ([-\d.]+)px/);
+            if (transformValues) {
+                currentX = parseFloat(transformValues[1]);
+                currentY = parseFloat(transformValues[2]);
+            }
+        }
+
+        const x = originalLeft + currentX;
+        const y = originalTop + currentY;
+
+        const deltaX = Math.abs(x - originalLeft);
+        const deltaY = Math.abs(y - originalTop);
 
         if (deltaX > 20 || deltaY > 20) { // 허용 오차 20px
             completed = false;
@@ -247,22 +262,18 @@ function stopTimer() {
     clearInterval(timerIntervalId);
 }
 
-// 기록 저장 함수 (LocalStorage 사용)
-function saveRecord(difficulty, time) {
-    let records = JSON.parse(localStorage.getItem(RECORDS_KEY)) || {
-        4: [],
-        12: [],
-        24: []
-    };
-
-    records[difficulty].push(time);
-
-    // 최근 10개의 기록만 저장
-    if (records[difficulty].length > 10) {
-        records[difficulty].shift();
+// 기록 저장 함수 (Firestore 사용)
+async function saveRecord(difficulty, time) {
+    try {
+        await addDoc(collection(db, "puzzleRecords"), {
+            difficulty: difficulty, // 난이도
+            time: time,             // 걸린 시간
+            timestamp: Timestamp.now() // 기록 시간
+        });
+        console.log("기록이 Firestore에 성공적으로 저장되었습니다.");
+    } catch (e) {
+        console.error("기록 저장 실패:", e);
     }
-
-    localStorage.setItem(RECORDS_KEY, JSON.stringify(records));
 }
 
 // 기록 보기 버튼 이벤트 리스너
@@ -276,35 +287,52 @@ closeRecordButton.addEventListener('click', () => {
     recordSection.style.display = 'none';
 });
 
-// 기록 표시 함수
-function displayRecords() {
-    const records = JSON.parse(localStorage.getItem(RECORDS_KEY)) || {
-        4: [],
-        12: [],
-        24: []
-    };
-
-    // 쉬움 기록
-    recordEasyList.innerHTML = '';
-    records['4'].forEach((time, index) => {
-        const li = document.createElement('li');
-        li.textContent = `${index + 1}. ${time}초`;
-        recordEasyList.appendChild(li);
+// 기록 표시 함수 (Firestore 사용)
+async function displayRecords() {
+    // Firestore 쿼리 설정: 난이도별로 내림차순 정렬, 상위 10개만 가져오기
+    const difficulties = [4, 12, 24];
+    const recordPromises = difficulties.map(async (difficulty) => {
+        const q = query(
+            collection(db, "puzzleRecords"),
+            where("difficulty", "==", difficulty),
+            orderBy("time", "asc"), // 걸린 시간이 짧은 순
+            limit(10)
+        );
+        const querySnapshot = await getDocs(q);
+        return { difficulty, records: querySnapshot.docs };
     });
 
-    // 중간 기록
-    recordMediumList.innerHTML = '';
-    records['12'].forEach((time, index) => {
-        const li = document.createElement('li');
-        li.textContent = `${index + 1}. ${time}초`;
-        recordMediumList.appendChild(li);
-    });
+    try {
+        const recordsData = await Promise.all(recordPromises);
 
-    // 어려움 기록
-    recordHardList.innerHTML = '';
-    records['24'].forEach((time, index) => {
-        const li = document.createElement('li');
-        li.textContent = `${index + 1}. ${time}초`;
-        recordHardList.appendChild(li);
-    });
+        // 각 난이도별로 기록 표시
+        recordsData.forEach(({ difficulty, records }) => {
+            let listElement;
+            if (difficulty === 4) {
+                listElement = recordEasyList;
+            } else if (difficulty === 12) {
+                listElement = recordMediumList;
+            } else if (difficulty === 24) {
+                listElement = recordHardList;
+            }
+
+            listElement.innerHTML = ''; // 기존 기록 초기화
+
+            if (records.length === 0) {
+                const li = document.createElement('li');
+                li.textContent = "기록이 없습니다.";
+                listElement.appendChild(li);
+            } else {
+                records.forEach((doc, index) => {
+                    const data = doc.data();
+                    const li = document.createElement('li');
+                    li.textContent = `${index + 1}. ${data.time}초 - ${data.timestamp.toDate().toLocaleString()}`;
+                    listElement.appendChild(li);
+                });
+            }
+        });
+
+    } catch (e) {
+        console.error("기록 불러오기 실패:", e);
+    }
 }
