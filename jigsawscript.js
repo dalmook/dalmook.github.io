@@ -1,6 +1,6 @@
 // jigsawscript.js
 
-import { db } from './logicgamefirebaseConfig.js';
+import { db } from './jigsawfirebaseConfig.js';
 import { collection, addDoc, Timestamp, query, where, orderBy, limit, getDocs } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore.js";
 
 let selectedImage = null;
