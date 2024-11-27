@@ -426,7 +426,7 @@
     "description": "동그라미의 수"
   },
   {
-    "sequence": "빈 캉에 들어갈 값은? \n → + ↓ = 9\n ← + → = 12\n ↓ - → = 3\n ↑ + → = [QUESTION]",
+    "sequence": "빈 칸에 들어갈 값은? \n → + ↓ = 9\n ← + → = 12\n ↓ - → = 3\n ↑ + → = [QUESTION]",
     "answer": 15,
     "description": "시계의 숫자"
   },
