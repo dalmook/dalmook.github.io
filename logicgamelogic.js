@@ -215,7 +215,10 @@ function submitAnswer(userAnswer) {
         // 5문제를 모두 풀었을 때
         showNameForm();
     } else {
-        selectNewQuestion();
+        // 2초 뒤에 다음 문제로 넘어감
+        setTimeout(() => {
+            selectNewQuestion();
+        }, 2000);
     }
 }
 
