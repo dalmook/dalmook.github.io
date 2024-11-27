@@ -87,6 +87,10 @@ let gameOver = false;
 // 게임 루프 플래그
 let isGameLoopRunning = false;
 
+// 드래그 상태 변수
+let isDragging = false;
+let dragStartX = 0;
+
 // 이벤트 리스너 설정
 document.getElementById('view-record-button').addEventListener('click', () => {
     console.log("기록 보기 버튼 클릭.");
@@ -115,26 +119,98 @@ document.getElementById('restart-button')?.addEventListener('click', () => {
     gameLoop();
 });
 
-// 터치 이동 제스처 처리 (터치 영역 분할)
-canvas.addEventListener('touchstart', (e) => {
-    const touchX = e.changedTouches[0].clientX;
-    if (touchX < canvas.width / 2) {
-        // 왼쪽 터치
-        character.movingLeft = true;
-        console.log("왼쪽 영역 터치 감지.");
-    } else {
-        // 오른쪽 터치
-        character.movingRight = true;
-        console.log("오른쪽 영역 터치 감지.");
+// 드래그 기반 이동 구현
+
+// PC용 마우스 이벤트
+canvas.addEventListener('mousedown', (e) => {
+    isDragging = true;
+    dragStartX = e.clientX;
+    console.log("마우스 드래그 시작.");
+});
+
+canvas.addEventListener('mousemove', (e) => {
+    if (isDragging) {
+        let deltaX = e.clientX - dragStartX;
+        character.x += deltaX;
+        // 캐릭터가 화면을 벗어나지 않도록 제한
+        if (character.x < 0) character.x = 0;
+        if (character.x + character.width > canvas.width) character.x = canvas.width - character.width;
+        dragStartX = e.clientX;
+        console.log(`마우스 드래그 중: x=${character.x}`);
     }
+});
+
+canvas.addEventListener('mouseup', () => {
+    isDragging = false;
+    console.log("마우스 드래그 종료.");
+});
+
+canvas.addEventListener('mouseleave', () => {
+    isDragging = false;
+    console.log("마우스가 캔버스를 벗어남, 드래그 종료.");
+});
+
+// 모바일용 터치 이벤트
+canvas.addEventListener('touchstart', (e) => {
+    if (e.touches.length === 1) { // 단일 터치만 처리
+        isDragging = true;
+        dragStartX = e.touches[0].clientX;
+        console.log("터치 드래그 시작.");
+    }
+});
+
+canvas.addEventListener('touchmove', (e) => {
+    if (isDragging && e.touches.length === 1) {
+        let deltaX = e.touches[0].clientX - dragStartX;
+        character.x += deltaX;
+        // 캐릭터가 화면을 벗어나지 않도록 제한
+        if (character.x < 0) character.x = 0;
+        if (character.x + character.width > canvas.width) character.x = canvas.width - character.width;
+        dragStartX = e.touches[0].clientX;
+        console.log(`터치 드래그 중: x=${character.x}`);
+    }
+});
+
+canvas.addEventListener('touchend', () => {
+    isDragging = false;
+    console.log("터치 드래그 종료.");
+});
+
+canvas.addEventListener('touchcancel', () => {
+    isDragging = false;
+    console.log("터치가 취소됨, 드래그 종료.");
+});
+
+// 기존 터치 스와이프 이벤트 제거
+/*
+canvas.addEventListener('touchstart', (e) => {
+    touchStartX = e.changedTouches[0].screenX;
+    console.log(`캔버스 터치 시작 X: ${touchStartX}`);
 }, false);
 
 canvas.addEventListener('touchend', (e) => {
-    // 터치가 끝나면 이동 멈춤
-    character.movingLeft = false;
-    character.movingRight = false;
-    console.log("터치 종료, 캐릭터 이동 멈춤.");
+    let touchEndX = e.changedTouches[0].screenX;
+    let deltaX = touchEndX - touchStartX;
+    console.log(`캔버스 터치 종료 X: ${touchEndX}, deltaX: ${deltaX}`);
+
+    if (deltaX > 50) { // 오른쪽 스와이프
+        character.movingRight = true;
+        character.movingLeft = false;
+        console.log("오른쪽 스와이프 감지.");
+    } else if (deltaX < -50) { // 왼쪽 스와이프
+        character.movingLeft = true;
+        character.movingRight = false;
+        console.log("왼쪽 스와이프 감지.");
+    }
+
+    // 스와이프 후 즉시 멈추도록 설정
+    setTimeout(() => {
+        character.movingLeft = false;
+        character.movingRight = false;
+        console.log("캐릭터 이동 멈춤.");
+    }, 200); // 200ms 후 멈춤
 });
+*/
 
 // 게임 루프
 function gameLoop() {
@@ -161,7 +237,9 @@ function loop() {
 function update() {
     const currentTime = Date.now();
 
-    // 캐릭터 이동
+    // 캐릭터 이동 (드래그 기반으로 이동 처리되므로, 별도의 이동 로직 제거)
+    // 기존 스와이프 기반 이동 로직 제거
+    /*
     if (character.movingLeft && character.x > 0) {
         character.x -= character.speed;
         console.log(`캐릭터 왼쪽 이동: x=${character.x}`);
@@ -170,6 +248,7 @@ function update() {
         character.x += character.speed;
         console.log(`캐릭터 오른쪽 이동: x=${character.x}`);
     }
+    */
 
     // 빗방울 생성
     if (currentTime - lastRaindropTime > raindropInterval) {
