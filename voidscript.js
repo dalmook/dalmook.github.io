@@ -17,7 +17,7 @@ characterImg.src = 'images/힘내.webp'; // 사용자가 만든 캐릭터 이미
 
 // 빗방울 이미지 로드
 const raindropImg = new Image();
-raindropImg.src = 'images/raindrop.png'; // 빗방울 이미지 경로
+raindropImg.src = 'images/힘내.webp'; // 빗방울 이미지 경로
 
 // 오디오 설정
 const bgMusic = new Audio('audio/background.mp3');
