@@ -88,23 +88,6 @@ let gameOver = false;
 let isGameLoopRunning = false;
 
 // 이벤트 리스너 설정
-document.getElementById('left-button').addEventListener('touchstart', () => { 
-    character.movingLeft = true; 
-    console.log("왼쪽 버튼 터치 시작."); 
-});
-document.getElementById('left-button').addEventListener('touchend', () => { 
-    character.movingLeft = false; 
-    console.log("왼쪽 버튼 터치 종료."); 
-});
-document.getElementById('right-button').addEventListener('touchstart', () => { 
-    character.movingRight = true; 
-    console.log("오른쪽 버튼 터치 시작."); 
-});
-document.getElementById('right-button').addEventListener('touchend', () => { 
-    character.movingRight = false; 
-    console.log("오른쪽 버튼 터치 종료."); 
-});
-
 document.getElementById('view-record-button').addEventListener('click', () => {
     console.log("기록 보기 버튼 클릭.");
     displayRecords();
@@ -135,15 +118,15 @@ document.getElementById('restart-button')?.addEventListener('click', () => {
 // 터치 이동 제스처 처리 (스와이프)
 let touchStartX = 0;
 
-document.addEventListener('touchstart', (e) => {
+canvas.addEventListener('touchstart', (e) => {
     touchStartX = e.changedTouches[0].screenX;
-    console.log(`터치 시작 X: ${touchStartX}`);
+    console.log(`캔버스 터치 시작 X: ${touchStartX}`);
 }, false);
 
-document.addEventListener('touchend', (e) => {
+canvas.addEventListener('touchend', (e) => {
     let touchEndX = e.changedTouches[0].screenX;
     let deltaX = touchEndX - touchStartX;
-    console.log(`터치 종료 X: ${touchEndX}, deltaX: ${deltaX}`);
+    console.log(`캔버스 터치 종료 X: ${touchEndX}, deltaX: ${deltaX}`);
 
     if (deltaX > 50) { // 오른쪽 스와이프
         character.movingRight = true;
@@ -154,6 +137,13 @@ document.addEventListener('touchend', (e) => {
         character.movingRight = false;
         console.log("왼쪽 스와이프 감지.");
     }
+
+    // 스와이프 후 즉시 멈추도록 설정 (원한다면 지속적으로 움직이도록 변경 가능)
+    setTimeout(() => {
+        character.movingLeft = false;
+        character.movingRight = false;
+        console.log("캐릭터 이동 멈춤.");
+    }, 200); // 200ms 후 멈춤
 });
 
 // 게임 루프
