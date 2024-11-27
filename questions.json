@@ -401,7 +401,7 @@
     "description": "각 숫자는 이전 숫자의 2배입니다."
   },
   {
-    "sequence": "1 1 2 3 5 [QUESTION] 13",
+    "sequence": "1 1 2 3 5 [QUESTION] 13 21",
     "answer": 8,
     "description": "피보나치 수열입니다."
   },
