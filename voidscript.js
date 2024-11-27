@@ -7,9 +7,13 @@ import { collection, addDoc, Timestamp, query, orderBy, limit, getDocs } from "h
 const canvas = document.getElementById('game-canvas');
 const ctx = canvas.getContext('2d');
 
+console.log("Canvas 요소 로드 완료.");
+
 // 화면 크기 설정 (모바일 세로 화면에 최적화)
 canvas.width = window.innerWidth;
 canvas.height = window.innerHeight;
+
+console.log(`Canvas 크기 설정: ${canvas.width}x${canvas.height}`);
 
 // 캐릭터 이미지 로드
 const characterImg = new Image();
@@ -23,10 +27,14 @@ raindropImg.src = 'images/raindrop.png'; // 빗방울 이미지 경로
 const raindropLargeImg = new Image();
 raindropLargeImg.src = 'images/raindrop_large.png'; // 큰 빗방울 이미지 경로
 
+console.log("이미지 로드 시작.");
+
 // 오디오 설정
 const bgMusic = new Audio('audio/background.mp3');
 bgMusic.loop = true;
 const collisionSound = new Audio('audio/collision.mp3');
+
+console.log("오디오 설정 완료.");
 
 // 이미지 로딩 상태 추적
 let imagesLoaded = 0;
@@ -34,26 +42,26 @@ const totalImages = 3; // characterImg, raindropImg, raindropLargeImg
 
 function imageLoaded() {
     imagesLoaded++;
+    console.log(`이미지 로드 완료: ${imagesLoaded}/${totalImages}`);
     if (imagesLoaded === totalImages) {
+        console.log("모든 이미지가 로드되었습니다.");
         // 모든 이미지가 로드된 후 게임 초기화
         init();
     }
 }
 
-characterImg.onload = imageLoaded;
-characterImg.onerror = () => {
-    console.error("character.jpg 이미지를 로드할 수 없습니다.");
-};
+function imageError(imageName) {
+    console.error(`${imageName} 이미지를 로드할 수 없습니다.`);
+}
 
-raindropImg.onload = imageLoaded;
-raindropImg.onerror = () => {
-    console.error("raindrop.png 이미지를 로드할 수 없습니다.");
-};
+characterImg.onload = () => imageLoaded();
+characterImg.onerror = () => imageError("character.jpg");
 
-raindropLargeImg.onload = imageLoaded;
-raindropLargeImg.onerror = () => {
-    console.error("raindrop_large.png 이미지를 로드할 수 없습니다.");
-};
+raindropImg.onload = () => imageLoaded();
+raindropImg.onerror = () => imageError("raindrop.png");
+
+raindropLargeImg.onload = () => imageLoaded();
+raindropLargeImg.onerror = () => imageError("raindrop_large.png");
 
 // 게임 변수 초기화
 let character = {
@@ -80,27 +88,46 @@ let gameOver = false;
 let isGameLoopRunning = false;
 
 // 이벤트 리스너 설정
-document.getElementById('left-button').addEventListener('touchstart', () => { character.movingLeft = true; });
-document.getElementById('left-button').addEventListener('touchend', () => { character.movingLeft = false; });
-document.getElementById('right-button').addEventListener('touchstart', () => { character.movingRight = true; });
-document.getElementById('right-button').addEventListener('touchend', () => { character.movingRight = false; });
+document.getElementById('left-button').addEventListener('touchstart', () => { 
+    character.movingLeft = true; 
+    console.log("왼쪽 버튼 터치 시작."); 
+});
+document.getElementById('left-button').addEventListener('touchend', () => { 
+    character.movingLeft = false; 
+    console.log("왼쪽 버튼 터치 종료."); 
+});
+document.getElementById('right-button').addEventListener('touchstart', () => { 
+    character.movingRight = true; 
+    console.log("오른쪽 버튼 터치 시작."); 
+});
+document.getElementById('right-button').addEventListener('touchend', () => { 
+    character.movingRight = false; 
+    console.log("오른쪽 버튼 터치 종료."); 
+});
 
 document.getElementById('view-record-button').addEventListener('click', () => {
+    console.log("기록 보기 버튼 클릭.");
     displayRecords();
     document.getElementById('record-section').classList.remove('hidden');
 });
 
 document.getElementById('close-record').addEventListener('click', () => {
+    console.log("기록 닫기 버튼 클릭.");
     document.getElementById('record-section').classList.add('hidden');
 });
 
 document.getElementById('restart-button')?.addEventListener('click', () => {
+    console.log("재시작 버튼 클릭.");
     resetGameVariables();
     gameOver = false;
     document.getElementById('record-section').classList.add('hidden');
     document.getElementById('restart-button').classList.add('hidden');
     bgMusic.currentTime = 0;
-    bgMusic.play();
+    bgMusic.play().then(() => {
+        console.log("배경 음악 재생 시작.");
+    }).catch(error => {
+        console.error("배경 음악 재생 실패:", error);
+    });
     gameLoop();
 });
 
@@ -109,26 +136,34 @@ let touchStartX = 0;
 
 document.addEventListener('touchstart', (e) => {
     touchStartX = e.changedTouches[0].screenX;
+    console.log(`터치 시작 X: ${touchStartX}`);
 }, false);
 
 document.addEventListener('touchend', (e) => {
     let touchEndX = e.changedTouches[0].screenX;
     let deltaX = touchEndX - touchStartX;
+    console.log(`터치 종료 X: ${touchEndX}, deltaX: ${deltaX}`);
 
     if (deltaX > 50) { // 오른쪽 스와이프
         character.movingRight = true;
         character.movingLeft = false;
+        console.log("오른쪽 스와이프 감지.");
     } else if (deltaX < -50) { // 왼쪽 스와이프
         character.movingLeft = true;
         character.movingRight = false;
+        console.log("왼쪽 스와이프 감지.");
     }
 }, false);
 
 // 게임 루프
 function gameLoop() {
-    if (isGameLoopRunning) return; // 게임 루프가 이미 실행 중이라면 중복 실행 방지
+    if (isGameLoopRunning) {
+        console.log("게임 루프 이미 실행 중.");
+        return; // 게임 루프가 이미 실행 중이라면 중복 실행 방지
+    }
 
     isGameLoopRunning = true;
+    console.log("게임 루프 시작.");
     requestAnimationFrame(loop);
 }
 
@@ -148,9 +183,11 @@ function update() {
     // 캐릭터 이동
     if (character.movingLeft && character.x > 0) {
         character.x -= character.speed;
+        console.log(`캐릭터 왼쪽 이동: x=${character.x}`);
     }
     if (character.movingRight && character.x + character.width < canvas.width) {
         character.x += character.speed;
+        console.log(`캐릭터 오른쪽 이동: x=${character.x}`);
     }
 
     // 빗방울 생성
@@ -163,6 +200,7 @@ function update() {
             speed: 5 + score / 10, // 난이도 상승에 따른 속도 증가
             type: Math.random() > 0.5 ? 'small' : 'large' // 빗방울 종류 추가
         });
+        console.log("빗방울 생성.");
         lastRaindropTime = currentTime;
     }
 
@@ -172,6 +210,7 @@ function update() {
 
         // 충돌 감지
         if (isColliding(character, raindrop)) {
+            console.log("충돌 감지!");
             gameOver = true;
             stopGame();
         }
@@ -179,6 +218,7 @@ function update() {
         // 화면을 벗어난 빗방울 제거
         if (raindrop.y > canvas.height) {
             raindrops.splice(index, 1);
+            console.log("빗방울 제거.");
         }
     });
 
@@ -186,11 +226,13 @@ function update() {
     if (currentTime - lastScoreTime > scoreInterval) {
         score++;
         document.getElementById('score-display').innerText = `시간: ${score}초`;
+        console.log(`점수 업데이트: ${score}초`);
         lastScoreTime = currentTime;
 
         // 난이도 상승 (빗방울 생성 간격 감소)
         if (raindropInterval > 300) { // 최소 간격 설정
             raindropInterval -= 10; // 점점 더 빠르게 빗방울 생성
+            console.log(`빗방울 생성 간격 감소: ${raindropInterval}ms`);
         }
 
         // 빗방울 속도 증가
@@ -208,6 +250,8 @@ function render() {
     // 캐릭터 그리기
     if (characterImg.complete) {
         ctx.drawImage(characterImg, character.x, character.y, character.width, character.height);
+    } else {
+        console.log("캐릭터 이미지 로드 대기 중.");
     }
 
     // 빗방울 그리기
@@ -216,6 +260,8 @@ function render() {
             ctx.drawImage(raindropImg, raindrop.x, raindrop.y, raindrop.width, raindrop.height);
         } else if (raindrop.type === 'large' && raindropLargeImg.complete) {
             ctx.drawImage(raindropLargeImg, raindrop.x, raindrop.y, raindrop.width, raindrop.height);
+        } else {
+            console.log(`빗방울 이미지 로드 대기 중: type=${raindrop.type}`);
         }
     });
 }
@@ -232,8 +278,15 @@ function isColliding(rect1, rect2) {
 
 // 게임 종료 함수
 async function stopGame() {
-    collisionSound.play();
+    try {
+        await collisionSound.play();
+        console.log("충돌 효과음 재생.");
+    } catch (error) {
+        console.error("충돌 효과음 재생 실패:", error);
+    }
     bgMusic.pause();
+    console.log("배경 음악 일시 정지.");
+
     alert(`게임 오버! 걸린 시간: ${score}초`);
 
     // 기록 저장
@@ -249,10 +302,12 @@ async function stopGame() {
 
     // 재시작 버튼 표시
     document.getElementById('restart-button').classList.remove('hidden');
+    console.log("재시작 버튼 표시.");
 }
 
 // 기록 표시 함수
 async function displayRecords() {
+    console.log("기록 표시 함수 호출.");
     const recordList = document.getElementById('record-list');
     recordList.innerHTML = ''; // 기존 기록 초기화
 
@@ -264,6 +319,7 @@ async function displayRecords() {
         const li = document.createElement('li');
         li.textContent = "기록이 없습니다.";
         recordList.appendChild(li);
+        console.log("기록 없음.");
     } else {
         querySnapshot.forEach((doc, index) => {
             const data = doc.data();
@@ -271,24 +327,32 @@ async function displayRecords() {
             const date = data.timestamp.toDate().toLocaleString();
             li.textContent = `${index + 1}. ${data.score}초 - ${date}`;
             recordList.appendChild(li);
+            console.log(`기록 추가: ${li.textContent}`);
         });
     }
 }
 
 // 게임 초기화 함수
 function init() {
+    console.log("init() 함수 호출.");
     // 화면 크기 변경 시 캔버스 크기 조정
     window.addEventListener('resize', () => {
         canvas.width = window.innerWidth;
         canvas.height = window.innerHeight;
         character.y = canvas.height - 150; // 캐릭터 위치 재설정
+        console.log(`화면 크기 변경: ${canvas.width}x${canvas.height}`);
     });
 
     // 게임 시작 시 배경 음악 재생 및 시작 화면 숨기기
     document.getElementById('start-game-button').addEventListener('click', () => {
+        console.log("게임 시작 버튼 클릭 이벤트 트리거.");
         document.getElementById('start-screen').classList.add('hidden');
         document.getElementById('game-container').classList.remove('hidden');
-        bgMusic.play();
+        bgMusic.play().then(() => {
+            console.log("배경 음악 재생 성공.");
+        }).catch(error => {
+            console.error("배경 음악 재생 실패:", error);
+        });
         resetGameVariables();
         gameLoop();
     });
@@ -296,6 +360,7 @@ function init() {
 
 // 게임 재시작 시 변수 초기화 함수
 function resetGameVariables() {
+    console.log("게임 변수 초기화.");
     raindrops = [];
     raindropInterval = 1000;
     lastRaindropTime = Date.now();
@@ -303,6 +368,3 @@ function resetGameVariables() {
     document.getElementById('score-display').innerText = `시간: ${score}초`;
     lastScoreTime = Date.now();
 }
-
-// 게임 시작
-// init()은 모든 이미지가 로드된 후에 호출됩니다.
