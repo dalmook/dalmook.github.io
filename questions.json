@@ -391,102 +391,27 @@
 ,
     "hard": [
   {
-    "sequence": "2 4 8 16 32 [QUESTION] 128",
-    "answer": 64,
-    "description": "각 숫자는 이전 숫자의 2배입니다."
-  },
-  {
-    "sequence": "3 6 12 24 [QUESTION] 96",
-    "answer": 48,
-    "description": "각 숫자는 이전 숫자의 2배입니다."
-  },
-  {
-    "sequence": "1 1 2 3 5 [QUESTION] 13 21",
-    "answer": 8,
-    "description": "피보나치 수열입니다."
-  },
-  {
-    "sequence": "A C F J [QUESTION]",
-    "answer": "O",
-    "description": "알파벳 간 간격이 2, 3, 4로 점차 증가합니다."
-  },
-  {
-    "sequence": "가 나 다 라 [QUESTION] 마",
-    "answer": "라",
-    "description": "한글 순서입니다."
-  },
-  {
-    "sequence": "10 20 40 [QUESTION] 160 320",
-    "answer": 80,
-    "description": "각 숫자는 이전 숫자의 2배입니다."
-  },
-  {
-    "sequence": "2 3 6 11 [QUESTION] 27",
-    "answer": 18,
-    "description": "각 숫자는 n^2 + n 규칙에 따릅니다."
-  },
-  {
-    "sequence": "B D H [QUESTION] R",
-    "answer": "N",
-    "description": "알파벳 간 간격이 2, 4, 6으로 점차 증가합니다."
-  },
-  {
-    "sequence": "5 10 15 25 [QUESTION] 65",
-    "answer": 40,
-    "description": "각 숫자는 앞의 두 숫자의 합입니다."
-  },
-  {
-    "sequence": "10 20 30 50 [QUESTION] 130",
-    "answer": 80,
-    "description": "각 숫자는 앞의 두 숫자의 합입니다."
-  },
-  {
-    "sequence": "1 4 9 16 [QUESTION] 36",
-    "answer": 25,
-    "description": "각 숫자는 자연수의 제곱입니다."
-  },
-  {
-    "sequence": "하 허 호 흐 [QUESTION] 희",
-    "answer": "히",
-    "description": "한글 자음과 모음이 순서대로 바뀝니다."
-  },
-  {
-    "sequence": "2 3 5 8 12 [QUESTION] 30",
-    "answer": 17,
-    "description": "각 숫자는 이전 숫자에 1씩 증가하는 값을 더합니다."
-  },
-  {
-    "sequence": "A C E H K [QUESTION]",
-    "answer": "N",
-    "description": "알파벳 간 간격이 2, 2, 3으로 점차 증가합니다."
-  },
-  {
-    "sequence": "2 5 10 17 [QUESTION] 37",
-    "answer": 26,
-    "description": "각 숫자는 n^2 + 1입니다."
-  },
-  {
-    "sequence": "1 2 6 24 120 [QUESTION]",
+    "sequence": "어떤 사냥꾼이 자기 집에서 1 km 남쪽으로 갔다가, 곰을 발견하고 총을 쏘았습니다. 도망치는 곰을 쫓아 동쪽으로 1 km를 가서 결국 그 곰을 잡을 수 있었는데, 거기서 다시 북쪽으로 1 km를 갔더니 사냥꾼의 집이 나왔습니다.",
     "answer": 720,
     "description": "각 숫자는 팩토리얼 값입니다 (n!)."
   },
   {
-    "sequence": "가 나 다 라 [QUESTION] 마",
+    "sequence": "어떤 사냥꾼이 자기 집에서 1 km 남쪽으로 갔다가, 곰을 발견하고 총을 쏘았습니다. 도망치는 곰을 쫓아 동쪽으로 1 km를 가서 결국 그 곰을 잡을 수 있었는데, 거기서 다시 북쪽으로 1 km를 갔더니 사냥꾼의 집이 나왔습니다.",
     "answer": "바",
     "description": "한글 순서 중 두 칸씩 건너뜁니다."
   },
   {
-    "sequence": "10 12 15 19 [QUESTION] 30",
+    "sequence": "어떤 사냥꾼이 자기 집에서 1 km 남쪽으로 갔다가, 곰을 발견하고 총을 쏘았습니다. 도망치는 곰을 쫓아 동쪽으로 1 km를 가서 결국 그 곰을 잡을 수 있었는데, 거기서 다시 북쪽으로 1 km를 갔더니 사냥꾼의 집이 나왔습니다.",
     "answer": 24,
     "description": "각 숫자는 이전 숫자에 점차 증가하는 값을 더합니다."
   },
   {
-    "sequence": "3 9 27 81 [QUESTION] 729",
+    "sequence": "어떤 사냥꾼이 자기 집에서 1 km 남쪽으로 갔다가, 곰을 발견하고 총을 쏘았습니다. 도망치는 곰을 쫓아 동쪽으로 1 km를 가서 결국 그 곰을 잡을 수 있었는데, 거기서 다시 북쪽으로 1 km를 갔더니 사냥꾼의 집이 나왔습니다.",
     "answer": 243,
     "description": "각 숫자는 3의 거듭제곱입니다."
   },
   {
-    "sequence": "2 6 12 20 [QUESTION] 42",
+    "sequence": "어떤 사냥꾼이 자기 집에서 1 km 남쪽으로 갔다가, 곰을 발견하고 총을 쏘았습니다. 도망치는 곰을 쫓아 동쪽으로 1 km를 가서 결국 그 곰을 잡을 수 있었는데, 거기서 다시 북쪽으로 1 km를 갔더니 사냥꾼의 집이 나왔습니다. ",
     "answer": 30,
     "description": "각 숫자는 n^2 - n 규칙에 따릅니다."
   }
