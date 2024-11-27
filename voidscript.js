@@ -17,7 +17,7 @@ console.log(`Canvas 크기 설정: ${canvas.width}x${canvas.height}`);
 
 // 캐릭터 이미지 로드
 const characterImg = new Image();
-characterImg.src = 'images/character.jpg'; // 사용자가 만든 캐릭터 이미지 경로
+characterImg.src = 'images/character.png'; // 사용자가 만든 캐릭터 이미지 경로
 
 // 빗방울 이미지 로드
 const raindropImg = new Image();
