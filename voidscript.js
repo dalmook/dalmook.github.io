@@ -13,11 +13,11 @@ canvas.height = window.innerHeight;
 
 // 캐릭터 이미지 로드
 const characterImg = new Image();
-characterImg.src = 'images/imagechoice.png'; // 사용자가 만든 캐릭터 이미지 경로
+characterImg.src = 'images/character.jpg'; // 사용자가 만든 캐릭터 이미지 경로
 
 // 빗방울 이미지 로드
 const raindropImg = new Image();
-raindropImg.src = 'images/imagechoice.png'; // 빗방울 이미지 경로
+raindropImg.src = 'images/raindrop.png'; // 빗방울 이미지 경로
 
 // 추가 빗방울 이미지 로드 (필요 시)
 const raindropLargeImg = new Image();
