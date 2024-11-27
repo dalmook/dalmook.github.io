@@ -5,6 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>직소 퍼즐 게임</title>
     <link rel="stylesheet" href="styles.css">
+    <!-- interact.js CDN 추가 -->
+    <script src="https://cdn.jsdelivr.net/npm/interactjs/dist/interact.min.js" defer></script>
 </head>
 <body>
     <h1>직소 퍼즐 게임</h1>
@@ -49,11 +51,11 @@
         <h2>게임 기록</h2>
         <button id="closeRecordButton">닫기</button>
         <div id="record-content">
-            <h3>쉬움</h3>
+            <h3>쉬움 (4조각)</h3>
             <ul id="record-easy"></ul>
-            <h3>중간</h3>
+            <h3>중간 (12조각)</h3>
             <ul id="record-medium"></ul>
-            <h3>어려움</h3>
+            <h3>어려움 (24조각)</h3>
             <ul id="record-hard"></ul>
         </div>
     </div>
@@ -61,6 +63,6 @@
     <!-- 기록 보기 버튼 -->
     <button id="viewRecordButton">기록 보기</button>
 
-    <script src="script.js"></script>
+    <script src="script.js" defer></script>
 </body>
 </html>
