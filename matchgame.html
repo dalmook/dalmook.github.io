@@ -528,13 +528,26 @@
 
             // 게임 보드 초기화
             gameBoard.innerHTML = '';
-
+            // 이미지 로드 확인
+            let loadedImagesCount = 0;
+            const totalImages = gameImages.length;
             
             gameImages.forEach((item, index) => {
                 const card = document.createElement('div');
                 card.classList.add('card');
                 card.dataset.image = item.image;
-                card.dataset.name = item.name;
+                card.dataset.name = item.name;                
+                // 카드 뒷면 설정
+                const img = new Image();
+                img.src = item.image;
+                img.onload = () => {
+                    loadedImagesCount++;
+                    if (loadedImagesCount === totalImages) {
+                        // 모든 이미지 로드 완료 후 게임 시작
+                        startGame(revealTime);
+                    }
+                };            
+                
                 if (item.desc) {
                     card.dataset.desc = item.desc;
                 }
