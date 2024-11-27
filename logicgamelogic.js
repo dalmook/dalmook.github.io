@@ -18,9 +18,12 @@ const playerNameInput = document.getElementById("playerName");
 const saveNameButton = document.getElementById("saveNameButton");
 const goBackButton = document.getElementById("goBackButton");
 const difficultySelect = document.getElementById("difficultySelect");
+const prevQuestionButton = document.getElementById("prevQuestionButton");
+const nextQuestionButton = document.getElementById("nextQuestionButton");
 
 // 게임 변수 초기화
 let currentQuestion = null;
+let currentQuestionIndex = 0; // 현재 문제 인덱스
 let score = 0;
 let startTime, timerInterval;
 let questionsAnswered = 0;
@@ -35,6 +38,9 @@ let selectedQuestions = {
     medium: [],
     hard: []
 };
+
+// 게임 상태 저장: 각 문제의 결과 저장
+let gameHistory = [];
 
 // 난이도 선택 이벤트 리스너
 difficultySelect.addEventListener("change", () => {
@@ -62,6 +68,7 @@ function generateGame() {
 // 게임 초기화 함수
 function resetGame() {
     currentQuestion = null;
+    currentQuestionIndex = 0;
     answerInput.value = "";
     resultElement.textContent = "";
     score = 0;
@@ -74,6 +81,12 @@ function resetGame() {
     optionsElement.innerHTML = "";
     optionsElement.style.display = "none";
     inputContainer.style.display = "block";
+
+    // 네비게이션 버튼 숨김
+    document.getElementById("navigation-buttons").style.display = "none";
+
+    // 게임 히스토리 초기화
+    gameHistory = [];    
 }
 
 // JSON 파일에서 질문 로드 함수
@@ -153,6 +166,12 @@ function displaySequence() {
     } else {
         displayInputField();
     }
+
+    // 이전 및 다음 버튼 숨김
+    document.getElementById("navigation-buttons").style.display = "none";
+
+    // 결과 메시지 초기화
+    resultElement.textContent = "";
 }
 
 // 선택지 표시 함수
@@ -210,12 +229,107 @@ function submitAnswer(userAnswer) {
 
     scoreElement.textContent = `점수: ${score}`;
     questionsAnswered++; // 질문 수 증가
+  // 게임 히스토리에 현재 질문 결과 저장
+    gameHistory[currentQuestionIndex] = {
+        question: currentQuestion,
+        userAnswer: userAnswer,
+        isCorrect: isCorrect
+    };
+    // Submit 버튼 숨김, 네비게이션 버튼 표시
+    submitAnswerButton.style.display = "none";
+    document.getElementById("navigation-buttons").style.display = "flex";
 
+    // 이전/다음 버튼 활성화 상태 업데이트
+    updateNavigationButtons();
+    
     if (questionsAnswered >= totalQuestions) {
         // 5문제를 모두 풀었을 때
         showNameForm();
     } else {
         selectNewQuestion();
+    }
+}
+
+// 이전 질문 보기 함수
+prevQuestionButton.addEventListener("click", () => {
+    if (currentQuestionIndex > 0) {
+        currentQuestionIndex--;
+        loadQuestionFromHistory();
+    }
+});
+
+// 다음 질문 보기 함수
+nextQuestionButton.addEventListener("click", () => {
+    if (currentQuestionIndex < selectedQuestions[difficultySelect.value].length - 1) {
+        currentQuestionIndex++;
+        loadQuestionFromHistory();
+    } else {
+        // 다음 질문이 없으면 새 질문 로드
+        selectRandomQuestion();
+        displaySequence();
+    }
+});
+
+// 게임 히스토리에서 질문 로드 함수
+function loadQuestionFromHistory() {
+    const history = gameHistory[currentQuestionIndex];
+    const difficulty = difficultySelect.value;
+    const questions = selectedQuestions[difficulty];
+
+    if (history) {
+        currentQuestion = history.question;
+        let formattedSequence = replaceQuestionWithIcon(currentQuestion.sequence);
+        formattedSequence = formattedSequence.replace(/\n/g, '<br>'); // 줄 바꿈 처리
+        sequenceElement.innerHTML = formattedSequence;
+
+        if (currentQuestion.options && Array.isArray(currentQuestion.options)) {
+            displayOptions(currentQuestion.options);
+        } else {
+            displayInputField();
+        }
+
+        // 결과 표시
+        if (history.isCorrect) {
+            resultElement.textContent = "정답입니다!\n" + currentQuestion.description;
+            resultElement.style.color = "green";
+            resultElement.classList.add("correct");
+            resultElement.classList.remove("incorrect");
+        } else {
+            resultElement.textContent = `오답입니다! 정답은 "${currentQuestion.answer}"입니다.\n설명: ${currentQuestion.description}`;
+            resultElement.style.color = "red";
+            resultElement.classList.add("incorrect");
+            resultElement.classList.remove("correct");
+        }
+
+        // Submit 버튼 숨김
+        submitAnswerButton.style.display = "none";
+        document.getElementById("navigation-buttons").style.display = "flex";
+
+        // 이전/다음 버튼 활성화 상태 업데이트
+        updateNavigationButtons();
+    } else {
+        // 히스토리에 없는 경우 새 질문 로드
+        selectRandomQuestion();
+        displaySequence();
+        submitAnswerButton.style.display = "inline-block";
+        document.getElementById("navigation-buttons").style.display = "none";
+    }
+}
+
+// 네비게이션 버튼 활성화 상태 업데이트 함수
+function updateNavigationButtons() {
+    // 이전 버튼 활성화 여부
+    if (currentQuestionIndex > 0) {
+        prevQuestionButton.disabled = false;
+    } else {
+        prevQuestionButton.disabled = true;
+    }
+
+    // 다음 버튼 활성화 여부
+    if (currentQuestionIndex < selectedQuestions[difficultySelect.value].length - 1) {
+        nextQuestionButton.disabled = false;
+    } else {
+        nextQuestionButton.disabled = true;
     }
 }
 
@@ -378,6 +492,23 @@ goBackButton.addEventListener("click", () => {
     hideNameForm();
     generateGame(); // 게임을 재시작
 });
+
+// 네비게이션 버튼 활성화 상태 업데이트 함수
+function updateNavigationButtons() {
+    // 이전 버튼 활성화 여부
+    if (currentQuestionIndex > 0) {
+        prevQuestionButton.disabled = false;
+    } else {
+        prevQuestionButton.disabled = true;
+    }
+
+    // 다음 버튼 활성화 여부
+    if (currentQuestionIndex < selectedQuestions[difficultySelect.value].length - 1) {
+        nextQuestionButton.disabled = false;
+    } else {
+        nextQuestionButton.disabled = true;
+    }
+}
 
 // 페이지 로드 시 게임 시작
 window.onload = () => {
