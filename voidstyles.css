@@ -27,6 +27,10 @@ body, html {
     z-index: 2000; /* 다른 요소보다 높게 설정 */
 }
 
+.modal.hidden {
+    display: none;
+}
+
 .modal-content {
     background-color: #fff;
     padding: 20px 30px;
