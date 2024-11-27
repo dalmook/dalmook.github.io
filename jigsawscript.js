@@ -208,7 +208,7 @@ async function checkPuzzleCompletion() {
 
         let currentX = 0, currentY = 0;
         if (currentTransform && currentTransform !== 'none') {
-            const transformValues = currentTransform.match(/translate([-\d.]+)px, ([-\d.]+)px/);
+            const transformValues = currentTransform.match(/translate\(([-\d.]+)px, ([-\d.]+)px\)/);
             if (transformValues) {
                 currentX = parseFloat(transformValues[1]);
                 currentY = parseFloat(transformValues[2]);
