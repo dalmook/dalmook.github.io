@@ -21,7 +21,9 @@ h1 {
     display: flex;
     justify-content: center;
     gap: 10px;
+    flex-wrap: wrap; /* 이미지가 너무 많을 때 자동 줄바꿈 */
 }
+
 
 .selectable-image {
     width: 100px;
@@ -33,7 +35,7 @@ h1 {
     transition: border 0.3s ease;
 }
 
-.selectable-image:hover {
+.selectable-image:hover, .selectable-image.selected {
     border: 2px solid #2196F3;
 }
 
@@ -47,6 +49,7 @@ h1 {
     border-radius: 10px;
     display: flex;
     flex-wrap: wrap;
+    overflow: hidden; /* 퍼즐 조각이 컨테이너를 벗어나지 않도록 */
 }
 
 .puzzle-piece {
@@ -76,8 +79,9 @@ h1 {
     border-radius: 10px;
     display: none;
     z-index: 1000;
-    width: 80%;
+    width: 90%; /* 모바일 화면에 맞게 폭 조정 */
     max-width: 500px;
+    box-sizing: border-box;
 }
 
 #record-content {
@@ -102,6 +106,7 @@ h1 {
     border: 1px solid #ddd;
 }
 
+
 #closeRecordButton {
     margin-top: 10px;
     padding: 8px 16px;
@@ -125,7 +130,8 @@ h1 {
 @media (max-width: 700px) {
     #puzzle-container {
         width: 90%;
-        height: auto;
+        height: auto; /* 높이를 자동으로 조정 */
+        aspect-ratio: 1 / 1; /* 정사각형 유지 */
     }
 
     .puzzle-piece {
