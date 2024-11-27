@@ -1,0 +1,38 @@
+<!-- voiddalbong.html -->
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>빗방울 피하기 게임</title>
+    <link rel="stylesheet" href="voidstyles.css">
+    <!-- Firebase SDK는 voidfirebaseConfig.js 내에서 임포트 -->
+</head>
+<body>
+    <!-- 시작 화면 -->
+    <div id="start-screen">
+        <h1>빗방울 피하기 게임</h1>
+        <button id="start-game-button">게임 시작</button>
+    </div>
+
+    <!-- 게임 컨테이너 -->
+    <div id="game-container" class="hidden">
+        <canvas id="game-canvas"></canvas>
+        <div id="score-display">시간: 0초</div>
+        <div id="controls">
+            <button id="left-button">←</button>
+            <button id="right-button">→</button>
+        </div>
+        <button id="view-record-button">기록 보기</button>
+        <div id="record-section" class="hidden">
+            <h2>게임 기록</h2>
+            <button id="close-record">닫기</button>
+            <ul id="record-list"></ul>
+        </div>
+        <button id="restart-button" class="hidden">다시 시작</button>
+    </div>
+
+    <!-- JavaScript 모듈 스크립트 -->
+    <script type="module" src="voidscript.js" defer></script>
+</body>
+</html>
