@@ -346,8 +346,14 @@ function init() {
     // 게임 시작 시 배경 음악 재생 및 시작 화면 숨기기
     document.getElementById('start-game-button').addEventListener('click', () => {
         console.log("게임 시작 버튼 클릭 이벤트 트리거.");
-        document.getElementById('start-screen').classList.add('hidden');
-        document.getElementById('game-container').classList.remove('hidden');
+        const startScreen = document.getElementById('start-screen');
+        const gameContainer = document.getElementById('game-container');
+        
+        // 직접 display 속성 변경
+        startScreen.style.display = 'none';
+        gameContainer.style.display = 'block';
+        console.log("start-screen을 숨기고 game-container를 표시.");
+
         bgMusic.play().then(() => {
             console.log("배경 음악 재생 성공.");
         }).catch(error => {
