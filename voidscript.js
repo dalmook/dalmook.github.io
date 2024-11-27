@@ -237,19 +237,6 @@ function loop() {
 function update() {
     const currentTime = Date.now();
 
-    // 캐릭터 이동 (드래그 기반으로 이동 처리되므로, 별도의 이동 로직 제거)
-    // 기존 스와이프 기반 이동 로직 제거
-    /*
-    if (character.movingLeft && character.x > 0) {
-        character.x -= character.speed;
-        console.log(`캐릭터 왼쪽 이동: x=${character.x}`);
-    }
-    if (character.movingRight && character.x + character.width < canvas.width) {
-        character.x += character.speed;
-        console.log(`캐릭터 오른쪽 이동: x=${character.x}`);
-    }
-    */
-
     // 빗방울 생성
     if (currentTime - lastRaindropTime > raindropInterval) {
         raindrops.push({
