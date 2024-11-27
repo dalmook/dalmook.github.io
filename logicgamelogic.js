@@ -74,7 +74,12 @@ function resetGame() {
     optionsElement.innerHTML = "";
     optionsElement.style.display = "none";
     inputContainer.style.display = "block";
+
+    // 피드백 아이콘 초기화
+    feedbackIcon.classList.add("hidden");
+    feedbackIcon.style.display = "none";
 }
+
 
 // JSON 파일에서 질문 로드 함수
 async function loadQuestions() {
@@ -200,12 +205,21 @@ function submitAnswer(userAnswer) {
         resultElement.style.color = "green";
         resultElement.classList.add("correct");
         resultElement.classList.remove("incorrect");
+        // 초록색 O 아이콘 표시
+        showFeedbackIcon(true);        
         score += 10; // 정답 시 점수 증가
     } else {
         resultElement.textContent = `오답입니다! 정답은 ${currentQuestion.answer}입니다. 설명: ${currentQuestion.description}`;
         resultElement.style.color = "red";
         resultElement.classList.add("incorrect");
         resultElement.classList.remove("correct");
+        // 빨간색 X 아이콘 표시
+        showFeedbackIcon(false);
+
+        // 2초 뒤에 다음 문제로 넘어감
+        setTimeout(() => {
+            selectNewQuestion();
+        }, 2000);        
     }
 
     scoreElement.textContent = `점수: ${score}`;
@@ -215,18 +229,44 @@ function submitAnswer(userAnswer) {
         // 5문제를 모두 풀었을 때
         showNameForm();
     } else {
-        selectNewQuestion();
+        if (userAnswer.toLowerCase() === String(currentQuestion.answer).toLowerCase()) {
+            // 정답인 경우 즉시 다음 질문으로 넘어가려면 아래 주석을 해제하세요.
+            setTimeout(() => {
+                selectNewQuestion();
+            }, 1000);
     }
 }
 
+// 정답/오답 피드백 아이콘 표시 함수 추가
+function showFeedbackIcon(isCorrect) {
+    feedbackIcon.style.display = "block"; // 아이콘을 보이게 함
+    feedbackIcon.classList.remove("hidden"); // 숨김 클래스 제거
+
+    if (isCorrect) {
+        feedbackIcon.innerHTML = '<i class="fas fa-check-circle"></i>'; // 초록색 O 아이콘
+        feedbackIcon.classList.add("correct");
+        feedbackIcon.classList.remove("incorrect");
+    } else {
+        feedbackIcon.innerHTML = '<i class="fas fa-times-circle"></i>'; // 빨간색 X 아이콘
+        feedbackIcon.classList.add("incorrect");
+        feedbackIcon.classList.remove("correct");
+    }
+}    
+    
 // 새로운 질문 선택 및 게임 진행 함수
 function selectNewQuestion() {
+    // 피드백 아이콘 숨김
+    feedbackIcon.classList.add("hidden");
+    feedbackIcon.style.display = "none";
+
     selectRandomQuestion();
     if (currentQuestion) {
         displaySequence();
         answerInput.value = "";
+        resultElement.textContent = "";
     }
 }
+
 
 // 타이머 시작 함수
 function startTimer() {
