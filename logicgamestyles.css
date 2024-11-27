@@ -199,6 +199,29 @@ button:hover {
     color: white;
 }
 
+/* 네비게이션 버튼 스타일 */
+#navigation-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 20px; /* 버튼 간 간격 */
+}
+
+#prevQuestionButton,
+#nextQuestionButton {
+    background-color: #607D8B; /* 청회색 */
+    color: white;
+}
+
+#prevQuestionButton:hover,
+#nextQuestionButton:hover {
+    background-color: #455A64; /* 더 어두운 청회색 */
+}
+
+/* 정답/오답 설명 스타일링 */
+#result {
+    font-size: 18px;
+    margin-top: 20px;
+}
 /* 모바일 환경 대응 */
 @media (max-width: 600px) {
     #name-form {
@@ -225,8 +248,12 @@ button:hover {
     .button-group {
         flex-direction: column;
     }
-        .option-button {
+    .option-button {
         width: 100%; /* 모바일에서 버튼을 전체 너비로 확장 */
     }
+    #navigation-buttons {
+        flex-direction: column;
+        gap: 10px;
+    }    
 
 }
