@@ -55,7 +55,7 @@ function imageError(imageName) {
 }
 
 characterImg.onload = () => imageLoaded();
-characterImg.onerror = () => imageError("character.jpg");
+characterImg.onerror = () => imageError("character.png");
 
 raindropImg.onload = () => imageLoaded();
 raindropImg.onerror = () => imageError("raindrop.png");
@@ -128,6 +128,7 @@ document.getElementById('restart-button')?.addEventListener('click', () => {
     }).catch(error => {
         console.error("배경 음악 재생 실패:", error);
     });
+    isGameLoopRunning = false; // 게임 루프 플래그 초기화
     gameLoop();
 });
 
@@ -153,7 +154,7 @@ document.addEventListener('touchend', (e) => {
         character.movingRight = false;
         console.log("왼쪽 스와이프 감지.");
     }
-}, false);
+});
 
 // 게임 루프
 function gameLoop() {
@@ -287,22 +288,8 @@ async function stopGame() {
     bgMusic.pause();
     console.log("배경 음악 일시 정지.");
 
-    alert(`게임 오버! 걸린 시간: ${score}초`);
-
-    // 기록 저장
-    try {
-        await addDoc(collection(db, "gameRecords"), {
-            score: score,
-            timestamp: Timestamp.now()
-        });
-        console.log("기록이 Firestore에 저장되었습니다.");
-    } catch (e) {
-        console.error("기록 저장 실패:", e);
-    }
-
-    // 재시작 버튼 표시
-    document.getElementById('restart-button').classList.remove('hidden');
-    console.log("재시작 버튼 표시.");
+    // 이름 입력 모달 표시
+    showNameModal();
 }
 
 // 기록 표시 함수
@@ -325,12 +312,65 @@ async function displayRecords() {
             const data = doc.data();
             const li = document.createElement('li');
             const date = data.timestamp.toDate().toLocaleString();
-            li.textContent = `${index + 1}. ${data.score}초 - ${date}`;
+            li.textContent = `${index + 1}. ${data.name} - ${data.score}초 - ${date}`;
             recordList.appendChild(li);
             console.log(`기록 추가: ${li.textContent}`);
         });
     }
 }
+
+// 이름 입력 모달 제어
+const nameModal = document.getElementById('name-modal');
+const closeModalButton = document.getElementById('close-modal');
+const submitNameButton = document.getElementById('submit-name');
+const playerNameInput = document.getElementById('player-name');
+
+// 모달 표시 함수
+function showNameModal() {
+    nameModal.classList.remove('hidden');
+    // 모달이 표시되면 게임 루프 정지
+    isGameLoopRunning = false;
+}
+
+// 모달 숨기기 함수
+function hideNameModal() {
+    nameModal.classList.add('hidden');
+    playerNameInput.value = ''; // 입력 필드 초기화
+}
+
+// 모달 닫기 버튼 이벤트 리스너
+closeModalButton.addEventListener('click', () => {
+    hideNameModal();
+    // 재시작 버튼 표시
+    document.getElementById('restart-button').classList.remove('hidden');
+});
+
+// 이름 저장 버튼 이벤트 리스너
+submitNameButton.addEventListener('click', async () => {
+    const playerName = playerNameInput.value.trim();
+    if (playerName === '') {
+        alert('이름을 입력해주세요.');
+        return;
+    }
+
+    // Firestore에 기록 저장
+    try {
+        await addDoc(collection(db, "gameRecords"), {
+            name: playerName, // 플레이어 이름
+            score: score,      // 점수 (시간)
+            timestamp: Timestamp.now() // 저장 시간
+        });
+        console.log("기록이 Firestore에 저장되었습니다.");
+    } catch (e) {
+        console.error("기록 저장 실패:", e);
+    }
+
+    // 모달 숨기기
+    hideNameModal();
+
+    // 재시작 버튼 표시
+    document.getElementById('restart-button').classList.remove('hidden');
+});
 
 // 게임 초기화 함수
 function init() {
@@ -373,4 +413,9 @@ function resetGameVariables() {
     score = 0;
     document.getElementById('score-display').innerText = `시간: ${score}초`;
     lastScoreTime = Date.now();
+    // 게임 루프 플래그 초기화
+    isGameLoopRunning = false;
 }
+
+// 이름 입력 모달 숨기기 초기 설정
+hideNameModal();
