@@ -21,8 +21,7 @@ h1 {
     border: 2px solid #ccc;
     border-radius: 5px;
     position: relative;
-    display: inline-block;
-    white-space: pre-wrap; /* \n을 줄 바꿈으로 처리 */
+    display: inline-block; /* 크기를 텍스트에 맞춤 */
 }
 
 /* 시퀀스 내의 아이콘 스타일링 */
@@ -37,24 +36,6 @@ h1 {
     transform: scale(1.2); /* 호버 시 크기 확대 */
 }
 
-/* 선택지 버튼 스타일링 */
-.option-button {
-    padding: 10px 20px;
-    margin: 5px;
-    font-size: 16px;
-    background-color: #2196F3; /* 파란색 */
-    color: white;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    transition: background-color 0.3s ease;
-}
-
-.option-button:hover {
-    background-color: #1976D2; /* 파란색 호버 시 어둡게 */
-}
-
-/* 입력 필드 스타일링 */
 input[type="number"],
 input[type="text"] {
     padding: 10px;
@@ -225,9 +206,5 @@ button:hover {
 
     .button-group {
         flex-direction: column;
-    }
-
-    .option-button {
-        width: 100%; /* 모바일에서 버튼을 전체 너비로 확장 */
     }
 }
