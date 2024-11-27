@@ -172,9 +172,6 @@ function displaySequence() {
 
     // 결과 메시지 초기화
     resultElement.textContent = "";
-
-    // Submit 버튼 표시
-    submitAnswerButton.style.display = "inline-block";
 }
 
 // 선택지 표시 함수
@@ -217,9 +214,7 @@ function submitAnswer(userAnswer) {
     }
 
     // 정답을 문자열로 비교 (대소문자 무시)
-    const isCorrect = userAnswer.toLowerCase() === String(currentQuestion.answer).toLowerCase();
-
-    if (isCorrect) {
+    if (userAnswer.toLowerCase() === String(currentQuestion.answer).toLowerCase()) {
         resultElement.textContent = "정답입니다!";
         resultElement.style.color = "green";
         resultElement.classList.add("correct");
@@ -234,14 +229,12 @@ function submitAnswer(userAnswer) {
 
     scoreElement.textContent = `점수: ${score}`;
     questionsAnswered++; // 질문 수 증가
-
-    // 게임 히스토리에 현재 질문 결과 저장
+  // 게임 히스토리에 현재 질문 결과 저장
     gameHistory[currentQuestionIndex] = {
         question: currentQuestion,
         userAnswer: userAnswer,
-        isCorrect: isCorrect // 수정: isCorrect 변수 사용
+        isCorrect: isCorrect
     };
-
     // Submit 버튼 숨김, 네비게이션 버튼 표시
     submitAnswerButton.style.display = "none";
     document.getElementById("navigation-buttons").style.display = "flex";
@@ -499,3 +492,25 @@ goBackButton.addEventListener("click", () => {
     hideNameForm();
     generateGame(); // 게임을 재시작
 });
+
+// 네비게이션 버튼 활성화 상태 업데이트 함수
+function updateNavigationButtons() {
+    // 이전 버튼 활성화 여부
+    if (currentQuestionIndex > 0) {
+        prevQuestionButton.disabled = false;
+    } else {
+        prevQuestionButton.disabled = true;
+    }
+
+    // 다음 버튼 활성화 여부
+    if (currentQuestionIndex < selectedQuestions[difficultySelect.value].length - 1) {
+        nextQuestionButton.disabled = false;
+    } else {
+        nextQuestionButton.disabled = true;
+    }
+}
+
+// 페이지 로드 시 게임 시작
+window.onload = () => {
+    generateGame();
+};
