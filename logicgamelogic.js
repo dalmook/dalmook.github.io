@@ -212,7 +212,10 @@ function submitAnswer(userAnswer) {
         alert("문제가 로드되지 않았습니다.");
         return;
     }
-
+    
+    // 정답을 문자열로 비교 (대소문자 무시)
+    const isCorrect = userAnswer.toLowerCase() === String(currentQuestion.answer).toLowerCase();
+    
     // 정답을 문자열로 비교 (대소문자 무시)
     if (userAnswer.toLowerCase() === String(currentQuestion.answer).toLowerCase()) {
         resultElement.textContent = "정답입니다!";
