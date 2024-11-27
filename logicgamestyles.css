@@ -201,20 +201,32 @@ button:hover {
 
 /* 네비게이션 버튼 스타일 */
 #navigation-buttons {
-    display: flex;
+    display: none; /* 초기 숨김 상태 */
     justify-content: center;
     gap: 20px; /* 버튼 간 간격 */
+    margin-top: 20px; /* 상단 여백 */
 }
 
 #prevQuestionButton,
 #nextQuestionButton {
     background-color: #607D8B; /* 청회색 */
     color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
 }
 
 #prevQuestionButton:hover,
 #nextQuestionButton:hover {
     background-color: #455A64; /* 더 어두운 청회색 */
+}
+
+#prevQuestionButton:disabled,
+#nextQuestionButton:disabled {
+    background-color: #B0BEC5; /* 비활성화 상태 색상 */
+    cursor: not-allowed;
 }
 
 /* 정답/오답 설명 스타일링 */
