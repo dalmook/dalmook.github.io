@@ -1,5 +1,12 @@
+// logicgamelogic.js
+
+// Firebase 초기화는 logicgamefirebaseConfig.js에서 이미 완료되었습니다.
+// db 변수는 window.db로 초기화됨
+
 // DOM 요소 선택
 const sequenceElement = document.getElementById("sequence");
+const optionsElement = document.getElementById("options");
+const inputContainer = document.getElementById("input-container");
 const answerInput = document.getElementById("answerInput");
 const submitAnswerButton = document.getElementById("submitAnswerButton");
 const resultElement = document.getElementById("result");
@@ -67,6 +74,11 @@ function resetGame() {
     scoreElement.textContent = `점수: ${score}`;
     clearInterval(timerInterval);
     timerDisplay.textContent = "걸린 시간: 0초";
+
+    // 선택지 및 입력 필드 초기화
+    optionsElement.innerHTML = "";
+    optionsElement.style.display = "none";
+    inputContainer.style.display = "block";
 }
 
 // JSON 파일에서 질문 로드 함수
@@ -140,18 +152,50 @@ function displaySequence() {
     let formattedSequence = replaceQuestionWithIcon(currentQuestion.sequence);
     formattedSequence = formattedSequence.replace(/\n/g, '<br>'); // 줄 바꿈 처리
     sequenceElement.innerHTML = formattedSequence;
+
+    if (currentQuestion.options && Array.isArray(currentQuestion.options)) {
+        displayOptions(currentQuestion.options);
+    } else {
+        displayInputField();
+    }
+}
+
+// 선택지 표시 함수
+function displayOptions(options) {
+    optionsElement.innerHTML = ""; // 기존 선택지 초기화
+    options.forEach(option => {
+        const button = document.createElement("button");
+        button.textContent = option;
+        button.classList.add("option-button");
+        button.addEventListener("click", () => {
+            submitAnswer(option);
+        });
+        optionsElement.appendChild(button);
+    });
+    optionsElement.style.display = "block";
+    inputContainer.style.display = "none"; // 입력 필드 숨김
+}
+
+// 입력 필드 표시 함수
+function displayInputField() {
+    optionsElement.style.display = "none";
+    inputContainer.style.display = "block";
 }
 
 // 정답 제출 함수
 submitAnswerButton.addEventListener("click", () => {
-    if (!currentQuestion) {
-        alert("문제가 로드되지 않았습니다.");
-        return;
-    }
-
     const userAnswer = answerInput.value.trim();
     if (!userAnswer) {
         alert("답을 입력하세요!");
+        return;
+    }
+    submitAnswer(userAnswer);
+});
+
+// 정답 제출 처리 함수
+function submitAnswer(userAnswer) {
+    if (!currentQuestion) {
+        alert("문제가 로드되지 않았습니다.");
         return;
     }
 
@@ -178,7 +222,7 @@ submitAnswerButton.addEventListener("click", () => {
     } else {
         selectNewQuestion();
     }
-});
+}
 
 // 새로운 질문 선택 및 게임 진행 함수
 function selectNewQuestion() {
