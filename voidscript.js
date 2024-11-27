@@ -76,6 +76,9 @@ let lastScoreTime = Date.now();
 
 let gameOver = false;
 
+// 게임 루프 플래그
+let isGameLoopRunning = false;
+
 // 이벤트 리스너 설정
 document.getElementById('left-button').addEventListener('touchstart', () => { character.movingLeft = true; });
 document.getElementById('left-button').addEventListener('touchend', () => { character.movingLeft = false; });
@@ -123,8 +126,15 @@ document.addEventListener('touchend', (e) => {
 
 // 게임 루프
 function gameLoop() {
+    if (isGameLoopRunning) return; // 게임 루프가 이미 실행 중이라면 중복 실행 방지
+
+    isGameLoopRunning = true;
+    requestAnimationFrame(loop);
+}
+
+function loop() {
     if (!gameOver) {
-        requestAnimationFrame(gameLoop);
+        requestAnimationFrame(loop);
     }
 
     update();
@@ -202,9 +212,9 @@ function render() {
 
     // 빗방울 그리기
     raindrops.forEach(raindrop => {
-        if (raindropImg.complete && raindrop.type === 'small') {
+        if (raindrop.type === 'small' && raindropImg.complete) {
             ctx.drawImage(raindropImg, raindrop.x, raindrop.y, raindrop.width, raindrop.height);
-        } else if (raindropLargeImg.complete && raindrop.type === 'large') {
+        } else if (raindrop.type === 'large' && raindropLargeImg.complete) {
             ctx.drawImage(raindropLargeImg, raindrop.x, raindrop.y, raindrop.width, raindrop.height);
         }
     });
@@ -267,9 +277,6 @@ async function displayRecords() {
 
 // 게임 초기화 함수
 function init() {
-    // 게임 루프 시작
-    gameLoop();
-
     // 화면 크기 변경 시 캔버스 크기 조정
     window.addEventListener('resize', () => {
         canvas.width = window.innerWidth;
@@ -293,6 +300,9 @@ function resetGameVariables() {
     raindropInterval = 1000;
     lastRaindropTime = Date.now();
     score = 0;
-    document.getElementById('score-display').innerText = `시간: 0초`;
+    document.getElementById('score-display').innerText = `시간: ${score}초`;
     lastScoreTime = Date.now();
 }
+
+// 게임 시작
+// init()은 모든 이미지가 로드된 후에 호출됩니다.
