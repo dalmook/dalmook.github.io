@@ -131,16 +131,14 @@ function selectRandomQuestion() {
 
 // 아이콘을 HTML로 대체하는 함수
 function replaceQuestionWithIcon(sequence) {
-    const replacedSequence = sequence.replace("[QUESTION]", '<i class="fas fa-question-circle question-icon"></i>');
-    console.log("Original Sequence:", sequence);
-    console.log("Formatted Sequence:", replacedSequence);
-    return replacedSequence;
+    return sequence.replace("[QUESTION]", '<i class="fas fa-question-circle question-icon"></i>');
 }
 
 // 시퀀스 표시 함수
 function displaySequence() {
     if (!currentQuestion) return;
-    const formattedSequence = replaceQuestionWithIcon(currentQuestion.sequence);
+    let formattedSequence = replaceQuestionWithIcon(currentQuestion.sequence);
+    formattedSequence = formattedSequence.replace(/\n/g, '<br>'); // 줄 바꿈 처리
     sequenceElement.innerHTML = formattedSequence;
 }
 
