@@ -36,38 +36,6 @@ h1 {
     transform: scale(1.2); /* 호버 시 크기 확대 */
 }
 
-/* 문제 컨테이너 스타일링 */
-.sequence-container {
-    position: relative; /* 아이콘을 절대 위치로 배치하기 위해 설정 */
-    display: inline-block;
-}
-
-/* 정답/오답 아이콘 스타일링 */
-.feedback-icon {
-    position: absolute;
-    top: 10px;
-    right: 10px;
-    font-size: 24px;
-    z-index: 10;
-    transition: opacity 0.3s ease, transform 0.3s ease;
-}
-
-.feedback-icon.correct {
-    color: green;
-    opacity: 1;
-    transform: scale(1);
-}
-
-.feedback-icon.incorrect {
-    color: red;
-    opacity: 1;
-    transform: scale(1);
-}
-
-.feedback-icon.hidden {
-    opacity: 0;
-    transform: scale(0.5);
-}
 /* 선택지 버튼 스타일링 */
 .option-button {
     padding: 10px 20px;
