@@ -1,4 +1,4 @@
-// script.js
+// jigsawscript.js
 
 import { db } from './logicgamefirebaseConfig.js';
 import { collection, addDoc, Timestamp, query, where, orderBy, limit, getDocs } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore.js";
@@ -31,6 +31,7 @@ imageUploadInput.addEventListener('change', (e) => {
         reader.onload = function(event) {
             selectedImage = event.target.result;
             // 선택된 이미지를 표시 (필요 시 미리보기)
+            // 선택 효과 추가
             predefinedImages.forEach(image => image.classList.remove('selected'));
         };
         reader.readAsDataURL(file);
@@ -197,10 +198,10 @@ function dragMoveListener(event) {
 }
 
 // 퍼즐 완료 체크 함수
-function checkPuzzleCompletion() {
+async function checkPuzzleCompletion() {
     // 모든 퍼즐 조각이 원래 위치에 근접하게 배치되었는지 확인
     let completed = true;
-    puzzlePieces.forEach(piece => {
+    for (let piece of puzzlePieces) {
         const originalLeft = parseFloat(piece.style.left);
         const originalTop = parseFloat(piece.style.top);
         const currentTransform = piece.style.transform;
@@ -222,13 +223,14 @@ function checkPuzzleCompletion() {
 
         if (deltaX > 20 || deltaY > 20) { // 허용 오차 20px
             completed = false;
+            break;
         }
-    });
+    }
 
     if (completed) {
         stopTimer();
         alert(`축하합니다! 걸린 시간: ${timer}초`);
-        saveRecord(numPieces, timer);
+        await saveRecord(numPieces, timer);
         resetGame();
     }
 }
@@ -289,7 +291,7 @@ closeRecordButton.addEventListener('click', () => {
 
 // 기록 표시 함수 (Firestore 사용)
 async function displayRecords() {
-    // Firestore 쿼리 설정: 난이도별로 내림차순 정렬, 상위 10개만 가져오기
+    // Firestore 쿼리 설정: 난이도별로 오름차순 정렬, 상위 10개만 가져오기
     const difficulties = [4, 12, 24];
     const recordPromises = difficulties.map(async (difficulty) => {
         const q = query(
