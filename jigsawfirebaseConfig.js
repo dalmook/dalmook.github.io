@@ -5,12 +5,12 @@ import { getFirestore } from "https://www.gstatic.com/firebasejs/9.22.2/firebase
 
 // Your web app's Firebase configuration
 const firebaseConfig = {
-    apiKey: "YOUR_API_KEY",
-    authDomain: "YOUR_AUTH_DOMAIN",
-    projectId: "YOUR_PROJECT_ID",
-    storageBucket: "YOUR_STORAGE_BUCKET",
-    messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
-    appId: "YOUR_APP_ID"
+    apiKey: "AIzaSyB-HZlpoNP0xcj9punWXpxHsgmuNHONCyU",
+    authDomain: "jigsawdalbong.firebaseapp.com",
+    projectId: "jigsawdalbong",
+    storageBucket: "jigsawdalbong.firebasestorage.app",
+    messagingSenderId: "507344274155",
+    appId: "1:507344274155:web:c3dc52320d9e618ac6b4ae"
 };
 
 // Initialize Firebase
