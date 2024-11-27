@@ -25,7 +25,7 @@ raindropImg.src = 'images/raindrop.png'; // 빗방울 이미지 경로
 
 // 추가 빗방울 이미지 로드 (필요 시)
 const raindropLargeImg = new Image();
-raindropLargeImg.src = 'images/raindrop_large.png'; // 큰 빗방울 이미지 경로
+raindropLargeImg.src = 'images/raindrop_large.jpg'; // 큰 빗방울 이미지 경로
 
 console.log("이미지 로드 시작.");
 
