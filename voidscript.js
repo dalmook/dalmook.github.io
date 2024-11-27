@@ -76,7 +76,7 @@ let character = {
 
 let raindrops = [];
 let raindropInterval = 1000; // 밀리초 단위로 빗방울 생성 간격
-let lastRaindropTime = Date.now();
+let lastRaindropTime = Date.now() + 2000; // 초기 빗방울 생성 2초 후
 
 let score = 0;
 let scoreInterval = 1000; // 1초마다 점수 증가
@@ -115,35 +115,25 @@ document.getElementById('restart-button')?.addEventListener('click', () => {
     gameLoop();
 });
 
-// 터치 이동 제스처 처리 (스와이프)
-let touchStartX = 0;
-
+// 터치 이동 제스처 처리 (터치 영역 분할)
 canvas.addEventListener('touchstart', (e) => {
-    touchStartX = e.changedTouches[0].screenX;
-    console.log(`캔버스 터치 시작 X: ${touchStartX}`);
+    const touchX = e.changedTouches[0].clientX;
+    if (touchX < canvas.width / 2) {
+        // 왼쪽 터치
+        character.movingLeft = true;
+        console.log("왼쪽 영역 터치 감지.");
+    } else {
+        // 오른쪽 터치
+        character.movingRight = true;
+        console.log("오른쪽 영역 터치 감지.");
+    }
 }, false);
 
 canvas.addEventListener('touchend', (e) => {
-    let touchEndX = e.changedTouches[0].screenX;
-    let deltaX = touchEndX - touchStartX;
-    console.log(`캔버스 터치 종료 X: ${touchEndX}, deltaX: ${deltaX}`);
-
-    if (deltaX > 50) { // 오른쪽 스와이프
-        character.movingRight = true;
-        character.movingLeft = false;
-        console.log("오른쪽 스와이프 감지.");
-    } else if (deltaX < -50) { // 왼쪽 스와이프
-        character.movingLeft = true;
-        character.movingRight = false;
-        console.log("왼쪽 스와이프 감지.");
-    }
-
-    // 스와이프 후 즉시 멈추도록 설정 (원한다면 지속적으로 움직이도록 변경 가능)
-    setTimeout(() => {
-        character.movingLeft = false;
-        character.movingRight = false;
-        console.log("캐릭터 이동 멈춤.");
-    }, 200); // 200ms 후 멈춤
+    // 터치가 끝나면 이동 멈춤
+    character.movingLeft = false;
+    character.movingRight = false;
+    console.log("터치 종료, 캐릭터 이동 멈춤.");
 });
 
 // 게임 루프
@@ -201,7 +191,7 @@ function update() {
 
         // 충돌 감지
         if (isColliding(character, raindrop)) {
-            console.log("충돌 감지!");
+            console.log(`충돌 감지! 캐릭터 위치: (${character.x}, ${character.y}, ${character.width}, ${character.height}), 빗방울 위치: (${raindrop.x}, ${raindrop.y}, ${raindrop.width}, ${raindrop.height})`);
             gameOver = true;
             stopGame();
         }
@@ -231,6 +221,9 @@ function update() {
             raindrop.speed = 5 + score / 10;
         });
     }
+
+    // 빗방울 배열 상태 로그
+    console.log(`현재 빗방울 개수: ${raindrops.length}`);
 }
 
 // 렌더링 함수
@@ -320,12 +313,14 @@ function showNameModal() {
     nameModal.classList.remove('hidden');
     // 모달이 표시되면 게임 루프 정지
     isGameLoopRunning = false;
+    console.log("이름 입력 모달 표시.");
 }
 
 // 모달 숨기기 함수
 function hideNameModal() {
     nameModal.classList.add('hidden');
     playerNameInput.value = ''; // 입력 필드 초기화
+    console.log("이름 입력 모달 숨김.");
 }
 
 // 모달 닫기 버튼 이벤트 리스너
@@ -333,6 +328,7 @@ closeModalButton.addEventListener('click', () => {
     hideNameModal();
     // 재시작 버튼 표시
     document.getElementById('restart-button').classList.remove('hidden');
+    console.log("모달 닫기 버튼 클릭, 재시작 버튼 표시.");
 });
 
 // 이름 저장 버튼 이벤트 리스너
@@ -360,6 +356,7 @@ submitNameButton.addEventListener('click', async () => {
 
     // 재시작 버튼 표시
     document.getElementById('restart-button').classList.remove('hidden');
+    console.log("이름 저장 후 재시작 버튼 표시.");
 });
 
 // 게임 초기화 함수
@@ -399,7 +396,7 @@ function resetGameVariables() {
     console.log("게임 변수 초기화.");
     raindrops = [];
     raindropInterval = 1000;
-    lastRaindropTime = Date.now();
+    lastRaindropTime = Date.now() + 2000; // 2초 후 빗방울 생성 시작
     score = 0;
     document.getElementById('score-display').innerText = `시간: ${score}초`;
     lastScoreTime = Date.now();
