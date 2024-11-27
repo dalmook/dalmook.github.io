@@ -87,7 +87,7 @@ function generatePuzzle(imageSrc, piecesCount) {
         const imgWidth = img.width;
         const imgHeight = img.height;
 
-        // 퍼즐 영역 크기 설정 (600x600 고정)
+        // 퍼즐 영역 크기 동적으로 가져오기
         const puzzleWidth = puzzleContainer.clientWidth;
         const puzzleHeight = puzzleContainer.clientHeight;
 
