@@ -182,7 +182,7 @@ function displayInputField() {
     inputContainer.style.display = "block";
 }
 
-// 정답 제출 함수
+// 정답 제출 함수 (입력 필드 제출 시)
 submitAnswerButton.addEventListener("click", () => {
     const userAnswer = answerInput.value.trim();
     if (!userAnswer) {
