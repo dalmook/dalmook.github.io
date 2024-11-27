@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>직소 퍼즐 게임</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <h1>직소 퍼즐 게임</h1>
+
+    <!-- 이미지 업로드 섹션 -->
+    <div id="upload-section">
+        <h2>개인 사진 업로드</h2>
+        <input type="file" id="imageUpload" accept="image/*">
+    </div>
+
+    <!-- 이미지 선택 섹션 -->
+    <div id="select-section">
+        <h2>이미지 선택</h2>
+        <div id="predefined-images">
+            <img src="images/image1.jpg" alt="Image 1" class="selectable-image">
+            <img src="images/image2.jpg" alt="Image 2" class="selectable-image">
+            <!-- 추가 이미지들 -->
+        </div>
+    </div>
+
+    <!-- 난이도 선택 섹션 -->
+    <div id="difficulty-section">
+        <h2>난이도 선택</h2>
+        <select id="difficultySelect">
+            <option value="4">쉬움 (4조각)</option>
+            <option value="12">중간 (12조각)</option>
+            <option value="24">어려움 (24조각)</option>
+        </select>
+        <button id="startButton">게임 시작</button>
+    </div>
+
+    <!-- 퍼즐 영역 -->
+    <div id="puzzle-container">
+        <!-- 퍼즐 조각들이 여기에 배치됩니다 -->
+    </div>
+
+    <!-- 타이머 -->
+    <div id="timer">걸린 시간: 0초</div>
+
+    <!-- 기록 보기 -->
+    <div id="record-section">
+        <h2>게임 기록</h2>
+        <button id="closeRecordButton">닫기</button>
+        <div id="record-content">
+            <h3>쉬움</h3>
+            <ul id="record-easy"></ul>
+            <h3>중간</h3>
+            <ul id="record-medium"></ul>
+            <h3>어려움</h3>
+            <ul id="record-hard"></ul>
+        </div>
+    </div>
+
+    <!-- 기록 보기 버튼 -->
+    <button id="viewRecordButton">기록 보기</button>
+
+    <script src="script.js"></script>
+</body>
+</html>
