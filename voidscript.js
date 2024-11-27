@@ -20,9 +20,9 @@ const raindropImg = new Image();
 raindropImg.src = 'images/힘내.webp'; // 빗방울 이미지 경로
 
 // 오디오 설정
-const bgMusic = new Audio('audio/background.mp3');
+const bgMusic = new Audio('https://www.soundjay.com/buttons/sounds/button-16.mp3');
 bgMusic.loop = true;
-const collisionSound = new Audio('audio/collision.mp3');
+const collisionSound = new Audio('https://www.soundjay.com/buttons/sounds/button-16.mp3');
 
 // 게임 변수
 let character = {
