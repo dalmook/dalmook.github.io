@@ -11,10 +11,9 @@ body, html {
 }
 
 .hidden {
-    display: none;
+    display: none !important;
 }
 
-/* 기존 .modal 클래스 */
 .modal {
     position: fixed;
     top: 0;
@@ -28,7 +27,6 @@ body, html {
     z-index: 2000; /* 다른 요소보다 높게 설정 */
 }
 
-/* 추가: .modal.hidden 클래스의 우선순위 강화 */
 .modal.hidden {
     display: none !important;
 }
@@ -191,7 +189,7 @@ body, html {
 }
 
 #record-section.hidden {
-    display: none;
+    display: none !important;
 }
 
 #record-section h2 {
@@ -240,5 +238,5 @@ body, html {
 }
 
 #restart-button.hidden {
-    display: none;
+    display: none !important;
 }
