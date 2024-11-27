@@ -13,18 +13,49 @@ canvas.height = window.innerHeight;
 
 // 캐릭터 이미지 로드
 const characterImg = new Image();
-characterImg.src = 'images/힘내.webp'; // 사용자가 만든 캐릭터 이미지 경로
+characterImg.src = 'images/character.jpg'; // 사용자가 만든 캐릭터 이미지 경로
 
 // 빗방울 이미지 로드
 const raindropImg = new Image();
-raindropImg.src = 'images/힘내.webp'; // 빗방울 이미지 경로
+raindropImg.src = 'images/raindrop.png'; // 빗방울 이미지 경로
+
+// 추가 빗방울 이미지 로드 (필요 시)
+const raindropLargeImg = new Image();
+raindropLargeImg.src = 'images/raindrop_large.png'; // 큰 빗방울 이미지 경로
 
 // 오디오 설정
-const bgMusic = new Audio('https://www.soundjay.com/buttons/sounds/button-16.mp3');
+const bgMusic = new Audio('audio/background.mp3');
 bgMusic.loop = true;
-const collisionSound = new Audio('https://www.soundjay.com/buttons/sounds/button-16.mp3');
+const collisionSound = new Audio('audio/collision.mp3');
 
-// 게임 변수
+// 이미지 로딩 상태 추적
+let imagesLoaded = 0;
+const totalImages = 3; // characterImg, raindropImg, raindropLargeImg
+
+function imageLoaded() {
+    imagesLoaded++;
+    if (imagesLoaded === totalImages) {
+        // 모든 이미지가 로드된 후 게임 초기화
+        init();
+    }
+}
+
+characterImg.onload = imageLoaded;
+characterImg.onerror = () => {
+    console.error("character.jpg 이미지를 로드할 수 없습니다.");
+};
+
+raindropImg.onload = imageLoaded;
+raindropImg.onerror = () => {
+    console.error("raindrop.png 이미지를 로드할 수 없습니다.");
+};
+
+raindropLargeImg.onload = imageLoaded;
+raindropLargeImg.onerror = () => {
+    console.error("raindrop_large.png 이미지를 로드할 수 없습니다.");
+};
+
+// 게임 변수 초기화
 let character = {
     x: canvas.width / 2 - 50, // 초기 위치 (가로 중앙)
     y: canvas.height - 150,    // 화면 하단
@@ -171,14 +202,10 @@ function render() {
 
     // 빗방울 그리기
     raindrops.forEach(raindrop => {
-        if (raindropImg.complete) {
-            let imgSrc = 'images/raindrop.png';
-            if (raindrop.type === 'large') {
-                imgSrc = 'images/raindrop_large.png'; // 추가 빗방울 이미지
-            }
-            const raindropImage = new Image();
-            raindropImage.src = imgSrc;
-            ctx.drawImage(raindropImage, raindrop.x, raindrop.y, raindrop.width, raindrop.height);
+        if (raindropImg.complete && raindrop.type === 'small') {
+            ctx.drawImage(raindropImg, raindrop.x, raindrop.y, raindrop.width, raindrop.height);
+        } else if (raindropLargeImg.complete && raindrop.type === 'large') {
+            ctx.drawImage(raindropLargeImg, raindrop.x, raindrop.y, raindrop.width, raindrop.height);
         }
     });
 }
@@ -269,6 +296,3 @@ function resetGameVariables() {
     document.getElementById('score-display').innerText = `시간: 0초`;
     lastScoreTime = Date.now();
 }
-
-// 게임 시작
-init();
