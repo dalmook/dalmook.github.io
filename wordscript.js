@@ -11,6 +11,7 @@ let gameWords = [];
 let currentQuestion = {};
 let usedIndices = [];
 let currentMode = "word-to-meaning"; // 현재 게임 모드
+let currentDifficulty = "easy"; // 현재 선택된 난이도
 
 // 초기 선택 화면 관련 요소
 const selectionScreen = document.getElementById("selection-screen");
@@ -29,14 +30,11 @@ const backToSelectionBtn = document.getElementById("back-to-selection");
 // 단어 게임 섹션 관련 요소
 const wordGameSection = document.getElementById("word-game");
 const backToSelectionGameBtn = document.getElementById("back-to-selection-game");
-const startGameBtn = document.getElementById("startGameBtn");
-const difficultySelect = document.getElementById("difficulty");
-const gameModeSelect = document.getElementById("gameMode");
+const difficultyButtons = document.querySelectorAll(".difficulty-button");
 const gameArea = document.getElementById("game-area");
 const questionEl = document.getElementById("question");
 const optionsEl = document.getElementById("options");
 const feedbackEl = document.getElementById("feedback");
-const nextQuestionBtn = document.getElementById("nextQuestionBtn");
 const timerEl = document.getElementById("timer");
 
 // 데이터 로드 함수
@@ -105,7 +103,7 @@ function startTimer(seconds, onTimeout) {
 
 // 시간 초과 처리 함수
 function handleTimeout() {
-    const difficulty = difficultySelect.value;
+    const difficulty = currentDifficulty;
 
     let penalty = 0;
     if (difficulty === "easy") penalty = -2;
@@ -115,13 +113,11 @@ function handleTimeout() {
     feedbackEl.textContent = `시간 초과! -${Math.abs(penalty)}점`;
     updateScore(penalty);
 
-    // 다음 질문 버튼 표시
-    nextQuestionBtn.style.display = "block";
-    nextQuestionBtn.onclick = () => {
+    // 1초 후 다음 질문 로드
+    setTimeout(() => {
         feedbackEl.textContent = "";
-        nextQuestionBtn.style.display = "none";
         loadQuestion(currentMode);
-    };
+    }, 1000);
 }
 
 // 질문 로드 함수
@@ -130,7 +126,7 @@ function loadQuestion(mode) {
         feedbackEl.textContent = `게임이 종료되었습니다! 최종 점수: ${score}점`;
         questionEl.textContent = "";
         optionsEl.innerHTML = "";
-        nextQuestionBtn.style.display = "none";
+        timerEl.textContent = "";
         clearInterval(timer);
         return;
     }
@@ -185,7 +181,7 @@ function generateOptions(correctAnswer, mode) {
 function checkAnswer(selected, correct, mode) {
     clearInterval(timer); // 타이머 정지
 
-    const difficulty = difficultySelect.value;
+    const difficulty = currentDifficulty;
 
     if (selected === correct) {
         let points = 0;
@@ -205,13 +201,11 @@ function checkAnswer(selected, correct, mode) {
         updateScore(penalty);
     }
 
-    // 다음 질문 버튼 표시
-    nextQuestionBtn.style.display = "block";
-    nextQuestionBtn.onclick = () => {
+    // 1초 후 다음 질문 로드
+    setTimeout(() => {
         feedbackEl.textContent = "";
-        nextQuestionBtn.style.display = "none";
         loadQuestion(mode);
-    };
+    }, 1000);
 }
 
 // 애플리케이션 초기화 함수
@@ -261,50 +255,58 @@ function initializeApp() {
         loadCard(currentCardIndex);
     });
 
-    // 단어 게임 시작
-    startGameBtn.addEventListener("click", () => {
-        const difficulty = difficultySelect.value;
-        const gameMode = gameModeSelect.value;
-        currentMode = gameMode;
-
-        // 난이도별 시간 제한 설정 및 점수 초기화
-        if (difficulty === "easy") {
-            timeLimit = 5;
-            score = 0;
-        } else if (difficulty === "medium") {
-            timeLimit = 3;
-            score = 0;
-        } else if (difficulty === "hard") {
-            timeLimit = 2;
-            score = 0;
-        }
-
-        // 필터링된 단어 선택
-        gameWords = wordData.filter(word => word.difficulty === difficulty);
-        if (gameWords.length < 4) {
-            alert("선택한 난이도에 충분한 단어가 없습니다.");
-            return;
-        }
-
-        // 게임 초기화
-        usedIndices = [];
-        gameArea.style.display = "block";
-        feedbackEl.textContent = "";
-        nextQuestionBtn.style.display = "none";
-
-        // 점수 표시 초기화
-        scoreDisplay = document.getElementById("scoreDisplay");
-        if (!scoreDisplay) {
-            scoreDisplay = document.createElement("div");
-            scoreDisplay.id = "scoreDisplay";
-            scoreDisplay.textContent = `점수: ${score}`;
-            gameArea.prepend(scoreDisplay); // 게임 영역 상단에 점수 표시
-        } else {
-            scoreDisplay.textContent = `점수: ${score}`;
-        }
-
-        loadQuestion(currentMode);
+    // 난이도 버튼 이벤트
+    difficultyButtons.forEach(button => {
+        button.addEventListener("click", () => {
+            const difficulty = button.getAttribute('data-difficulty');
+            startGame(difficulty);
+        });
     });
+}
+
+// 게임 시작 함수
+function startGame(difficulty) {
+    currentMode = gameModeSelect.value;
+
+    // 난이도별 시간 제한 설정 및 점수 초기화
+    if (difficulty === "easy") {
+        timeLimit = 5;
+        score = 0;
+    } else if (difficulty === "medium") {
+        timeLimit = 3;
+        score = 0;
+    } else if (difficulty === "hard") {
+        timeLimit = 2;
+        score = 0;
+    }
+
+    // 현재 난이도 저장
+    currentDifficulty = difficulty;
+
+    // 필터링된 단어 선택
+    gameWords = wordData.filter(word => word.difficulty === difficulty);
+    if (gameWords.length < 4) {
+        alert("선택한 난이도에 충분한 단어가 없습니다.");
+        return;
+    }
+
+    // 게임 초기화
+    usedIndices = [];
+    gameArea.style.display = "block";
+    feedbackEl.textContent = "";
+
+    // 점수 표시 초기화
+    scoreDisplay = document.getElementById("scoreDisplay");
+    if (!scoreDisplay) {
+        scoreDisplay = document.createElement("div");
+        scoreDisplay.id = "scoreDisplay";
+        scoreDisplay.textContent = `점수: ${score}`;
+        gameArea.prepend(scoreDisplay); // 게임 영역 상단에 점수 표시
+    } else {
+        scoreDisplay.textContent = `점수: ${score}`;
+    }
+
+    loadQuestion(currentMode);
 }
 
 // 게임 초기화 함수
@@ -313,7 +315,7 @@ function resetGame() {
     questionEl.textContent = "";
     optionsEl.innerHTML = "";
     feedbackEl.textContent = "";
-    nextQuestionBtn.style.display = "none";
+    timerEl.textContent = "";
     clearInterval(timer);
 
     // 점수 표시 제거
