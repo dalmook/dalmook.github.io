@@ -31,9 +31,9 @@ raindropLargeImg.src = 'images/raindrop_large.png'; // 큰 빗방울 이미지 �
 console.log("이미지 로드 시작.");
 
 // 오디오 설정
-//const bgMusic = new Audio('audio/background.mp3');
-//bgMusic.loop = true;
-//const collisionSound = new Audio('audio/collision.mp3');
+const bgMusic = new Audio('audio/background.mp3');
+bgMusic.loop = true;
+const collisionSound = new Audio('audio/collision.mp3');
 
 console.log("오디오 설정 완료.");
 
@@ -111,11 +111,11 @@ document.getElementById('restart-button')?.addEventListener('click', () => {
     document.getElementById('record-section').classList.add('hidden');
     document.getElementById('restart-button').classList.add('hidden');
     bgMusic.currentTime = 0;
-    //bgMusic.play().then(() => {
-     //   console.log("배경 음악 재생 시작.");
-   // }).catch(error => {
-        //console.error("배경 음악 재생 실패:", error);
-    //});
+    bgMusic.play().then(() => {
+        console.log("배경 음악 재생 시작.");
+    }).catch(error => {
+        console.error("배경 음악 재생 실패:", error);
+    });
     isGameLoopRunning = false; // 게임 루프 플래그 초기화
     gameLoop();
 });
@@ -393,8 +393,8 @@ async function stopGame() {
     } catch (error) {
         console.error("충돌 효과음 재생 실패:", error);
     }
-    //bgMusic.pause();
-    //console.log("배경 음악 일시 정지.");
+    bgMusic.pause();
+    console.log("배경 음악 일시 정지.");
 
     // 이름 입력 모달 표시
     showNameModal();
