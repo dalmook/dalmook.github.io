@@ -37,6 +37,7 @@ const questionEl = document.getElementById("question");
 const optionsEl = document.getElementById("options");
 const feedbackEl = document.getElementById("feedback");
 const nextQuestionBtn = document.getElementById("nextQuestionBtn");
+const timerEl = document.getElementById("timer");
 
 // 데이터 로드 함수
 async function loadWordData() {
@@ -60,6 +61,7 @@ function loadCard(index) {
         return;
     }
     const data = wordData[index];
+    console.log("Loading card:", index, data); // 디버깅용 로그 추가
     cardFront.textContent = data.word;
     cardBack.textContent = data.meaning;
     flipCard(false);
@@ -88,18 +90,11 @@ function startTimer(seconds, onTimeout) {
     let timeRemaining = seconds;
 
     // 타이머 표시 업데이트
-    const timerElement = document.getElementById("timer");
-    if (timerElement) {
-        timerElement.remove(); // 이전 타이머 제거
-    }
-    const newTimerElement = document.createElement("div");
-    newTimerElement.id = "timer";
-    newTimerElement.textContent = `남은 시간: ${timeRemaining}초`;
-    gameArea.insertBefore(newTimerElement, questionEl.nextSibling);
+    timerEl.textContent = `남은 시간: ${timeRemaining}초`;
 
     timer = setInterval(() => {
         timeRemaining--;
-        newTimerElement.textContent = `남은 시간: ${timeRemaining}초`;
+        timerEl.textContent = `남은 시간: ${timeRemaining}초`;
 
         if (timeRemaining <= 0) {
             clearInterval(timer);
@@ -250,9 +245,6 @@ function initializeApp() {
         resetGame();
     });
 
-    // 낱말 카드 초기화
-    loadCard(currentCardIndex);
-
     // 카드 플립 기능
     card.addEventListener("click", () => {
         flipCard(!card.classList.contains("flipped"));
@@ -275,7 +267,7 @@ function initializeApp() {
         const gameMode = gameModeSelect.value;
         currentMode = gameMode;
 
-        // 난이도별 시간 제한 설정 및 점수 설정
+        // 난이도별 시간 제한 설정 및 점수 초기화
         if (difficulty === "easy") {
             timeLimit = 5;
             score = 0;
@@ -313,6 +305,22 @@ function initializeApp() {
 
         loadQuestion(currentMode);
     });
+}
+
+// 게임 초기화 함수
+function resetGame() {
+    gameArea.style.display = "none";
+    questionEl.textContent = "";
+    optionsEl.innerHTML = "";
+    feedbackEl.textContent = "";
+    nextQuestionBtn.style.display = "none";
+    clearInterval(timer);
+
+    // 점수 표시 제거
+    if (scoreDisplay) {
+        scoreDisplay.remove();
+        scoreDisplay = null;
+    }
 }
 
 // 초기 데이터 로드 및 애플리케이션 초기화
