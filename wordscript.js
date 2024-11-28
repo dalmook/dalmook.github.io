@@ -1,12 +1,25 @@
 /* wordscript.js */
 
+// 전역 변수
+let wordData = []; // JSON에서 불러올 데이터
+let currentCardIndex = 0;
+let score = 0;
+let scoreDisplay = null;
+let timer;
+let timeLimit = 5; // 기본 시간 (난이도에 따라 변경)
+let isPlaying = false;
+let playInterval;
+let gameWords = [];
+let currentQuestion = {};
+let usedIndices = [];
+let currentMode = "word-to-meaning"; // 현재 게임 모드
+
 // 초기 선택 화면 관련 요소
 const selectionScreen = document.getElementById("selection-screen");
 const selectFlashcardsBtn = document.getElementById("select-flashcards");
 const selectWordgameBtn = document.getElementById("select-wordgame");
 
 // 낱말 카드 섹션 관련 요소
-let currentCardIndex = 0;
 const flashcardsSection = document.getElementById("flashcards");
 const card = document.getElementById("card");
 const cardFront = document.getElementById("card-front");
@@ -29,22 +42,6 @@ const optionsEl = document.getElementById("options");
 const feedbackEl = document.getElementById("feedback");
 const nextQuestionBtn = document.getElementById("nextQuestionBtn");
 
-// 점수 표시 요소 (동적으로 생성)
-let score = 0;
-let scoreDisplay = null;
-
-// 타이머 변수
-let timer;
-let timeLimit = 5; // 기본 시간 (난이도에 따라 변경)
-let isPlaying = false;
-
-// 게임 관련 변수
-let wordData = []; // JSON에서 불러올 데이터
-let gameWords = [];
-let currentQuestion = {};
-let usedIndices = [];
-let currentMode = "word-to-meaning"; // 현재 게임 모드
-
 // 데이터 로드 함수
 async function loadWordData() {
     try {
@@ -53,23 +50,224 @@ async function loadWordData() {
             throw new Error(`HTTP error! status: ${response.status}`);
         }
         wordData = await response.json();
-        console.log("단어 데이터가 성공적으로 로드되었습니다.");
+        console.log("단어 데이터가 성공적으로 로드되었습니다.", wordData);
     } catch (error) {
         console.error("단어 데이터를 불러오는 데 실패했습니다:", error);
         alert("단어 데이터를 불러오는 데 실패했습니다. 나중에 다시 시도해주세요.");
     }
 }
 
-// 초기 데이터 로드
-loadWordData().then(() => {
-    if (wordData.length > 0) {
-        // 데이터 로드 후 초기화
-        initializeApp();
-    } else {
+// 낱말 카드 초기화 함수 (전역으로 이동)
+function loadCard(index) {
+    if (wordData.length === 0) {
         console.error("wordData가 비어 있습니다.");
+        return;
     }
-});
+    const data = wordData[index];
+    cardFront.textContent = data.word;
+    cardBack.textContent = data.meaning;
+    flipCard(false);
+}
 
+// 카드 플립 함수 (전역으로 이동)
+function flipCard(flip) {
+    if (flip) {
+        card.classList.add("flipped");
+    } else {
+        card.classList.remove("flipped");
+    }
+}
+
+// 점수 업데이트 함수 (전역으로 이동)
+function updateScore(points) {
+    score += points;
+    if (scoreDisplay) {
+        scoreDisplay.textContent = `점수: ${score}`;
+    }
+}
+
+// 타이머 시작 함수 (전역으로 이동)
+function startTimer(seconds, onTimeout) {
+    clearInterval(timer); // 기존 타이머 초기화
+    let timeRemaining = seconds;
+
+    // 타이머 표시 업데이트
+    const timerElement = document.getElementById("timer");
+    if (timerElement) {
+        timerElement.remove(); // 이전 타이머 제거
+    }
+    const newTimerElement = document.createElement("div");
+    newTimerElement.id = "timer";
+    newTimerElement.textContent = `남은 시간: ${timeRemaining}초`;
+    gameArea.insertBefore(newTimerElement, questionEl.nextSibling);
+
+    timer = setInterval(() => {
+        timeRemaining--;
+        newTimerElement.textContent = `남은 시간: ${timeRemaining}초`;
+
+        if (timeRemaining <= 0) {
+            clearInterval(timer);
+            if (onTimeout) onTimeout();
+        }
+    }, 1000);
+}
+
+// 시간 초과 처리 함수 (전역으로 이동)
+function handleTimeout() {
+    const difficulty = difficultySelect.value;
+
+    let penalty = 0;
+    if (difficulty === "easy") penalty = -2;
+    else if (difficulty === "medium") penalty = -4;
+    else if (difficulty === "hard") penalty = -8;
+
+    feedbackEl.textContent = `시간 초과! -${Math.abs(penalty)}점`;
+    updateScore(penalty);
+
+    // 다음 질문 버튼 표시
+    nextQuestionBtn.style.display = "block";
+    nextQuestionBtn.onclick = () => {
+        feedbackEl.textContent = "";
+        nextQuestionBtn.style.display = "none";
+        loadQuestion(currentMode);
+    };
+}
+
+// 질문 로드 함수 (전역으로 이동)
+function loadQuestion(mode) {
+    if (usedIndices.length === gameWords.length) {
+        feedbackEl.textContent = `게임이 종료되었습니다! 최종 점수: ${score}점`;
+        questionEl.textContent = "";
+        optionsEl.innerHTML = "";
+        nextQuestionBtn.style.display = "none";
+        clearInterval(timer);
+        return;
+    }
+
+    let randomIndex;
+    do {
+        randomIndex = Math.floor(Math.random() * gameWords.length);
+    } while (usedIndices.includes(randomIndex));
+
+    usedIndices.push(randomIndex);
+    currentQuestion = gameWords[randomIndex];
+
+    console.log("새로운 질문 로드:", currentQuestion);
+
+    // 질문 표시
+    questionEl.textContent = mode === "word-to-meaning" ? currentQuestion.word : currentQuestion.meaning;
+
+    // 옵션 생성
+    generateOptions(mode === "word-to-meaning" ? currentQuestion.meaning : currentQuestion.word, mode);
+
+    // 시간 제한 타이머 시작
+    startTimer(timeLimit, handleTimeout);
+}
+
+// 옵션 생성 함수 (전역으로 이동)
+function generateOptions(correctAnswer, mode) {
+    const options = [correctAnswer];
+    while (options.length < 4) {
+        const randomWord = gameWords[Math.floor(Math.random() * gameWords.length)];
+        const option = mode === "word-to-meaning" ? randomWord.meaning : randomWord.word;
+        if (!options.includes(option)) {
+            options.push(option);
+        }
+    }
+
+    // 옵션을 섞습니다
+    options.sort(() => Math.random() - 0.5);
+
+    // 옵션 버튼 생성
+    optionsEl.innerHTML = "";
+    options.forEach(option => {
+        const btn = document.createElement("button");
+        btn.textContent = option;
+        btn.addEventListener("click", () => {
+            checkAnswer(option, correctAnswer, mode);
+        });
+        optionsEl.appendChild(btn);
+    });
+}
+
+// 정답 확인 함수 (전역으로 이동)
+function checkAnswer(selected, correct, mode) {
+    clearInterval(timer); // 타이머 정지
+
+    const difficulty = difficultySelect.value;
+
+    if (selected === correct) {
+        let points = 0;
+        if (difficulty === "easy") points = 10;
+        else if (difficulty === "medium") points = 20;
+        else if (difficulty === "hard") points = 30;
+
+        feedbackEl.textContent = `정답입니다! +${points}점`;
+        updateScore(points);
+    } else {
+        let penalty = 0;
+        if (difficulty === "easy") penalty = -2;
+        else if (difficulty === "medium") penalty = -4;
+        else if (difficulty === "hard") penalty = -8;
+
+        feedbackEl.textContent = `틀렸습니다! -${Math.abs(penalty)}점`;
+        updateScore(penalty);
+    }
+
+    // 다음 질문 버튼 표시
+    nextQuestionBtn.style.display = "block";
+    nextQuestionBtn.onclick = () => {
+        feedbackEl.textContent = "";
+        nextQuestionBtn.style.display = "none";
+        loadQuestion(mode);
+    };
+}
+
+// 자동 재생 함수 (전역으로 이동)
+function playCard() {
+    playInterval = setInterval(() => {
+        if (!isPlaying) return;
+        const data = wordData[currentCardIndex];
+        speak(data.word);
+        setTimeout(() => {
+            flipCard(true);
+        }, 3000); // 3초 후에 뜻 표시
+        setTimeout(() => {
+            flipCard(false);
+            currentCardIndex = (currentCardIndex + 1) % wordData.length;
+            loadCard(currentCardIndex);
+        }, 6000); // 6초 후에 다음 카드로 이동
+    }, 7000); // 7초 간격으로 반복
+}
+
+// 텍스트 음성 변환 함수 (전역으로 이동)
+function speak(text) {
+    if ('speechSynthesis' in window) {
+        const utterance = new SpeechSynthesisUtterance(text);
+        utterance.lang = 'en-US';
+        window.speechSynthesis.speak(utterance);
+    } else {
+        alert("음성 합성이 지원되지 않는 브라우저입니다.");
+    }
+}
+
+// 게임 초기화 함수 (전역으로 이동)
+function resetGame() {
+    gameArea.style.display = "none";
+    questionEl.textContent = "";
+    optionsEl.innerHTML = "";
+    feedbackEl.textContent = "";
+    nextQuestionBtn.style.display = "none";
+    clearInterval(timer);
+
+    // 점수 표시 제거
+    if (scoreDisplay) {
+        scoreDisplay.remove();
+        scoreDisplay = null;
+    }
+}
+
+// 애플리케이션 초기화 함수 (전역으로 이동)
 function initializeApp() {
     // 초기 선택 화면 버튼 이벤트
     selectFlashcardsBtn.addEventListener("click", () => {
@@ -105,14 +303,6 @@ function initializeApp() {
         flipCard(!card.classList.contains("flipped"));
     });
 
-    function flipCard(flip) {
-        if (flip) {
-            card.classList.add("flipped");
-        } else {
-            card.classList.remove("flipped");
-        }
-    }
-
     // 이전/다음 버튼 기능
     prevBtn.addEventListener("click", () => {
         currentCardIndex = (currentCardIndex - 1 + wordData.length) % wordData.length;
@@ -123,17 +313,6 @@ function initializeApp() {
         currentCardIndex = (currentCardIndex + 1) % wordData.length;
         loadCard(currentCardIndex);
     });
-
-    // 텍스트 음성 변환 기능
-    function speak(text) {
-        if ('speechSynthesis' in window) {
-            const utterance = new SpeechSynthesisUtterance(text);
-            utterance.lang = 'en-US';
-            window.speechSynthesis.speak(utterance);
-        } else {
-            alert("음성 합성이 지원되지 않는 브라우저입니다.");
-        }
-    }
 
     // 재생/멈춤 버튼 기능
     playBtn.addEventListener("click", () => {
@@ -146,26 +325,6 @@ function initializeApp() {
         isPlaying = false;
         clearInterval(playInterval);
     });
-
-    // 자동 재생 간격 변수
-    let playInterval;
-
-    // 자동 재생 기능
-    function playCard() {
-        playInterval = setInterval(() => {
-            if (!isPlaying) return;
-            const data = wordData[currentCardIndex];
-            speak(data.word);
-            setTimeout(() => {
-                flipCard(true);
-            }, 3000); // 3초 후에 뜻 표시
-            setTimeout(() => {
-                flipCard(false);
-                currentCardIndex = (currentCardIndex + 1) % wordData.length;
-                loadCard(currentCardIndex);
-            }, 6000); // 6초 후에 다음 카드로 이동
-        }, 7000); // 7초 간격으로 반복
-    }
 
     // 단어 게임 시작
     startGameBtn.addEventListener("click", () => {
@@ -211,165 +370,13 @@ function initializeApp() {
 
         loadQuestion(currentMode);
     });
-
-    // 질문 로드
-    function loadQuestion(mode) {
-        if (usedIndices.length === gameWords.length) {
-            feedbackEl.textContent = `게임이 종료되었습니다! 최종 점수: ${score}점`;
-            questionEl.textContent = "";
-            optionsEl.innerHTML = "";
-            nextQuestionBtn.style.display = "none";
-            clearInterval(timer);
-            return;
-        }
-
-        let randomIndex;
-        do {
-            randomIndex = Math.floor(Math.random() * gameWords.length);
-        } while (usedIndices.includes(randomIndex));
-
-        usedIndices.push(randomIndex);
-        currentQuestion = gameWords[randomIndex];
-
-        // 질문 표시
-        questionEl.textContent = mode === "word-to-meaning" ? currentQuestion.word : currentQuestion.meaning;
-
-        // 옵션 생성
-        generateOptions(mode === "word-to-meaning" ? currentQuestion.meaning : currentQuestion.word, mode);
-
-        // 시간 제한 타이머 시작
-        startTimer(timeLimit, () => {
-            handleTimeout();
-        });
-    }
-
-    // 옵션 생성
-    function generateOptions(correctAnswer, mode) {
-        const options = [correctAnswer];
-        while (options.length < 4) {
-            const randomWord = gameWords[Math.floor(Math.random() * gameWords.length)];
-            const option = mode === "word-to-meaning" ? randomWord.meaning : randomWord.word;
-            if (!options.includes(option)) {
-                options.push(option);
-            }
-        }
-
-        // 옵션을 섞습니다
-        options.sort(() => Math.random() - 0.5);
-
-        // 옵션 버튼 생성
-        optionsEl.innerHTML = "";
-        options.forEach(option => {
-            const btn = document.createElement("button");
-            btn.textContent = option;
-            btn.addEventListener("click", () => {
-                checkAnswer(option, correctAnswer, mode);
-            });
-            optionsEl.appendChild(btn);
-        });
-    }
-
-    // 정답 확인
-    function checkAnswer(selected, correct, mode) {
-        clearInterval(timer); // 타이머 정지
-
-        const difficulty = difficultySelect.value;
-
-        if (selected === correct) {
-            let points = 0;
-            if (difficulty === "easy") points = 10;
-            else if (difficulty === "medium") points = 20;
-            else if (difficulty === "hard") points = 30;
-
-            feedbackEl.textContent = `정답입니다! +${points}점`;
-            updateScore(points);
-        } else {
-            let penalty = 0;
-            if (difficulty === "easy") penalty = -2;
-            else if (difficulty === "medium") penalty = -4;
-            else if (difficulty === "hard") penalty = -8;
-
-            feedbackEl.textContent = `틀렸습니다! -${Math.abs(penalty)}점`;
-            updateScore(penalty);
-        }
-
-        // 다음 질문 버튼 표시
-        nextQuestionBtn.style.display = "block";
-        nextQuestionBtn.onclick = () => {
-            feedbackEl.textContent = "";
-            nextQuestionBtn.style.display = "none";
-            loadQuestion(mode);
-        };
-    }
-
-    // 타이머 시작
-    function startTimer(seconds, onTimeout) {
-        clearInterval(timer); // 기존 타이머 초기화
-        let timeRemaining = seconds;
-
-        // 타이머 표시 업데이트
-        const timerElement = document.getElementById("timer");
-        if (timerElement) {
-            timerElement.remove(); // 이전 타이머 제거
-        }
-        const newTimerElement = document.createElement("div");
-        newTimerElement.id = "timer";
-        newTimerElement.textContent = `남은 시간: ${timeRemaining}초`;
-        gameArea.insertBefore(newTimerElement, questionEl.nextSibling);
-
-        timer = setInterval(() => {
-            timeRemaining--;
-            newTimerElement.textContent = `남은 시간: ${timeRemaining}초`;
-
-            if (timeRemaining <= 0) {
-                clearInterval(timer);
-                if (onTimeout) onTimeout();
-            }
-        }, 1000);
-    }
-
-    // 시간 초과 처리
-    function handleTimeout() {
-        const difficulty = difficultySelect.value;
-
-        let penalty = 0;
-        if (difficulty === "easy") penalty = -2;
-        else if (difficulty === "medium") penalty = -4;
-        else if (difficulty === "hard") penalty = -8;
-
-        feedbackEl.textContent = `시간 초과! -${Math.abs(penalty)}점`;
-        updateScore(penalty);
-
-        // 다음 질문 버튼 표시
-        nextQuestionBtn.style.display = "block";
-        nextQuestionBtn.onclick = () => {
-            feedbackEl.textContent = "";
-            nextQuestionBtn.style.display = "none";
-            loadQuestion(currentMode);
-        };
-    }
-
-    // 점수 업데이트 함수
-    function updateScore(points) {
-        score += points;
-        if (scoreDisplay) {
-            scoreDisplay.textContent = `점수: ${score}`;
-        }
-    }
-
-    // 게임 초기화 함수
-    function resetGame() {
-        gameArea.style.display = "none";
-        questionEl.textContent = "";
-        optionsEl.innerHTML = "";
-        feedbackEl.textContent = "";
-        nextQuestionBtn.style.display = "none";
-        clearInterval(timer);
-
-        // 점수 표시 제거
-        if (scoreDisplay) {
-            scoreDisplay.remove();
-            scoreDisplay = null;
-        }
-    }
 }
+
+// 초기 데이터 로드 및 애플리케이션 초기화
+loadWordData().then(() => {
+    if (wordData.length > 0) {
+        initializeApp();
+    } else {
+        console.error("wordData가 비어 있습니다.");
+    }
+});
