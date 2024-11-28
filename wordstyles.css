@@ -15,7 +15,7 @@ section {
     margin: 40px 0;
 }
 
-.selection-button {
+.selection-button, .difficulty-button {
     display: inline-block;
     margin: 10px 20px;
     padding: 15px 30px;
@@ -28,7 +28,7 @@ section {
     transition: background-color 0.3s;
 }
 
-.selection-button:hover {
+.selection-button:hover, .difficulty-button:hover {
     background-color: #45a049;
 }
 
@@ -98,7 +98,7 @@ section {
     margin-bottom: 20px;
 }
 
-.game-settings label, .game-settings select {
+.game-settings label {
     margin: 0 10px;
     font-size: 16px;
 }
@@ -158,36 +158,22 @@ section {
     color: green;
 }
 
-#nextQuestionBtn {
-    margin-top: 20px;
-    padding: 10px 20px;
-    font-size: 16px;
-    cursor: pointer;
-    border: none;
-    border-radius: 5px;
-    background-color: #555555;
-    color: white;
-    transition: background-color 0.3s;
-}
-
-#nextQuestionBtn:hover {
-    background-color: #333333;
-}
+/* #nextQuestionBtn removed */
 
 /* 반응형 디자인 추가 */
 @media (max-width: 600px) {
     .card {
         width: 90%;
         max-width: none; /* 최대 너비 제거 */
-        aspect-ratio: 4 / 3; /* 비율 조정 가능 */
+        aspect-ratio: 3 / 2; /* 비율 유지 */
     }
 
-    .controls button, #options button, #nextQuestionBtn {
+    .controls button, #options button {
         width: 90%;
         font-size: 14px;
     }
 
-    .selection-button {
+    .selection-button, .difficulty-button {
         width: 90%;
         padding: 10px 20px;
         font-size: 16px;
