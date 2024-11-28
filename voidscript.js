@@ -75,7 +75,7 @@ let character = {
 };
 
 let raindrops = [];
-let raindropInterval = 1000; // 밀리초 단위로 빗방울 생성 간격
+let raindropInterval = 500; // 밀리초 단위로 빗방울 생성 간격
 let lastRaindropTime = Date.now() + 2000; // 초기 빗방울 생성 2초 후
 
 let score = 0;
