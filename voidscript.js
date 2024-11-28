@@ -32,7 +32,7 @@ console.log("이미지 로드 시작.");
 
 // 오디오 설정
 //const bgMusic = new Audio('audio/background.mp3');
-bgMusic.loop = true;
+//bgMusic.loop = true;
 //const collisionSound = new Audio('audio/collision.mp3');
 
 console.log("오디오 설정 완료.");
