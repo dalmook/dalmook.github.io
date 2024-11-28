@@ -284,7 +284,7 @@ function update() {
 
         // 빗방울 속도 증가
         raindrops.forEach(raindrop => {
-            raindrop.speed = 5 + score / 10;
+            raindrop.speed = 5 + score / 10 + Math.random();
         });
     }
 
