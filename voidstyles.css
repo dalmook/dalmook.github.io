@@ -1,260 +1,198 @@
-/* voidstyles.css */
+/* wordstyles.css */
 
-body, html {
-    margin: 0;
-    padding: 0;
-    height: 100%;
-    width: 100%;
-    overflow: hidden;    
+body {
     font-family: Arial, sans-serif;
-}
-
-.hidden {
-    display: none;
-}
-
-/* 기존 .modal 클래스 */
-.modal {
-    position: fixed;
-    top: 0;
-    left: 0;
-    right:0;
-    bottom:0;
-    background-color: rgba(0,0,0,0.5);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    z-index: 2000; /* 다른 요소보다 높게 설정 */
-}
-
-/* 추가: .modal.hidden 클래스의 우선순위 강화 */
-.modal.hidden {
-    display: none !important;
-}
-
-.modal-content {
-    background-color: #fff;
-    padding: 20px 30px;
-    border-radius: 10px;
     text-align: center;
-    position: relative;
-    width: 80%;
-    max-width: 400px;
+    padding: 20px;
+    background-color: #f0f8ff;
 }
 
-.close-button {
-    position: absolute;
-    top: 10px;
-    right: 15px;
-    font-size: 24px;
-    font-weight: bold;
-    cursor: pointer;
+h1 {
+    color: #333;
 }
 
-#player-name {
-    width: 80%;
-    padding: 10px;
-    margin: 20px 0;
-    font-size: 16px;
+section {
+    margin: 40px 0;
 }
 
-#submit-name {
-    padding: 10px 20px;
-    font-size: 16px;
-    background-color: #00796b;
-    color: white;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-}
-
-#submit-name:hover {
-    background-color: #004d40;
-}
-
-#start-screen {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(160, 214, 197, 0.95);
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    z-index: 1001;
-}
-
-#start-screen h1 {
-    font-size: 32px;
-    margin-bottom: 20px;
-    color: #004d40;
-}
-
-#start-game-button {
+.selection-button {
+    display: inline-block;
+    margin: 10px 20px;
     padding: 15px 30px;
     font-size: 18px;
-    background-color: #00796b;
-    color: white;
-    border: none;
-    border-radius: 5px;
     cursor: pointer;
+    border: none;
+    border-radius: 8px;
+    background-color: #4CAF50;
+    color: white;
     transition: background-color 0.3s;
 }
 
-#start-game-button:hover {
-    background-color: #004d40;
+.selection-button:hover {
+    background-color: #45a049;
 }
 
-#game-container {
+.card {
+    width: 300px;
+    height: 200px;
+    margin: 20px auto;
+    perspective: 1000px;
+    cursor: pointer;
     position: relative;
-    width: 100%;
-    height: 100%;
-    background-image: url('images/voidbgimg.jpg'); /* 원하는 배경 이미지 경로 */
-    background-size: contain; /* 배경 이미지 크기를 전체 화면에 맞춤 */
-    background-position: center; /* 배경 이미지의 중심을 맞춤 */
-    background-repeat: no-repeat; /* 배경 이미지 반복 안 함 */
-    z-index: 1; /* 기본 z-index */
 }
 
-#game-canvas {
-    display: block;
+.card-face {
     width: 100%;
     height: 100%;
     position: absolute;
-    top: 0;
-    left: 0;
-    z-index: 2; /* 캔버스가 배경 이미지보다 위에 표시되도록 설정 */
-    background-color: transparent;
-}
-
-#score-display {
-    position: absolute;
-    top: 10px;
-    left: 50%;
-    transform: translateX(-50%);
-    background-color: rgba(255, 255, 255, 0.7);
-    padding: 5px 10px;
-    border-radius: 5px;
-    font-size: 18px;
-    color: #333;
-}
-
-#controls {
-    position: absolute;
-    bottom: 20px;
-    left: 50%;
-    transform: translateX(-50%);
+    backface-visibility: hidden;
     display: flex;
-    gap: 20px;
-}
-
-#controls button {
-    width: 60px;
-    height: 60px;
-    border: none;
-    border-radius: 50%;
-    background-color: #00796b;
-    color: white;
+    align-items: center;
+    justify-content: center;
     font-size: 24px;
+    border: 1px solid #ccc;
+    border-radius: 10px;
+    background-color: #fff;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+    transition: transform 0.6s;
+}
+
+.front {
+    /* Front face-specific styles (추가 스타일 가능) */
+}
+
+.back {
+    transform: rotateY(180deg);
+    /* Back face-specific styles (추가 스타일 가능) */
+}
+
+.card.flipped .front {
+    transform: rotateY(180deg);
+}
+
+.card.flipped .back {
+    transform: rotateY(360deg);
+}
+
+.controls button {
+    margin: 10px;
+    padding: 10px 20px;
+    font-size: 16px;
     cursor: pointer;
-    transition: background-color 0.3s;
-}
-
-#controls button:active {
-    background-color: #004d40;
-}
-
-#view-record-button {
-    position: absolute;
-    top: 10px;
-    right: 10px;
-    z-index: 1003;
-    padding: 8px 16px;
-    background-color: #ff8a65;
-    color: white;
     border: none;
     border-radius: 5px;
-    cursor: pointer;
+    background-color: #008CBA;
+    color: white;
     transition: background-color 0.3s;
 }
 
-#view-record-button:hover {
-    background-color: #e65100;
+.controls button:hover {
+    background-color: #007B9E;
 }
 
-#record-section {
-    position: fixed;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    width: 90%;
-    max-width: 400px;
-    background-color: rgba(255, 255, 255, 0.95);
+.game-settings {
+    margin-bottom: 20px;
+}
+
+.game-settings label, .game-settings select {
+    margin: 0 10px;
+    font-size: 16px;
+}
+
+.game-area {
+    margin-top: 20px;
+}
+
+#scoreDisplay {
+    font-size: 20px;
+    margin-bottom: 10px;
+    font-weight: bold;
+}
+
+#question {
+    background-color: #ffffff; /* 흰색 배경 */
+    border: 2px solid #000000; /* 검은색 테두리 */
     padding: 20px;
-    border: 2px solid #ccc;
-    border-radius: 10px;
-    z-index: 1000;
-    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+    margin: 0 auto 20px;
+    width: 80%; /* 원하는 너비로 조절 */
+    font-weight: bold; /* 굵은 글씨 */
+    color: #000000; /* 검은색 글씨 */
+    box-sizing: border-box;
+    border-radius: 8px; /* 모서리 둥글게 */
+    text-align: center; /* 텍스트 중앙 정렬 */
+    font-size: 1.2em; /* 글씨 크기 조절 */
 }
 
-#record-section.hidden {
-    display: none;
-}
-
-#record-section h2 {
-    margin-top: 0;
-    color: #333;
-}
-
-#record-section #close-record {
+#options button {
+    display: block;
+    width: 200px;
+    margin: 10px auto;
+    padding: 10px;
+    font-size: 16px;
+    cursor: pointer;
+    border: none;
+    border-radius: 5px;
     background-color: #f44336;
     color: white;
-    border: none;
-    padding: 8px 12px;
-    border-radius: 5px;
-    cursor: pointer;
-    float: right;
+    transition: background-color 0.3s;
 }
 
-#record-list {
-    list-style: none;
-    padding: 0;
-    margin: 20px 0 0 0;
-    max-height: 300px;
-    overflow-y: auto;
+#options button:hover {
+    background-color: #da190b;
 }
 
-#record-list li {
-    background-color: #f1f1f1;
-    margin-bottom: 10px;
-    padding: 10px;
-    border-radius: 5px;
-}
-
-#restart-button {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    padding: 10px 20px;
-    background-color: #4caf50;
-    color: white;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
+#feedback {
+    margin-top: 20px;
     font-size: 18px;
-    z-index: 1002;
+    color: green;
 }
 
-#restart-button.hidden {
-    display: none;
+#nextQuestionBtn {
+    margin-top: 20px;
+    padding: 10px 20px;
+    font-size: 16px;
+    cursor: pointer;
+    border: none;
+    border-radius: 5px;
+    background-color: #555555;
+    color: white;
+    transition: background-color 0.3s;
 }
-/* 예시: 모바일 기기에서 캔버스 크기 조정 */
-@media (max-width: 768px) {
-    #game-canvas {
-        width: 100%;
-        height: 100%;
+
+#nextQuestionBtn:hover {
+    background-color: #333333;
+}
+
+#timer {
+    font-size: 18px;
+    margin-top: 10px;
+    color: #ff0000;
+}
+
+/* 반응형 디자인 추가 */
+@media (max-width: 600px) {
+    .card {
+        width: 90%;
+        height: auto;
+    }
+
+    .controls button, #options button, #nextQuestionBtn {
+        width: 80%;
+        font-size: 14px;
+    }
+
+    .selection-button {
+        width: 80%;
+        padding: 10px 20px;
+        font-size: 16px;
+    }
+
+    #question {
+        width: 95%;
+        font-size: 1em;
+    }
+
+    #timer {
+        font-size: 16px;
     }
 }
