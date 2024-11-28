@@ -447,6 +447,12 @@ function init() {
         gameContainer.style.display = 'block';
         console.log("start-screen을 숨기고 game-container를 표시.");
 
+        // 배경 이미지 변경
+        gameContainer.style.backgroundImage = "url('images/your-background-image.jpg')"; // 원하는 이미지 경로
+        gameContainer.style.backgroundSize = "cover"; // 이미지 크기 설정
+        gameContainer.style.backgroundPosition = "center"; // 이미지 위치 설정
+        gameContainer.style.backgroundRepeat = "no-repeat"; // 반복 없음        
+
         bgMusic.play().then(() => {
             console.log("배경 음악 재생 성공.");
         }).catch(error => {
