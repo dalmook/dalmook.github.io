@@ -113,6 +113,12 @@ section {
     font-weight: bold;
 }
 
+#timer {
+    font-size: 18px;
+    margin-top: 10px;
+    color: #ff0000;
+}
+
 #question {
     background-color: #ffffff; /* 흰색 배경 */
     border: 2px solid #000000; /* 검은색 테두리 */
@@ -166,12 +172,6 @@ section {
 
 #nextQuestionBtn:hover {
     background-color: #333333;
-}
-
-#timer {
-    font-size: 18px;
-    margin-top: 10px;
-    color: #ff0000;
 }
 
 /* 반응형 디자인 추가 */
