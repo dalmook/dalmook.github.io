@@ -10,7 +10,7 @@ body, html {
 }
 
 .hidden {
-    display: none !important;
+    display: none;
 }
 
 /* 기존 .modal 클래스 */
