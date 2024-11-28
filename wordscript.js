@@ -7,8 +7,6 @@ let score = 0;
 let scoreDisplay = null;
 let timer;
 let timeLimit = 5; // 기본 시간 (난이도에 따라 변경)
-let isPlaying = false;
-let playInterval;
 let gameWords = [];
 let currentQuestion = {};
 let usedIndices = [];
@@ -26,8 +24,6 @@ const cardFront = document.getElementById("card-front");
 const cardBack = document.getElementById("card-back");
 const prevBtn = document.getElementById("prevBtn");
 const nextBtn = document.getElementById("nextBtn");
-const playBtn = document.getElementById("playBtn");
-const pauseBtn = document.getElementById("pauseBtn");
 const backToSelectionBtn = document.getElementById("back-to-selection");
 
 // 단어 게임 섹션 관련 요소
@@ -223,34 +219,6 @@ function checkAnswer(selected, correct, mode) {
     };
 }
 
-// 자동 재생 함수
-function playCard() {
-    playInterval = setInterval(() => {
-        if (!isPlaying) return;
-        const data = wordData[currentCardIndex];
-        speak(data.word);
-        setTimeout(() => {
-            flipCard(true);
-        }, 3000); // 3초 후에 뜻 표시
-        setTimeout(() => {
-            flipCard(false);
-            currentCardIndex = (currentCardIndex + 1) % wordData.length;
-            loadCard(currentCardIndex);
-        }, 6000); // 6초 후에 다음 카드로 이동
-    }, 7000); // 7초 간격으로 반복
-}
-
-// 텍스트 음성 변환 함수
-function speak(text) {
-    if ('speechSynthesis' in window) {
-        const utterance = new SpeechSynthesisUtterance(text);
-        utterance.lang = 'en-US';
-        window.speechSynthesis.speak(utterance);
-    } else {
-        alert("음성 합성이 지원되지 않는 브라우저입니다.");
-    }
-}
-
 // 게임 초기화 함수
 function resetGame() {
     gameArea.style.display = "none";
@@ -271,25 +239,28 @@ function resetGame() {
 function initializeApp() {
     // 초기 선택 화면 버튼 이벤트
     selectFlashcardsBtn.addEventListener("click", () => {
+        console.log("낱말 카드 버튼 클릭");
         selectionScreen.style.display = "none";
         flashcardsSection.style.display = "block";
         loadCard(currentCardIndex);
     });
 
     selectWordgameBtn.addEventListener("click", () => {
+        console.log("단어 게임 버튼 클릭");
         selectionScreen.style.display = "none";
         wordGameSection.style.display = "block";
     });
 
     // 뒤로 가기 버튼 이벤트 (낱말 카드 섹션)
     backToSelectionBtn.addEventListener("click", () => {
+        console.log("뒤로 가기 버튼 클릭 (낱말 카드 섹션)");
         flashcardsSection.style.display = "none";
         selectionScreen.style.display = "block";
-        pauseBtn.click(); // 자동 재생 중지
     });
 
     // 뒤로 가기 버튼 이벤트 (단어 게임 섹션)
     backToSelectionGameBtn.addEventListener("click", () => {
+        console.log("뒤로 가기 버튼 클릭 (단어 게임 섹션)");
         wordGameSection.style.display = "none";
         selectionScreen.style.display = "block";
         resetGame();
@@ -312,18 +283,6 @@ function initializeApp() {
     nextBtn.addEventListener("click", () => {
         currentCardIndex = (currentCardIndex + 1) % wordData.length;
         loadCard(currentCardIndex);
-    });
-
-    // 재생/멈춤 버튼 기능
-    playBtn.addEventListener("click", () => {
-        if (isPlaying) return;
-        isPlaying = true;
-        playCard();
-    });
-
-    pauseBtn.addEventListener("click", () => {
-        isPlaying = false;
-        clearInterval(playInterval);
     });
 
     // 단어 게임 시작
