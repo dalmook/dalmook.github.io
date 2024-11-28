@@ -21,7 +21,7 @@ characterImg.src = 'images/character.png'; // 사용자가 만든 캐릭터 이�
 
 // 빗방울 이미지 로드
 const raindropImg = new Image();
-raindropImg.src = 'images/raindrop.png'; // 빗방울 이미지 경로
+raindropImg.src = 'images/poo.png'; // 빗방울 이미지 경로
 
 // 추가 빗방울 이미지 로드 (필요 시)
 const raindropLargeImg = new Image();
