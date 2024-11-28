@@ -57,7 +57,7 @@ async function loadWordData() {
     }
 }
 
-// 낱말 카드 초기화 함수 (전역으로 이동)
+// 낱말 카드 초기화 함수
 function loadCard(index) {
     if (wordData.length === 0) {
         console.error("wordData가 비어 있습니다.");
@@ -69,7 +69,7 @@ function loadCard(index) {
     flipCard(false);
 }
 
-// 카드 플립 함수 (전역으로 이동)
+// 카드 플립 함수
 function flipCard(flip) {
     if (flip) {
         card.classList.add("flipped");
@@ -78,7 +78,7 @@ function flipCard(flip) {
     }
 }
 
-// 점수 업데이트 함수 (전역으로 이동)
+// 점수 업데이트 함수
 function updateScore(points) {
     score += points;
     if (scoreDisplay) {
@@ -86,7 +86,7 @@ function updateScore(points) {
     }
 }
 
-// 타이머 시작 함수 (전역으로 이동)
+// 타이머 시작 함수
 function startTimer(seconds, onTimeout) {
     clearInterval(timer); // 기존 타이머 초기화
     let timeRemaining = seconds;
@@ -112,7 +112,7 @@ function startTimer(seconds, onTimeout) {
     }, 1000);
 }
 
-// 시간 초과 처리 함수 (전역으로 이동)
+// 시간 초과 처리 함수
 function handleTimeout() {
     const difficulty = difficultySelect.value;
 
@@ -133,7 +133,7 @@ function handleTimeout() {
     };
 }
 
-// 질문 로드 함수 (전역으로 이동)
+// 질문 로드 함수
 function loadQuestion(mode) {
     if (usedIndices.length === gameWords.length) {
         feedbackEl.textContent = `게임이 종료되었습니다! 최종 점수: ${score}점`;
@@ -164,7 +164,7 @@ function loadQuestion(mode) {
     startTimer(timeLimit, handleTimeout);
 }
 
-// 옵션 생성 함수 (전역으로 이동)
+// 옵션 생성 함수
 function generateOptions(correctAnswer, mode) {
     const options = [correctAnswer];
     while (options.length < 4) {
@@ -190,7 +190,7 @@ function generateOptions(correctAnswer, mode) {
     });
 }
 
-// 정답 확인 함수 (전역으로 이동)
+// 정답 확인 함수
 function checkAnswer(selected, correct, mode) {
     clearInterval(timer); // 타이머 정지
 
@@ -223,7 +223,7 @@ function checkAnswer(selected, correct, mode) {
     };
 }
 
-// 자동 재생 함수 (전역으로 이동)
+// 자동 재생 함수
 function playCard() {
     playInterval = setInterval(() => {
         if (!isPlaying) return;
@@ -240,7 +240,7 @@ function playCard() {
     }, 7000); // 7초 간격으로 반복
 }
 
-// 텍스트 음성 변환 함수 (전역으로 이동)
+// 텍스트 음성 변환 함수
 function speak(text) {
     if ('speechSynthesis' in window) {
         const utterance = new SpeechSynthesisUtterance(text);
@@ -251,7 +251,7 @@ function speak(text) {
     }
 }
 
-// 게임 초기화 함수 (전역으로 이동)
+// 게임 초기화 함수
 function resetGame() {
     gameArea.style.display = "none";
     questionEl.textContent = "";
@@ -267,7 +267,7 @@ function resetGame() {
     }
 }
 
-// 애플리케이션 초기화 함수 (전역으로 이동)
+// 애플리케이션 초기화 함수
 function initializeApp() {
     // 초기 선택 화면 버튼 이벤트
     selectFlashcardsBtn.addEventListener("click", () => {
