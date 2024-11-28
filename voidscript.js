@@ -448,7 +448,7 @@ function init() {
         console.log("start-screen을 숨기고 game-container를 표시.");
 
         // 배경 이미지 변경
-        gameContainer.style.backgroundImage = "url('images/your-background-image.jpg')"; // 원하는 이미지 경로
+        gameContainer.style.backgroundImage = "url('images/voidbgimg.jpg')"; // 원하는 이미지 경로
         gameContainer.style.backgroundSize = "cover"; // 이미지 크기 설정
         gameContainer.style.backgroundPosition = "center"; // 이미지 위치 설정
         gameContainer.style.backgroundRepeat = "no-repeat"; // 반복 없음        
