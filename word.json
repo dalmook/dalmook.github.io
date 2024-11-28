@@ -1,0 +1,10 @@
+[
+    { "word": "apple", "meaning": "사과", "difficulty": "easy" },
+    { "word": "banana", "meaning": "바나나", "difficulty": "easy" },
+    { "word": "cat", "meaning": "고양이", "difficulty": "easy" },
+    { "word": "dog", "meaning": "개", "difficulty": "easy" },
+    { "word": "elephant", "meaning": "코끼리", "difficulty": "medium" },
+    { "word": "giraffe", "meaning": "기린", "difficulty": "medium" },
+    { "word": "hippopotamus", "meaning": "하마", "difficulty": "hard" },
+    { "word": "rhinoceros", "meaning": "코뿔소", "difficulty": "hard" }
+]
