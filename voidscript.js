@@ -272,13 +272,16 @@ function update() {
 
     // 우산 생성
     if (currentTime - lastUmbrellaTime > umbrellaInterval) {
+        const umbrellaSize = Math.min(canvas.width, canvas.height) / 10; // 화면 크기에 따라 크기 설정
+
         umbrellas.push({
-            x: Math.random() * (canvas.width - 50),
-            y: -50,
-            width: 50,
-            height: 50,
+            x: Math.random() * (canvas.width - umbrellaSize),
+            y: -umbrellaSize,
+            width: umbrellaSize,
+            height: umbrellaSize,
             speed: 4
         });
+
         console.log("우산 생성.");
         lastUmbrellaTime = currentTime;
     }
