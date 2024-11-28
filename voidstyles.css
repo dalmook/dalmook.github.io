@@ -250,3 +250,10 @@ body, html {
 #restart-button.hidden {
     display: none;
 }
+/* 예시: 모바일 기기에서 캔버스 크기 조정 */
+@media (max-width: 768px) {
+    #game-canvas {
+        width: 100%;
+        height: 100%;
+    }
+}
