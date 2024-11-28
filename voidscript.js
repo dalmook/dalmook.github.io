@@ -153,18 +153,18 @@ canvas.addEventListener('mousemove', (e) => {
         if (character.x < 0) character.x = 0;
         if (character.x + character.width > canvas.width) character.x = canvas.width - character.width;
         dragStartX = e.clientX;
-        console.log(`마우스 드래그 중: x=${character.x}`);
+        // console.log(`마우스 드래그 중: x=${character.x}`);
     }
 });
 
 canvas.addEventListener('mouseup', () => {
     isDragging = false;
-    console.log("마우스 드래그 종료.");
+    // console.log("마우스 드래그 종료.");
 });
 
 canvas.addEventListener('mouseleave', () => {
     isDragging = false;
-    console.log("마우스가 캔버스를 벗어남, 드래그 종료.");
+    // console.log("마우스가 캔버스를 벗어남, 드래그 종료.");
 });
 
 // 모바일용 터치 이벤트
@@ -172,7 +172,7 @@ canvas.addEventListener('touchstart', (e) => {
     if (e.touches.length === 1) { // 단일 터치만 처리
         isDragging = true;
         dragStartX = e.touches[0].clientX;
-        console.log("터치 드래그 시작.");
+        // console.log("터치 드래그 시작.");
     }
 });
 
