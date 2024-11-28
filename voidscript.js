@@ -27,6 +27,13 @@ raindropImg.src = 'images/raindrop.png'; // 빗방울 이미지 경로
 const raindropLargeImg = new Image();
 raindropLargeImg.src = 'images/raindrop_large.png'; // 큰 빗방울 이미지 경로
 
+// 우산 이미지 로드
+const umbrellaImg = new Image();
+umbrellaImg.src = 'images/umbrella.png'; // 우산 이미지 경로
+
+umbrellaImg.onload = () => imageLoaded();
+umbrellaImg.onerror = () => imageError("umbrella.png");
+
 console.log("이미지 로드 시작.");
 
 // 오디오 설정
@@ -77,6 +84,11 @@ let character = {
 let raindrops = [];
 let raindropInterval = 500; // 밀리초 단위로 빗방울 생성 간격
 let lastRaindropTime = Date.now() + 2000; // 초기 빗방울 생성 2초 후
+
+// 우산 아이템 관련 변수 추가
+let umbrellas = [];
+let umbrellaInterval = 5000; // 우산 생성 간격 (밀리초 단위)
+let lastUmbrellaTime = Date.now();
 
 let score = 0;
 let scoreInterval = 1000; // 1초마다 점수 증가
@@ -237,6 +249,38 @@ function loop() {
 function update() {
     const currentTime = Date.now();
 
+// 우산 생성
+if (currentTime - lastUmbrellaTime > umbrellaInterval) {
+    umbrellas.push({
+        x: Math.random() * (canvas.width - 50),
+        y: -50,
+        width: 50,
+        height: 50,
+        speed: 4 // 우산 하강 속도
+    });
+    console.log("우산 생성.");
+    lastUmbrellaTime = currentTime;
+}
+
+// 우산 이동
+umbrellas.forEach((umbrella, index) => {
+    umbrella.y += umbrella.speed;
+
+    // 캐릭터와 우산 충돌 감지
+    if (isColliding(character, umbrella)) {
+        console.log("우산 획득!");
+        score += 10; // 시간 10초 증가
+        document.getElementById('score-display').innerText = `시간: ${score}초`;
+        umbrellas.splice(index, 1); // 우산 제거
+    }
+
+    // 화면을 벗어난 우산 제거
+    if (umbrella.y > canvas.height) {
+        umbrellas.splice(index, 1);
+        console.log("우산 제거.");
+    }
+    });
+    
     // 빗방울 생성
     if (currentTime - lastRaindropTime > raindropInterval) {
         raindrops.push({
@@ -304,6 +348,15 @@ function render() {
         console.log("캐릭터 이미지 로드 대기 중.");
     }
 
+    // 우산 그리기
+    umbrellas.forEach(umbrella => {
+        if (raindropImg.complete) {
+            ctx.drawImage(raindropImg, umbrella.x, umbrella.y, umbrella.width, umbrella.height);
+        } else {
+            console.log("우산 이미지 로드 대기 중.");
+        }
+    });
+    
     // 빗방울 그리기
     raindrops.forEach(raindrop => {
         if (raindrop.type === 'small' && raindropImg.complete) {
