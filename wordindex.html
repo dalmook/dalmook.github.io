@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>영어 단어 학습 앱</title>
+    <link rel="stylesheet" href="wordstyles.css">
+</head>
+<body>
+    <h1>영어 단어 학습 앱</h1>
+    
+    <!-- 초기 선택 화면 -->
+    <section id="selection-screen">
+        <h2>원하는 기능을 선택하세요</h2>
+        <button id="select-flashcards" class="selection-button">낱말 카드</button>
+        <button id="select-wordgame" class="selection-button">단어 게임</button>
+    </section>
+    
+    <!-- 낱말 카드 섹션 -->
+    <section id="flashcards" style="display: none;">
+        <h2>낱말 카드</h2>
+        <div class="card" id="card">
+            <div class="card-face front" id="card-front">
+                <!-- 영어 단어가 표시됩니다 -->
+            </div>
+            <div class="card-face back" id="card-back">
+                <!-- 단어의 뜻이 표시됩니다 -->
+            </div>
+        </div>
+        <div class="controls">
+            <button id="prevBtn">이전</button>
+            <button id="playBtn">재생</button>
+            <button id="pauseBtn">멈춤</button>
+            <button id="nextBtn">다음</button>
+            <button id="back-to-selection">뒤로</button>
+        </div>
+    </section>
+
+    <!-- 단어 게임 섹션 -->
+    <section id="word-game" style="display: none;">
+        <h2>단어 게임</h2>
+        <div class="game-settings">
+            <label for="difficulty">난이도:</label>
+            <select id="difficulty">
+                <option value="easy">Easy</option>
+                <option value="medium">Medium</option>
+                <option value="hard">Hard</option>
+            </select>
+
+            <label for="gameMode">방식:</label>
+            <select id="gameMode">
+                <option value="word-to-meaning">단어 → 뜻 선택</option>
+                <option value="meaning-to-word">뜻 → 단어 선택</option>
+            </select>
+
+            <button id="startGameBtn">게임 시작</button>
+            <button id="back-to-selection-game">뒤로</button>
+        </div>
+
+        <div class="game-area" id="game-area" style="display: none;">
+            <div id="scoreDisplay">점수: 0</div>
+            <div id="question"></div>
+            <div id="options"></div>
+            <div id="feedback"></div>
+            <button id="nextQuestionBtn" style="display: none;">다음 문제</button>
+        </div>
+    </section>
+
+    <script src="wordscript.js"></script>
+</body>
+</html>
