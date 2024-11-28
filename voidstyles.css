@@ -10,7 +10,7 @@ body, html {
 }
 
 .hidden {
-    display: none;
+    display: none !important;
 }
 
 /* 기존 .modal 클래스 */
@@ -125,7 +125,7 @@ body, html {
     position: absolute;
     top: 0;
     left: 0;
-    z-index: 2; /* 캔버스가 배경 이미지보다 위에 표시되도록 설정 */
+    z-index: 1; /* 캔버스가 배경 이미지보다 위에 표시되도록 설정 */
     background-color: transparent;
 }
 
@@ -256,4 +256,279 @@ body, html {
         width: 100%;
         height: 100%;
     }
+        #view-record-button {
+        top: 5px;
+        right: 5px;
+        padding: 8px 16px;
+        font-size: 14px;
+    }
+
+
+9초 동안 Thought
+모바일에서 "기록 보기" 버튼이 클릭되지 않는 문제는 주로 CSS 스타일링과 관련이 있을 수 있습니다. PC에서는 정상적으로 작동하지만 모바일에서는 클릭이 되지 않는다면, 버튼이 다른 요소에 의해 가려지거나 z-index 설정이 올바르지 않을 가능성이 큽니다. 아래에 수정해야 할 CSS 부분과 점검 사항을 안내드리겠습니다.
+
+1. "기록 보기" 버튼의 CSS 스타일링 확인 및 수정
+1.1. 버튼의 위치와 z-index 설정
+"기록 보기" 버튼이 다른 요소들보다 위에 표시되도록 z-index를 설정하고, position 속성을 적절히 지정해야 합니다. 특히 모바일에서는 화면 크기가 다르기 때문에 버튼의 위치와 크기를 재조정할 필요가 있을 수 있습니다.
+
+수정할 부분: voidstyles.css
+css
+코드 복사
+/* "기록 보기" 버튼 스타일링 */
+#view-record-button {
+    position: absolute; /* 혹은 fixed */
+    top: 10px; /* 원하는 위치로 조정 */
+    right: 10px; /* 원하는 위치로 조정 */
+    z-index: 1003; /* 다른 요소들보다 높은 z-index 설정 */
+    padding: 10px 20px;
+    font-size: 16px;
+    background-color: #ffcc00; /* 버튼 배경색 */
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+/* 모바일 화면에서 버튼 크기 및 위치 조정 */
+@media (max-width: 768px) {
+    #view-record-button {
+        top: 5px;
+        right: 5px;
+        padding: 8px 16px;
+        font-size: 14px;
+    }
+}
+1.2. 다른 요소들과의 겹침 방지
+버튼이 다른 요소들에 의해 가려지지 않도록 z-index를 높게 설정하고, 버튼이 위치한 컨테이너(game-container 등)의 position 속성을 적절히 설정하세요.
+
+예시: game-container 스타일링
+css
+코드 복사
+#game-container {
+    position: relative; /* 자식 요소들의 절대 위치를 기준으로 함 */
+    width: 100%;
+    height: 100%;
+    background-image: url('images/your-background-image.jpg'); /* 원하는 배경 이미지 경로 */
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    z-index: 1; /* 기본 z-index 설정 */
+}
+
+/* 캔버스 스타일링 */
+#game-canvas {
+    display: block;
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 1; /* 게임 컨테이너와 동일한 z-index */
+    background-color: transparent;
+}
+2. record-section의 CSS 스타일링 점검 및 수정
+"기록 보기" 버튼을 클릭했을 때 나타나는 record-section이 올바르게 표시되도록 CSS를 설정해야 합니다. 특히, record-section이 나타날 때 버튼이 가려지지 않도록 z-index와 위치를 조정하세요.
+
+수정할 부분: voidstyles.css
+css
+코드 복사
+/* 기록 섹션 스타일링 */
+#record-section {
+    position: fixed; /* 화면 중앙에 고정 */
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: rgba(255, 255, 255, 0.95); /* 반투명 배경 */
+    padding: 20px;
+    border-radius: 10px;
+    z-index: 1000; /* 버튼보다 낮은 z-index 설정 */
+    box-shadow: 0 0 10px rgba(0,0,0,0.5);
+    max-width: 90%;
+    max-height: 80%;
+    overflow-y: auto;
+}
+
+/* 모바일 화면에서 기록 섹션 크기 조정 */
+@media (max-width: 768px) {
+    #record-section {
+        width: 90%;
+        height: 80%;
+    }
+}
+2.1. 버튼과 record-section 간의 z-index 관계 확인
+버튼 (#view-record-button): z-index: 1003
+record-section: z-index: 1000
+이렇게 설정하면 record-section이 버튼 뒤에 위치하게 되어, 버튼이 항상 클릭 가능하도록 유지됩니다.
+
+3. 기타 CSS 점검 사항
+3.1. .hidden 클래스 확인
+기록 섹션과 다른 요소들을 숨길 때 사용하는 .hidden 클래스가 올바르게 설정되어 있는지 확인하세요.
+
+css
+코드 복사
+.hidden {
+    display: none !important;
+}
+3.2. 버튼의 터치 영역 확대 (모바일 터치 편의성)
+모바일에서는 버튼의 터치 영역이 충분히 커야 클릭이 용이합니다. 버튼의 패딩을 늘리거나 최소 크기를 설정하세요.
+
+css
+코드 복사
+#view-record-button {
+    padding: 12px 24px; /* 터치 영역 확대 */
+    font-size: 16px;
+}
+
+@media (max-width: 768px) {
+    #view-record-button {
+        padding: 10px 20px;
+        font-size: 14px;
+    }
+}
+4. HTML 구조 점검
+버튼과 기록 섹션이 올바르게 HTML에 정의되어 있는지 확인하세요. 특히, id가 정확히 일치하는지 점검해야 합니다.
+
+html
+코드 복사
+<!-- 게임 컨테이너 -->
+<div id="game-container" class="hidden">
+    <canvas id="game-canvas"></canvas>
+    <div id="score-display">시간: 0초</div>
+    <div id="controls">
+        <!-- 좌우 버튼을 제거했습니다 -->
+    </div>
+    <button id="view-record-button">기록 보기</button>
+    <div id="record-section" class="hidden">
+        <h2>게임 기록</h2>
+        <button id="close-record">닫기</button>
+        <ul id="record-list"></ul>
+    </div>
+    <button id="restart-button" class="hidden">다시 시작</button>
+</div>
+5. 디버깅 단계
+모바일 브라우저에서 개발자 도구 사용:
+
+Android (Chrome): Chrome 원격 디버깅을 설정하여 PC의 개발자 도구로 모바일 브라우저의 콘솔과 요소를 점검하세요.
+iOS (Safari): Safari Web Inspector를 사용하여 모바일 브라우저의 콘솔과 요소를 점검하세요.
+콘솔 로그 확인:
+
+"기록 보기" 버튼 클릭 시 JavaScript 콘솔에 기록 보기 버튼 클릭. 로그가 출력되는지 확인하세요.
+displayRecords 함수 내에서 오류가 발생하지 않는지 확인하세요.
+CSS 오버레이 확인:
+
+버튼 위에 투명한 요소가 겹쳐 있지 않은지 확인하세요.
+z-index를 조정하여 버튼이 항상 최상위에 위치하도록 설정하세요.
+버튼의 가시성 확인:
+
+모바일에서 "기록 보기" 버튼이 실제로 화면에 표시되는지, 혹은 크기가 너무 작거나 위치가 잘못되어 있는지 확인하세요.
+6. 최종 CSS 예시
+아래는 위의 모든 사항을 반영한 예시 CSS입니다. 필요에 따라 프로젝트에 맞게 조정하세요.
+
+css
+코드 복사
+/* 기본 스타일 */
+body, html {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    width: 100%;
+    overflow: hidden;
+    font-family: Arial, sans-serif;
+}
+
+/* 숨김 클래스 */
+.hidden {
+    display: none !important;
+}
+
+/* 게임 컨테이너 */
+#game-container {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    background-image: url('images/your-background-image.jpg'); /* 원하는 배경 이미지 경로 */
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    z-index: 1;
+}
+
+/* 캔버스 */
+#game-canvas {
+    display: block;
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 1;
+    background-color: transparent;
+}
+
+/* 점수 표시 */
+#score-display {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    z-index: 1002;
+    background-color: rgba(255, 255, 255, 0.8);
+    padding: 5px 10px;
+    border-radius: 5px;
+    font-size: 16px;
+}
+
+/* 컨트롤 */
+#controls {
+    position: absolute;
+    bottom: 10px;
+    left: 10px;
+    z-index: 1002;
+}
+
+/* "기록 보기" 버튼 */
+#view-record-button {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    z-index: 1003;
+    padding: 10px 20px;
+    font-size: 16px;
+    background-color: #ffcc00;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+/* 기록 섹션 */
+#record-section {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: rgba(255, 255, 255, 0.95);
+    padding: 20px;
+    border-radius: 10px;
+    z-index: 1000;
+    box-shadow: 0 0 10px rgba(0,0,0,0.5);
+    max-width: 90%;
+    max-height: 80%;
+    overflow-y: auto;
+}
+
+/* 모바일 화면에서 버튼 및 기록 섹션 조정 */
+@media (max-width: 768px) {
+    #view-record-button {
+        top: 5px;
+        right: 5px;
+        padding: 8px 16px;
+        font-size: 14px;
+    }
+
+    #record-section {
+        width: 90%;
+        height: auto;
+    }
+
+    #score-display {
+        font-size: 14px;
+    }    
 }
