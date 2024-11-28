@@ -33,12 +33,15 @@ section {
 }
 
 .card {
-    width: 300px;
-    height: 200px;
+    width: 80%;
+    max-width: 300px; /* 최대 너비 설정 */
+    aspect-ratio: 3 / 2; /* 3:2 비율 유지 */
     margin: 20px auto;
     perspective: 1000px;
     cursor: pointer;
     position: relative;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+    border-radius: 10px;
 }
 
 .card-face {
@@ -49,12 +52,13 @@ section {
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 24px;
+    font-size: 1.2em; /* 상대적인 글씨 크기 */
     border: 1px solid #ccc;
     border-radius: 10px;
     background-color: #fff;
-    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
     transition: transform 0.6s;
+    padding: 10px; /* 내부 여백 추가 */
+    box-sizing: border-box;
 }
 
 .front {
@@ -125,10 +129,11 @@ section {
 
 #options button {
     display: block;
-    width: 200px;
+    width: 80%;
+    max-width: 200px; /* 최대 너비 설정 */
     margin: 10px auto;
     padding: 10px;
-    font-size: 16px;
+    font-size: 1em; /* 상대적인 글씨 크기 */
     cursor: pointer;
     border: none;
     border-radius: 5px;
@@ -173,16 +178,17 @@ section {
 @media (max-width: 600px) {
     .card {
         width: 90%;
-        height: auto;
+        max-width: none; /* 최대 너비 제거 */
+        aspect-ratio: 4 / 3; /* 비율 조정 가능 */
     }
 
     .controls button, #options button, #nextQuestionBtn {
-        width: 80%;
+        width: 90%;
         font-size: 14px;
     }
 
     .selection-button {
-        width: 80%;
+        width: 90%;
         padding: 10px 20px;
         font-size: 16px;
     }
