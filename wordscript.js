@@ -56,13 +56,18 @@ async function loadWordData() {
         console.log("단어 데이터가 성공적으로 로드되었습니다.");
     } catch (error) {
         console.error("단어 데이터를 불러오는 데 실패했습니다:", error);
+        alert("단어 데이터를 불러오는 데 실패했습니다. 나중에 다시 시도해주세요.");
     }
 }
 
 // 초기 데이터 로드
 loadWordData().then(() => {
-    // 데이터 로드 후 초기화
-    initializeApp();
+    if (wordData.length > 0) {
+        // 데이터 로드 후 초기화
+        initializeApp();
+    } else {
+        console.error("wordData가 비어 있습니다.");
+    }
 });
 
 function initializeApp() {
