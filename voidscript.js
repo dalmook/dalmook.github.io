@@ -31,8 +31,13 @@ raindropLargeImg.src = 'images/raindrop_large.png'; // 큰 빗방울 이미지 �
 const umbrellaImg = new Image();
 umbrellaImg.src = 'images/umbrella.png'; // 우산 이미지 경로
 
-umbrellaImg.onload = () => imageLoaded();
-umbrellaImg.onerror = () => imageError("umbrella.png");
+umbrellaImg.onload = () => {
+    console.log("우산 이미지 로드 완료");
+    imageLoaded();
+};
+umbrellaImg.onerror = () => {
+    console.error("우산 이미지 로드 실패");
+};
 
 console.log("이미지 로드 시작.");
 
