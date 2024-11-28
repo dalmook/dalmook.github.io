@@ -113,9 +113,9 @@ document.getElementById('restart-button')?.addEventListener('click', () => {
     bgMusic.currentTime = 0;
     //bgMusic.play().then(() => {
      //   console.log("배경 음악 재생 시작.");
-    }).catch(error => {
+   // }).catch(error => {
         //console.error("배경 음악 재생 실패:", error);
-    });
+    //});
     isGameLoopRunning = false; // 게임 루프 플래그 초기화
     gameLoop();
 });
