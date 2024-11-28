@@ -36,7 +36,7 @@
 
     <!-- 단어 게임 섹션 -->
     <section id="word-game" style="display: none;">
-        <!-- <h2>단어 게임</h2> --> <!-- 단어 게임 제목 삭제 -->
+        <!-- 단어 게임 섹션 제목 삭제 -->
         <div class="game-settings">
             <label>난이도:</label>
             <button class="difficulty-button" data-difficulty="easy">Easy</button>
@@ -45,13 +45,21 @@
             <button id="back-to-selection-game">뒤로</button>
         </div>
 
+        <div class="game-mode-selection" style="display: none;">
+            <label>게임 방식:</label>
+            <button class="mode-button" data-mode="word-to-meaning">단어 → 뜻 선택</button>
+            <button class="mode-button" data-mode="meaning-to-word">뜻 → 단어 선택</button>
+        </div>
+
+        <button id="startGameBtn" class="hidden">게임 시작</button>
+
         <div class="game-area" id="game-area" style="display: none;">
             <div id="scoreDisplay">점수: 0</div>
             <div id="timer">남은 시간: 0초</div>
             <div id="question"></div>
             <div id="options"></div>
             <div id="feedback"></div>
-            <!-- <button id="nextQuestionBtn" style="display: none;">다음 문제</button> --> <!-- 다음 문제 버튼 삭제 -->
+            <!-- 다음 문제 버튼 삭제 -->
         </div>
     </section>
 
