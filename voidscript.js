@@ -357,11 +357,11 @@ async function displayRecords() {
         recordList.appendChild(li);
         console.log("기록 없음.");
     } else {
-        querySnapshot.forEach((doc, index) => {
+        querySnapshot.forEach((doc) => {
             const data = doc.data();
             const li = document.createElement('li');
             const date = data.timestamp.toDate().toLocaleString();
-            li.textContent = `${index + 1}. ${data.name} - ${data.score}초 - ${date}`;
+            li.textContent = `${data.name} - ${data.score}초 - ${date}`;
             recordList.appendChild(li);
             console.log(`기록 추가: ${li.textContent}`);
         });
