@@ -219,22 +219,6 @@ function checkAnswer(selected, correct, mode) {
     };
 }
 
-// 게임 초기화 함수
-function resetGame() {
-    gameArea.style.display = "none";
-    questionEl.textContent = "";
-    optionsEl.innerHTML = "";
-    feedbackEl.textContent = "";
-    nextQuestionBtn.style.display = "none";
-    clearInterval(timer);
-
-    // 점수 표시 제거
-    if (scoreDisplay) {
-        scoreDisplay.remove();
-        scoreDisplay = null;
-    }
-}
-
 // 애플리케이션 초기화 함수
 function initializeApp() {
     // 초기 선택 화면 버튼 이벤트
