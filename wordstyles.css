@@ -15,11 +15,11 @@ section {
     margin: 40px 0;
 }
 
-.selection-button, .difficulty-button {
+.selection-button, .difficulty-button, .mode-button {
     display: inline-block;
     margin: 10px 20px;
-    padding: 15px 30px;
-    font-size: 18px;
+    padding: 10px 20px;
+    font-size: 16px;
     cursor: pointer;
     border: none;
     border-radius: 8px;
@@ -28,8 +28,12 @@ section {
     transition: background-color 0.3s;
 }
 
-.selection-button:hover, .difficulty-button:hover {
+.selection-button:hover, .difficulty-button:hover, .mode-button:hover {
     background-color: #45a049;
+}
+
+.hidden {
+    display: none;
 }
 
 .card {
@@ -94,11 +98,11 @@ section {
     background-color: #007B9E;
 }
 
-.game-settings {
+.game-settings, .game-mode-selection {
     margin-bottom: 20px;
 }
 
-.game-settings label {
+.game-settings label, .game-mode-selection label {
     margin: 0 10px;
     font-size: 16px;
 }
@@ -158,8 +162,6 @@ section {
     color: green;
 }
 
-/* #nextQuestionBtn removed */
-
 /* 반응형 디자인 추가 */
 @media (max-width: 600px) {
     .card {
@@ -168,15 +170,10 @@ section {
         aspect-ratio: 3 / 2; /* 비율 유지 */
     }
 
-    .controls button, #options button {
+    .controls button, #options button, .selection-button, .difficulty-button, .mode-button {
         width: 90%;
         font-size: 14px;
-    }
-
-    .selection-button, .difficulty-button {
-        width: 90%;
-        padding: 10px 20px;
-        font-size: 16px;
+        padding: 10px 15px;
     }
 
     #question {
