@@ -440,7 +440,8 @@ body {
 
     .game-header {
         flex-wrap: nowrap; /* 줄바꿈 방지 */
-        justify-content: space-between; /* 제목과 버튼을 양쪽으로 배치 */
+        justify-content: center; /* 가운데 정렬 유지 */
+        gap: 5px; /* 제목과 버튼 사이 간격 더 줄이기 */
     }
     .controls {
         display: flex;
