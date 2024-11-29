@@ -5,6 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>영어 단어 학습 앱</title>
     <link rel="stylesheet" href="wordstyles.css">
+    <!-- Firebase SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js"></script>
 </head>
 <body>
     <!-- 초기 선택 화면 -->
@@ -15,6 +18,7 @@
     
     <!-- 낱말 카드 섹션 -->
     <section id="flashcards" style="display: none;">
+        <h2>낱말 카드</h2>
         <div class="card" id="card">
             <div class="card-face front" id="card-front">
                 <!-- 영어 단어가 표시됩니다 -->
@@ -53,46 +57,41 @@
             <div id="options"></div>
             <div id="feedback"></div>
         </div>
+
+        <!-- 기록 보기 버튼 추가 -->
+        <button id="viewRecordsBtn" class="selection-button">기록 보기</button>
     </section>
 
-    <!-- 이름 입력 팝업 창 -->
-    <div id="namePopup" class="popup hidden">
-        <div class="popup-content">
-            <h2>게임 종료!</h2>
-            <p>점수: <span id="finalScore">0</span>점</p>
-            <p>시간: <span id="finalTime">0</span>초</p>
-            <input type="text" id="playerName" placeholder="이름을 입력하세요">
+    <!-- 이름 입력 팝업 -->
+    <div id="namePopup" class="modal hidden">
+        <div class="modal-content">
+            <span class="close-button">&times;</span>
+            <h2>축하합니다!</h2>
+            <p>이름을 입력하고 점수를 기록하세요:</p>
+            <input type="text" id="playerName" placeholder="이름 입력">
             <button id="submitScoreBtn">제출</button>
         </div>
     </div>
 
-    <!-- 기록 보기 버튼 -->
-    <button id="viewRecordsBtn" class="selection-button">기록 보기</button>
-
-    <!-- 기록 보기 팝업 창 -->
-    <div id="recordsPopup" class="popup hidden">
-        <div class="popup-content">
+    <!-- 기록 보기 팝업 -->
+    <div id="recordsPopup" class="modal hidden">
+        <div class="modal-content">
+            <span class="close-button">&times;</span>
             <h2>게임 기록</h2>
             <table id="recordsTable">
                 <thead>
                     <tr>
                         <th>이름</th>
                         <th>점수</th>
-                        <th>시간(초)</th>
-                        <th>날짜</th>
+                        <th>기록 시간</th>
                     </tr>
                 </thead>
                 <tbody>
-                    <!-- 기록이 여기에 추가됩니다 -->
+                    <!-- 기록이 여기 표시됩니다 -->
                 </tbody>
             </table>
-            <button id="closeRecordsBtn">닫기</button>
         </div>
     </div>
-
-    <!-- Firebase SDK 추가 -->
-    <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js"></script>
 
     <script src="wordscript.js"></script>
 </body>
