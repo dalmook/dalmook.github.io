@@ -407,9 +407,24 @@ body {
 
 /* 반응형 디자인 */
 @media screen and (max-width: 600px) {
+    .controls {
+        display: flex;
+        justify-content: space-between; /* 버튼을 좌우로 정렬 */
+        align-items: center; /* 수직 가운데 정렬 */
+        margin-top: 20px; /* 카드와 버튼 사이 간격 추가 */
+    }
+
+    .controls button {
+        padding: 10px 15px; /* 버튼의 크기 조정 */
+        font-size: 14px; /* 버튼 텍스트 크기 조정 */
+        flex-grow: 1; /* 버튼이 균등하게 공간을 차지 */
+        max-width: 45%; /* 각 버튼의 최대 너비 제한 */
+        margin: 0 5px; /* 버튼 간의 간격 추가 */
+    }    
     .card {
         width: 90%;
         aspect-ratio: 3 / 2; /* 너비와 높이의 비율을 3:2로 설정 */
+        margin-bottom: 20px; /* 카드 하단에 여백 추가 */
     }
 
     #options button {
