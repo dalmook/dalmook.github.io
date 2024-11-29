@@ -259,13 +259,23 @@ function startGame(difficulty) {
 
     // 필터링된 단어 선택
     gameWords = wordData.filter(word => word.difficulty === difficulty);
-    if (gameWords.length < 4) {
+    if (gameWords.length < 20) {
         alert("선택한 난이도에 충분한 단어가 없습니다.");
         return;
     }
+    // 게임당 20개의 랜덤 단어 선택
+    gameWords = [];
+    const usedIndices = new Set(); // 이미 선택된 인덱스를 추적
+    while (gameWords.length < 20) {
+        const randomIndex = Math.floor(Math.random() * allWords.length);
+        if (!usedIndices.has(randomIndex)) {
+            gameWords.push(allWords[randomIndex]);
+            usedIndices.add(randomIndex);
+        }
+    }
 
     // 게임 초기화
-    usedIndices = [];
+    usedIndices.clear(); // 게임 중 중복 방지를 위한 인덱스 초기화
     gameArea.style.display = "block";
     feedbackEl.textContent = "";
     questionEl.textContent = "";
