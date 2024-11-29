@@ -15,26 +15,9 @@ h1 {
 section {
     margin: 40px 0;
 }
-/* 낱말 카드/단어 게임 버튼 스타일 */
-.selection-button {
-    display: inline-block;
-    margin: 10px 20px;
-    padding: 15px 30px;
-    font-size: 18px;
-    cursor: pointer;
-    border: none;
-    border-radius: 8px;
-    color: white;
-    background-color: #4CAF50; /* 기본 배경색 (녹색) */
-    transition: background-color 0.3s, transform 0.2s;
-}
-/* 호버(마우스 오버) 효과 */
-.selection-button:hover {
-    background-color: #45a049; /* 호버 시 배경색 */
-    transform: scale(1.05); /* 버튼 크기 확대 */
-}
+
 /* 선택 버튼 스타일 */
-.difficulty-button, .mode-button {
+.selection-button, .difficulty-button, .mode-button {
     display: inline-block;
     margin: 10px 20px;
     padding: 15px 30px;
@@ -273,6 +256,11 @@ section {
         padding: 12px 25px;
         font-size: 18px;
         margin: 10px 0;
+        background-color: #4CAF50; /* 녹색 */
+    }
+
+    .difficulty-button:hover {
+        background-color: #45a049;
     }
 
     /* 게임 시작 버튼 크기 조정 */
@@ -299,5 +287,17 @@ section {
         width: 90%;
         padding: 12px 25px;
         font-size: 18px;
+    }
+
+    /* 추가: 버튼 간격 및 레이아웃 최적화 */
+    .game-settings, .game-mode-selection, .controls {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .controls button {
+        width: 90%;
+        margin: 5px 0;
     }
 }
