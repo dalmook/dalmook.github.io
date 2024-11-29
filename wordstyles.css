@@ -253,9 +253,9 @@ section {
     /* 난이도 버튼 크기 및 간격 조정 */
     .difficulty-button {
         width: 90%;
-        padding: 12px 25px;
-        font-size: 18px;
-        margin: 10px 0;
+        padding: 5px 15px;
+        font-size: 10px;
+        margin: 5px 0;
         background-color: #4CAF50; /* 녹색 */
     }
 
