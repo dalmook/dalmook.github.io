@@ -115,7 +115,25 @@ section {
 .card.flipped .back {
     transform: rotateY(360deg);
 }
+/* 낱말 카드 섹션 설정 */
+.flashcard-settings {
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
 
+.flashcard-settings label {
+    margin-right: 10px;
+    font-size: 16px;
+}
+
+#flashcard-difficulty {
+    padding: 8px 12px;
+    font-size: 16px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
 /* 컨트롤 버튼 스타일 */
 .controls button {
     margin: 10px;
