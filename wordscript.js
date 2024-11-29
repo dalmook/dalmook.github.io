@@ -337,7 +337,8 @@ submitScoreBtn.addEventListener("click", () => {
     db.collection("gameRecords").add({
         name: playerName,
         score: score,
-        recordTime: recordTime
+        recordTime: recordTime,
+        difficulty: currentDifficulty // 난이도 정보 추가
     })
     .then(() => {
         alert("점수가 기록되었습니다!");
