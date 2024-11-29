@@ -34,7 +34,7 @@ section {
     transform: scale(1.05); /* 버튼 크기 확대 */
 }
 /* 선택 버튼 스타일 */
-.selection-button, .difficulty-button, .mode-button {
+.difficulty-button, .mode-button {
     display: inline-block;
     margin: 10px 20px;
     padding: 15px 30px;
