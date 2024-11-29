@@ -1,12 +1,14 @@
 /* wordscript.js */
 
-// 전역 변수
-let wordData = []; // JSON에서 불러올 데이터
-let currentCardIndex = 0;
-let score = 0;
-let scoreDisplay = null;
-let timer;
-let timeLimit = 5; // 기본 시간 (난이도에 따라 변경)
+// ====================
+// 전역 변수 선언
+// ====================
+
+// 낱말 카드 관련 변수
+let flashcardsWords = [];
+let currentFlashcardIndex = 0;
+
+// 단어 게임 관련 변수
 let gameWords = [];
 let currentQuestion = {};
 let usedIndices = [];
@@ -14,8 +16,24 @@ let currentMode = "word-to-meaning"; // 현재 게임 모드
 let currentDifficulty = "easy"; // 현재 선택된 난이도
 let currentQuestionCount = 0;   // 현재 질문 수
 const TOTAL_QUESTIONS = 20;      // 총 질문 수
+let score = 0;
+let scoreDisplay = null;
+let timer;
+let timeLimit = 5; // 기본 시간 (난이도에 따라 변경)
 
-// 낱말 카드 관련 요소
+// 단어 데이터
+let wordData = [];
+
+// ====================
+// DOM 요소 참조
+// ====================
+
+// 초기 선택 화면 관련 요소
+const selectionScreen = document.getElementById("selection-screen");
+const selectFlashcardsBtn = document.getElementById("select-flashcards");
+const selectWordgameBtn = document.getElementById("select-wordgame");
+
+// 낱말 카드 섹션 관련 요소
 const flashcardsSection = document.getElementById("flashcards");
 const card = document.getElementById("card");
 const cardFront = document.getElementById("card-front");
@@ -23,11 +41,11 @@ const cardBack = document.getElementById("card-back");
 const prevBtn = document.getElementById("prevBtn");
 const nextBtn = document.getElementById("nextBtn");
 const backToSelectionBtn = document.getElementById("back-to-selection");
-
-// 낱말 카드 난이도 선택 요소
 const flashcardDifficultySelect = document.getElementById("flashcard-difficulty");
+const speakBtn = document.getElementById("speakBtn");
+const progressBar = document.getElementById("progress-bar");
 
-// 단어 게임 섹션 관련 요소 (기존 코드 유지)
+// 단어 게임 섹션 관련 요소
 const wordGameSection = document.getElementById("word-game");
 const backToSelectionGameBtn = document.getElementById("back-to-selection-game");
 const difficultyButtons = document.querySelectorAll(".difficulty-button");
@@ -40,18 +58,22 @@ const feedbackEl = document.getElementById("feedback");
 const timerEl = document.getElementById("timer");
 const gameModeSelection = document.querySelector(".game-mode-selection");
 
-// 기록 보기 관련 요소 (기존 코드 유지)
+// 기록 보기 관련 요소
 const viewRecordsBtn = document.getElementById("viewRecordsBtn");
 const recordsPopup = document.getElementById("recordsPopup");
 const recordsTableBody = document.querySelector("#recordsTable tbody");
 
-// 이름 입력 팝업 관련 요소 (기존 코드 유지)
+// 이름 입력 팝업 관련 요소
 const namePopup = document.getElementById("namePopup");
 const closeButtons = document.querySelectorAll(".close-button");
 const submitScoreBtn = document.getElementById("submitScoreBtn");
 const playerNameInput = document.getElementById("playerName");
 
-// Firebase 초기화 (여기에 본인의 Firebase 구성 정보를 입력하세요)
+// ====================
+// Firebase 초기화
+// ====================
+
+// 본인의 Firebase 구성 정보로 교체하세요
 const firebaseConfig = {
     apiKey: "AIzaSyCqUAZGSffw--qgbjxWXJPDrexbewz-FiI", // Firebase 콘솔에서 확인
     authDomain: "engwordrecord.firebaseapp.com",
@@ -65,11 +87,10 @@ const firebaseConfig = {
 firebase.initializeApp(firebaseConfig);
 const db = firebase.firestore();
 
-// 추가 전역 변수: 낱말 카드 단어 목록 및 현재 인덱스
-let flashcardsWords = [];
-let currentFlashcardIndex = 0;
-
+// ====================
 // 데이터 로드 함수
+// ====================
+
 async function loadWordData() {
     try {
         const response = await fetch('word.json'); // word.json 파일 경로
@@ -84,7 +105,10 @@ async function loadWordData() {
     }
 }
 
-// 낱말 카드 초기화 함수
+// ====================
+// 낱말 카드 관련 함수
+// ====================
+
 function loadFlashcard(index) {
     if (flashcardsWords.length === 0) {
         console.error("flashcardsWords가 비어 있습니다.");
@@ -98,11 +122,14 @@ function loadFlashcard(index) {
     cardBack.textContent = data.meaning;
     flipCard(false);
 
+    // 진행 바 업데이트
+    const progressPercentage = ((index + 1) / flashcardsWords.length) * 100;
+    progressBar.style.width = `${progressPercentage}%`;
+
     // 영어 단어를 음성으로 읽어줌
     speakWord(data.word);
 }
 
-// 카드 플립 함수
 function flipCard(flip) {
     if (flip) {
         card.classList.add("flipped");
@@ -111,7 +138,6 @@ function flipCard(flip) {
     }
 }
 
-// 음성 재생 함수
 function speakWord(word) {
     if ('speechSynthesis' in window) {
         const utterance = new SpeechSynthesisUtterance(word);
@@ -122,13 +148,6 @@ function speakWord(word) {
     }
 }
 
-// 낱말 카드 난이도 선택 시 단어 로드
-flashcardDifficultySelect.addEventListener("change", () => {
-    const selectedDifficulty = flashcardDifficultySelect.value;
-    loadFlashcards(selectedDifficulty);
-});
-
-// 낱말 카드 단어 로드 함수
 function loadFlashcards(difficulty) {
     // 난이도별 단어 필터링
     const filteredWords = wordData.filter(word => word.difficulty === difficulty);
@@ -143,11 +162,13 @@ function loadFlashcards(difficulty) {
     // 현재 인덱스 초기화
     currentFlashcardIndex = 0;
 
+    // 진행 바 초기화
+    progressBar.style.width = '0%';
+
     // 첫 번째 카드 로드
     loadFlashcard(currentFlashcardIndex);
 }
 
-// 배열 섞기 함수 (Fisher-Yates 알고리즘)
 function shuffleArray(array) {
     let shuffled = array.slice(); // 배열 복사
     for (let i = shuffled.length - 1; i > 0; i--) {
@@ -157,84 +178,13 @@ function shuffleArray(array) {
     return shuffled;
 }
 
-// 이전 버튼 클릭 시
-prevBtn.addEventListener("click", () => {
-    if (currentFlashcardIndex > 0) {
-        currentFlashcardIndex--;
-        loadFlashcard(currentFlashcardIndex);
-    } else {
-        alert("첫 번째 카드입니다.");
-    }
-});
+// ====================
+// 단어 게임 관련 함수
+// ====================
 
-// 다음 버튼 클릭 시
-nextBtn.addEventListener("click", () => {
-    if (currentFlashcardIndex < flashcardsWords.length - 1) {
-        currentFlashcardIndex++;
-        loadFlashcard(currentFlashcardIndex);
-    } else {
-        alert("마지막 카드입니다.");
-    }
-});
-
-// 점수 업데이트 함수 (기존 코드 유지)
-function updateScore(points) {
-    score += points;
-    if (scoreDisplay) {
-        scoreDisplay.textContent = `점수: ${score}`;
-    }
-}
-
-// 타이머 시작 함수 (기존 코드 유지)
-function startTimer(seconds, onTimeout) {
-    clearInterval(timer); // 기존 타이머 초기화
-    let timeRemaining = seconds;
-
-    // 타이머 표시 업데이트
-    timerEl.textContent = `남은 시간: ${timeRemaining}초`;
-
-    timer = setInterval(() => {
-        timeRemaining--;
-        timerEl.textContent = `남은 시간: ${timeRemaining}초`;
-
-        if (timeRemaining <= 0) {
-            clearInterval(timer);
-            if (onTimeout) onTimeout();
-        }
-    }, 1000);
-}
-
-// 시간 초과 처리 함수 (기존 코드 유지)
-function handleTimeout() {
-    const difficulty = currentDifficulty;
-
-    let penalty = 0;
-    if (difficulty === "easy") penalty = -2;
-    else if (difficulty === "medium") penalty = -4;
-    else if (difficulty === "hard") penalty = -8;
-
-    feedbackEl.textContent = `시간 초과! -${Math.abs(penalty)}점`;
-    updateScore(penalty);
-
-    // 1초 후 다음 질문 로드
-    setTimeout(() => {
-        feedbackEl.textContent = "";
-        loadQuestion(currentMode);
-    }, 1000);
-}
-
-// 질문 로드 함수 (기존 코드 유지)
 function loadQuestion(mode) {
     if (currentQuestionCount >= TOTAL_QUESTIONS) {
-        feedbackEl.textContent = `게임이 종료되었습니다! 최종 점수: ${score}점`;
-        questionEl.textContent = "";
-        optionsEl.innerHTML = "";
-        timerEl.textContent = "";
-        clearInterval(timer);
-
-        // 이름 입력 팝업 열기
-        openNamePopup();
-
+        endGame();
         return;
     }
 
@@ -245,7 +195,7 @@ function loadQuestion(mode) {
 
     usedIndices.push(randomIndex);
     currentQuestion = gameWords[randomIndex];
-    currentQuestionCount++; // 질문 수 증가
+    currentQuestionCount++;
 
     console.log("새로운 질문 로드:", currentQuestion);
 
@@ -259,7 +209,6 @@ function loadQuestion(mode) {
     startTimer(timeLimit, handleTimeout);
 }
 
-// 옵션 생성 함수 (기존 코드 유지)
 function generateOptions(correctAnswer, mode) {
     const options = [correctAnswer];
     while (options.length < 4) {
@@ -286,7 +235,6 @@ function generateOptions(correctAnswer, mode) {
     });
 }
 
-// 정답 확인 함수
 function checkAnswer(selected, correct, mode) {
     clearInterval(timer); // 타이머 정지
 
@@ -346,7 +294,6 @@ function checkAnswer(selected, correct, mode) {
     }, 2000); // 2초로 증가
 }
 
-// 게임 시작 함수 (기존 코드 유지)
 function startGame(difficulty) {
     // 난이도별 시간 제한 설정 및 점수 초기화
     if (difficulty === "easy") {
@@ -396,75 +343,51 @@ function startGame(difficulty) {
     loadQuestion(currentMode);
 }
 
-// 게임 초기화 함수 (기존 코드 유지)
-function resetGame() {
-    gameArea.style.display = "none";
+function handleTimeout() {
+    const difficulty = currentDifficulty;
+
+    let penalty = 0;
+    if (difficulty === "easy") penalty = -2;
+    else if (difficulty === "medium") penalty = -4;
+    else if (difficulty === "hard") penalty = -8;
+
+    feedbackEl.textContent = `시간 초과! -${Math.abs(penalty)}점`;
+    updateScore(penalty);
+
+    // 2초 후 다음 질문 로드
+    setTimeout(() => {
+        feedbackEl.textContent = "";
+        loadQuestion(currentMode);
+    }, 2000);
+}
+
+function endGame() {
+    feedbackEl.textContent = `게임이 종료되었습니다! 최종 점수: ${score}점`;
     questionEl.textContent = "";
     optionsEl.innerHTML = "";
-    feedbackEl.textContent = "";
     timerEl.textContent = "";
     clearInterval(timer);
 
-    // 점수 표시 제거
+    // 이름 입력 팝업 열기
+    openNamePopup();
+}
+
+// ====================
+// 점수 관련 함수
+// ====================
+
+function updateScore(points) {
+    score += points;
     if (scoreDisplay) {
-        scoreDisplay.remove();
-        scoreDisplay = null;
+        scoreDisplay.textContent = `점수: ${score}`;
     }
-
-    // 게임 모드 선택 숨기기
-    gameModeSelection.style.display = "none";
-
-    // 게임 시작 버튼 숨기기
-    startGameBtn.classList.add("hidden");
 }
 
-// 모달 열기 함수 (기존 코드 유지)
-function openNamePopup() {
-    namePopup.classList.remove("hidden");
-    namePopup.style.display = "block";
-}
+// ====================
+// 기록 보기 관련 함수
+// ====================
 
-// 모달 닫기 함수 (기존 코드 유지)
-function closeModal() {
-    namePopup.classList.add("hidden");
-    namePopup.style.display = "none";
-    recordsPopup.classList.add("hidden");
-    recordsPopup.style.display = "none";
-}
-
-// 이름 제출 함수 (기존 코드 유지)
-submitScoreBtn.addEventListener("click", () => {
-    const playerName = playerNameInput.value.trim();
-    if (playerName === "") {
-        alert("이름을 입력해주세요.");
-        return;
-    }
-
-    // 현재 시간 기록
-    const recordTime = new Date().toLocaleString();
-
-    // Firestore에 데이터 저장
-    db.collection("gameRecords").add({
-        name: playerName,
-        score: score,
-        recordTime: recordTime,
-        difficulty: currentDifficulty // 난이도 정보 추가
-    })
-    .then(() => {
-        alert("점수가 기록되었습니다!");
-        namePopup.classList.add("hidden");
-        namePopup.style.display = "none";
-        playerNameInput.value = "";
-        resetGame();
-    })
-    .catch((error) => {
-        console.error("점수 기록에 실패했습니다: ", error);
-        alert("점수 기록에 실패했습니다. 다시 시도해주세요.");
-    });
-});
-
-// 기록 보기 버튼 클릭 시 (기존 코드 유지)
-viewRecordsBtn.addEventListener("click", () => {
+function viewRecords() {
     // Firestore에서 데이터 가져오기
     db.collection("gameRecords").orderBy("score", "desc").get()
     .then((querySnapshot) => {
@@ -505,16 +428,162 @@ viewRecordsBtn.addEventListener("click", () => {
         console.error("기록을 가져오는 데 실패했습니다: ", error);
         alert("기록을 가져오는 데 실패했습니다.");
     });
+}
+
+// ====================
+// 모달 관련 함수
+// ====================
+
+function openNamePopup() {
+    namePopup.classList.remove("hidden");
+    namePopup.style.display = "block";
+}
+
+function closeModal() {
+    namePopup.classList.add("hidden");
+    namePopup.style.display = "none";
+    recordsPopup.classList.add("hidden");
+    recordsPopup.style.display = "none";
+}
+
+// ====================
+// 이벤트 리스너 설정
+// ====================
+
+// 낱말 카드 난이도 선택 시 단어 로드
+flashcardDifficultySelect.addEventListener("change", () => {
+    const selectedDifficulty = flashcardDifficultySelect.value;
+    loadFlashcards(selectedDifficulty);
 });
 
-// 모달 닫기 버튼 클릭 시 (기존 코드 유지)
+// 낱말 카드 음성 재생 버튼 클릭 시
+speakBtn.addEventListener("click", () => {
+    const word = cardFront.textContent.trim();
+    speakWord(word);
+});
+
+// 낱말 카드 이전 버튼 클릭 시
+prevBtn.addEventListener("click", () => {
+    if (currentFlashcardIndex > 0) {
+        currentFlashcardIndex--;
+        loadFlashcard(currentFlashcardIndex);
+    } else {
+        alert("첫 번째 카드입니다.");
+    }
+});
+
+// 낱말 카드 다음 버튼 클릭 시
+nextBtn.addEventListener("click", () => {
+    if (currentFlashcardIndex < flashcardsWords.length - 1) {
+        currentFlashcardIndex++;
+        loadFlashcard(currentFlashcardIndex);
+    } else {
+        alert("마지막 카드입니다.");
+    }
+});
+
+// 낱말 카드 섹션 뒤로 가기 버튼 클릭 시
+backToSelectionBtn.addEventListener("click", () => {
+    console.log("뒤로 가기 버튼 클릭 (낱말 카드 섹션)");
+    flashcardsSection.style.display = "none";
+    selectionScreen.style.display = "block";
+});
+
+// 단어 게임 섹션 뒤로 가기 버튼 클릭 시
+backToSelectionGameBtn.addEventListener("click", () => {
+    console.log("뒤로 가기 버튼 클릭 (단어 게임 섹션)");
+    wordGameSection.style.display = "none";
+    selectionScreen.style.display = "block";
+    resetGame();
+});
+
+// 단어 게임 난이도 버튼 클릭 시
+difficultyButtons.forEach(button => {
+    button.addEventListener("click", () => {
+        const difficulty = button.getAttribute('data-difficulty');
+        currentDifficulty = difficulty;
+        // 모든 난이도 버튼에서 .selected 클래스 제거
+        difficultyButtons.forEach(btn => btn.classList.remove("selected"));
+        // 클릭된 버튼에 .selected 클래스 추가
+        button.classList.add("selected");
+        // 게임 모드 선택 섹션 표시
+        gameModeSelection.style.display = "flex";
+        // "게임 시작" 버튼 숨김
+        startGameBtn.classList.add("hidden");
+    });
+});
+
+// 단어 게임 모드 버튼 클릭 시
+modeButtons.forEach(button => {
+    button.addEventListener("click", () => {
+        const mode = button.getAttribute('data-mode');
+        currentMode = mode;
+        // 모든 모드 버튼에서 .selected 클래스 제거
+        modeButtons.forEach(btn => btn.classList.remove("selected"));
+        // 클릭된 버튼에 .selected 클래스 추가
+        button.classList.add("selected");
+        // "게임 시작" 버튼 표시
+        startGameBtn.classList.remove("hidden");
+    });
+});
+
+// 단어 게임 시작 버튼 클릭 시
+startGameBtn.addEventListener("click", () => {
+    if (!currentDifficulty) {
+        alert("난이도를 선택해주세요.");
+        return;
+    }
+    if (!currentMode) {
+        alert("게임 방식을 선택해주세요.");
+        return;
+    }
+    console.log("게임 시작 버튼 클릭");
+    startGame(currentDifficulty);
+});
+
+// 이름 제출 버튼 클릭 시
+submitScoreBtn.addEventListener("click", () => {
+    const playerName = playerNameInput.value.trim();
+    if (playerName === "") {
+        alert("이름을 입력해주세요.");
+        return;
+    }
+
+    // 현재 시간 기록
+    const recordTime = new Date().toLocaleString();
+
+    // Firestore에 데이터 저장
+    db.collection("gameRecords").add({
+        name: playerName,
+        score: score,
+        recordTime: recordTime,
+        difficulty: currentDifficulty // 난이도 정보 추가
+    })
+    .then(() => {
+        alert("점수가 기록되었습니다!");
+        closeModal();
+        playerNameInput.value = "";
+        resetGame();
+    })
+    .catch((error) => {
+        console.error("점수 기록에 실패했습니다: ", error);
+        alert("점수 기록에 실패했습니다. 다시 시도해주세요.");
+    });
+});
+
+// 기록 보기 버튼 클릭 시
+viewRecordsBtn.addEventListener("click", () => {
+    viewRecords();
+});
+
+// 모달 닫기 버튼 클릭 시
 closeButtons.forEach(button => {
     button.addEventListener("click", () => {
         closeModal();
     });
 });
 
-// 외부 클릭 시 모달 닫기 (기존 코드 유지)
+// 외부 클릭 시 모달 닫기
 window.addEventListener("click", (event) => {
     if (event.target === namePopup) {
         closeModal();
@@ -524,9 +593,14 @@ window.addEventListener("click", (event) => {
     }
 });
 
-// 애플리케이션 초기화 함수 (기존 코드 유지 및 수정)
+// ====================
+// 애플리케이션 초기화 함수
+// ====================
+
 function initializeApp() {
-    // 초기 선택 화면 버튼 이벤트
+    // 초기 선택 화면 버튼 이벤트 유지
+
+    // 낱말 카드 버튼 클릭 시
     selectFlashcardsBtn.addEventListener("click", () => {
         console.log("낱말 카드 버튼 클릭");
         selectionScreen.style.display = "none";
@@ -536,6 +610,7 @@ function initializeApp() {
         loadFlashcards("easy");
     });
 
+    // 단어 게임 버튼 클릭 시
     selectWordgameBtn.addEventListener("click", () => {
         console.log("단어 게임 버튼 클릭");
         selectionScreen.style.display = "none";
@@ -543,34 +618,37 @@ function initializeApp() {
         gameModeSelection.style.display = "flex"; // 게임 모드 선택 섹션 표시
     });
 
-    // 뒤로 가기 버튼 이벤트 (낱말 카드 섹션)
-    backToSelectionBtn.addEventListener("click", () => {
-        console.log("뒤로 가기 버튼 클릭 (낱말 카드 섹션)");
-        flashcardsSection.style.display = "none";
-        selectionScreen.style.display = "block";
-    });
-
-    // 뒤로 가기 버튼 이벤트 (단어 게임 섹션)
-    backToSelectionGameBtn.addEventListener("click", () => {
-        console.log("뒤로 가기 버튼 클릭 (단어 게임 섹션)");
-        wordGameSection.style.display = "none";
-        selectionScreen.style.display = "block";
-        resetGame();
-    });
-
-    // 카드 플립 기능
-    card.addEventListener("click", () => {
-        flipCard(!card.classList.contains("flipped"));
-    });
-
-    // 이전/다음 버튼 기능 유지 (이미 추가됨)
-
-    // 난이도 버튼 클릭 시 기존 코드 유지...
-
-    // 게임 모드 버튼 클릭 시 기존 코드 유지...
-
-    // 게임 시작 버튼 클릭 시 기존 코드 유지...
+    // 카드 플립 기능은 낱말 카드 섹션에서 이미 구현됨
 }
+
+// ====================
+// 게임 초기화 및 재설정 함수
+// ====================
+
+function resetGame() {
+    gameArea.style.display = "none";
+    questionEl.textContent = "";
+    optionsEl.innerHTML = "";
+    feedbackEl.textContent = "";
+    timerEl.textContent = "";
+    clearInterval(timer);
+
+    // 점수 표시 제거
+    if (scoreDisplay) {
+        scoreDisplay.remove();
+        scoreDisplay = null;
+    }
+
+    // 게임 모드 선택 숨기기
+    gameModeSelection.style.display = "none";
+
+    // 게임 시작 버튼 숨기기
+    startGameBtn.classList.add("hidden");
+}
+
+// ====================
+// 최종 초기화
+// ====================
 
 // 초기 데이터 로드 및 애플리케이션 초기화
 loadWordData().then(() => {
