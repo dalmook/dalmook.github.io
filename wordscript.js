@@ -17,12 +17,12 @@ let gameStartTime = 0; // 게임 시작 시간
 // Firebase 초기화
 // TODO: 여기에 Firebase 설정을 추가하세요
 const firebaseConfig = {
-    apiKey: "YOUR_API_KEY", // Firebase 콘솔에서 확인
-    authDomain: "YOUR_AUTH_DOMAIN",
-    projectId: "YOUR_PROJECT_ID",
-    storageBucket: "YOUR_STORAGE_BUCKET",
-    messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
-    appId: "YOUR_APP_ID"
+    apiKey: "AIzaSyCqUAZGSffw--qgbjxWXJPDrexbewz-FiI", // Firebase 콘솔에서 확인
+    authDomain: "engwordrecord.firebaseapp.com",
+    projectId: "engwordrecord",
+    storageBucket: "engwordrecord.firebasestorage.app",
+    messagingSenderId: "1871312101",
+    appId: "1:1871312101:web:875bb35f925e8c52bd900c"
 };
 
 // Firebase 초기화
