@@ -409,7 +409,7 @@ body {
 @media screen and (max-width: 600px) {
     .card {
         width: 90%;
-        height: auto;
+        aspect-ratio: 3 / 2; /* 너비와 높이의 비율을 3:2로 설정 */
     }
 
     #options button {
