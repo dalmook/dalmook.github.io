@@ -363,14 +363,22 @@ viewRecordsBtn.addEventListener("click", () => {
             const data = doc.data();
             const row = document.createElement("tr");
 
+            // 난이도 셀 추가
+            const difficultyCell = document.createElement("td");
+            difficultyCell.textContent = data.difficulty.charAt(0).toUpperCase() + data.difficulty.slice(1); // 첫 글자 대문자
+            row.appendChild(difficultyCell);
+
+            // 이름 셀
             const nameCell = document.createElement("td");
             nameCell.textContent = data.name;
             row.appendChild(nameCell);
 
+            // 점수 셀
             const scoreCell = document.createElement("td");
             scoreCell.textContent = data.score;
             row.appendChild(scoreCell);
 
+            // 기록 시간 셀
             const timeCell = document.createElement("td");
             timeCell.textContent = data.recordTime;
             row.appendChild(timeCell);
