@@ -1,5 +1,6 @@
 /* wordstyles.css */
 
+/* 기본 스타일 설정 */
 body {
     font-family: Arial, sans-serif;
     text-align: center;
@@ -14,7 +15,6 @@ h1 {
 section {
     margin: 40px 0;
 }
-
 .selection-button {
     display: inline-block;
     margin: 10px 20px;
@@ -23,22 +23,63 @@ section {
     cursor: pointer;
     border: none;
     border-radius: 8px;
-    background-color: #4CAF50;
     color: white;
-    transition: background-color 0.3s;
+    background-color: #4CAF50; /* 기본 배경색 (녹색) */
+    transition: background-color 0.3s, transform 0.2s;
+}
+/* 선택 버튼 스타일 */
+.difficulty-button, .mode-button {
+    display: inline-block;
+    margin: 10px 20px;
+    padding: 15px 30px;
+    font-size: 18px;
+    cursor: pointer;
+    border: none;
+    border-radius: 8px;
+    color: white;
+    transition: background-color 0.3s, transform 0.2s;
 }
 
-.selection-button:hover {
+/* 난이도 버튼 색상 */
+.difficulty-button {
+    background-color: #4CAF50; /* 녹색 */
+}
+
+.difficulty-button:hover {
     background-color: #45a049;
 }
 
+/* 게임 방식 버튼 색상 */
+.mode-button {
+    background-color: #2196F3; /* 파란색 */
+}
+
+.mode-button:hover {
+    background-color: #1e88e5;
+}
+
+/* 선택된 버튼 스타일 */
+.selected {
+    background-color: #FF5722 !important; /* 선택 시 주황색 */
+    transform: scale(1.05);
+}
+
+/* 숨김 클래스 */
+.hidden {
+    display: none;
+}
+
+/* 낱말 카드 스타일 */
 .card {
-    width: 300px;
-    height: 200px;
+    width: 80%;
+    max-width: 300px; /* 최대 너비 설정 */
+    aspect-ratio: 3 / 2; /* 3:2 비율 유지 */
     margin: 20px auto;
     perspective: 1000px;
     cursor: pointer;
     position: relative;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+    border-radius: 10px;
 }
 
 .card-face {
@@ -49,12 +90,13 @@ section {
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 24px;
+    font-size: 1.2em; /* 상대적인 글씨 크기 */
     border: 1px solid #ccc;
     border-radius: 10px;
     background-color: #fff;
-    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
-    transition: transform 0.3s; /* 애니메이션 속도 조절 */
+    transition: transform 0.6s;
+    padding: 10px; /* 내부 여백 추가 */
+    box-sizing: border-box;
 }
 
 .front {
@@ -73,7 +115,26 @@ section {
 .card.flipped .back {
     transform: rotateY(360deg);
 }
+/* 낱말 카드 섹션 설정 */
+.flashcard-settings {
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
 
+.flashcard-settings label {
+    margin-right: 10px;
+    font-size: 16px;
+}
+
+#flashcard-difficulty {
+    padding: 8px 12px;
+    font-size: 16px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+/* 컨트롤 버튼 스타일 */
 .controls button {
     margin: 10px;
     padding: 10px 20px;
@@ -83,22 +144,45 @@ section {
     border-radius: 5px;
     background-color: #008CBA;
     color: white;
-    transition: background-color 0.3s;
+    transition: background-color 0.3s, transform 0.2s;
 }
 
 .controls button:hover {
     background-color: #007B9E;
 }
 
-.game-settings {
+/* 게임 설정 및 게임 모드 선택 섹션 스타일 */
+.game-settings, .game-mode-selection {
     margin-bottom: 20px;
 }
 
-.game-settings label, .game-settings select {
+.game-settings label, .game-mode-selection label {
     margin: 0 10px;
     font-size: 16px;
 }
 
+/* 게임 시작 버튼 스타일 */
+#startGameBtn {
+    margin-top: 20px;
+    padding: 12px 25px;
+    font-size: 18px;
+    cursor: pointer;
+    border: none;
+    border-radius: 8px;
+    background-color: #FF9800;
+    color: white;
+    transition: background-color 0.3s, transform 0.2s;
+}
+
+#startGameBtn:hover {
+    background-color: #e68900;
+}
+
+#startGameBtn.selected {
+    background-color: #E65100;
+}
+
+/* 게임 영역 스타일 */
 .game-area {
     margin-top: 20px;
 }
@@ -107,6 +191,12 @@ section {
     font-size: 20px;
     margin-bottom: 10px;
     font-weight: bold;
+}
+
+#timer {
+    font-size: 18px;
+    margin-top: 10px;
+    color: #ff0000;
 }
 
 #question {
@@ -125,16 +215,17 @@ section {
 
 #options button {
     display: block;
-    width: 200px;
+    width: 80%;
+    max-width: 200px; /* 최대 너비 설정 */
     margin: 10px auto;
     padding: 10px;
-    font-size: 16px;
+    font-size: 1em; /* 상대적인 글씨 크기 */
     cursor: pointer;
     border: none;
     border-radius: 5px;
     background-color: #f44336;
     color: white;
-    transition: background-color 0.3s;
+    transition: background-color 0.3s, transform 0.2s;
 }
 
 #options button:hover {
@@ -147,52 +238,181 @@ section {
     color: green;
 }
 
-#nextQuestionBtn {
-    margin-top: 20px;
-    padding: 10px 20px;
-    font-size: 16px;
+/* 모달 팝업 스타일 */
+.modal {
+    display: none; /* 숨김 상태 */
+    position: fixed; /* 고정 위치 */
+    z-index: 1; /* 최상위 */
+    left: 0;
+    top: 0;
+    width: 100%; /* 전체 너비 */
+    height: 100%; /* 전체 높이 */
+    overflow: auto; /* 스크롤 가능 */
+    background-color: rgba(0,0,0,0.4); /* 반투명 배경 */
+}
+
+.modal-content {
+    background-color: #fefefe;
+    margin: 15% auto; /* 중앙에 위치 */
+    padding: 20px;
+    border: 1px solid #888;
+    width: 80%; /* 너비 */
+    max-width: 400px; /* 최대 너비 */
+    border-radius: 10px;
+    text-align: center;
+}
+
+.close-button {
+    color: #aaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
     cursor: pointer;
-    border: none;
-    border-radius: 5px;
-    background-color: #555555;
+}
+
+.close-button:hover,
+.close-button:focus {
+    color: black;
+    text-decoration: none;
+}
+
+/* 기록 테이블 스타일 */
+#recordsTable {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+}
+
+#recordsTable th, #recordsTable td {
+    border: 1px solid #ddd;
+    padding: 8px;
+}
+
+#recordsTable th {
+    background-color: #f2f2f2;
+    color: black;
+}
+/* 정답 표시 스타일 */
+.correct-answer {
+    background-color: #4CAF50 !important; /* 녹색 */
     color: white;
-    transition: background-color 0.3s;
+    border: 2px solid #388E3C;
 }
 
-#nextQuestionBtn:hover {
-    background-color: #333333;
+/* 오답 표시 스타일 */
+.incorrect-answer {
+    background-color: #F44336 !important; /* 빨간색 */
+    color: white;
+    border: 2px solid #D32F2F;
 }
 
-#timer {
-    font-size: 18px;
-    margin-top: 10px;
-    color: #ff0000;
+/* 버튼 비활성화 스타일 (선택 사항) */
+.options button:disabled {
+    cursor: not-allowed;
+    opacity: 0.6;
 }
-
-/* 반응형 디자인 추가 */
 @media (max-width: 600px) {
+    /* 낱말 카드 크기 조정 */
     .card {
         width: 90%;
-        height: auto;
+        max-width: none; /* 최대 너비 제거 */
+        aspect-ratio: 3 / 2; /* 비율 유지 */
     }
 
-    .controls button, #options button, #nextQuestionBtn {
-        width: 80%;
-        font-size: 14px;
+    /* 게임 설정 및 게임 모드 선택 섹션 레이아웃 조정 */
+    .game-settings, .game-mode-selection {
+        margin-bottom: 15px;
     }
 
-    .selection-button {
-        width: 80%;
-        padding: 10px 20px;
-        font-size: 16px;
+    /* 게임 모드 선택 섹션 스타일 조정 */
+    .game-mode-selection {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        margin-top: 5px;
     }
 
+    /* 게임 모드 버튼 스타일 조정 */
+    .mode-button {
+        width: 90%;
+        max-width: 200px;
+        margin: 5px 0;
+        padding: 7px 14px;
+        font-size: 12px;
+        cursor: pointer;
+        border: none;
+        border-radius: 8px;
+        background-color: #2196F3; /* 파란색 */
+        color: white;
+        transition: background-color 0.3s, transform 0.2s;
+    }
+
+    .mode-button:hover {
+        background-color: #1e88e5;
+    }
+
+    /* 난이도 버튼 크기 및 간격 조정 */
+    .difficulty-button {
+        width: 90%;
+        padding: 7px 14px;
+        font-size: 12px;
+        margin: 5px 0;
+        background-color: #4CAF50; /* 녹색 */
+    }
+
+    .difficulty-button:hover {
+        background-color: #45a049;
+    }
+
+    /* 게임 시작 버튼 크기 조정 */
+    #startGameBtn {
+        margin-top: 5px;
+        width: 90%;
+        padding: 7px 14px;
+        font-size: 12px;
+    }
+
+    /* 질문 영역 및 옵션 버튼 크기 조정 */
     #question {
         width: 95%;
         font-size: 1em;
     }
 
-    #timer {
+    #options button {
+        width: 90%;
         font-size: 16px;
+        padding: 12px;
+    }
+
+    /* 선택 버튼 크기 조정 */
+    .selection-button {
+        width: 90%;
+        padding: 7px 14px;
+        font-size: 14px;
+    }
+
+    /* 추가: 버튼 간격 및 레이아웃 최적화 */
+    .game-settings, .game-mode-selection, .controls {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .controls button {
+        width: 90%;
+        margin: 5px 0;
+    }
+
+    /* 모달 내용 크기 조정 */
+    .modal-content {
+        width: 90%;
+        max-width: 300px;
+        margin: 30% auto;
+    }
+
+    /* 기록 테이블 글씨 크기 조정 */
+    #recordsTable th, #recordsTable td {
+        padding: 6px;
+        font-size: 14px;
     }
 }
