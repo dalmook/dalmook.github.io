@@ -94,6 +94,8 @@ body {
     font-size: 24px;
     background-color: white;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    padding: 10px;
+    box-sizing: border-box;
 }
 
 .card-face.front {
@@ -105,11 +107,11 @@ body {
 }
 
 /* 카드 뒤집기 효과 */
-.flipped .front {
+.card.flipped .front {
     transform: rotateY(180deg);
 }
 
-.flipped .back {
+.card.flipped .back {
     transform: rotateY(360deg);
 }
 
@@ -194,11 +196,21 @@ body {
     margin-bottom: 20px;
 }
 
-#question {
+#question.quiz-card {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: white; /* 흰색 배경 추가 */
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    margin: 0 auto 20px auto;
+    width: 80%;
+    min-height: 60px;
     font-size: 22px;
-    margin-bottom: 20px;
 }
 
+/* 옵션 버튼 스타일 */
 #options {
     display: flex;
     flex-direction: column;
@@ -360,6 +372,10 @@ body {
     }
 
     .modal-content {
+        width: 90%;
+    }
+
+    #question.quiz-card {
         width: 90%;
     }
 }
