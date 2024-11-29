@@ -142,6 +142,8 @@ function speakWord(word) {
     if ('speechSynthesis' in window) {
         const utterance = new SpeechSynthesisUtterance(word);
         utterance.lang = 'en-US'; // 영어 발음 설정
+        utterance.rate = 1; // 속도 (0.1 ~ 10)
+        utterance.pitch = 1; // 음의 높낮이 (0 ~ 2)
         window.speechSynthesis.speak(utterance);
     } else {
         console.warn("이 브라우저는 음성 합성을 지원하지 않습니다.");
@@ -156,8 +158,8 @@ function loadFlashcards(difficulty) {
         return;
     }
 
-    // 단어를 랜덤하게 섞은 후 상위 20개 선택
-    flashcardsWords = shuffleArray(filteredWords).slice(0, 20);
+    // 모든 단어를 랜덤하게 섞고, 전체 단어를 무한히 순환하도록 설정
+    flashcardsWords = shuffleArray(filteredWords);
 
     // 현재 인덱스 초기화
     currentFlashcardIndex = 0;
@@ -468,7 +470,9 @@ prevBtn.addEventListener("click", () => {
         currentFlashcardIndex--;
         loadFlashcard(currentFlashcardIndex);
     } else {
-        alert("첫 번째 카드입니다.");
+        // 마지막 카드에서 다시 처음 카드로 순환
+        currentFlashcardIndex = flashcardsWords.length - 1;
+        loadFlashcard(currentFlashcardIndex);
     }
 });
 
@@ -478,7 +482,9 @@ nextBtn.addEventListener("click", () => {
         currentFlashcardIndex++;
         loadFlashcard(currentFlashcardIndex);
     } else {
-        alert("마지막 카드입니다.");
+        // 마지막 카드에서 다시 처음 카드로 순환
+        currentFlashcardIndex = 0;
+        loadFlashcard(currentFlashcardIndex);
     }
 });
 
@@ -618,7 +624,10 @@ function initializeApp() {
         gameModeSelection.style.display = "flex"; // 게임 모드 선택 섹션 표시
     });
 
-    // 카드 플립 기능은 낱말 카드 섹션에서 이미 구현됨
+    // 카드 플립 기능
+    card.addEventListener("click", () => {
+        flipCard(!card.classList.contains("flipped"));
+    });
 }
 
 // ====================
