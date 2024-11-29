@@ -305,7 +305,7 @@ function checkAnswer(selected, correct, mode) {
             button.disabled = false; // 버튼 활성화
         });
         loadQuestion(mode);
-    }, 2000); // 2초로 증가
+    }, 1000); // 2초로 증가
 }
 
 function startGame(difficulty) {
@@ -365,14 +365,33 @@ function handleTimeout() {
     else if (difficulty === "medium") penalty = -4;
     else if (difficulty === "hard") penalty = -8;
 
+    // 모든 옵션 버튼을 비활성화
+    const optionButtons = optionsEl.querySelectorAll('button');
+    optionButtons.forEach(button => {
+        button.disabled = true;
+    });
+
+    // 정답 버튼 찾기 및 'correct-answer' 클래스 추가
+    optionButtons.forEach(button => {
+        const answer = currentMode === "word-to-meaning" ? currentQuestion.meaning : currentQuestion.word;
+        if (button.textContent === answer) {
+            button.classList.add("correct-answer");
+        }
+    });
+    
     feedbackEl.textContent = `시간 초과! -${Math.abs(penalty)}점`;
     updateScore(penalty);
 
-    // 2초 후 다음 질문 로드
+    // 2초 후 다음 질문 로드 (사용자가 결과를 확인할 시간 확보)
     setTimeout(() => {
         feedbackEl.textContent = "";
+        // 모든 버튼의 정답/오답 클래스 제거
+        optionButtons.forEach(button => {
+            button.classList.remove("correct-answer", "incorrect-answer");
+            button.disabled = false; // 버튼 활성화
+        });
         loadQuestion(currentMode);
-    }, 2000);
+    }, 2000); // 2초 후 다음 질문으로 이동
 }
 
 function endGame() {
