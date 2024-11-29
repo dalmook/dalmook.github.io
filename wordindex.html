@@ -30,6 +30,11 @@
             </select>
         </div>
         
+        <!-- 진행 바 추가 -->
+        <div id="progress-bar-container">
+            <div id="progress-bar"></div>
+        </div>
+        
         <div class="card" id="card">
             <div class="card-face front" id="card-front">
                 <!-- 영어 단어가 표시됩니다 -->
@@ -53,59 +58,4 @@
             <button class="difficulty-button" data-difficulty="medium">Medium</button>
             <button class="difficulty-button" data-difficulty="hard">Hard</button>
             <button id="back-to-selection-game">뒤로</button>
-        </div>
-
-        <div class="game-mode-selection" style="display: none;">
-            <button class="mode-button" data-mode="word-to-meaning">단어 → 뜻</button>
-            <button class="mode-button" data-mode="meaning-to-word">뜻 → 단어</button>
-        </div>
-
-        <button id="startGameBtn" class="hidden">게임 시작</button>
-
-        <div class="game-area" id="game-area" style="display: none;">
-            <div id="scoreDisplay">점수: 0</div>
-            <div id="timer">남은 시간: 0초</div>
-            <div id="question"></div>
-            <div id="options"></div>
-            <div id="feedback"></div>
-        </div>
-
-        <!-- 기록 보기 버튼 추가 -->
-        <button id="viewRecordsBtn" class="selection-button">기록 보기</button>
-    </section>
-
-    <!-- 이름 입력 팝업 -->
-    <div id="namePopup" class="modal hidden">
-        <div class="modal-content">
-            <span class="close-button">&times;</span>
-            <h2>축하합니다!</h2>
-            <p>이름을 입력하고 점수를 기록하세요:</p>
-            <input type="text" id="playerName" placeholder="이름 입력">
-            <button id="submitScoreBtn">제출</button>
-        </div>
-    </div>
-
-    <!-- 기록 보기 팝업 -->
-    <div id="recordsPopup" class="modal hidden">
-        <div class="modal-content">
-            <span class="close-button">&times;</span>
-            <h2>게임 기록</h2>
-            <table id="recordsTable">
-                <thead>
-                    <tr>
-                        <th>난이도</th> <!-- 난이도 열 추가 -->
-                        <th>이름</th>
-                        <th>점수</th>
-                        <th>기록 시간</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <!-- 기록이 여기 표시됩니다 -->
-                </tbody>
-            </table>
-        </div>
-    </div>
-
-    <script src="wordscript.js"></script>
-</body>
-</html>
+        </div
