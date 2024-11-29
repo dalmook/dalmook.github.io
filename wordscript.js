@@ -12,22 +12,6 @@ let currentQuestion = {};
 let usedIndices = [];
 let currentMode = "word-to-meaning"; // 현재 게임 모드
 let currentDifficulty = "easy"; // 현재 선택된 난이도
-let gameStartTime = 0; // 게임 시작 시간
-
-// Firebase 초기화
-// TODO: 여기에 Firebase 설정을 추가하세요
-const firebaseConfig = {
-    apiKey: "AIzaSyCqUAZGSffw--qgbjxWXJPDrexbewz-FiI", // Firebase 콘솔에서 확인
-    authDomain: "engwordrecord.firebaseapp.com",
-    projectId: "engwordrecord",
-    storageBucket: "engwordrecord.firebasestorage.app",
-    messagingSenderId: "1871312101",
-    appId: "1:1871312101:web:875bb35f925e8c52bd900c"
-};
-
-// Firebase 초기화
-firebase.initializeApp(firebaseConfig);
-const db = firebase.firestore();
 
 // 초기 선택 화면 관련 요소
 const selectionScreen = document.getElementById("selection-screen");
@@ -56,16 +40,30 @@ const feedbackEl = document.getElementById("feedback");
 const timerEl = document.getElementById("timer");
 const gameModeSelection = document.querySelector(".game-mode-selection");
 
-// 팝업 관련 요소
-const namePopup = document.getElementById("namePopup");
-const finalScoreEl = document.getElementById("finalScore");
-const finalTimeEl = document.getElementById("finalTime");
-const playerNameInput = document.getElementById("playerName");
-const submitScoreBtn = document.getElementById("submitScoreBtn");
+// 기록 보기 관련 요소
 const viewRecordsBtn = document.getElementById("viewRecordsBtn");
 const recordsPopup = document.getElementById("recordsPopup");
 const recordsTableBody = document.querySelector("#recordsTable tbody");
-const closeRecordsBtn = document.getElementById("closeRecordsBtn");
+
+// 이름 입력 팝업 관련 요소
+const namePopup = document.getElementById("namePopup");
+const closeButtons = document.querySelectorAll(".close-button");
+const submitScoreBtn = document.getElementById("submitScoreBtn");
+const playerNameInput = document.getElementById("playerName");
+
+// Firebase 초기화 (여기에 본인의 Firebase 구성 정보를 입력하세요)
+const firebaseConfig = {
+    apiKey: "AIzaSyCqUAZGSffw--qgbjxWXJPDrexbewz-FiI", // Firebase 콘솔에서 확인
+    authDomain: "engwordrecord.firebaseapp.com",
+    projectId: "engwordrecord",
+    storageBucket: "engwordrecord.firebasestorage.app",
+    messagingSenderId: "1871312101",
+    appId: "1:1871312101:web:875bb35f925e8c52bd900c"
+};
+
+// Firebase 초기화
+firebase.initializeApp(firebaseConfig);
+const db = firebase.firestore();
 
 // 데이터 로드 함수
 async function loadWordData() {
@@ -159,8 +157,9 @@ function loadQuestion(mode) {
         timerEl.textContent = "";
         clearInterval(timer);
 
-        // 게임 종료 시 이름 입력 팝업 표시
-        showNamePopup();
+        // 이름 입력 팝업 열기
+        openNamePopup();
+
         return;
     }
 
@@ -273,9 +272,6 @@ function startGame(difficulty) {
     optionsEl.innerHTML = "";
     timerEl.textContent = "";
 
-    // 게임 시작 시간 기록
-    gameStartTime = Date.now();
-
     // 점수 표시 초기화
     scoreDisplay = document.getElementById("scoreDisplay");
     if (!scoreDisplay) {
@@ -312,92 +308,100 @@ function resetGame() {
     startGameBtn.classList.add("hidden");
 }
 
-// 이름 입력 팝업 표시 함수
-function showNamePopup() {
-    // 최종 점수 및 시간 계산
-    const finalTime = Math.floor((Date.now() - gameStartTime) / 1000);
-    finalScoreEl.textContent = score;
-    finalTimeEl.textContent = finalTime;
-
-    // 팝업 표시
+// 모달 열기 함수
+function openNamePopup() {
     namePopup.classList.remove("hidden");
+    namePopup.style.display = "block";
 }
 
-// 점수 제출 함수
-function submitScore() {
+// 모달 닫기 함수
+function closeModal() {
+    namePopup.classList.add("hidden");
+    namePopup.style.display = "none";
+    recordsPopup.classList.add("hidden");
+    recordsPopup.style.display = "none";
+}
+
+// 이름 제출 함수
+submitScoreBtn.addEventListener("click", () => {
     const playerName = playerNameInput.value.trim();
     if (playerName === "") {
         alert("이름을 입력해주세요.");
         return;
     }
 
-    const finalTime = Math.floor((Date.now() - gameStartTime) / 1000);
+    // 현재 시간 기록
+    const recordTime = new Date().toLocaleString();
 
-    // Firestore에 데이터 추가
-    db.collection("scores").add({
+    // Firestore에 데이터 저장
+    db.collection("gameRecords").add({
         name: playerName,
         score: score,
-        time: finalTime,
-        date: new Date()
+        recordTime: recordTime
     })
     .then(() => {
         alert("점수가 기록되었습니다!");
-        // 팝업 숨기기
         namePopup.classList.add("hidden");
-        // 게임 초기화
+        namePopup.style.display = "none";
+        playerNameInput.value = "";
         resetGame();
-        // 초기 선택 화면으로 돌아가기
-        selectionScreen.style.display = "block";
     })
     .catch((error) => {
         console.error("점수 기록에 실패했습니다: ", error);
-        alert("점수 기록에 실패했습니다. 나중에 다시 시도해주세요.");
+        alert("점수 기록에 실패했습니다. 다시 시도해주세요.");
     });
-}
+});
 
-// 기록 보기 팝업 표시 함수
-function showRecords() {
+// 기록 보기 버튼 클릭 시
+viewRecordsBtn.addEventListener("click", () => {
     // Firestore에서 데이터 가져오기
-    db.collection("scores").orderBy("score", "desc").limit(10).get()
+    db.collection("gameRecords").orderBy("score", "desc").get()
     .then((querySnapshot) => {
         recordsTableBody.innerHTML = ""; // 기존 기록 초기화
         querySnapshot.forEach((doc) => {
             const data = doc.data();
-            const tr = document.createElement("tr");
+            const row = document.createElement("tr");
 
-            const nameTd = document.createElement("td");
-            nameTd.textContent = data.name;
-            tr.appendChild(nameTd);
+            const nameCell = document.createElement("td");
+            nameCell.textContent = data.name;
+            row.appendChild(nameCell);
 
-            const scoreTd = document.createElement("td");
-            scoreTd.textContent = data.score;
-            tr.appendChild(scoreTd);
+            const scoreCell = document.createElement("td");
+            scoreCell.textContent = data.score;
+            row.appendChild(scoreCell);
 
-            const timeTd = document.createElement("td");
-            timeTd.textContent = data.time;
-            tr.appendChild(timeTd);
+            const timeCell = document.createElement("td");
+            timeCell.textContent = data.recordTime;
+            row.appendChild(timeCell);
 
-            const dateTd = document.createElement("td");
-            const date = data.date.toDate();
-            dateTd.textContent = `${date.getFullYear()}-${(date.getMonth()+1).toString().padStart(2,'0')}-${date.getDate().toString().padStart(2,'0')} ${date.getHours().toString().padStart(2,'0')}:${date.getMinutes().toString().padStart(2,'0')}`;
-            tr.appendChild(dateTd);
-
-            recordsTableBody.appendChild(tr);
+            recordsTableBody.appendChild(row);
         });
 
-        // 기록 보기 팝업 표시
         recordsPopup.classList.remove("hidden");
+        recordsPopup.style.display = "block";
     })
     .catch((error) => {
-        console.error("기록을 불러오는 데 실패했습니다: ", error);
-        alert("기록을 불러오는 데 실패했습니다. 나중에 다시 시도해주세요.");
+        console.error("기록을 가져오는 데 실패했습니다: ", error);
+        alert("기록을 가져오는 데 실패했습니다.");
     });
-}
+});
 
-// 기록 보기 팝업 닫기 함수
-function closeRecords() {
-    recordsPopup.classList.add("hidden");
-}
+// 모달 닫기 버튼 클릭 시
+closeButtons.forEach(button => {
+    button.addEventListener("click", () => {
+        closeModal();
+    });
+});
+
+// 외부 클릭 시 모달 닫기
+window.addEventListener("click", (event) => {
+    if (event.target === namePopup) {
+        closeModal();
+    }
+    if (event.target === recordsPopup) {
+        closeModal();
+    }
+});
 
 // 애플리케이션 초기화 함수
 function initializeApp() {
@@ -490,15 +494,6 @@ function initializeApp() {
         console.log("게임 시작 버튼 클릭");
         startGame(currentDifficulty);
     });
-
-    // 이름 입력 제출 버튼 클릭 시
-    submitScoreBtn.addEventListener("click", submitScore);
-
-    // 기록 보기 버튼 클릭 시
-    viewRecordsBtn.addEventListener("click", showRecords);
-
-    // 기록 보기 팝업 닫기 버튼 클릭 시
-    closeRecordsBtn.addEventListener("click", closeRecords);
 }
 
 // 초기 데이터 로드 및 애플리케이션 초기화
