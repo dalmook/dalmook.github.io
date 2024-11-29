@@ -327,25 +327,28 @@ function initializeApp() {
         loadCard(currentCardIndex);
     });
 
-    // 난이도 버튼 이벤트
+    // 난이도 버튼 클릭 시
     difficultyButtons.forEach(button => {
         button.addEventListener("click", () => {
-            const difficulty = button.getAttribute('data-difficulty');
-            // 난이도 선택 후 게임 모드 선택 섹션 표시
-            document.querySelector(".game-mode-selection").style.display = "block";
-            // 선택된 난이도 저장
-            currentDifficulty = difficulty;
-            // "게임 시작" 버튼 표시
-            startGameBtn.classList.remove("hidden");
+            // 모든 난이도 버튼에서 .selected 클래스 제거
+            difficultyButtons.forEach(btn => btn.classList.remove("selected"));
+            // 클릭된 버튼에 .selected 클래스 추가
+            button.classList.add("selected");
+            // 게임 모드 선택 섹션 표시
+            gameModeSelection.style.display = "flex";
+            // "게임 시작" 버튼 숨김
+            startGameBtn.classList.add("hidden");
         });
     });
-
-    // 게임 모드 버튼 이벤트
+    
+    // 게임 모드 버튼 클릭 시
     modeButtons.forEach(button => {
         button.addEventListener("click", () => {
-            const mode = button.getAttribute('data-mode');
-            currentMode = mode;
-            // 게임 시작 버튼 활성화
+            // 모든 모드 버튼에서 .selected 클래스 제거
+            modeButtons.forEach(btn => btn.classList.remove("selected"));
+            // 클릭된 버튼에 .selected 클래스 추가
+            button.classList.add("selected");
+            // "게임 시작" 버튼 표시
             startGameBtn.classList.remove("hidden");
         });
     });
