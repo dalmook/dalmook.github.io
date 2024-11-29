@@ -296,8 +296,8 @@ section {
     /* 선택 버튼 크기 조정 */
     .selection-button {
         width: 90%;
-        padding: 12px 25px;
-        font-size: 18px;
+        padding: 7px 14px;
+        font-size: 14px;
     }
 
     /* 추가: 버튼 간격 및 레이아웃 최적화 */
