@@ -44,6 +44,9 @@ const backToSelectionBtn = document.getElementById("back-to-selection");
 const flashcardDifficultySelect = document.getElementById("flashcard-difficulty");
 const speakBtn = document.getElementById("speakBtn");
 const progressBar = document.getElementById("progress-bar");
+const progressText = document.getElementById("progress-text");
+const wordText = document.getElementById("word-text");
+const meaningText = document.getElementById("meaning-text");
 
 // 단어 게임 섹션 관련 요소
 const wordGameSection = document.getElementById("word-game");
@@ -68,6 +71,11 @@ const namePopup = document.getElementById("namePopup");
 const closeButtons = document.querySelectorAll(".close-button");
 const submitScoreBtn = document.getElementById("submitScoreBtn");
 const playerNameInput = document.getElementById("playerName");
+
+// 기록 보기 필터링 및 정렬 요소
+const filterDifficulty = document.getElementById("filter-difficulty");
+const sortBy = document.getElementById("sort-by");
+const applyFiltersBtn = document.getElementById("apply-filters");
 
 // ====================
 // Firebase 초기화
@@ -118,13 +126,16 @@ function loadFlashcard(index) {
     const data = flashcardsWords[index];
     console.log("Loading flashcard:", index, data); // 디버깅용 로그 추가
 
-    cardFront.textContent = data.word;
-    cardBack.textContent = data.meaning;
+    wordText.textContent = data.word;
+    meaningText.textContent = data.meaning;
     flipCard(false);
 
     // 진행 바 업데이트
     const progressPercentage = ((index + 1) / flashcardsWords.length) * 100;
     progressBar.style.width = `${progressPercentage}%`;
+
+    // 진행 텍스트 업데이트
+    progressText.textContent = `${index + 1} / ${flashcardsWords.length}`;
 
     // 영어 단어를 음성으로 읽어줌
     speakWord(data.word);
@@ -158,7 +169,7 @@ function loadFlashcards(difficulty) {
         return;
     }
 
-    // 모든 단어를 랜덤하게 섞고, 전체 단어를 무한히 순환하도록 설정
+    // 모든 단어를 랜덤하게 섞은 후 전체 단어를 사용
     flashcardsWords = shuffleArray(filteredWords);
 
     // 현재 인덱스 초기화
@@ -166,6 +177,7 @@ function loadFlashcards(difficulty) {
 
     // 진행 바 초기화
     progressBar.style.width = '0%';
+    progressText.textContent = `0 / ${flashcardsWords.length}`;
 
     // 첫 번째 카드 로드
     loadFlashcard(currentFlashcardIndex);
@@ -375,6 +387,25 @@ function endGame() {
 }
 
 // ====================
+// 타이머 관련 함수
+// ====================
+
+function startTimer(seconds, callback) {
+    timerEl.textContent = `남은 시간: ${seconds}초`;
+    let remaining = seconds;
+    timer = setInterval(() => {
+        remaining--;
+        if (remaining > 0) {
+            timerEl.textContent = `남은 시간: ${remaining}초`;
+        } else {
+            clearInterval(timer);
+            timerEl.textContent = `남은 시간: 0초`;
+            callback();
+        }
+    }, 1000);
+}
+
+// ====================
 // 점수 관련 함수
 // ====================
 
@@ -390,8 +421,28 @@ function updateScore(points) {
 // ====================
 
 function viewRecords() {
+    let query = db.collection("gameRecords");
+
+    // 난이도 필터링
+    const selectedDifficulty = filterDifficulty.value;
+    if (selectedDifficulty !== "all") {
+        query = query.where("difficulty", "==", selectedDifficulty);
+    }
+
+    // 정렬 기준 설정
+    const selectedSort = sortBy.value;
+    if (selectedSort === "score_desc") {
+        query = query.orderBy("score", "desc");
+    } else if (selectedSort === "score_asc") {
+        query = query.orderBy("score", "asc");
+    } else if (selectedSort === "time_desc") {
+        query = query.orderBy("recordTime", "desc");
+    } else if (selectedSort === "time_asc") {
+        query = query.orderBy("recordTime", "asc");
+    }
+
     // Firestore에서 데이터 가져오기
-    db.collection("gameRecords").orderBy("score", "desc").get()
+    query.get()
     .then((querySnapshot) => {
         recordsTableBody.innerHTML = ""; // 기존 기록 초기화
         querySnapshot.forEach((doc) => {
@@ -460,7 +511,7 @@ flashcardDifficultySelect.addEventListener("change", () => {
 
 // 낱말 카드 음성 재생 버튼 클릭 시
 speakBtn.addEventListener("click", () => {
-    const word = cardFront.textContent.trim();
+    const word = wordText.textContent.trim();
     speakWord(word);
 });
 
@@ -468,24 +519,22 @@ speakBtn.addEventListener("click", () => {
 prevBtn.addEventListener("click", () => {
     if (currentFlashcardIndex > 0) {
         currentFlashcardIndex--;
-        loadFlashcard(currentFlashcardIndex);
     } else {
         // 마지막 카드에서 다시 처음 카드로 순환
         currentFlashcardIndex = flashcardsWords.length - 1;
-        loadFlashcard(currentFlashcardIndex);
     }
+    loadFlashcard(currentFlashcardIndex);
 });
 
 // 낱말 카드 다음 버튼 클릭 시
 nextBtn.addEventListener("click", () => {
     if (currentFlashcardIndex < flashcardsWords.length - 1) {
         currentFlashcardIndex++;
-        loadFlashcard(currentFlashcardIndex);
     } else {
         // 마지막 카드에서 다시 처음 카드로 순환
         currentFlashcardIndex = 0;
-        loadFlashcard(currentFlashcardIndex);
     }
+    loadFlashcard(currentFlashcardIndex);
 });
 
 // 낱말 카드 섹션 뒤로 가기 버튼 클릭 시
@@ -547,6 +596,11 @@ startGameBtn.addEventListener("click", () => {
     startGame(currentDifficulty);
 });
 
+// 카드 플립 기능 추가: 카드 전체 클릭 시 플립
+card.addEventListener("click", () => {
+    flipCard(!card.classList.contains("flipped"));
+});
+
 // 이름 제출 버튼 클릭 시
 submitScoreBtn.addEventListener("click", () => {
     const playerName = playerNameInput.value.trim();
@@ -599,6 +653,11 @@ window.addEventListener("click", (event) => {
     }
 });
 
+// 적용 버튼 클릭 시 필터링 및 정렬 적용
+applyFiltersBtn.addEventListener("click", () => {
+    viewRecords();
+});
+
 // ====================
 // 애플리케이션 초기화 함수
 // ====================
@@ -622,11 +681,6 @@ function initializeApp() {
         selectionScreen.style.display = "none";
         wordGameSection.style.display = "block";
         gameModeSelection.style.display = "flex"; // 게임 모드 선택 섹션 표시
-    });
-
-    // 카드 플립 기능
-    card.addEventListener("click", () => {
-        flipCard(!card.classList.contains("flipped"));
     });
 }
 
@@ -659,7 +713,6 @@ function resetGame() {
 // 최종 초기화
 // ====================
 
-// 초기 데이터 로드 및 애플리케이션 초기화
 loadWordData().then(() => {
     if (wordData.length > 0) {
         initializeApp();
