@@ -24,9 +24,9 @@
         <div class="flashcard-settings">
             <label for="flashcard-difficulty">난이도 선택:</label>
             <select id="flashcard-difficulty">
-                <option value="easy">Easy (초등)</option>
-                <option value="medium">Medium (중등)</option>
-                <option value="hard">Hard (고등)</option>
+                <option value="easy">Easy (중등)</option>
+                <option value="medium">Medium (고등)</option>
+                <option value="hard">Hard (수능)</option>
             </select>
         </div>
         
@@ -34,14 +34,17 @@
         <div id="progress-bar-container">
             <div id="progress-bar"></div>
         </div>
+        <div id="progress-text">0 / 20</div>
         
         <div class="card" id="card">
             <div class="card-face front" id="card-front">
                 <!-- 영어 단어가 표시됩니다 -->
-                <button id="speakBtn">🔊</button>
+                <span id="word-text">단어</span>
+                <button id="speakBtn" aria-label="발음 듣기">🔊</button>
             </div>
             <div class="card-face back" id="card-back">
                 <!-- 단어의 뜻이 표시됩니다 -->
+                <span id="meaning-text">뜻</span>
             </div>
         </div>
         <div class="controls">
@@ -73,6 +76,7 @@
             <div id="timer">남은 시간: 0초</div>
             <div id="question" class="quiz-card">
                 <!-- 퀴즈 단어가 표시됩니다 -->
+                단어 또는 뜻
             </div>
             <div id="options"></div>
             <div id="feedback"></div>
@@ -98,6 +102,26 @@
         <div class="modal-content">
             <span class="close-button">&times;</span>
             <h2>게임 기록</h2>
+            <!-- 필터링 및 정렬 옵션 추가 -->
+            <div class="records-filters">
+                <label for="filter-difficulty">난이도:</label>
+                <select id="filter-difficulty">
+                    <option value="all">전체</option>
+                    <option value="easy">Easy (초등)</option>
+                    <option value="medium">Medium (중등)</option>
+                    <option value="hard">Hard (고등)</option>
+                </select>
+
+                <label for="sort-by">정렬 기준:</label>
+                <select id="sort-by">
+                    <option value="score_desc">점수 높은 순</option>
+                    <option value="score_asc">점수 낮은 순</option>
+                    <option value="time_desc">최근 기록</option>
+                    <option value="time_asc">오래된 기록</option>
+                </select>
+
+                <button id="apply-filters">적용</button>
+            </div>
             <table id="recordsTable">
                 <thead>
                     <tr>
