@@ -72,6 +72,12 @@ body {
     transition: width 0.5s;
 }
 
+#progress-text {
+    margin-top: 5px;
+    font-size: 16px;
+    color: #333;
+}
+
 /* 카드 스타일 */
 .card {
     width: 300px;
@@ -106,7 +112,6 @@ body {
     transform: rotateY(180deg);
 }
 
-/* 카드 뒤집기 효과 */
 .card.flipped .front {
     transform: rotateY(180deg);
 }
@@ -125,6 +130,7 @@ body {
     font-size: 24px;
     cursor: pointer;
     color: #555;
+    transition: color 0.3s;
 }
 
 #speakBtn:hover {
@@ -208,6 +214,7 @@ body {
     width: 80%;
     min-height: 60px;
     font-size: 22px;
+    box-sizing: border-box;
 }
 
 /* 옵션 버튼 스타일 */
@@ -360,6 +367,44 @@ body {
     font-weight: bold;
 }
 
+/* 기록 필터링 및 정렬 섹션 스타일 */
+.records-filters {
+    margin-bottom: 20px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.records-filters label {
+    margin: 5px 10px;
+    font-size: 14px;
+}
+
+.records-filters select {
+    padding: 5px;
+    margin: 5px 10px;
+    font-size: 14px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+}
+
+.records-filters button {
+    padding: 5px 15px;
+    margin: 5px 10px;
+    font-size: 14px;
+    cursor: pointer;
+    border: none;
+    border-radius: 5px;
+    background-color: #2196F3;
+    color: white;
+    transition: background-color 0.3s;
+}
+
+.records-filters button:hover {
+    background-color: #0b7dda;
+}
+
 /* 반응형 디자인 */
 @media screen and (max-width: 600px) {
     .card {
@@ -377,5 +422,32 @@ body {
 
     #question.quiz-card {
         width: 90%;
+    }
+
+    /* 낱말 카드 글자 크기 조정 */
+    #word-text, #meaning-text {
+        font-size: 20px;
+    }
+
+    /* 게임 시작 버튼 스타일 개선 */
+    #startGameBtn {
+        padding: 12px 24px;
+        font-size: 18px;
+        background-color: #4CAF50;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        transition: background-color 0.3s;
+        margin-bottom: 20px;
+    }
+
+    #startGameBtn:hover {
+        background-color: #45a049;
+    }
+
+    /* 퀴즈 단어 카드 높이 조정 */
+    #question.quiz-card {
+        min-height: 80px;
     }
 }
