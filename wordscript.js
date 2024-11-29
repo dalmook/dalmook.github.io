@@ -258,24 +258,18 @@ function startGame(difficulty) {
     currentDifficulty = difficulty;
 
     // 필터링된 단어 선택
-    gameWords = wordData.filter(word => word.difficulty === difficulty);
-    if (gameWords.length < 20) {
-        alert("선택한 난이도에 충분한 단어가 없습니다.");
+    const filteredWords = wordData.filter(word => word.difficulty === difficulty);
+    if (filteredWords.length < 20) {
+        alert("선택한 난이도에 충분한 단어가 없습니다. 최소 20개 이상의 단어가 필요합니다.");
         return;
     }
-    // 게임당 20개의 랜덤 단어 선택
-    gameWords = [];
-    const usedIndices = new Set(); // 이미 선택된 인덱스를 추적
-    while (gameWords.length < 20) {
-        const randomIndex = Math.floor(Math.random() * allWords.length);
-        if (!usedIndices.has(randomIndex)) {
-            gameWords.push(allWords[randomIndex]);
-            usedIndices.add(randomIndex);
-        }
-    }
+
+    // 단어를 랜덤하게 섞은 후 상위 20개 선택
+    const shuffled = filteredWords.sort(() => 0.5 - Math.random());
+    gameWords = shuffled.slice(0, 20);
 
     // 게임 초기화
-    usedIndices.clear(); // 게임 중 중복 방지를 위한 인덱스 초기화
+    usedIndices = [];
     gameArea.style.display = "block";
     feedbackEl.textContent = "";
     questionEl.textContent = "";
