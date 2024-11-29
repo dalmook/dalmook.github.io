@@ -12,6 +12,9 @@ let currentQuestion = {};
 let usedIndices = [];
 let currentMode = "word-to-meaning"; // 현재 게임 모드
 let currentDifficulty = "easy"; // 현재 선택된 난이도
+let currentQuestionCount = 0; // 현재 질문 수
+const TOTAL_QUESTIONS = 20;    // 총 질문 수
+
 
 // 초기 선택 화면 관련 요소
 const selectionScreen = document.getElementById("selection-screen");
@@ -150,7 +153,7 @@ function handleTimeout() {
 
 // 질문 로드 함수
 function loadQuestion(mode) {
-    if (usedIndices.length === gameWords.length) {
+    if (currentQuestionCount >= TOTAL_QUESTIONS) {
         feedbackEl.textContent = `게임이 종료되었습니다! 최종 점수: ${score}점`;
         questionEl.textContent = "";
         optionsEl.innerHTML = "";
@@ -170,6 +173,7 @@ function loadQuestion(mode) {
 
     usedIndices.push(randomIndex);
     currentQuestion = gameWords[randomIndex];
+    currentQuestionCount++; // 질문 수 증가
 
     console.log("새로운 질문 로드:", currentQuestion);
 
@@ -182,6 +186,8 @@ function loadQuestion(mode) {
     // 시간 제한 타이머 시작
     startTimer(timeLimit, handleTimeout);
 }
+
+
 
 // 옵션 생성 함수
 function generateOptions(correctAnswer, mode) {
@@ -270,6 +276,7 @@ function startGame(difficulty) {
 
     // 게임 초기화
     usedIndices = [];
+    currentQuestionCount = 0; // 질문 수 초기화
     gameArea.style.display = "block";
     feedbackEl.textContent = "";
     questionEl.textContent = "";
