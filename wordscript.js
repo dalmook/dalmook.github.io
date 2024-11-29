@@ -293,7 +293,7 @@ function initializeApp() {
         console.log("단어 게임 버튼 클릭");
         selectionScreen.style.display = "none";
         wordGameSection.style.display = "block";
-        document.querySelector(".game-mode-selection").style.display = "block";
+        gameModeSelection.style.display = "flex"; // 게임 모드 선택 섹션 표시
     });
 
     // 뒤로 가기 버튼 이벤트 (낱말 카드 섹션)
@@ -327,9 +327,11 @@ function initializeApp() {
         loadCard(currentCardIndex);
     });
 
-    // 난이도 버튼 클릭 시
+    // 난이도 버튼 클릭 시 .selected 클래스 토글
     difficultyButtons.forEach(button => {
         button.addEventListener("click", () => {
+            const difficulty = button.getAttribute('data-difficulty');
+            currentDifficulty = difficulty;
             // 모든 난이도 버튼에서 .selected 클래스 제거
             difficultyButtons.forEach(btn => btn.classList.remove("selected"));
             // 클릭된 버튼에 .selected 클래스 추가
@@ -340,10 +342,12 @@ function initializeApp() {
             startGameBtn.classList.add("hidden");
         });
     });
-    
-    // 게임 모드 버튼 클릭 시
+
+    // 게임 모드 버튼 클릭 시 .selected 클래스 토글
     modeButtons.forEach(button => {
         button.addEventListener("click", () => {
+            const mode = button.getAttribute('data-mode');
+            currentMode = mode;
             // 모든 모드 버튼에서 .selected 클래스 제거
             modeButtons.forEach(btn => btn.classList.remove("selected"));
             // 클릭된 버튼에 .selected 클래스 추가
@@ -353,7 +357,7 @@ function initializeApp() {
         });
     });
 
-    // 게임 시작 버튼 이벤트
+    // 게임 시작 버튼 클릭 시
     startGameBtn.addEventListener("click", () => {
         if (!currentDifficulty) {
             alert("난이도를 선택해주세요.");
