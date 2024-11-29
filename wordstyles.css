@@ -220,69 +220,49 @@ section {
     color: green;
 }
 
-/* 팝업 창 스타일 */
-.popup {
-    position: fixed;
-    top: 0;
+/* 모달 팝업 스타일 */
+.modal {
+    display: none; /* 숨김 상태 */
+    position: fixed; /* 고정 위치 */
+    z-index: 1; /* 최상위 */
     left: 0;
-    right: 0;
-    bottom: 0;
-    background-color: rgba(0,0,0,0.5);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    z-index: 1000;
+    top: 0;
+    width: 100%; /* 전체 너비 */
+    height: 100%; /* 전체 높이 */
+    overflow: auto; /* 스크롤 가능 */
+    background-color: rgba(0,0,0,0.4); /* 반투명 배경 */
 }
 
-.popup-content {
-    background-color: #fff;
-    padding: 20px 30px;
+.modal-content {
+    background-color: #fefefe;
+    margin: 15% auto; /* 중앙에 위치 */
+    padding: 20px;
+    border: 1px solid #888;
+    width: 80%; /* 너비 */
+    max-width: 400px; /* 최대 너비 */
     border-radius: 10px;
-    width: 80%;
-    max-width: 400px;
     text-align: center;
 }
 
-.popup-content h2 {
-    margin-bottom: 10px;
-}
-
-.popup-content input {
-    width: 80%;
-    padding: 10px;
-    margin: 10px 0;
-    font-size: 16px;
-}
-
-.popup-content button {
-    padding: 10px 20px;
-    font-size: 16px;
+.close-button {
+    color: #aaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
     cursor: pointer;
-    border: none;
-    border-radius: 5px;
-    background-color: #4CAF50;
-    color: white;
-    transition: background-color 0.3s;
 }
 
-.popup-content button:hover {
-    background-color: #45a049;
+.close-button:hover,
+.close-button:focus {
+    color: black;
+    text-decoration: none;
 }
 
-/* 기록 보기 버튼 스타일 */
-#viewRecordsBtn {
-    background-color: #9C27B0; /* 보라색 */
-}
-
-#viewRecordsBtn:hover {
-    background-color: #8E24AA;
-}
-
-/* 기록 보기 팝업 창 테이블 스타일 */
+/* 기록 테이블 스타일 */
 #recordsTable {
     width: 100%;
     border-collapse: collapse;
-    margin: 20px 0;
+    margin-top: 20px;
 }
 
 #recordsTable th, #recordsTable td {
@@ -292,25 +272,9 @@ section {
 
 #recordsTable th {
     background-color: #f2f2f2;
-    color: #333;
+    color: black;
 }
 
-#closeRecordsBtn {
-    margin-top: 20px;
-    padding: 10px 20px;
-    font-size: 16px;
-    cursor: pointer;
-    border: none;
-    border-radius: 5px;
-    background-color: #f44336;
-    color: white;
-    transition: background-color 0.3s;
-}
-
-#closeRecordsBtn:hover {
-    background-color: #da190b;
-}
-/* 반응형 디자인 추가 */
 @media (max-width: 600px) {
     /* 낱말 카드 크기 조정 */
     .card {
@@ -391,35 +355,6 @@ section {
         font-size: 14px;
     }
 
-    /* 팝업 창 스타일 조정 */
-    .popup-content {
-        width: 90%;
-        padding: 15px 20px;
-    }
-
-    .popup-content input {
-        width: 100%;
-        padding: 8px;
-        margin: 10px 0;
-        font-size: 14px;
-    }
-
-    .popup-content button {
-        width: 100%;
-        padding: 10px;
-        font-size: 16px;
-    }
-
-    /* 기록 보기 팝업 창 테이블 스타일 조정 */
-    #recordsTable th, #recordsTable td {
-        padding: 6px;
-        font-size: 14px;
-    }
-
-    #closeRecordsBtn {
-        padding: 8px 16px;
-        font-size: 14px;
-    }  
     /* 추가: 버튼 간격 및 레이아웃 최적화 */
     .game-settings, .game-mode-selection, .controls {
         display: flex;
@@ -430,5 +365,18 @@ section {
     .controls button {
         width: 90%;
         margin: 5px 0;
+    }
+
+    /* 모달 내용 크기 조정 */
+    .modal-content {
+        width: 90%;
+        max-width: 300px;
+        margin: 30% auto;
+    }
+
+    /* 기록 테이블 글씨 크기 조정 */
+    #recordsTable th, #recordsTable td {
+        padding: 6px;
+        font-size: 14px;
     }
 }
