@@ -15,9 +15,20 @@ h1 {
 section {
     margin: 40px 0;
 }
-
+.selection-button {
+    display: inline-block;
+    margin: 10px 20px;
+    padding: 15px 30px;
+    font-size: 18px;
+    cursor: pointer;
+    border: none;
+    border-radius: 8px;
+    color: white;
+    background-color: #4CAF50; /* 기본 배경색 (녹색) */
+    transition: background-color 0.3s, transform 0.2s;
+}
 /* 선택 버튼 스타일 */
-.selection-button, .difficulty-button, .mode-button {
+.difficulty-button, .mode-button {
     display: inline-block;
     margin: 10px 20px;
     padding: 15px 30px;
@@ -235,9 +246,9 @@ section {
     .mode-button {
         width: 90%;
         max-width: 200px;
-        margin: 10px 0;
-        padding: 12px 25px;
-        font-size: 18px;
+        margin: 5px 0;
+        padding: 7px 14px;
+        font-size: 12px;
         cursor: pointer;
         border: none;
         border-radius: 8px;
@@ -253,8 +264,8 @@ section {
     /* 난이도 버튼 크기 및 간격 조정 */
     .difficulty-button {
         width: 90%;
-        padding: 5px 15px;
-        font-size: 10px;
+        padding: 7px 14px;
+        font-size: 12px;
         margin: 5px 0;
         background-color: #4CAF50; /* 녹색 */
     }
@@ -266,8 +277,8 @@ section {
     /* 게임 시작 버튼 크기 조정 */
     #startGameBtn {
         width: 90%;
-        padding: 14px 30px;
-        font-size: 20px;
+        padding: 7px 14px;
+        font-size: 12px;
     }
 
     /* 질문 영역 및 옵션 버튼 크기 조정 */
