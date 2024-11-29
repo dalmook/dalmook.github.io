@@ -426,7 +426,7 @@ body {
 
     /* 낱말 카드 글자 크기 조정 */
     #word-text, #meaning-text {
-        font-size: 20px;
+        font-size: 40px;
     }
 
     /* 게임 시작 버튼 스타일 개선 */
