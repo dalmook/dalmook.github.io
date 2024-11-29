@@ -25,13 +25,32 @@ section {
     cursor: pointer;
     border: none;
     border-radius: 8px;
-    background-color: #4CAF50;
     color: white;
-    transition: background-color 0.3s;
+    transition: background-color 0.3s, transform 0.2s;
 }
 
-.selection-button:hover, .difficulty-button:hover, .mode-button:hover {
+/* 난이도 버튼 색상 */
+.difficulty-button {
+    background-color: #4CAF50; /* 녹색 */
+}
+
+.difficulty-button:hover {
     background-color: #45a049;
+}
+
+/* 게임 방식 버튼 색상 */
+.mode-button {
+    background-color: #2196F3; /* 파란색 */
+}
+
+.mode-button:hover {
+    background-color: #1e88e5;
+}
+
+/* 선택된 버튼 스타일 */
+.selected {
+    background-color: #FF5722 !important; /* 선택 시 주황색 */
+    transform: scale(1.05);
 }
 
 /* 숨김 클래스 */
@@ -96,7 +115,7 @@ section {
     border-radius: 5px;
     background-color: #008CBA;
     color: white;
-    transition: background-color 0.3s;
+    transition: background-color 0.3s, transform 0.2s;
 }
 
 .controls button:hover {
@@ -123,11 +142,15 @@ section {
     border-radius: 8px;
     background-color: #FF9800;
     color: white;
-    transition: background-color 0.3s;
+    transition: background-color 0.3s, transform 0.2s;
 }
 
 #startGameBtn:hover {
     background-color: #e68900;
+}
+
+#startGameBtn.selected {
+    background-color: #E65100;
 }
 
 /* 게임 영역 스타일 */
@@ -173,7 +196,7 @@ section {
     border-radius: 5px;
     background-color: #f44336;
     color: white;
-    transition: background-color 0.3s;
+    transition: background-color 0.3s, transform 0.2s;
 }
 
 #options button:hover {
@@ -218,13 +241,13 @@ section {
         cursor: pointer;
         border: none;
         border-radius: 8px;
-        background-color: #4CAF50;
+        background-color: #2196F3; /* 파란색 */
         color: white;
-        transition: background-color 0.3s;
+        transition: background-color 0.3s, transform 0.2s;
     }
 
     .mode-button:hover {
-        background-color: #45a049;
+        background-color: #1e88e5;
     }
 
     /* 난이도 버튼 크기 및 간격 조정 */
