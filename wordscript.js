@@ -12,9 +12,8 @@ let currentQuestion = {};
 let usedIndices = [];
 let currentMode = "word-to-meaning"; // 현재 게임 모드
 let currentDifficulty = "easy"; // 현재 선택된 난이도
-let currentQuestionCount = 0; // 현재 질문 수
-const TOTAL_QUESTIONS = 20;    // 총 질문 수
-
+let currentQuestionCount = 0;   // 현재 질문 수
+const TOTAL_QUESTIONS = 20;      // 총 질문 수
 
 // 초기 선택 화면 관련 요소
 const selectionScreen = document.getElementById("selection-screen");
@@ -187,8 +186,6 @@ function loadQuestion(mode) {
     startTimer(timeLimit, handleTimeout);
 }
 
-
-
 // 옵션 생성 함수
 function generateOptions(correctAnswer, mode) {
     const options = [correctAnswer];
@@ -265,14 +262,14 @@ function startGame(difficulty) {
 
     // 필터링된 단어 선택
     const filteredWords = wordData.filter(word => word.difficulty === difficulty);
-    if (filteredWords.length < 20) {
-        alert("선택한 난이도에 충분한 단어가 없습니다. 최소 20개 이상의 단어가 필요합니다.");
+    if (filteredWords.length < TOTAL_QUESTIONS) {
+        alert(`선택한 난이도에 충분한 단어가 없습니다. 최소 ${TOTAL_QUESTIONS}개 이상의 단어가 필요합니다.`);
         return;
     }
 
     // 단어를 랜덤하게 섞은 후 상위 20개 선택
     const shuffled = filteredWords.sort(() => 0.5 - Math.random());
-    gameWords = shuffled.slice(0, 20);
+    gameWords = shuffled.slice(0, TOTAL_QUESTIONS);
 
     // 게임 초기화
     usedIndices = [];
@@ -376,7 +373,9 @@ viewRecordsBtn.addEventListener("click", () => {
 
             // 난이도 셀 추가
             const difficultyCell = document.createElement("td");
-            difficultyCell.textContent = data.difficulty.charAt(0).toUpperCase() + data.difficulty.slice(1); // 첫 글자 대문자
+            const difficultyText = data.difficulty.charAt(0).toUpperCase() + data.difficulty.slice(1);
+            difficultyCell.textContent = difficultyText;
+            difficultyCell.classList.add(`${data.difficulty}-difficulty`); // 난이도별 클래스 추가
             row.appendChild(difficultyCell);
 
             // 이름 셀
