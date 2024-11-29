@@ -274,7 +274,25 @@ section {
     background-color: #f2f2f2;
     color: black;
 }
+/* 정답 표시 스타일 */
+.correct-answer {
+    background-color: #4CAF50 !important; /* 녹색 */
+    color: white;
+    border: 2px solid #388E3C;
+}
 
+/* 오답 표시 스타일 */
+.incorrect-answer {
+    background-color: #F44336 !important; /* 빨간색 */
+    color: white;
+    border: 2px solid #D32F2F;
+}
+
+/* 버튼 비활성화 스타일 (선택 사항) */
+.options button:disabled {
+    cursor: not-allowed;
+    opacity: 0.6;
+}
 @media (max-width: 600px) {
     /* 낱말 카드 크기 조정 */
     .card {
