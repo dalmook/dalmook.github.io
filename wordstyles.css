@@ -18,10 +18,9 @@ body {
     height: 100vh;
 }
 .game-header {
-    display: flex;
-    justify-content: space-between; /* 제목과 버튼을 양쪽에 배치 */
+    display: flex; /* Flexbox 활성화 */
+    justify-content: space-between; /* 제목과 버튼을 양쪽 끝에 배치 */
     align-items: center; /* 수직 가운데 정렬 */
-    margin-bottom: 20px; /* 제목 아래 여백 추가 */
 }
 .selection-button {
     padding: 15px 30px;
