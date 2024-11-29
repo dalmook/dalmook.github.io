@@ -205,6 +205,7 @@ function generateOptions(correctAnswer, mode) {
     options.forEach(option => {
         const btn = document.createElement("button");
         btn.textContent = option;
+        btn.classList.add("option-button"); // 옵션 버튼 클래스 추가
         btn.addEventListener("click", () => {
             checkAnswer(option, correctAnswer, mode);
         });
@@ -218,6 +219,12 @@ function checkAnswer(selected, correct, mode) {
 
     const difficulty = currentDifficulty;
 
+    // 모든 옵션 버튼을 비활성화
+    const optionButtons = optionsEl.querySelectorAll('button');
+    optionButtons.forEach(button => {
+        button.disabled = true;
+    });
+
     if (selected === correct) {
         let points = 0;
         if (difficulty === "easy") points = 10;
@@ -226,6 +233,13 @@ function checkAnswer(selected, correct, mode) {
 
         feedbackEl.textContent = `정답입니다! +${points}점`;
         updateScore(points);
+
+        // 선택된 버튼에 정답 클래스 추가
+        optionButtons.forEach(button => {
+            if (button.textContent === correct) {
+                button.classList.add("correct-answer");
+            }
+        });
     } else {
         let penalty = 0;
         if (difficulty === "easy") penalty = -2;
@@ -234,13 +248,29 @@ function checkAnswer(selected, correct, mode) {
 
         feedbackEl.textContent = `틀렸습니다! -${Math.abs(penalty)}점`;
         updateScore(penalty);
+
+        // 선택된 오답 버튼에 오답 클래스 추가
+        optionButtons.forEach(button => {
+            if (button.textContent === selected) {
+                button.classList.add("incorrect-answer");
+            }
+            // 정답 버튼에 정답 클래스 추가
+            if (button.textContent === correct) {
+                button.classList.add("correct-answer");
+            }
+        });
     }
 
-    // 1초 후 다음 질문 로드
+    // 2초 후 다음 질문 로드
     setTimeout(() => {
         feedbackEl.textContent = "";
+        // 모든 버튼의 정답/오답 클래스 제거
+        optionButtons.forEach(button => {
+            button.classList.remove("correct-answer", "incorrect-answer");
+            button.disabled = false; // 버튼 활성화
+        });
         loadQuestion(mode);
-    }, 1000);
+    }, 2000); // 2초로 증가
 }
 
 // 게임 시작 함수
