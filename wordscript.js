@@ -32,6 +32,9 @@ let wordData = [];
 const selectionScreen = document.getElementById("selection-screen");
 const selectFlashcardsBtn = document.getElementById("select-flashcards");
 const selectWordgameBtn = document.getElementById("select-wordgame");
+const gameArea = document.getElementById("game-area");
+console.log("gameArea:", gameArea); // 이 줄을 추가하여 gameArea가 제대로 선택되었는지 확인
+
 
 // 낱말 카드 섹션 관련 요소
 const flashcardsSection = document.getElementById("flashcards");
@@ -221,13 +224,18 @@ function loadQuestion(mode) {
 
     // 시간 제한 타이머 시작
     startTimer(timeLimit, handleTimeout);
-    
+
     // 남은 문제 수 업데이트
     if (scoreDisplay) {
         const remainingSpan = document.getElementById("remainingSpan");
-        remainingSpan.textContent = `남은 문제수: ${TOTAL_QUESTIONS - currentQuestionCount}`;
-    }    
+        if (remainingSpan) {
+            remainingSpan.textContent = `남은 문제수: ${TOTAL_QUESTIONS - currentQuestionCount}`;
+        } else {
+            console.error("remainingSpan 요소를 찾을 수 없습니다.");
+        }
+    }
 }
+
 
 function generateOptions(correctAnswer, mode) {
     const options = [correctAnswer];
@@ -320,10 +328,10 @@ function startGame(difficulty) {
         timeLimit = 5;
         score = 0;
     } else if (difficulty === "medium") {
-        timeLimit = 5;
+        timeLimit = 3;
         score = 0;
     } else if (difficulty === "hard") {
-        timeLimit = 5;
+        timeLimit = 2;
         score = 0;
     }
 
@@ -349,7 +357,7 @@ function startGame(difficulty) {
     optionsEl.innerHTML = "";
     timerEl.textContent = "";
 
-    // 점수 표시 초기화
+    // 점수 및 남은 문제 수 표시 초기화
     scoreDisplay = document.getElementById("scoreDisplay");
     if (!scoreDisplay) {
         scoreDisplay = document.createElement("div");
@@ -370,12 +378,21 @@ function startGame(difficulty) {
         scoreDisplay.appendChild(document.createTextNode(' | ')); // 구분자
         scoreDisplay.appendChild(remainingSpan);
 
-        gameArea.prepend(scoreDisplay);
+        // `gameArea`가 존재하는지 다시 한 번 확인
+        if (gameArea) {
+            gameArea.prepend(scoreDisplay);
+        } else {
+            console.error("gameArea 요소를 찾을 수 없습니다.");
+        }
     } else {
         const scoreSpan = document.getElementById("scoreSpan");
         const remainingSpan = document.getElementById("remainingSpan");
-        scoreSpan.textContent = `점수: ${score}`;
-        remainingSpan.textContent = `남은 문제수: ${TOTAL_QUESTIONS - currentQuestionCount}`;
+        if (scoreSpan && remainingSpan) {
+            scoreSpan.textContent = `점수: ${score}`;
+            remainingSpan.textContent = `남은 문제수: ${TOTAL_QUESTIONS - currentQuestionCount}`;
+        } else {
+            console.error("scoreSpan 또는 remainingSpan 요소를 찾을 수 없습니다.");
+        }
     }
 
     loadQuestion(currentMode);
@@ -461,8 +478,12 @@ function updateScore(points) {
     if (scoreDisplay) {
         const scoreSpan = document.getElementById("scoreSpan");
         const remainingSpan = document.getElementById("remainingSpan");
-        scoreSpan.textContent = `점수: ${score}`;
-        remainingSpan.textContent = `남은 문제수: ${TOTAL_QUESTIONS - currentQuestionCount}`;
+        if (scoreSpan && remainingSpan) {
+            scoreSpan.textContent = `점수: ${score}`;
+            remainingSpan.textContent = `남은 문제수: ${TOTAL_QUESTIONS - currentQuestionCount}`;
+        } else {
+            console.error("scoreSpan 또는 remainingSpan 요소를 찾을 수 없습니다.");
+        }
     }
 }
 
