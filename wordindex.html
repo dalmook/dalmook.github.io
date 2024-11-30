@@ -74,15 +74,15 @@
 
         <button id="startGameBtn" class="hidden">게임 시작</button>
 
-        <div class="game-area" id="game-area" style="display: none;">
-            <div id="scoreDisplay">점수: 0</div>
-            <div id="timer">남은 시간: 0초</div>
-            <div id="question" class="quiz-card">
-                <!-- 퀴즈 단어가 표시됩니다 -->
-                단어 또는 뜻
+        <div id="game-area">
+            <!-- 점수 및 남은 문제 수 표시 -->
+            <div id="scoreDisplay">
+                <span id="scoreSpan">점수: 0</span> |
+                <span id="remainingSpan">남은 문제수: 20</span>
             </div>
             <div id="options"></div>
             <div id="feedback"></div>
+            <div id="timer"></div>
         </div>
     </section>
 
