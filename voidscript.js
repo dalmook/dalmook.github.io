@@ -31,11 +31,11 @@ raindropLargeImg.src = 'images/raindrop_large.png'; // 큰 빗방울 이미지 �
 console.log("이미지 로드 시작.");
 
 // 오디오 설정
-const bgMusic = new Audio('audio/background.mp3');
-bgMusic.loop = true;
-const collisionSound = new Audio('audio/collision.mp3');
+// const bgMusic = new Audio('audio/background.mp3');
+// bgMusic.loop = true;
+// const collisionSound = new Audio('audio/collision.mp3');
 
-console.log("오디오 설정 완료.");
+// console.log("오디오 설정 완료.");
 
 // 이미지 로딩 상태 추적
 let imagesLoaded = 0;
@@ -110,9 +110,9 @@ document.getElementById('restart-button')?.addEventListener('click', () => {
     gameOver = false;
     document.getElementById('record-section').classList.add('hidden');
     document.getElementById('restart-button').classList.add('hidden');
-    bgMusic.currentTime = 0;
-    bgMusic.play().then(() => {
-        console.log("배경 음악 재생 시작.");
+    // bgMusic.currentTime = 0;
+    // bgMusic.play().then(() => {
+    //     console.log("배경 음악 재생 시작.");
     }).catch(error => {
         console.error("배경 음악 재생 실패:", error);
     });
@@ -387,14 +387,14 @@ function isColliding(rect1, rect2) {
 
 // 게임 종료 함수
 async function stopGame() {
-    try {
-        await collisionSound.play();
-        console.log("충돌 효과음 재생.");
-    } catch (error) {
-        console.error("충돌 효과음 재생 실패:", error);
-    }
-    bgMusic.pause();
-    console.log("배경 음악 일시 정지.");
+    // try {
+    //     await collisionSound.play();
+    //     console.log("충돌 효과음 재생.");
+    // } catch (error) {
+    //     console.error("충돌 효과음 재생 실패:", error);
+    // }
+    // bgMusic.pause();
+    // console.log("배경 음악 일시 정지.");
 
     // 이름 입력 모달 표시
     showNameModal();
@@ -512,11 +512,11 @@ function init() {
         gameContainer.style.backgroundPosition = "center"; // 이미지 위치 설정
         gameContainer.style.backgroundRepeat = "no-repeat"; // 반복 없음        
 
-        bgMusic.play().then(() => {
-            console.log("배경 음악 재생 성공.");
-        }).catch(error => {
-            console.error("배경 음악 재생 실패:", error);
-        });
+        // bgMusic.play().then(() => {
+        //     console.log("배경 음악 재생 성공.");
+        // }).catch(error => {
+        //     console.error("배경 음악 재생 실패:", error);
+        // });
         resetGameVariables();
         gameLoop();
     });
