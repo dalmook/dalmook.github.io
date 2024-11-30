@@ -318,7 +318,7 @@ function showLeaderboard() {
                 console.log("기록이 없습니다.");
                 const tr = document.createElement("tr");
                 const td = document.createElement("td");
-                td.colSpan = 5; // Rank 삭제로 컬럼 수 조정
+                td.colSpan = 4; // Rank 삭제로 컬럼 수 조정
                 td.textContent = "기록이 없습니다.";
                 tr.appendChild(td);
                 recordTableBody.appendChild(tr);
