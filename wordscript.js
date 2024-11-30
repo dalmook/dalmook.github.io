@@ -314,10 +314,10 @@ function startGame(difficulty) {
         timeLimit = 5;
         score = 0;
     } else if (difficulty === "medium") {
-        timeLimit = 4;
+        timeLimit = 5;
         score = 0;
     } else if (difficulty === "hard") {
-        timeLimit = 3;
+        timeLimit = 5;
         score = 0;
     }
 
