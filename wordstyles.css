@@ -228,8 +228,19 @@ body {
 }
 
 #scoreDisplay {
-    font-size: 20px;
-    margin-bottom: 10px;
+    display: flex;
+    justify-content: center; /* 가운데 정렬 */
+    align-items: center; /* 수직 가운데 정렬 */
+    gap: 20px; /* 점수와 남은 문제 수 사이 간격 */
+    font-size: 18px; /* 글씨 크기 조정 */
+    margin-bottom: 10px; /* 아래쪽 여백 추가 */
+    color: #333; /* 텍스트 색상 */
+    transition: all 0.3s ease;
+    animation: updateHighlight 0.5s;
+}
+@keyframes updateHighlight {
+    from { background-color: #fff; }
+    to { background-color: #ffeb3b; }
 }
 
 #timer {
@@ -457,6 +468,16 @@ body {
 
 /* 반응형 디자인 */
 @media screen and (max-width: 600px) {
+    #scoreDisplay {
+        flex-direction: column; /* 세로 방향 정렬 */
+        gap: 10px; /* 간격 줄이기 */
+        font-size: 16px; /* 글씨 크기 조정 */
+    }
+
+    /* 점수 및 남은 문제 수 텍스트 크기 조정 */
+    #scoreDisplay span {
+        font-size: 16px;
+    }    
     #viewRecordsBtn {
         padding: 5px 10px; /* 버튼 내부 여백 줄이기 */
         font-size: 16px; /* 버튼 글씨 크기 조정 */
