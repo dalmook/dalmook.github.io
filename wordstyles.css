@@ -235,12 +235,6 @@ body {
     font-size: 18px; /* 글씨 크기 조정 */
     margin-bottom: 10px; /* 아래쪽 여백 추가 */
     color: #333; /* 텍스트 색상 */
-    transition: all 0.3s ease;
-    animation: updateHighlight 0.5s;
-}
-@keyframes updateHighlight {
-    from { background-color: #fff; }
-    to { background-color: #ffeb3b; }
 }
 
 #timer {
