@@ -345,11 +345,11 @@ function showLeaderboard() {
                     timeTd.textContent = `${data.time || 0}초`; // 시간이 없으면 0초 표시
                     tr.appendChild(timeTd);
 
-                    const dateTd = document.createElement("td");
-                    dateTd.textContent = data.timestamp
-                        ? data.timestamp.toDate().toLocaleString()
-                        : "N/A"; // 날짜 표시
-                    tr.appendChild(dateTd);
+                    // const dateTd = document.createElement("td");
+                    // dateTd.textContent = data.timestamp
+                    //     ? data.timestamp.toDate().toLocaleString()
+                    //     : "N/A"; // 날짜 표시
+                    // tr.appendChild(dateTd);
 
                     recordTableBody.appendChild(tr);
                 });
