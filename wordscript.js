@@ -55,6 +55,9 @@ const difficultyButtons = document.querySelectorAll(".difficulty-button");
 const modeButtons = document.querySelectorAll(".mode-button");
 const startGameBtn = document.getElementById("startGameBtn");
 const gameArea = document.getElementById("game-area");
+const scoreDisplay = document.getElementById("scoreDisplay");
+const scoreSpan = document.getElementById("scoreSpan");
+const remainingSpan = document.getElementById("remainingSpan");
 const questionEl = document.getElementById("question");
 const optionsEl = document.getElementById("options");
 const feedbackEl = document.getElementById("feedback");
@@ -221,6 +224,13 @@ function loadQuestion(mode) {
 
     // 시간 제한 타이머 시작
     startTimer(timeLimit, handleTimeout);
+
+    // 남은 문제 수 업데이트
+    if (remainingSpan) {
+        remainingSpan.textContent = `남은 문제수: ${TOTAL_QUESTIONS - currentQuestionCount}`;
+    } else {
+        console.error("remainingSpan 요소를 찾을 수 없습니다.");
+    }
 }
 
 function generateOptions(correctAnswer, mode) {
@@ -343,15 +353,12 @@ function startGame(difficulty) {
     optionsEl.innerHTML = "";
     timerEl.textContent = "";
 
-    // 점수 표시 초기화
-    scoreDisplay = document.getElementById("scoreDisplay");
-    if (!scoreDisplay) {
-        scoreDisplay = document.createElement("div");
-        scoreDisplay.id = "scoreDisplay";
-        scoreDisplay.textContent = `점수: ${score}`;
-        gameArea.prepend(scoreDisplay); // 게임 영역 상단에 점수 표시
+    // 점수 및 남은 문제 수 표시 초기화
+    if (scoreSpan && remainingSpan) {
+        scoreSpan.textContent = `점수: ${score}`;
+        remainingSpan.textContent = `남은 문제수: ${TOTAL_QUESTIONS - currentQuestionCount}`;
     } else {
-        scoreDisplay.textContent = `점수: ${score}`;
+        console.error("scoreSpan 또는 remainingSpan 요소를 찾을 수 없습니다.");
     }
 
     loadQuestion(currentMode);
@@ -360,6 +367,7 @@ function startGame(difficulty) {
 function handleTimeout() {
     const difficulty = currentDifficulty;
 
+    // 난이도에 따른 점수 페널티 설정
     let penalty = 0;
     if (difficulty === "easy") penalty = -2;
     else if (difficulty === "medium") penalty = -4;
@@ -378,8 +386,11 @@ function handleTimeout() {
             button.classList.add("correct-answer");
         }
     });
-    
-    feedbackEl.textContent = `시간 초과! -${Math.abs(penalty)}점`;
+
+    // 피드백 표시 (정답을 텍스트로 표시하지 않음)
+    feedbackEl.textContent = `시간 초과! (-${Math.abs(penalty)}점)`;
+
+    // 점수 업데이트
     updateScore(penalty);
 
     // 2초 후 다음 질문 로드 (사용자가 결과를 확인할 시간 확보)
@@ -430,8 +441,11 @@ function startTimer(seconds, callback) {
 
 function updateScore(points) {
     score += points;
-    if (scoreDisplay) {
-        scoreDisplay.textContent = `점수: ${score}`;
+    if (scoreSpan && remainingSpan) {
+        scoreSpan.textContent = `점수: ${score}`;
+        remainingSpan.textContent = `남은 문제수: ${TOTAL_QUESTIONS - currentQuestionCount}`;
+    } else {
+        console.error("scoreSpan 또는 remainingSpan 요소를 찾을 수 없습니다.");
     }
 }
 
