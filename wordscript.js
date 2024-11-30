@@ -486,9 +486,9 @@ function viewRecords() {
             row.appendChild(scoreCell);
 
             // 기록 시간 셀
-            const timeCell = document.createElement("td");
-            timeCell.textContent = data.recordTime;
-            row.appendChild(timeCell);
+            // const timeCell = document.createElement("td");
+            // timeCell.textContent = data.recordTime;
+            // row.appendChild(timeCell);
 
             recordsTableBody.appendChild(row);
         });
