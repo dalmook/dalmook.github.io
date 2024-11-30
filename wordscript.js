@@ -221,6 +221,12 @@ function loadQuestion(mode) {
 
     // 시간 제한 타이머 시작
     startTimer(timeLimit, handleTimeout);
+
+    // 남은 문제 수 업데이트
+    if (scoreDisplay) {
+        const remainingSpan = document.getElementById("remainingSpan");
+        remainingSpan.textContent = `남은 문제수: ${TOTAL_QUESTIONS - currentQuestionCount}`;
+    }
 }
 
 function generateOptions(correctAnswer, mode) {
@@ -348,10 +354,28 @@ function startGame(difficulty) {
     if (!scoreDisplay) {
         scoreDisplay = document.createElement("div");
         scoreDisplay.id = "scoreDisplay";
-        scoreDisplay.textContent = `점수: ${score}`;
-        gameArea.prepend(scoreDisplay); // 게임 영역 상단에 점수 표시
+
+        // 점수 스팬
+        const scoreSpan = document.createElement("span");
+        scoreSpan.id = "scoreSpan";
+        scoreSpan.textContent = `점수: ${score}`;
+
+        // 남은 문제 수 스팬
+        const remainingSpan = document.createElement("span");
+        remainingSpan.id = "remainingSpan";
+        remainingSpan.textContent = `남은 문제수: ${TOTAL_QUESTIONS - currentQuestionCount}`;
+
+        // 스팬들을 scoreDisplay에 추가
+        scoreDisplay.appendChild(scoreSpan);
+        scoreDisplay.appendChild(document.createTextNode(' | ')); // 구분자
+        scoreDisplay.appendChild(remainingSpan);
+
+        gameArea.prepend(scoreDisplay);
     } else {
-        scoreDisplay.textContent = `점수: ${score}`;
+        const scoreSpan = document.getElementById("scoreSpan");
+        const remainingSpan = document.getElementById("remainingSpan");
+        scoreSpan.textContent = `점수: ${score}`;
+        remainingSpan.textContent = `남은 문제수: ${TOTAL_QUESTIONS - currentQuestionCount}`;
     }
 
     loadQuestion(currentMode);
@@ -360,6 +384,7 @@ function startGame(difficulty) {
 function handleTimeout() {
     const difficulty = currentDifficulty;
 
+    // 난이도에 따른 점수 페널티 설정
     let penalty = 0;
     if (difficulty === "easy") penalty = -2;
     else if (difficulty === "medium") penalty = -4;
@@ -378,8 +403,11 @@ function handleTimeout() {
             button.classList.add("correct-answer");
         }
     });
-    
-    feedbackEl.textContent = `시간 초과! -${Math.abs(penalty)}점`;
+
+    // 피드백 표시 (정답을 텍스트로 표시하지 않음)
+    feedbackEl.textContent = `시간 초과! (-${Math.abs(penalty)}점)`;
+
+    // 점수 업데이트
     updateScore(penalty);
 
     // 2초 후 다음 질문 로드 (사용자가 결과를 확인할 시간 확보)
@@ -391,7 +419,7 @@ function handleTimeout() {
             button.disabled = false; // 버튼 활성화
         });
         loadQuestion(currentMode);
-    }, 2000); // 2초 후 다음 질문으로 이동
+    }, 1000); // 2초 후 다음 질문으로 이동
 }
 
 function endGame() {
@@ -431,7 +459,10 @@ function startTimer(seconds, callback) {
 function updateScore(points) {
     score += points;
     if (scoreDisplay) {
-        scoreDisplay.textContent = `점수: ${score}`;
+        const scoreSpan = document.getElementById("scoreSpan");
+        const remainingSpan = document.getElementById("remainingSpan");
+        scoreSpan.textContent = `점수: ${score}`;
+        remainingSpan.textContent = `남은 문제수: ${TOTAL_QUESTIONS - currentQuestionCount}`;
     }
 }
 
