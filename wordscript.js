@@ -348,10 +348,10 @@ function startGame(difficulty) {
     if (!scoreDisplay) {
         scoreDisplay = document.createElement("div");
         scoreDisplay.id = "scoreDisplay";
-        scoreDisplay.textContent = `점수: ${score}`;
+        scoreDisplay.textContent = `점수: ${score} | 총 20문제`;
         gameArea.prepend(scoreDisplay); // 게임 영역 상단에 점수 표시
     } else {
-        scoreDisplay.textContent = `점수: ${score}`;
+        scoreDisplay.textContent = `점수: ${score} | 총 20문제`;
     }
 
     loadQuestion(currentMode);
@@ -431,7 +431,7 @@ function startTimer(seconds, callback) {
 function updateScore(points) {
     score += points;
     if (scoreDisplay) {
-        scoreDisplay.textContent = `점수: ${score}`;
+        scoreDisplay.textContent = `점수: ${score} | 총 20문제`;
     }
 }
 
