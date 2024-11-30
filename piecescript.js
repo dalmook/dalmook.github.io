@@ -384,7 +384,7 @@ function startTimer() {
                 <td>${record.difficulty}</td>
                 <td>${record.name}</td>
                 <td>${record.score}</td>
-                <td>${date}</td>
+                <!--<td>${date}</td>--!>
             `;
             recordTableBody.appendChild(row);
 
