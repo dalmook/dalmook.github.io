@@ -4,6 +4,10 @@ const treeImage = document.getElementById('tree-image');
 const contributorsList = document.getElementById('contributors-list');
 const totalTouchesElement = document.getElementById('total-touches');
 const saveButton = document.getElementById('save-button');
+const prevButton = document.getElementById('prev-button');
+const nextButton = document.getElementById('next-button');
+// 자동 성장 모드 토글 제거
+// const autoGrowToggle = document.getElementById('auto-grow-toggle');
 
 const TREE_STAGES = [
   { max: 1000, src: 'images/sapling.png' },
@@ -27,12 +31,13 @@ totalTouchesRef.get().then((doc) => {
 // 로컬 터치 카운트 (저장 전)
 let localTouchCount = 0;
 
-/**
- * 스로틀링 함수
- * @param {Function} func - 실행할 함수
- * @param {number} limit - 제한 시간 (밀리초 단위)
- * @returns {Function} - 제한된 함수
- */
+// 현재 표시되고 있는 나무 단계 인덱스
+let currentStageIndex = 0;
+
+// 터치 횟수 전체 카운트
+let totalTouches = 0;
+
+// 스로틀링 함수
 function throttle(func, limit) {
   let lastFunc;
   let lastRan;
@@ -54,20 +59,13 @@ function throttle(func, limit) {
 }
 
 // 나무 이미지 업데이트 함수
-function updateTreeImage(total) {
-  for (let stage of TREE_STAGES) {
-    if (total < stage.max) {
-      if (!treeImage.src.includes(stage.src)) {
-        // 부드러운 전환을 위해 클래스 추가
-        treeImage.classList.add('growing');
-        setTimeout(() => {
-          treeImage.src = stage.src;
-          treeImage.classList.remove('growing');
-        }, 250); // 전환 중간에 이미지 변경
-      }
-      break;
-    }
-  }
+function updateTreeImage() {
+  treeImage.classList.add('growing');
+  setTimeout(() => {
+    treeImage.src = TREE_STAGES[currentStageIndex].src;
+    treeImage.classList.remove('growing');
+  }, 250); // 전환 중간에 이미지 변경
+  updateNavigationButtons();
 }
 
 // 기여자 목록 업데이트 함수
@@ -87,9 +85,25 @@ function updateContributors() {
 function getTotalTouches() {
   totalTouchesRef.onSnapshot((doc) => {
     if (doc.exists) {
-      const total = doc.data().count;
-      totalTouchesElement.textContent = `총 터치 횟수: ${total}`;
-      updateTreeImage(total);
+      totalTouches = doc.data().count;
+      totalTouchesElement.textContent = `총 터치 횟수: ${totalTouches}`;
+      
+      // totalTouches에 기반하여 currentStageIndex 설정
+      let newStageIndex = 0;
+      for (let i = 0; i < TREE_STAGES.length; i++) {
+        if (totalTouches < TREE_STAGES[i].max) {
+          newStageIndex = i;
+          break;
+        }
+      }
+
+      if (currentStageIndex !== newStageIndex) {
+        currentStageIndex = newStageIndex;
+        updateTreeImage();
+      } else {
+        // currentStageIndex가 이미 올바른 경우 버튼 상태만 업데이트
+        updateNavigationButtons();
+      }
     }
   });
 }
@@ -148,6 +162,9 @@ function saveTouches() {
 
         // 로컬 터치 카운트 초기화
         localTouchCount = 0;
+
+        // 로컬 스토리지 초기화 (선택 사항)
+        localStorage.removeItem('localTouchCount');
       });
     }).then(() => {
       console.log('터치 기록이 성공적으로 업데이트되었습니다.');
@@ -156,6 +173,49 @@ function saveTouches() {
       console.error('터치 기록 업데이트 중 오류 발생: ', error);
       alert('기록 저장 중 오류가 발생했습니다.');
     });
+  }
+}
+
+// 이전 및 다음 버튼 업데이트 함수
+function updateNavigationButtons() {
+  // 이전 버튼 상태
+  if (currentStageIndex <= 0) {
+    prevButton.disabled = true;
+  } else {
+    prevButton.disabled = false;
+  }
+
+  // 다음 버튼 상태
+  if (currentStageIndex < TREE_STAGES.length - 1) {
+    const requiredTouches = TREE_STAGES[currentStageIndex].max; // 현재 단계의 max 값 사용
+    if (totalTouches >= requiredTouches) {
+      nextButton.disabled = false;
+    } else {
+      nextButton.disabled = true;
+    }
+  } else {
+    nextButton.disabled = true; // 마지막 단계에서는 다음 버튼 비활성화
+  }
+}
+
+// 이전 버튼 클릭 이벤트 핸들러
+function showPreviousStage() {
+  if (currentStageIndex > 0) {
+    currentStageIndex -= 1;
+    updateTreeImage();
+  }
+}
+
+// 다음 버튼 클릭 이벤트 핸들러
+function showNextStage() {
+  if (currentStageIndex < TREE_STAGES.length - 1) {
+    const requiredTouches = TREE_STAGES[currentStageIndex].max; // 현재 단계의 max 값 사용
+    if (totalTouches >= requiredTouches) {
+      currentStageIndex += 1;
+      updateTreeImage();
+    } else {
+      alert(`다음 단계에 도달하려면 총 터치 횟수가 ${requiredTouches} 이상이어야 합니다.`);
+    }
   }
 }
 
@@ -181,13 +241,8 @@ function handleTouch(event) {
     treeImage.classList.remove('throttled');
   }, 200);
 
-  // 총 터치 횟수 업데이트 (기본적으로 화면에 실시간으로 표시됨)
-  totalTouchesRef.get().then((doc) => {
-    if (doc.exists) {
-      const total = doc.data().count + localTouchCount;
-      // 터치 횟수 제한을 없앴으므로, 자동 저장 유도 로직 제거
-    }
-  });
+  // 로컬 스토리지에 터치 카운트 저장 (선택 사항)
+  localStorage.setItem('localTouchCount', localTouchCount);
 }
 
 // 스로틀링된 터치 이벤트 핸들러 생성 (500ms 간격)
@@ -196,15 +251,41 @@ const throttledHandleTouch = throttle(handleTouch, 500);
 // 터치 이벤트 리스너 추가
 treeImage.addEventListener('click', throttledHandleTouch);
 
+// 키보드 이벤트 핸들러 추가
+treeImage.addEventListener('keydown', (event) => {
+  if (event.key === 'Enter' || event.key === ' ') {
+    throttledHandleTouch(event);
+  }
+});
+
+// 이전 및 다음 버튼 이벤트 리스너 추가
+prevButton.addEventListener('click', showPreviousStage);
+nextButton.addEventListener('click', showNextStage);
+
 // "기록 저장" 버튼 클릭 이벤트 핸들러
 saveButton.addEventListener('click', () => {
   saveTouches();
 });
 
+// 자동 성장 모드 토글 버튼 이벤트 핸들러 제거
+// autoGrowToggle.addEventListener('change', (event) => {
+//   autoGrow = event.target.checked;
+//   if (autoGrow) {
+//     updateTreeImage(totalTouches); // 자동 성장 모드 활성화 시 현재 총 터치 횟수에 맞춰 이미지 업데이트
+//   }
+// });
+
 // 초기화 함수
 function init() {
+  // 로컬 스토리지에서 터치 카운트 복구 (선택 사항)
+  const storedCount = localStorage.getItem('localTouchCount');
+  if (storedCount) {
+    localTouchCount = parseInt(storedCount, 10);
+  }
+
   getTotalTouches();
   updateContributors();
+  updateNavigationButtons(); // 초기 버튼 상태 설정
 }
 
 // 페이지 로드 시 초기화
