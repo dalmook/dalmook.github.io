@@ -3,6 +3,7 @@
 const treeImage = document.getElementById('tree-image');
 const contributorsList = document.getElementById('contributors-list');
 const totalTouchesElement = document.getElementById('total-touches');
+const saveButton = document.getElementById('save-button');
 
 const TREE_STAGES = [
   { max: 10, src: 'images/sapling.png' },
@@ -22,6 +23,9 @@ totalTouchesRef.get().then((doc) => {
     totalTouchesRef.set({ count: 0 });
   }
 });
+
+// Local touch count before saving
+let localTouchCount = 0;
 
 // Function to update tree image based on total touches
 function updateTreeImage(total) {
@@ -64,8 +68,21 @@ function getTotalTouches() {
   });
 }
 
-// Handle tree image click
-treeImage.addEventListener('click', () => {
+// Function to animate tree image
+function animateTree() {
+  treeImage.classList.add('shake');
+  setTimeout(() => {
+    treeImage.classList.remove('shake');
+  }, 500); // 애니메이션 지속 시간과 일치
+}
+
+// Function to handle saving touches
+function saveTouches() {
+  if (localTouchCount === 0) {
+    alert('터치한 횟수가 없습니다.');
+    return;
+  }
+
   let userName = prompt('이름을 입력하세요:');
   if (userName) {
     userName = userName.trim();
@@ -80,20 +97,41 @@ treeImage.addEventListener('click', () => {
     db.runTransaction((transaction) => {
       return transaction.get(userRef).then((doc) => {
         if (!doc.exists) {
-          transaction.set(userRef, { name: userName, count: 1 });
+          transaction.set(userRef, { name: userName, count: localTouchCount });
         } else {
-          transaction.update(userRef, { count: firebase.firestore.FieldValue.increment(1) });
+          transaction.update(userRef, { count: firebase.firestore.FieldValue.increment(localTouchCount) });
         }
 
         // Increment total touches
-        transaction.update(totalTouchesRef, { count: firebase.firestore.FieldValue.increment(1) });
+        transaction.update(totalTouchesRef, { count: firebase.firestore.FieldValue.increment(localTouchCount) });
+
+        // Reset local touch count
+        localTouchCount = 0;
       });
     }).then(() => {
       console.log('터치 기록이 성공적으로 업데이트되었습니다.');
+      alert('기록이 저장되었습니다!');
     }).catch((error) => {
       console.error('터치 기록 업데이트 중 오류 발생: ', error);
+      alert('기록 저장 중 오류가 발생했습니다.');
     });
   }
+}
+
+// Handle tree image click
+treeImage.addEventListener('click', () => {
+  localTouchCount += 1;
+  animateTree();
+
+  if (localTouchCount >= 100) {
+    alert('터치 횟수가 100회에 도달했습니다. 기록을 저장해주세요.');
+    saveTouches();
+  }
+});
+
+// Handle save button click
+saveButton.addEventListener('click', () => {
+  saveTouches();
 });
 
 // 초기화 함수
