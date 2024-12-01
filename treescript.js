@@ -11,9 +11,9 @@ const nextButton = document.getElementById('next-button');
 
 const TREE_STAGES = [
   { max: 1000, src: 'images/sapling.png' },
-  { max: 1200, src: 'images/small_tree.png' },
-  { max: 1300, src: 'images/medium_tree.png' },
-  { max: 1400, src: 'images/large_tree.png' },
+  { max: 5000, src: 'images/small_tree.png' },
+  { max: 10000, src: 'images/medium_tree.png' },
+  { max: 15000, src: 'images/large_tree.png' },
   { max: Infinity, src: 'images/mature_tree.png' }
 ];
 
