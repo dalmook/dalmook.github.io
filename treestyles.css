@@ -1,14 +1,119 @@
 /* treestyles.css */
 
-/* 기존 스타일 유지 */
-
-/* 스로틀링 피드백을 위한 클래스 */
-#tree-image.throttled {
-  opacity: 0.5;
-  transition: opacity 0.2s ease;
+/* 기본 스타일 */
+body {
+  font-family: Arial, sans-serif;
+  text-align: center; /* 모든 텍스트를 가운데 정렬 */
+  background-color: #e0f7fa;
+  margin: 0;
+  padding: 0;
 }
 
-/* 플로팅 숫자 스타일 (변경 없음) */
+.header {
+  position: fixed;
+  top: 0;
+  right: 0;
+  padding: 10px 20px;
+  background-color: rgba(255, 255, 255, 0.8);
+  border-bottom-left-radius: 10px;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+  z-index: 1000;
+}
+
+.container {
+  padding: 80px 20px 20px 20px; /* 헤더 공간 확보 */
+  display: flex;
+  flex-direction: column;
+  align-items: center; /* 자식 요소들을 가로 방향으로 가운데 정렬 */
+}
+
+h1 {
+  margin-bottom: 20px;
+}
+
+#tree-container {
+  margin: 0 auto;
+  width: 80%;
+  max-width: 300px; /* 기본 최대 너비 */
+  height: auto;
+  position: relative;
+}
+
+#tree-image {
+  width: 100%; /* 부모 컨테이너의 100% 너비 */
+  height: auto; /* 비율 유지 */
+  cursor: pointer;
+  transition: opacity 0.5s ease, transform 0.5s ease;
+}
+
+#tree-image.growing {
+  opacity: 0.7;
+  transform: scale(1.05);
+}
+
+#tree-image.shake {
+  animation: shake 0.5s;
+}
+
+@keyframes shake {
+  0% { transform: translate(1px, 1px) rotate(0deg); }
+  10% { transform: translate(-1px, -2px) rotate(-1deg); }
+  20% { transform: translate(-3px, 0px) rotate(1deg); }
+  30% { transform: translate(3px, 2px) rotate(0deg); }
+  40% { transform: translate(1px, -1px) rotate(1deg); }
+  50% { transform: translate(-1px, 2px) rotate(-1deg); }
+  60% { transform: translate(-3px, 1px) rotate(0deg); }
+  70% { transform: translate(3px, 1px) rotate(-1deg); }
+  80% { transform: translate(-1px, -1px) rotate(1deg); }
+  90% { transform: translate(1px, 2px) rotate(0deg); }
+  100% { transform: translate(1px, -2px) rotate(-1deg); }
+}
+
+#save-button {
+  margin-top: 20px;
+  padding: 10px 20px;
+  font-size: 16px;
+  background-color: #ff9800;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+#save-button:hover {
+  background-color: #e68900;
+}
+
+#contributors {
+  margin-top: 30px;
+  width: 100%; /* 기여자 목록을 컨테이너 전체 너비로 설정 */
+  max-width: 500px; /* 최대 너비 설정 */
+}
+
+#contributors h2 {
+  text-align: center; /* 기여자 목록 제목을 가운데 정렬 */
+}
+
+#contributors-list {
+  list-style-type: none;
+  padding: 0;
+  max-height: 200px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center; /* 리스트 아이템들을 가운데 정렬 */
+}
+
+#contributors-list li {
+  padding: 5px 0;
+  border-bottom: 1px solid #ccc;
+  width: 100%; /* 리스트 아이템을 전체 너비로 확장 */
+  text-align: left; /* 리스트 아이템 텍스트는 왼쪽 정렬 */
+  max-width: 400px; /* 리스트 아이템의 최대 너비 설정 */
+}
+
+/* 플로팅 숫자 스타일 */
 .floating-number {
   position: absolute;
   color: #ff5722;
@@ -29,11 +134,58 @@
   }
 }
 
-/* 반응형 디자인 (변경 없음) */
+/* 반응형 디자인 */
 @media (max-width: 600px) {
-  /* 기존 미디어 쿼리 내용 유지 */
+  .header {
+    padding: 8px 16px;
+    font-size: 14px;
+  }
+
+  h1 {
+    font-size: 24px;
+  }
+
+  #contributors h2 {
+    font-size: 18px;
+  }
+
+  #contributors-list li {
+    font-size: 14px;
+    max-width: 300px; /* 모바일에서 리스트 아이템의 최대 너비 줄이기 */
+  }
+
+  #save-button {
+    font-size: 14px;
+    padding: 8px 16px;
+  }
+
+  /* 모바일에서 이미지 크기 조정 */
+  #tree-container {
+    width: 90%;
+    max-width: 250px; /* 모바일에서 최대 너비 줄이기 */
+  }
+
+  #tree-image {
+    width: 100%;
+    height: auto;
+    max-height: 300px; /* 모바일에서 최대 높이 설정 */
+  }
 }
 
+/* 추가적인 작은 화면을 위한 미디어 쿼리 */
 @media (max-width: 400px) {
-  /* 기존 미디어 쿼리 내용 유지 */
+  #tree-container {
+    width: 95%;
+    max-width: 200px;
+  }
+
+  #tree-image {
+    max-height: 250px;
+  }
+}
+
+/* 스로틀링 피드백을 위한 클래스 */
+#tree-image.throttled {
+  opacity: 0.5;
+  transition: opacity 0.2s ease;
 }
