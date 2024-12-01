@@ -56,10 +56,10 @@ function throttle(func, limit) {
   }
 }
 
-// 다음 목표를 현재 단계의 max 값으로 설정하는 함수
+// 다음 목표를 현재 단계의 다음 단계 max 값으로 설정하는 함수
 function getNextGoal() {
   if (currentStageIndex < TREE_STAGES.length - 1) {
-    return TREE_STAGES[currentStageIndex].max;
+    return TREE_STAGES[currentStageIndex + 1].max;
   } else {
     return 'N/A'; // 마지막 단계인 경우 다음 목표가 없음을 표시
   }
@@ -93,8 +93,6 @@ function getTotalTouches() {
   totalTouchesRef.onSnapshot((doc) => {
     if (doc.exists) {
       totalTouches = doc.data().count;
-      const nextGoal = getNextGoal();
-      totalTouchesElement.textContent = `총 터치 횟수: ${totalTouches}/${nextGoal}`;
       
       // totalTouches에 기반하여 currentStageIndex 설정
       let newStageIndex = 0;
@@ -112,6 +110,16 @@ function getTotalTouches() {
         // currentStageIndex가 이미 올바른 경우 버튼 상태만 업데이트
         updateNavigationButtons();
       }
+
+      // 다음 목표 설정
+      const nextGoal = getNextGoal();
+      if (nextGoal !== 'N/A') {
+        totalTouchesElement.textContent = `총 터치 횟수: ${totalTouches}/${nextGoal}`;
+      } else {
+        totalTouchesElement.textContent = `총 터치 횟수: ${totalTouches}`;
+      }
+
+      console.log(`Current Stage Index: ${currentStageIndex}, Total Touches: ${totalTouches}, Next Goal: ${nextGoal}`);
     }
   });
 }
@@ -285,7 +293,7 @@ function init() {
 
   getTotalTouches();
   updateContributors();
-  updateNavigationButtons(); // 초기 버튼 상태 설정
+  // updateNavigationButtons(); // 초기 버튼 상태 설정은 getTotalTouches 내에서 이미 처리됨
 }
 
 // 페이지 로드 시 초기화
