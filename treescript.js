@@ -13,21 +13,21 @@ const TREE_STAGES = [
   { max: Infinity, src: 'images/mature_tree.png' }
 ];
 
-// References to Firestore collections
+// Firestore 컬렉션 참조
 const touchCountsRef = db.collection('touchCounts');
 const totalTouchesRef = db.collection('gameData').doc('totalTouches');
 
-// Initialize total touches if not exists
+// 총 터치 횟수가 존재하지 않으면 초기화
 totalTouchesRef.get().then((doc) => {
   if (!doc.exists) {
     totalTouchesRef.set({ count: 0 });
   }
 });
 
-// Local touch count before saving
+// 로컬 터치 카운트 (저장 전)
 let localTouchCount = 0;
 
-// Function to update tree image based on total touches
+// 나무 이미지 업데이트 함수
 function updateTreeImage(total) {
   for (let stage of TREE_STAGES) {
     if (total < stage.max) {
@@ -44,7 +44,7 @@ function updateTreeImage(total) {
   }
 }
 
-// Function to update contributors list
+// 기여자 목록 업데이트 함수
 function updateContributors() {
   touchCountsRef.orderBy('count', 'desc').onSnapshot((snapshot) => {
     contributorsList.innerHTML = '';
@@ -57,7 +57,7 @@ function updateContributors() {
   });
 }
 
-// Function to get total touches and update tree
+// 총 터치 횟수 가져오기 및 나무 이미지 업데이트
 function getTotalTouches() {
   totalTouchesRef.onSnapshot((doc) => {
     if (doc.exists) {
@@ -68,7 +68,7 @@ function getTotalTouches() {
   });
 }
 
-// Function to animate tree image
+// 나무 이미지 애니메이션 함수 (떨림 효과)
 function animateTree() {
   treeImage.classList.add('shake');
   setTimeout(() => {
@@ -76,7 +76,7 @@ function animateTree() {
   }, 500); // 애니메이션 지속 시간과 일치
 }
 
-// Function to handle saving touches
+// 터치 기록 저장 함수
 function saveTouches() {
   if (localTouchCount === 0) {
     alert('터치한 횟수가 없습니다.');
@@ -91,7 +91,7 @@ function saveTouches() {
       return;
     }
 
-    // Reference to the user's touch count
+    // 사용자의 터치 카운트 문서 참조
     const userRef = touchCountsRef.doc(userName);
 
     db.runTransaction((transaction) => {
@@ -102,10 +102,10 @@ function saveTouches() {
           transaction.update(userRef, { count: firebase.firestore.FieldValue.increment(localTouchCount) });
         }
 
-        // Increment total touches
+        // 총 터치 횟수 증가
         transaction.update(totalTouchesRef, { count: firebase.firestore.FieldValue.increment(localTouchCount) });
 
-        // Reset local touch count
+        // 로컬 터치 카운트 초기화
         localTouchCount = 0;
       });
     }).then(() => {
@@ -118,18 +118,24 @@ function saveTouches() {
   }
 }
 
-// Handle tree image click
+// 나무 이미지 클릭(터치) 이벤트 핸들러
 treeImage.addEventListener('click', () => {
   localTouchCount += 1;
   animateTree();
 
-  if (localTouchCount >= 100) {
-    alert('터치 횟수가 100회에 도달했습니다. 기록을 저장해주세요.');
-    saveTouches();
-  }
+  // 총 터치 횟수 가져오기
+  totalTouchesRef.get().then((doc) => {
+    if (doc.exists) {
+      const total = doc.data().count + localTouchCount;
+      if (total >= 100) {
+        alert('터치 횟수가 100회에 도달했습니다. 기록을 저장해주세요.');
+        saveTouches();
+      }
+    }
+  });
 });
 
-// Handle save button click
+// "기록 저장" 버튼 클릭 이벤트 핸들러
 saveButton.addEventListener('click', () => {
   saveTouches();
 });
