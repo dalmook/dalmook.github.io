@@ -149,14 +149,18 @@ treeImage.addEventListener('click', (event) => {
   // 애니메이션 적용
   animateTree();
 
-  // 총 터치 횟수 가져오기
+  // 총 터치 횟수 업데이트
   totalTouchesRef.get().then((doc) => {
     if (doc.exists) {
       const total = doc.data().count + localTouchCount;
+      // 터치 횟수 제한을 없앴으므로, 더 이상 100회 도달 시 자동 저장을 유도하지 않습니다.
+      // 따라서 아래 조건문을 제거하거나 주석 처리합니다.
+      /*
       if (total >= 100) {
         alert('터치 횟수가 100회에 도달했습니다. 기록을 저장해주세요.');
         saveTouches();
       }
+      */
     }
   });
 });
