@@ -221,6 +221,12 @@ h1 {
     height: auto;
     max-height: 300px; /* 모바일에서 최대 높이 설정 */
   }
+/* 총 터치 횟수 스타일 추가 */
+#total-touches {
+  font-size: 18px;
+  font-weight: bold;
+  color: #ff5722; /* 원하는 색상으로 변경 */
+}
 }
 
 /* 추가적인 작은 화면을 위한 미디어 쿼리 */
