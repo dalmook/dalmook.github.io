@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>나무 성장 게임</title>
+  <link rel="stylesheet" href="styles.css">
+  <!-- Firebase SDK -->
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+</head>
+<body>
+  <div class="header">
+    <div id="total-touches">총 터치 횟수: 0</div>
+  </div>
+  <div class="container">
+    <h1>나무 성장 게임</h1>
+    <div id="tree-container">
+      <img id="tree-image" src="sapling.png" alt="나무" />
+    </div>
+    <div id="contributors">
+      <h2>기여자 목록</h2>
+      <ul id="contributors-list"></ul>
+    </div>
+  </div>
+
+  <!-- Firebase 설정 -->
+  <script src="firebaseConfig.js"></script>
+  <!-- 애플리케이션 로직 -->
+  <script src="app.js"></script>
+</body>
+</html>
