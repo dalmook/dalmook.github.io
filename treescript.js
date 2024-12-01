@@ -6,8 +6,6 @@ const totalTouchesElement = document.getElementById('total-touches');
 const saveButton = document.getElementById('save-button');
 const prevButton = document.getElementById('prev-button');
 const nextButton = document.getElementById('next-button');
-// 자동 성장 모드 토글 제거
-// const autoGrowToggle = document.getElementById('auto-grow-toggle');
 
 const TREE_STAGES = [
   { max: 1000, src: 'images/sapling.png' },
@@ -58,6 +56,15 @@ function throttle(func, limit) {
   }
 }
 
+// 다음 목표를 현재 단계의 max 값으로 설정하는 함수
+function getNextGoal() {
+  if (currentStageIndex < TREE_STAGES.length - 1) {
+    return TREE_STAGES[currentStageIndex].max;
+  } else {
+    return 'N/A'; // 마지막 단계인 경우 다음 목표가 없음을 표시
+  }
+}
+
 // 나무 이미지 업데이트 함수
 function updateTreeImage() {
   treeImage.classList.add('growing');
@@ -86,7 +93,8 @@ function getTotalTouches() {
   totalTouchesRef.onSnapshot((doc) => {
     if (doc.exists) {
       totalTouches = doc.data().count;
-      totalTouchesElement.textContent = `총 터치 횟수: ${totalTouches}`;
+      const nextGoal = getNextGoal();
+      totalTouchesElement.textContent = `총 터치 횟수: ${totalTouches}/${nextGoal}`;
       
       // totalTouches에 기반하여 currentStageIndex 설정
       let newStageIndex = 0;
@@ -266,14 +274,6 @@ nextButton.addEventListener('click', showNextStage);
 saveButton.addEventListener('click', () => {
   saveTouches();
 });
-
-// 자동 성장 모드 토글 버튼 이벤트 핸들러 제거
-// autoGrowToggle.addEventListener('change', (event) => {
-//   autoGrow = event.target.checked;
-//   if (autoGrow) {
-//     updateTreeImage(totalTouches); // 자동 성장 모드 활성화 시 현재 총 터치 횟수에 맞춰 이미지 업데이트
-//   }
-// });
 
 // 초기화 함수
 function init() {
