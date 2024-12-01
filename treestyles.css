@@ -1,0 +1,82 @@
+/* 기본 스타일 */
+body {
+  font-family: Arial, sans-serif;
+  text-align: center;
+  background-color: #e0f7fa;
+  margin: 0;
+  padding: 0;
+}
+
+.header {
+  position: fixed;
+  top: 0;
+  right: 0;
+  padding: 10px 20px;
+  background-color: rgba(255, 255, 255, 0.8);
+  border-bottom-left-radius: 10px;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+.container {
+  padding: 80px 20px 20px 20px; /* 헤더 공간 확보 */
+}
+
+h1 {
+  margin-bottom: 20px;
+}
+
+#tree-container {
+  margin: 0 auto;
+  width: 80%;
+  max-width: 300px;
+  height: auto;
+  position: relative;
+}
+
+#tree-image {
+  width: 100%;
+  height: auto;
+  cursor: pointer;
+  transition: opacity 0.5s ease, transform 0.5s ease;
+}
+
+#tree-image.growing {
+  opacity: 0.7;
+  transform: scale(1.05);
+}
+
+#contributors {
+  margin-top: 30px;
+}
+
+#contributors-list {
+  list-style-type: none;
+  padding: 0;
+  max-height: 200px;
+  overflow-y: auto;
+}
+
+#contributors-list li {
+  padding: 5px 0;
+  border-bottom: 1px solid #ccc;
+}
+
+/* 반응형 디자인 */
+@media (max-width: 600px) {
+  .header {
+    padding: 8px 16px;
+    font-size: 14px;
+  }
+
+  h1 {
+    font-size: 24px;
+  }
+
+  #contributors h2 {
+    font-size: 18px;
+  }
+
+  #contributors-list li {
+    font-size: 14px;
+  }
+}
