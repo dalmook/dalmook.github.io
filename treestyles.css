@@ -95,6 +95,34 @@ h1 {
   background-color: #e68900;
 }
 
+.navigation-buttons {
+  margin-top: 10px;
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+}
+
+.navigation-buttons button {
+  padding: 8px 16px;
+  font-size: 14px;
+  background-color: #4caf50;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.navigation-buttons button:hover {
+  background-color: #45a049;
+}
+
+.navigation-buttons button:disabled {
+  background-color: #a5d6a7;
+  cursor: not-allowed;
+  opacity: 0.6; /* 비활성화 상태 시 투명도 추가 */
+}
+
 #contributors {
   margin-top: 30px;
   width: 100%; /* 기여자 목록을 컨테이너 전체 너비로 설정 */
@@ -177,6 +205,11 @@ h1 {
     padding: 8px 16px;
   }
 
+  .navigation-buttons button {
+    font-size: 12px;
+    padding: 6px 12px;
+  }
+
   /* 모바일에서 이미지 크기 조정 */
   #tree-container {
     width: 90%;
@@ -205,6 +238,35 @@ h1 {
     font-size: 14px;
     max-width: 95%;
   }
+
+  .navigation-buttons button {
+    font-size: 10px;
+    padding: 5px 10px;
+  }
+}
+
+/* 나무 이미지 애니메이션 */
+#tree-image.growing {
+  opacity: 0.7;
+  transform: scale(1.05);
+}
+
+#tree-image.shake {
+  animation: shake 0.5s;
+}
+
+@keyframes shake {
+  0% { transform: translate(1px, 1px) rotate(0deg); }
+  10% { transform: translate(-1px, -2px) rotate(-1deg); }
+  20% { transform: translate(-3px, 0px) rotate(1deg); }
+  30% { transform: translate(3px, 2px) rotate(0deg); }
+  40% { transform: translate(1px, -1px) rotate(1deg); }
+  50% { transform: translate(-1px, 2px) rotate(-1deg); }
+  60% { transform: translate(-3px, 1px) rotate(0deg); }
+  70% { transform: translate(3px, 1px) rotate(-1deg); }
+  80% { transform: translate(-1px, -1px) rotate(1deg); }
+  90% { transform: translate(1px, 2px) rotate(0deg); }
+  100% { transform: translate(1px, -2px) rotate(-1deg); }
 }
 
 /* 스로틀링 피드백을 위한 클래스 */
