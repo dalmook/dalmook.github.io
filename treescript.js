@@ -5,11 +5,11 @@ const contributorsList = document.getElementById('contributors-list');
 const totalTouchesElement = document.getElementById('total-touches');
 
 const TREE_STAGES = [
-  { max: 10, src: 'sapling.png' },
-  { max: 50, src: 'small_tree.png' },
-  { max: 100, src: 'medium_tree.png' },
-  { max: 200, src: 'large_tree.png' },
-  { max: Infinity, src: 'mature_tree.png' }
+  { max: 10, src: 'images/sapling.png' },
+  { max: 50, src: 'images/small_tree.png' },
+  { max: 100, src: 'images/medium_tree.png' },
+  { max: 200, src: 'images/large_tree.png' },
+  { max: Infinity, src: 'images/mature_tree.png' }
 ];
 
 // References to Firestore collections
