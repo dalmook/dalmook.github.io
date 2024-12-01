@@ -29,14 +29,14 @@ h1 {
 #tree-container {
   margin: 0 auto;
   width: 80%;
-  max-width: 300px;
+  max-width: 300px; /* 기본 최대 너비 */
   height: auto;
   position: relative;
 }
 
 #tree-image {
-  width: 100%;
-  height: auto;
+  width: 100%; /* 부모 컨테이너의 100% 너비 */
+  height: auto; /* 비율 유지 */
   cursor: pointer;
   transition: opacity 0.5s ease, transform 0.5s ease;
 }
@@ -139,5 +139,29 @@ h1 {
   #save-button {
     font-size: 14px;
     padding: 8px 16px;
+  }
+
+  /* 모바일에서 이미지 크기 조정 */
+  #tree-container {
+    width: 90%;
+    max-width: 250px; /* 모바일에서 최대 너비 줄이기 */
+  }
+
+  #tree-image {
+    width: 100%;
+    height: auto;
+    max-height: 300px; /* 모바일에서 최대 높이 설정 */
+  }
+}
+
+/* 추가적인 작은 화면을 위한 미디어 쿼리 */
+@media (max-width: 400px) {
+  #tree-container {
+    width: 95%;
+    max-width: 200px;
+  }
+
+  #tree-image {
+    max-height: 250px;
   }
 }
