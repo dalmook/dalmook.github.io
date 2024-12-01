@@ -6,10 +6,10 @@ const totalTouchesElement = document.getElementById('total-touches');
 const saveButton = document.getElementById('save-button');
 
 const TREE_STAGES = [
-  { max: 10, src: 'images/sapling.png' },
-  { max: 50, src: 'images/small_tree.png' },
-  { max: 100, src: 'images/medium_tree.png' },
-  { max: 200, src: 'images/large_tree.png' },
+  { max: 100000, src: 'images/sapling.png' },
+  { max: 2000000, src: 'images/small_tree.png' },
+  { max: 40000000, src: 'images/medium_tree.png' },
+  { max: 100000000, src: 'images/large_tree.png' },
   { max: Infinity, src: 'images/mature_tree.png' }
 ];
 
