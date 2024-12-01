@@ -76,6 +76,21 @@ function animateTree() {
   }, 500); // 애니메이션 지속 시간과 일치
 }
 
+// 플로팅 숫자 생성 함수
+function createFloatingNumber(x, y, value) {
+  const floatingNumber = document.createElement('div');
+  floatingNumber.classList.add('floating-number');
+  floatingNumber.textContent = `+${value}`;
+  floatingNumber.style.left = `${x}px`;
+  floatingNumber.style.top = `${y}px`;
+  document.getElementById('tree-container').appendChild(floatingNumber);
+
+  // 애니메이션이 끝난 후 요소 제거
+  floatingNumber.addEventListener('animationend', () => {
+    floatingNumber.remove();
+  });
+}
+
 // 터치 기록 저장 함수
 function saveTouches() {
   if (localTouchCount === 0) {
@@ -119,8 +134,19 @@ function saveTouches() {
 }
 
 // 나무 이미지 클릭(터치) 이벤트 핸들러
-treeImage.addEventListener('click', () => {
+treeImage.addEventListener('click', (event) => {
+  // 터치 위치 계산
+  const rect = treeImage.getBoundingClientRect();
+  const x = event.clientX - rect.left;
+  const y = event.clientY - rect.top;
+
+  // 플로팅 숫자 생성
+  createFloatingNumber(x, y, 1);
+
+  // 로컬 터치 카운트 증가
   localTouchCount += 1;
+
+  // 애니메이션 적용
   animateTree();
 
   // 총 터치 횟수 가져오기
