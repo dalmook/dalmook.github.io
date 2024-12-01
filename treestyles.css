@@ -96,6 +96,27 @@ h1 {
   border-bottom: 1px solid #ccc;
 }
 
+/* 플로팅 숫자 스타일 */
+.floating-number {
+  position: absolute;
+  color: #ff5722;
+  font-weight: bold;
+  font-size: 20px;
+  pointer-events: none;
+  animation: floatUp 1s ease-out forwards;
+}
+
+@keyframes floatUp {
+  0% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-50px);
+  }
+}
+
 /* 반응형 디자인 */
 @media (max-width: 600px) {
   .header {
