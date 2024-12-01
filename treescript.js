@@ -56,12 +56,12 @@ function throttle(func, limit) {
   }
 }
 
-// 다음 목표를 현재 단계의 다음 단계 max 값으로 설정하는 함수
+// 다음 목표를 현재 단계의 max 값으로 설정하는 함수
 function getNextGoal() {
-  if (currentStageIndex < TREE_STAGES.length - 1) {
-    return TREE_STAGES[currentStageIndex + 1].max;
-  } else {
+  if (TREE_STAGES[currentStageIndex].max === Infinity) {
     return 'N/A'; // 마지막 단계인 경우 다음 목표가 없음을 표시
+  } else {
+    return TREE_STAGES[currentStageIndex].max;
   }
 }
 
@@ -93,7 +93,7 @@ function getTotalTouches() {
   totalTouchesRef.onSnapshot((doc) => {
     if (doc.exists) {
       totalTouches = doc.data().count;
-      
+
       // totalTouches에 기반하여 currentStageIndex 설정
       let newStageIndex = 0;
       for (let i = 0; i < TREE_STAGES.length; i++) {
