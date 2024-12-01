@@ -6,10 +6,10 @@ const totalTouchesElement = document.getElementById('total-touches');
 const saveButton = document.getElementById('save-button');
 
 const TREE_STAGES = [
-  { max: 100000, src: 'images/sapling.png' },
-  { max: 1000000, src: 'images/small_tree.png' },
-  { max: 10000000, src: 'images/medium_tree.png' },
-  { max: 100000000, src: 'images/large_tree.png' },
+  { max: 10, src: 'images/sapling.png' },
+  { max: 50, src: 'images/small_tree.png' },
+  { max: 100, src: 'images/medium_tree.png' },
+  { max: 200, src: 'images/large_tree.png' },
   { max: Infinity, src: 'images/mature_tree.png' }
 ];
 
@@ -166,16 +166,22 @@ function handleTouch(event) {
   const x = event.clientX - rect.left;
   const y = event.clientY - rect.top;
 
-  // 플로팅 숫자 생성
-  createFloatingNumber(x, y, 1);
-
   // 로컬 터치 카운트 증가
   localTouchCount += 1;
+
+  // 플로팅 숫자 생성 (누적된 터치 카운트)
+  createFloatingNumber(x, y, localTouchCount);
 
   // 애니메이션 적용
   animateTree();
 
-  // 총 터치 횟수 업데이트
+  // 스로틀링 피드백 적용
+  treeImage.classList.add('throttled');
+  setTimeout(() => {
+    treeImage.classList.remove('throttled');
+  }, 200);
+
+  // 총 터치 횟수 업데이트 (기본적으로 화면에 실시간으로 표시됨)
   totalTouchesRef.get().then((doc) => {
     if (doc.exists) {
       const total = doc.data().count + localTouchCount;
