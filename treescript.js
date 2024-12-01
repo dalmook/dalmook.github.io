@@ -1,4 +1,4 @@
-// app.js
+// treescript.js
 
 const treeImage = document.getElementById('tree-image');
 const contributorsList = document.getElementById('contributors-list');
@@ -27,7 +27,7 @@ totalTouchesRef.get().then((doc) => {
 function updateTreeImage(total) {
   for (let stage of TREE_STAGES) {
     if (total < stage.max) {
-      if (treeImage.src.indexOf(stage.src) === -1) {
+      if (!treeImage.src.includes(stage.src)) {
         // 부드러운 전환을 위해 클래스 추가
         treeImage.classList.add('growing');
         setTimeout(() => {
