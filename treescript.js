@@ -6,10 +6,10 @@ const totalTouchesElement = document.getElementById('total-touches');
 const saveButton = document.getElementById('save-button');
 
 const TREE_STAGES = [
-  { max: 10, src: 'images/sapling.png' },
-  { max: 50, src: 'images/small_tree.png' },
-  { max: 100, src: 'images/medium_tree.png' },
-  { max: 200, src: 'images/large_tree.png' },
+  { max: 100000, src: 'images/sapling.png' },
+  { max: 1000000, src: 'images/small_tree.png' },
+  { max: 10000000, src: 'images/medium_tree.png' },
+  { max: 100000000, src: 'images/large_tree.png' },
   { max: Infinity, src: 'images/mature_tree.png' }
 ];
 
@@ -26,6 +26,32 @@ totalTouchesRef.get().then((doc) => {
 
 // 로컬 터치 카운트 (저장 전)
 let localTouchCount = 0;
+
+/**
+ * 스로틀링 함수
+ * @param {Function} func - 실행할 함수
+ * @param {number} limit - 제한 시간 (밀리초 단위)
+ * @returns {Function} - 제한된 함수
+ */
+function throttle(func, limit) {
+  let lastFunc;
+  let lastRan;
+  return function(...args) {
+    const context = this;
+    if (!lastRan) {
+      func.apply(context, args);
+      lastRan = Date.now();
+    } else {
+      clearTimeout(lastFunc);
+      lastFunc = setTimeout(function() {
+        if ((Date.now() - lastRan) >= limit) {
+          func.apply(context, args);
+          lastRan = Date.now();
+        }
+      }, limit - (Date.now() - lastRan));
+    }
+  }
+}
 
 // 나무 이미지 업데이트 함수
 function updateTreeImage(total) {
@@ -133,8 +159,8 @@ function saveTouches() {
   }
 }
 
-// 나무 이미지 클릭(터치) 이벤트 핸들러
-treeImage.addEventListener('click', (event) => {
+// 터치 이벤트 핸들러 함수
+function handleTouch(event) {
   // 터치 위치 계산
   const rect = treeImage.getBoundingClientRect();
   const x = event.clientX - rect.left;
@@ -153,17 +179,16 @@ treeImage.addEventListener('click', (event) => {
   totalTouchesRef.get().then((doc) => {
     if (doc.exists) {
       const total = doc.data().count + localTouchCount;
-      // 터치 횟수 제한을 없앴으므로, 더 이상 100회 도달 시 자동 저장을 유도하지 않습니다.
-      // 따라서 아래 조건문을 제거하거나 주석 처리합니다.
-      /*
-      if (total >= 100) {
-        alert('터치 횟수가 100회에 도달했습니다. 기록을 저장해주세요.');
-        saveTouches();
-      }
-      */
+      // 터치 횟수 제한을 없앴으므로, 자동 저장 유도 로직 제거
     }
   });
-});
+}
+
+// 스로틀링된 터치 이벤트 핸들러 생성 (500ms 간격)
+const throttledHandleTouch = throttle(handleTouch, 500);
+
+// 터치 이벤트 리스너 추가
+treeImage.addEventListener('click', throttledHandleTouch);
 
 // "기록 저장" 버튼 클릭 이벤트 핸들러
 saveButton.addEventListener('click', () => {
