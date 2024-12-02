@@ -56,7 +56,7 @@ button:hover {
 
 .card {
     width: 350px;
-    height: 250px;
+    height: 300px;
     margin: 0 auto;
     perspective: 1000px;
 }
@@ -107,6 +107,7 @@ button:hover {
     justify-content: center;
     margin: 10px 0;
 }
+
 .bundle {
     display: flex;
     align-items: center;
@@ -116,6 +117,7 @@ button:hover {
     border-radius: 10px;
     background-color: #ffe4e1; /* 연한 분홍색 배경 */
 }
+
 .bundle .fruit {
     width: 50px;
     height: 50px;
@@ -124,9 +126,9 @@ button:hover {
 }
 
 @keyframes float {
-    0% { transform: translatey(0px); }
-    50% { transform: translatey(-10px); }
-    100% { transform: translatey(0px); }
+    0% { transform: translateY(0px); }
+    50% { transform: translateY(-10px); }
+    100% { transform: translateY(0px); }
 }
 
 /* 카드 애니메이션 */
@@ -143,4 +145,30 @@ button:hover {
     font-size: 1em;
     color: #333;
     margin-top: 10px;
+}
+
+/* 모바일(세로) 환경을 위한 반응형 디자인 */
+@media (max-width: 600px) {
+    .card {
+        width: 90%;
+        height: auto;
+    }
+
+    .bundle .fruit {
+        width: 30px;
+        height: 30px;
+    }
+
+    button, .nav-button {
+        padding: 8px 12px;
+        font-size: 0.9em;
+    }
+
+    label, select, input[type="number"] {
+        font-size: 1em;
+    }
+
+    .description {
+        font-size: 0.9em;
+    }
 }
