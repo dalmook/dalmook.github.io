@@ -128,17 +128,30 @@ h1 {
     object-fit: contain;
 }
 
-/* 과일 및 연산자 이미지 정렬을 개선 */
-.display-area img, .display-area span {
-    margin: 2px;
-}
-
+/* 결과 영역 내 텍스트 및 아이콘 정렬 */
 .result-area {
     display: flex;
     flex-direction: column;
     align-items: flex-start;
 }
 
+.result-area .result-text {
+    display: flex;
+    align-items: center;
+    margin-bottom: 5px;
+}
+
+.result-area .result-text span {
+    margin-right: 10px;
+}
+
+/* 연산자 기호 스타일링 */
+.display-area span.operator-symbol {
+    font-size: 24px;
+    margin: 0 5px;
+}
+
+/* 반응형 디자인 */
 @media (max-width: 600px) {
     .button {
         width: 70px;
