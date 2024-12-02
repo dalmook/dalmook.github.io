@@ -1,5 +1,10 @@
 /* gugustyles.css */
 
+/* 모든 요소에 box-sizing 적용 */
+*, *::before, *::after {
+    box-sizing: border-box;
+}
+
 body {
     font-family: 'Arial', sans-serif;
     background-color: #ffefd5; /* 부드러운 배경색 */
@@ -132,7 +137,14 @@ button:hover {
     background-color: #ffe4e1; /* 연한 분홍색 배경 */
 }
 
+.fruit {
+    width: 100%; /* 부모 요소의 너비에 맞춤 */
+    height: auto; /* 높이를 자동으로 조정 */
+    max-width: 50px; /* 최대 너비 제한 */
+}
+
 .bundle .fruit {
+    max-width: 50px; /* 기본 과일 이미지 최대 너비 */
     width: 50px;
     height: 50px;
     margin: 2px;
@@ -170,6 +182,27 @@ button:hover {
 
 /* 모바일(세로) 환경을 위한 반응형 디자인 */
 @media (max-width: 600px) {
+    /* .input-section 레이아웃 변경 */
+    .input-section {
+        flex-direction: column; /* 요소들을 세로로 배치 */
+        align-items: center;    /* 중앙 정렬 */
+    }
+
+    /* label, select, button의 마진과 너비 조정 */
+    .input-section label,
+    .input-section select,
+    .input-section button {
+        margin: 5px 0;          /* 위아래 마진 조정 */
+        width: 100%;            /* 요소들이 부모 컨테이너의 전체 너비 사용 */
+        max-width: 300px;       /* 최대 너비 제한 */
+    }
+
+    /* 이전/다음 버튼의 너비 조정 */
+    .nav-button {
+        width: 100%;
+        max-width: 200px;
+    }
+
     #card-container {
         width: 100%; /* 화면 전체 너비 사용 */
         display: flex;
@@ -178,16 +211,15 @@ button:hover {
         justify-content: flex-start; /* 카드가 위쪽부터 시작 */
         padding: 10px; /* 내부 여백 추가 */
         box-sizing: border-box; /* 패딩 포함한 크기 계산 */
-    }    
-    body {
-        padding: 10px;
     }
+
     .card {
         width: 100%;
         max-width: 100%;
     }
 
     .bundle .fruit {
+        max-width: 30px; /* 모바일에서 과일 이미지의 최대 너비 축소 */
         width: 30px;
         height: 30px;
     }
@@ -203,5 +235,16 @@ button:hover {
 
     .description {
         font-size: 0.9em;
+    }
+
+    /* 과일 이미지의 반응형 조정 */
+    .fruit {
+        width: 100%; /* 부모 요소의 너비에 맞춤 */
+        height: auto; /* 높이를 자동으로 조정 */
+        max-width: 50px; /* 최대 너비 제한 */
+    }
+
+    .bundle .fruit {
+        max-width: 30px; /* 모바일에서 과일 이미지의 최대 너비 축소 */
     }
 }
