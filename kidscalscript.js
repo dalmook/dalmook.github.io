@@ -29,7 +29,11 @@ const fruitCounts = {
 // 계산 로직 변수
 let currentValue = 0;
 let currentOperator = null;
-let previousValue = null;
+let previousValue = 0;
+let previousOperator = null;
+
+// 마지막으로 클릭한 과일을 추적하는 변수
+let lastClickedFruit = null;
 
 // DOM 요소
 const displayArea = document.getElementById('display-area');
@@ -41,6 +45,7 @@ const operatorButtons = document.querySelectorAll('.operator');
 fruitButtons.forEach(button => {
     button.addEventListener('click', () => {
         const fruit = button.getAttribute('data-fruit');
+        lastClickedFruit = fruit; // 마지막 클릭한 과일 업데이트
         addFruit(fruit);
         updateFruitCount(fruit);
     });
@@ -79,20 +84,23 @@ function handleOperator(operator) {
             currentValue = 0;
             currentOperator = null;
             previousValue = null;
-            updateDisplay();
+            previousOperator = null;
+            updateDisplay(); // 계산 후 디스플레이 초기화
         }
     } else {
         if (currentOperator && previousValue !== null) {
             // 연속된 연산자 처리
             previousValue = calculate(previousValue, currentOperator, currentValue);
+            previousOperator = operator;
             currentOperator = operator;
             currentValue = 0;
         } else {
             previousValue = currentValue;
+            previousOperator = operator;
             currentOperator = operator;
             currentValue = 0;
         }
-        updateDisplay();
+        updateDisplay(); // 연산자 클릭 시 디스플레이 업데이트
     }
 }
 
@@ -117,13 +125,12 @@ function updateDisplay(lastFruit = null) {
     // 현재 계산식 표시
     displayArea.innerHTML = '';
 
-    if (previousValue !== null) {
+    if (previousValue !== null && previousValue > 0) {
         // 이전 피연산자 표시 (과일 이미지)
         for (let i = 0; i < previousValue; i++) {
             const fruitImg = document.createElement('img');
-            const randomFruit = getRandomFruit();
-            fruitImg.src = fruitsData[randomFruit].img;
-            fruitImg.alt = fruitsData[randomFruit].name;
+            fruitImg.src = fruitsData[lastFruit].img; // 이전 피연산자도 마지막 과일로 설정
+            fruitImg.alt = fruitsData[lastFruit].name;
             displayArea.appendChild(fruitImg);
         }
 
@@ -140,9 +147,8 @@ function updateDisplay(lastFruit = null) {
     // 현재 피연산자 표시 (과일 이미지)
     for (let i = 0; i < currentValue; i++) {
         const fruitImg = document.createElement('img');
-        const randomFruit = getRandomFruit();
-        fruitImg.src = fruitsData[randomFruit].img;
-        fruitImg.alt = fruitsData[randomFruit].name;
+        fruitImg.src = fruitsData[lastFruit].img;
+        fruitImg.alt = fruitsData[lastFruit].name;
         displayArea.appendChild(fruitImg);
     }
 
@@ -163,34 +169,12 @@ function updateDisplay(lastFruit = null) {
 function displayResult(result) {
     resultArea.innerHTML = '';
     const roundedResult = Math.round(result);
+    const resultFruit = lastClickedFruit || 'apple'; // 마지막 클릭한 과일을 결과 과일로 사용, 없으면 사과
+
     for (let i = 0; i < roundedResult; i++) {
         const fruitImg = document.createElement('img');
-        const randomFruit = getRandomFruit();
-        fruitImg.src = fruitsData[randomFruit].img;
-        fruitImg.alt = fruitsData[randomFruit].name;
+        fruitImg.src = fruitsData[resultFruit].img;
+        fruitImg.alt = fruitsData[resultFruit].name;
         resultArea.appendChild(fruitImg);
-    }
-}
-
-// 랜덤 과일 선택 함수
-function getRandomFruit() {
-    const fruitKeys = Object.keys(fruitsData);
-    const randomKey = fruitKeys[Math.floor(Math.random() * fruitKeys.length)];
-    return randomKey;
-}
-
-// 연산자 기호 변환 함수
-function getOperatorSymbol(operator) {
-    switch(operator) {
-        case '+':
-            return '+';
-        case '-':
-            return '-';
-        case '*':
-            return '×';
-        case '/':
-            return '÷';
-        default:
-            return '';
     }
 }
