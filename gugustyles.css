@@ -81,7 +81,7 @@ button:hover {
 .card {
     width: 350px;
     height: auto; /* 높이를 자동으로 조정 */
-    max-height: 80vh; /* 최대 높이를 뷰포트 높이의 80%로 제한 */
+    /* max-height: 80vh; */ /* max-height 제거 */
     margin: 0 auto;
     perspective: 1000px;
 }
@@ -99,7 +99,7 @@ button:hover {
     transition: transform 0.6s;
     transform-style: preserve-3d;
     position: relative;
-    overflow-y: auto; /* 카드 내용이 넘칠 경우 스크롤 가능 */
+    /* overflow-y: auto; */ /* overflow 제거 */
 }
 
 .hidden {
@@ -111,6 +111,8 @@ button:hover {
     flex-wrap: wrap;
     justify-content: center;
     margin: 10px 0;
+    /* max-height: 150px; */ /* max-height 제거 */
+    /* overflow-y: auto; */   /* overflow 제거 */
 }
 
 .bundle {
@@ -156,7 +158,7 @@ button:hover {
 @media (max-width: 600px) {
     .card {
         width: 90%;
-        max-height: 70vh; /* 최대 높이를 더 줄임 */
+        /* max-height: 70vh; */ /* max-height 제거 */
     }
 
     .bundle .fruit {
@@ -178,7 +180,7 @@ button:hover {
     }
 
     .fruit-group {
-        max-height: 150px; /* 카드 내 과일 그룹 최대 높이 설정 */
-        overflow-y: auto;   /* 과일 그룹 스크롤 가능 */
+        /* max-height: 150px; */ /* max-height 제거 */
+        /* overflow-y: auto; */   /* overflow 제거 */
     }
 }
