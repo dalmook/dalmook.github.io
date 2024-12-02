@@ -40,7 +40,7 @@ const totalSteps = 9;
 
 // 숫자를 한글로 변환하는 함수
 function getKoreanNumber(number){
-    const numbers = ["영", "하나", "둘", "셋", "넷", "다섯", "여섯", "일곱", "여덟", "아홉", "열"];
+    const numbers = ["영", "한 ", "두 ", "세 ", "네 ", "다섯 ", "여섯 ", "일곱 ", "여덟 ", "아홉 ", "열 "];
     if(number <=10){
         return numbers[number];
     } else if(number >10 && number <=20){
