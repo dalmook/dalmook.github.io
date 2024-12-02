@@ -105,10 +105,6 @@ h1 {
     background-color: #f08080; /* 백스페이스 버튼 색상 변경 */
 }
 
-.button.operator.clear-all {
-    background-color: #90ee90; /* 지우기 버튼 색상 변경 */
-}
-
 .button.operator:active {
     background-color: #ddd;
 }
@@ -175,25 +171,6 @@ h1 {
     width: 20px;
     height: 20px;
     margin-right: 5px;
-}
-
-/* 추가된 클래스 */
-.display-fruit-img {
-    width: 30px;
-    height: 30px;
-    margin: 2px;
-    object-fit: contain;
-    border: 2px solid transparent; /* 기본 테두리 */
-}
-
-.display-fruit-img:last-child {
-    border: 2px solid #ff0000; /* 마지막 과일 강조 테두리 */
-}
-
-.result-fruit-img {
-    width: 20px;
-    height: 20px;
-    object-fit: contain;
 }
 
 /* 반응형 디자인 */
