@@ -11,7 +11,7 @@ const fruitsData = {
     strawberry: { name: '딸기', img: 'images/딸기.png' },
     persimmon: { name: '감', img: 'images/감.png' },
     grape: { name: '포도', img: 'images/포도.png' },
-    poo: { name: '똥', img: 'images/poo.png' }
+    poo: { name: '똥', img: 'images/poo.png' } // 새 과일 추가
 };
 
 // 과일 카운트 데이터
@@ -25,7 +25,7 @@ let fruitCounts = {
     strawberry: 0,
     persimmon: 0,
     grape: 0,
-    poo: 0
+    poo: 0 // 새 과일 카운트 추가
 };
 
 // 계산 로직 변수
@@ -165,6 +165,8 @@ function updateDisplay() {
             const fruitImg = document.createElement('img');
             fruitImg.src = fruitsData[input.name].img;
             fruitImg.alt = fruitsData[input.name].name;
+            fruitImg.title = fruitsData[input.name].name;
+            fruitImg.classList.add('display-fruit-img');
             displayArea.appendChild(fruitImg);
         } else if (input.type === 'operator') {
             const operatorSpan = document.createElement('span');
@@ -179,8 +181,13 @@ function updateDisplay() {
 
 // 결과 표시 함수
 function displayResult(result) {
-    // 전체 카운트 계산
-    let totalCount = result; // the calculated result
+    // Clear previous result
+    resultArea.innerHTML = '';
+
+    // Create text node for "결과: X개 ("
+    const resultText = document.createElement('span');
+    resultText.textContent = `결과: ${result}개 (`;
+    resultArea.appendChild(resultText);
 
     // Split inputs into operand1 and operand2
     let operand1Fruits = {};
@@ -202,21 +209,52 @@ function displayResult(result) {
         }
     });
 
-    // Function to construct fruit part string
-    function constructFruitString(fruitObj) {
-        return Object.entries(fruitObj).map(([fruit, count]) => {
-            return `${fruitsData[fruit].name} ${count}개`;
-        }).join(' + '); // assuming multiple fruits per operand are summed
+    // Function to append fruits to resultArea
+    function appendFruits(fruitObj) {
+        Object.entries(fruitObj).forEach(([fruit, count], index, array) => {
+            // Create image element
+            const img = document.createElement('img');
+            img.src = fruitsData[fruit].img;
+            img.alt = fruitsData[fruit].name;
+            img.title = fruitsData[fruit].name;
+            img.classList.add('result-fruit-img');
+
+            // Create span for count
+            const countSpan = document.createElement('span');
+            countSpan.textContent = `${count}개`;
+
+            // Create container for image and count
+            const fruitContainer = document.createElement('span');
+            fruitContainer.classList.add('fruit-result');
+            fruitContainer.appendChild(img);
+            fruitContainer.appendChild(countSpan);
+
+            resultArea.appendChild(fruitContainer);
+
+            // Add '+' or operator if not the last fruit
+            if (index < array.length - 1) {
+                const plus = document.createTextNode(' + ');
+                resultArea.appendChild(plus);
+            }
+        });
     }
 
-    let operand1String = constructFruitString(operand1Fruits);
-    let operand2String = constructFruitString(operand2Fruits);
+    // Append operand1 fruits
+    appendFruits(operand1Fruits);
 
-    // Construct equation string
-    let equationString = `${operand1String} ${operatorSymbol} ${operand2String}`;
+    // Append operator symbol
+    const operatorSpan = document.createElement('span');
+    operatorSpan.textContent = ` ${operatorSymbol} `;
+    operatorSpan.classList.add('operator-symbol');
+    resultArea.appendChild(operatorSpan);
 
-    // Set resultArea
-    resultArea.innerHTML = `결과: ${totalCount}개 (${equationString})`;
+    // Append operand2 fruits
+    appendFruits(operand2Fruits);
+
+    // Closing parenthesis
+    const closingParen = document.createElement('span');
+    closingParen.textContent = ')';
+    resultArea.appendChild(closingParen);
 }
 
 // 연산자 기호 변환 함수
