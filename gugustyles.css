@@ -57,6 +57,27 @@ button:hover {
     margin-top: 30px;
 }
 
+/* 이전/다음 버튼 스타일 */
+.navigation-buttons {
+    margin-bottom: 15px; /* 카드 위에 배치되므로 아래 여백 조정 */
+}
+
+.nav-button {
+    padding: 10px 15px;
+    font-size: 1em;
+    background-color: #87cefa;
+    color: white;
+    border: none;
+    cursor: pointer;
+    border-radius: 5px;
+    margin: 0 10px;
+    transition: background-color 0.3s ease;
+}
+
+.nav-button:hover {
+    background-color: #00bfff;
+}
+
 .card {
     width: 350px;
     height: auto; /* 높이를 자동으로 조정 */
@@ -83,26 +104,6 @@ button:hover {
 
 .hidden {
     display: none;
-}
-
-.navigation-buttons {
-    margin-top: 20px;
-}
-
-.nav-button {
-    padding: 10px 15px;
-    font-size: 1em;
-    background-color: #87cefa;
-    color: white;
-    border: none;
-    cursor: pointer;
-    border-radius: 5px;
-    margin: 0 10px;
-    transition: background-color 0.3s ease;
-}
-
-.nav-button:hover {
-    background-color: #00bfff;
 }
 
 .fruit-group {
