@@ -64,18 +64,23 @@ function addFruit(fruit) {
     updateDisplay();
 }
 
+// 과일 카운트 업데이트 함수
+function updateFruitCount(fruit) {
+    fruitCounts[fruit] += 1;
+    const countElement = document.getElementById(`count-${fruit}`);
+    if (countElement) {
+        countElement.textContent = fruitCounts[fruit];
+    }
+}
+
 // 연산자 처리 함수
 function handleOperator(operator) {
     if (operator === '=') {
         if (currentOperator && previousValue !== null) {
             const result = calculate(previousValue, currentOperator, currentValue);
             displayResult(result);
-            // 초기화
-            currentValue = 0;
-            currentOperator = null;
-            previousValue = null;
-            inputs = [];
-            updateDisplay();
+            // 결과 창에 결과를 표시한 후, 초기화
+            resetCalculator();
         }
     } else if (operator === 'backspace') {
         handleBackspace();
@@ -105,6 +110,7 @@ function handleBackspace() {
             currentValue -= 1;
             if (fruitCounts[fruitName] > 0) {
                 fruitCounts[fruitName] -= 1;
+                updateFruitCountDisplay(fruitName);
             }
         } else if (lastInput.type === 'operator') {
             if (lastInput.value !== 'backspace') {
@@ -162,20 +168,8 @@ function updateDisplay() {
         }
     });
 
-    // 마지막 추가된 과일 강조 표시 (선택 사항)
-    if (inputs.length > 0) {
-        const lastInput = inputs[inputs.length - 1];
-        if (lastInput.type === 'fruit') {
-            const lastFruitImg = document.createElement('img');
-            lastFruitImg.src = fruitsData[lastInput.name].img;
-            lastFruitImg.alt = fruitsData[lastInput.name].name;
-            lastFruitImg.style.width = '30px';
-            lastFruitImg.style.height = '30px';
-            lastFruitImg.style.margin = '2px';
-            lastFruitImg.style.border = '2px solid #ff0000';
-            displayArea.appendChild(lastFruitImg);
-        }
-    }
+    // 마지막 추가된 과일 강조 표시
+    // 기존에 중복으로 이미지가 추가되는 문제를 해결하기 위해 CSS에서 마지막 이미지를 강조합니다.
 }
 
 // 결과 표시 함수
@@ -214,10 +208,45 @@ function displayResult(result) {
     fruitElements.forEach((el, index) => {
         resultArea.appendChild(el);
         if (index < fruitElements.length - 1) {
-            const comma = document.createTextNode(', ');
-            resultArea.appendChild(comma);
+            const plus = document.createTextNode(' + ');
+            resultArea.appendChild(plus);
         }
     });
 
     resultArea.innerHTML += ')'; // 끝 부분
+}
+
+// 연산자 기호 변환 함수
+function getOperatorSymbol(operator) {
+    switch(operator) {
+        case '+':
+            return '+';
+        case '-':
+            return '-';
+        case '*':
+            return '×';
+        case '/':
+            return '÷';
+        case 'backspace':
+            return '←';
+        default:
+            return '';
+    }
+}
+
+// 과일 카운트 업데이트 디스플레이 함수
+function updateFruitCountDisplay(fruit) {
+    const countElement = document.getElementById(`count-${fruit}`);
+    if (countElement) {
+        countElement.textContent = fruitCounts[fruit];
+    }
+}
+
+// 계산 초기화 함수
+function resetCalculator() {
+    currentValue = 0;
+    currentOperator = null;
+    previousValue = null;
+    inputs = [];
+    updateDisplay();
 }
