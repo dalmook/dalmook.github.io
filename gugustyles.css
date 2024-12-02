@@ -55,8 +55,8 @@ button:hover {
 }
 
 .card {
-    width: 300px;
-    height: 200px;
+    width: 350px;
+    height: 250px;
     margin: 0 auto;
     perspective: 1000px;
 }
@@ -101,12 +101,6 @@ button:hover {
     background-color: #00bfff;
 }
 
-.fruit {
-    width: 50px;
-    height: 50px;
-    margin: 5px;
-    animation: float 2s ease-in-out infinite;
-}
 .fruit-group {
     display: flex;
     flex-wrap: wrap;
@@ -114,22 +108,13 @@ button:hover {
     margin: 10px 0;
 }
 
-.bundle {
-    display: flex;
-    align-items: center;
-    margin: 5px;
-    padding: 5px;
-    border: 2px dashed #ff6347;
-    border-radius: 10px;
-    background-color: #ffe4e1; /* 연한 분홍색 배경 */
-}
-
-.bundle .fruit {
+.fruit {
     width: 50px;
     height: 50px;
-    margin: 2px;
+    margin: 5px;
     animation: float 2s ease-in-out infinite;
 }
+
 @keyframes float {
     0% { transform: translatey(0px); }
     50% { transform: translatey(-10px); }
@@ -144,4 +129,10 @@ button:hover {
 @keyframes flipIn {
     from { opacity: 0; transform: rotateY(90deg); }
     to { opacity: 1; transform: rotateY(0deg); }
+}
+
+.description {
+    font-size: 1em;
+    color: #333;
+    margin-top: 10px;
 }
