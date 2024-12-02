@@ -32,6 +32,7 @@ const DAN_SELECT = document.getElementById('dan-select');
 const SUBMIT_BUTTON = document.getElementById('submit-dan');
 const VISUAL_CONTAINER = document.getElementById('card-container');
 const CARD_CONTENT = document.getElementById('card-content');
+const CARD_DESCRIPTION = document.getElementById('card-description'); // 설명 텍스트 요소 추가
 const FEEDBACK = document.getElementById('feedback');
 const PREV_BUTTON = document.getElementById('prev-button');
 const NEXT_BUTTON = document.getElementById('next-button');
@@ -56,9 +57,6 @@ function getKoreanNumber(number){
 // 제출 버튼 클릭 시 단 선택 처리
 SUBMIT_BUTTON.addEventListener('click', function() {
     let dan = DAN_SELECT.value;
-
-    // 입력란이 제거되었으므로 입력값을 가져올 필요가 없습니다.
-    // dan = parseInt(DAN_INPUT.value);
 
     dan = parseInt(dan);
 
@@ -110,8 +108,11 @@ function generateCard(dan, step){
         <div class="fruit-group">
             ${generateFruitGroups(dan, step)}
         </div>
-        <p class="description">${description}</p>
     `;
+
+    // 설명 텍스트 업데이트
+    CARD_DESCRIPTION.textContent = description;
+    CARD_DESCRIPTION.classList.remove('hidden');
 
     // 애니메이션 효과
     const card = document.getElementById('card-content');
