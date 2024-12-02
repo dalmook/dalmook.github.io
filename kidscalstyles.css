@@ -64,13 +64,13 @@ h1 {
 }
 
 .button {
-    width: 80px;
-    height: 100px;
+    width: 60px; /* 버튼 크기 조정 */
+    height: 60px; /* 버튼 크기 조정 */
     margin: 5px;
     border: none;
     border-radius: 10px;
     background-color: #ffcccb;
-    font-size: 24px;
+    font-size: 20px; /* 폰트 크기 조정 */
     cursor: pointer;
     transition: background-color 0.3s;
     display: flex;
@@ -81,22 +81,22 @@ h1 {
 }
 
 .button img {
-    width: 60%;
-    height: 60%;
+    width: 40%; /* 이미지 크기 조정 */
+    height: 40%; /* 이미지 크기 조정 */
     object-fit: contain;
 }
 
 .button .fruit-name {
-    margin-top: 5px;
-    font-size: 14px;
+    margin-top: 2px;
+    font-size: 12px; /* 폰트 크기 조정 */
     color: #333;
 }
 
 .button.operator {
-    width: 80px;
-    height: 80px;
+    width: 60px; /* 버튼 크기 조정 */
+    height: 60px; /* 버튼 크기 조정 */
     background-color: #add8e6;
-    font-size: 24px;
+    font-size: 20px; /* 폰트 크기 조정 */
     padding: 0;
     justify-content: center;
 }
@@ -119,19 +119,19 @@ h1 {
 
 .fruit-count {
     position: absolute;
-    top: 5px;
-    right: 10px;
+    top: 2px;
+    right: 5px;
     background-color: rgba(255, 255, 255, 0.8);
     border-radius: 50%;
-    padding: 2px 6px;
-    font-size: 12px;
+    padding: 1px 4px;
+    font-size: 10px; /* 폰트 크기 조정 */
     font-weight: bold;
     color: #333;
 }
 
 .display-area img {
-    width: 30px;
-    height: 30px;
+    width: 25px;
+    height: 25px;
     margin: 2px;
     object-fit: contain;
     border: 2px solid transparent; /* 기본 테두리 */
@@ -160,7 +160,7 @@ h1 {
 
 /* 연산자 기호 스타일링 */
 .display-area span.operator-symbol {
-    font-size: 24px;
+    font-size: 20px; /* 폰트 크기 조정 */
     margin: 0 5px;
 }
 
@@ -179,8 +179,8 @@ h1 {
 
 /* 추가된 클래스 */
 .display-fruit-img {
-    width: 30px;
-    height: 30px;
+    width: 25px;
+    height: 25px;
     margin: 2px;
     object-fit: contain;
     border: 2px solid transparent; /* 기본 테두리 */
@@ -199,19 +199,19 @@ h1 {
 /* 반응형 디자인 */
 @media (max-width: 600px) {
     .button {
-        width: 70px;
-        height: 90px;
+        width: 50px; /* 더 작은 화면을 위한 버튼 크기 조정 */
+        height: 50px;
     }
 
     .button.operator {
-        width: 70px;
-        height: 70px;
-        font-size: 20px;
+        width: 50px;
+        height: 50px;
+        font-size: 16px; /* 폰트 크기 조정 */
     }
 
     .result-area img, .display-area img {
-        width: 25px;
-        height: 25px;
+        width: 20px;
+        height: 20px;
     }
 
     h1 {
@@ -221,19 +221,19 @@ h1 {
 
 @media (max-width: 400px) {
     .button {
-        width: 60px;
-        height: 80px;
+        width: 40px; /* 더 작은 화면을 위한 버튼 크기 조정 */
+        height: 40px;
     }
 
     .button.operator {
-        width: 60px;
-        height: 60px;
-        font-size: 18px;
+        width: 40px;
+        height: 40px;
+        font-size: 14px; /* 폰트 크기 조정 */
     }
 
     .result-area img, .display-area img {
-        width: 20px;
-        height: 20px;
+        width: 15px;
+        height: 15px;
     }
 
     h1 {
