@@ -129,6 +129,7 @@ h1 {
     color: #333;
 }
 
+/* 계산식 표시 영역 */
 .display-area img {
     width: 25px;
     height: 25px;
@@ -141,30 +142,12 @@ h1 {
     border: 2px solid #ff0000; /* 마지막 과일 강조 테두리 */
 }
 
-.result-area img, .result-area .fruit-result img {
-    width: 20px;
-    height: 20px;
-    margin-right: 5px;
-    object-fit: contain;
-}
-
-.result-area .fruit-result {
-    display: flex;
-    align-items: center;
-    margin-right: 10px;
-}
-
-.result-area .fruit-result:last-child {
-    margin-right: 0;
-}
-
-/* 연산자 기호 스타일링 */
-.display-area span.operator-symbol {
+.display-area .operator-symbol {
     font-size: 20px; /* 폰트 크기 조정 */
     margin: 0 5px;
 }
 
-/* 결과 창의 과일 아이콘과 개수 정렬 */
+/* 결과 표시 영역 */
 .result-area .fruit-result {
     display: flex;
     align-items: center;
@@ -177,23 +160,9 @@ h1 {
     margin-right: 5px;
 }
 
-/* 추가된 클래스 */
-.display-fruit-img {
-    width: 25px;
-    height: 25px;
-    margin: 2px;
-    object-fit: contain;
-    border: 2px solid transparent; /* 기본 테두리 */
-}
-
-.display-fruit-img:last-child {
-    border: 2px solid #ff0000; /* 마지막 과일 강조 테두리 */
-}
-
-.result-fruit-img {
-    width: 20px;
-    height: 20px;
-    object-fit: contain;
+.result-area .operator-symbol {
+    font-size: 20px;
+    margin: 0 5px;
 }
 
 /* 반응형 디자인 */
@@ -209,7 +178,7 @@ h1 {
         font-size: 16px; /* 폰트 크기 조정 */
     }
 
-    .result-area img, .display-area img {
+    .result-area .fruit-result img, .display-area img {
         width: 20px;
         height: 20px;
     }
@@ -231,7 +200,7 @@ h1 {
         font-size: 14px; /* 폰트 크기 조정 */
     }
 
-    .result-area img, .display-area img {
+    .result-area .fruit-result img, .display-area img {
         width: 15px;
         height: 15px;
     }
@@ -246,4 +215,11 @@ h1 {
     .buttons-row {
         max-width: 100%;
     }
+}
+
+/* 결과 표시 과일 아이콘 배치 */
+.result-area .fruit-result img {
+    width: 20px;
+    height: 20px;
+    margin-right: 5px;
 }
