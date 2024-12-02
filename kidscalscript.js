@@ -132,10 +132,11 @@ function handleBackspace() {
             fruitCounts[fruit] -= 1;
             updateFruitCountDisplay(fruit);
         }
+    } else if (lastInput.type === 'operator') {
+        // nothing extra to do
     }
 
-    // 연산자가 마지막에 있었으면 다음으로 되돌림
-    // 예: 과일 + 연산자 -> 과일만 남게 됨
+    // 계산식 업데이트
     updateDisplay();
 
     // 결과 영역 초기화
@@ -178,71 +179,110 @@ function updateDisplay() {
 function calculateResult() {
     if (inputs.length === 0) return;
 
-    // 입력을 연산자 우선순위에 따라 계산
-    // 단순화하여 왼쪽에서 오른쪽으로 계산 (우선순위 무시)
-    let total = 0;
-    let currentOperator = null;
+    // Parse inputs into operands and operators
+    let operands = [];
+    let operators = [];
+
+    let currentOperand = {};
+
+    inputs.forEach(input => {
+        if (input.type === 'fruit') {
+            currentOperand[input.value] = (currentOperand[input.value] || 0) + 1;
+        } else if (input.type === 'operator') {
+            operands.push(currentOperand);
+            operators.push(input.value);
+            currentOperand = {};
+        }
+    });
+
+    // Push the last operand
+    if (Object.keys(currentOperand).length > 0) {
+        operands.push(currentOperand);
+    }
+
+    // Check if operands and operators are valid
+    if (operators.length !== operands.length - 1) {
+        alert("올바른 계산을 위해 과일을 선택하고 연산자를 입력하세요.");
+        return;
+    }
+
+    // Convert operands to total counts
+    let operandValues = operands.map(operand => sumFruitCounts(operand));
+
+    // Implement operator precedence: '*' and '/' before '+' and '-'
+
+    let i = 0;
+    while (i < operators.length) {
+        if (operators[i] === '*' || operators[i] === '/') {
+            let a = operandValues[i];
+            let b = operandValues[i + 1];
+            let res = 0;
+            if (operators[i] === '*') {
+                res = a * b;
+            } else if (operators[i] === '/') {
+                res = b !== 0 ? Math.floor(a / b) : 0;
+            }
+            operandValues.splice(i, 2, res);
+            operators.splice(i, 1);
+        } else {
+            i++;
+        }
+    }
+
+    // Now, handle '+' and '-'
+    let total = operandValues[0];
+    for (let j = 0; j < operators.length; j++) {
+        if (operators[j] === '+') {
+            total += operandValues[j + 1];
+        } else if (operators[j] === '-') {
+            total -= operandValues[j + 1];
+        }
+    }
+
+    // Now, format the expression for display as per user:
+    // Remove parentheses, use '+' only for '+' operators, and ',' otherwise.
+
     let expressionParts = [];
-
-    inputs.forEach(input => {
-        if (input.type === 'fruit') {
-            const count = fruitCounts[input.value];
-            if (currentOperator === null) {
-                total = count;
-                expressionParts.push(`${fruitsData[input.value].name} ${count}개`);
+    for (let k = 0; k < operands.length; k++) {
+        let operandStr = constructFruitString(operands[k]);
+        if (k > 0) {
+            let operator = operators[k - 1];
+            if (operator === '+') {
+                expressionParts.push(`+ ${operandStr}`);
             } else {
-                if (currentOperator === '+') {
-                    total += count;
-                    expressionParts.push(`+ ${fruitsData[input.value].name} ${count}개`);
-                } else if (currentOperator === '-') {
-                    total -= count;
-                    expressionParts.push(`- ${fruitsData[input.value].name} ${count}개`);
-                } else if (currentOperator === '*') {
-                    total *= count;
-                    expressionParts.push(`× ${fruitsData[input.value].name} ${count}개`);
-                } else if (currentOperator === '/') {
-                    total = count !== 0 ? Math.floor(total / count) : 0; // 정수 나눗셈
-                    expressionParts.push(`÷ ${fruitsData[input.value].name} ${count}개`);
-                }
-                currentOperator = null; // 연산자 초기화
+                expressionParts.push(`* ${operandStr}`); // For '*', '/' use the operator itself
             }
-        } else if (input.type === 'operator') {
-            currentOperator = input.value;
+        } else {
+            expressionParts.push(operandStr);
         }
-    });
+    }
 
-    // 표현식 조합
-    const expressionStr = expressionParts.join(' ');
+    let expressionStr = expressionParts.join(' ');
 
-    // 결과 표시 형식: 결과: 00개 [사과 4개 + 배 3개, 오렌지 3개]
-    // + 연산자일 때만 '+' 사용하고, 그 외는 ','로 구분
-    // 단, 위에서 단순 왼쪽에서 오른쪽으로 계산하므로 별도의 구분은 필요 없을 수 있습니다.
-    // 그러나 사용자가 요청한 대로 표현을 조정하겠습니다.
+    // Display without parentheses
+    resultArea.innerHTML = `결과: ${total}개 [${expressionStr}]`;
 
-    // 새로운 표현식을 위한 로직
-    let formattedExpression = '';
-    let tempExpression = '';
-    let operator = null;
+    // Reset inputs after calculation
+    inputs = [];
+    updateDisplay();
+}
 
-    inputs.forEach(input => {
-        if (input.type === 'fruit') {
-            const count = fruitCounts[input.value];
-            if (operator === null) {
-                tempExpression += `${fruitsData[input.value].name} ${count}개`;
-            } else if (operator === '+') {
-                tempExpression += ` + ${fruitsData[input.value].name} ${count}개`;
-            } else {
-                tempExpression += `, ${fruitsData[input.value].name} ${count}개`;
-            }
-        } else if (input.type === 'operator') {
-            operator = input.value;
+// 과일 개수 합산 함수
+function sumFruitCounts(operandObj) {
+    let sum = 0;
+    for (const fruit in operandObj) {
+        if (operandObj.hasOwnProperty(fruit)) {
+            sum += operandObj[fruit];
         }
-    });
+    }
+    return sum;
+}
 
-    formattedExpression = tempExpression;
-
-    // 결과 영역에 표시
-    resultArea.innerHTML = `결과: ${total}개 [${formattedExpression}]`;
+// 과일 문자열 생성 함수
+function constructFruitString(fruitObj) {
+    return Object.entries(fruitObj).map(([fruit, count]) => {
+        return `${fruitsData[fruit].name} ${count}개`;
+    }).join(' + ');
 }
 
 // 연산자 기호 변환 함수
