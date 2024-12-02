@@ -1,28 +1,36 @@
 /* kidscalstyles.css */
 
+* {
+    box-sizing: border-box;
+}
+
 body {
     font-family: Arial, sans-serif;
     background-color: #f0f8ff;
     display: flex;
     flex-direction: column;
     align-items: center;
-    padding: 20px;
+    padding: 10px;
+    margin: 0;
+    height: 100vh;
+    overflow-y: auto;
 }
 
 h1 {
     color: #333;
-    margin-bottom: 20px;
+    margin-bottom: 10px;
     text-align: center;
+    font-size: 24px;
 }
 
 .display-area, .result-area {
     width: 100%;
-    max-width: 500px;
-    min-height: 150px;
+    max-width: 400px;
+    min-height: 120px;
     border: 2px solid;
     border-radius: 10px;
     background-color: #ffffff;
-    margin-bottom: 20px;
+    margin-bottom: 10px;
     padding: 10px;
     display: flex;
     flex-wrap: wrap;
@@ -41,7 +49,7 @@ h1 {
 
 .buttons-row {
     width: 100%;
-    max-width: 500px;
+    max-width: 400px;
     display: flex;
     flex-wrap: wrap;
     justify-content: center;
@@ -107,6 +115,10 @@ h1 {
         width: 35px;
         height: 35px;
     }
+
+    h1 {
+        font-size: 20px;
+    }
 }
 
 @media (max-width: 400px) {
@@ -124,5 +136,16 @@ h1 {
     .result-area img, .display-area img {
         width: 30px;
         height: 30px;
+    }
+
+    h1 {
+        font-size: 18px;
+    }
+}
+
+/* 모바일 세로 화면 최적화 */
+@media (orientation: portrait) and (max-width: 600px) {
+    .buttons-row {
+        max-width: 100%;
     }
 }
