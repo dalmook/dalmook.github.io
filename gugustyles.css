@@ -1,0 +1,104 @@
+/* gugustyles.css */
+
+body {
+    font-family: 'Arial', sans-serif;
+    background-color: #f0f8ff;
+    text-align: center;
+    padding: 20px;
+}
+
+h1 {
+    color: #333;
+}
+
+.input-section {
+    margin: 20px 0;
+}
+
+label {
+    font-size: 1.2em;
+    margin-right: 10px;
+}
+
+select, input[type="number"] {
+    padding: 10px;
+    font-size: 1em;
+    margin-right: 10px;
+}
+
+button {
+    padding: 10px 20px;
+    font-size: 1em;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    cursor: pointer;
+    border-radius: 5px;
+}
+
+button:hover {
+    background-color: #45a049;
+}
+
+#visual-container {
+    margin-top: 30px;
+}
+
+.multiplication-row {
+    margin-bottom: 20px;
+}
+
+.fruit-group {
+    margin: 5px 0;
+}
+
+.fruit {
+    width: 30px;
+    height: 30px;
+    margin: 2px;
+    vertical-align: middle;
+}
+
+.result {
+    font-weight: bold;
+    margin-left: 10px;
+    font-size: 1.1em;
+}
+
+/* Responsive Design */
+@media (max-width: 600px) {
+    .fruit {
+        width: 25px;
+        height: 25px;
+    }
+
+    button {
+        padding: 8px 16px;
+        font-size: 0.9em;
+    }
+
+    label, select, input[type="number"] {
+        font-size: 1em;
+    }
+}
+
+/* Animation */
+.fruit-enter {
+    opacity: 0;
+    transform: scale(0.5);
+    animation: grow 0.5s forwards;
+}
+
+@keyframes grow {
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+/* Feedback Message */
+#feedback {
+    margin-top: 20px;
+    font-size: 1.1em;
+    color: #ff4500;
+}
