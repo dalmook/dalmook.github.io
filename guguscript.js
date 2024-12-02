@@ -38,12 +38,14 @@ let currentDan = null;
 let currentStep = 1; // 현재 카드 단계 (1~9)
 const totalSteps = 9;
 
+// 사용자가 수정한 numbers 배열
+const numbers = ["영", "한 ", "두 ", "세 ", "네 ", "다섯 ", "여섯 ", "일곱 ", "여덟 ", "아홉 ", "열 "];
+
 // 숫자를 한글로 변환하는 함수
 function getKoreanNumber(number){
-    const numbers = ["영", "한 ", "두 ", "세 ", "네 ", "다섯 ", "여섯 ", "일곱 ", "여덟 ", "아홉 ", "열 "];
-    if(number <=10){
+    if(number >= 0 && number < numbers.length){
         return numbers[number].trim(); // 앞뒤 공백 제거
-    } else if(number >10 && number <=20){
+    } else if(number >=10 && number < 20){
         return `${numbers[10].trim()} ${numbers[number-10].trim()}`;
     } else {
         // 복잡한 숫자 처리는 여기서 추가 가능
@@ -147,3 +149,13 @@ function updateNavigationButtons(){
     PREV_BUTTON.style.opacity = currentStep === 1 ? '0.5' : '1';
     NEXT_BUTTON.style.opacity = currentStep === totalSteps ? '0.5' : '1';
 }
+
+// 페이지 로드 시 기본 단 자동 선택 및 카드 표시
+document.addEventListener('DOMContentLoaded', function() {
+    const defaultDan = parseInt(DAN_SELECT.value);
+    if (defaultDan >=1 && defaultDan <=9){
+        generateCard(defaultDan, currentStep);
+        VISUAL_CONTAINER.classList.remove('hidden');
+        updateNavigationButtons();
+    }
+});
