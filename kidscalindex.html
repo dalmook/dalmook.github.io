@@ -1,249 +1,102 @@
-/* kidscalstyles.css */
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>어린이 계산기</title>
+    <!-- 외부 CSS 파일 연결 -->
+    <link rel="stylesheet" href="kidscalstyles.css">
+    <!-- 모바일 최적화를 위한 뷰포트 설정 -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body>
 
-* {
-    box-sizing: border-box;
-}
+    <h1>어린이 계산기</h1>
 
-body {
-    font-family: Arial, sans-serif;
-    background-color: #f0f8ff;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    padding: 10px;
-    margin: 0;
-    min-height: 100vh;
-    overflow-y: auto;
-}
+    <!-- 결과 표시 영역 -->
+    <div class="result-area" id="result-area">
+        <!-- 결과 텍스트가 여기에 표시됩니다 -->
+    </div>
 
-h1 {
-    color: #333;
-    margin-bottom: 10px;
-    text-align: center;
-    font-size: 24px;
-}
+    <!-- 현재 계산식 표시 영역 -->
+    <div class="display-area" id="display-area">
+        <!-- 현재 계산식이 여기에 표시됩니다 -->
+    </div>
 
-.display-area, .result-area {
-    width: 100%;
-    max-width: 400px;
-    min-height: 120px;
-    border: 2px solid;
-    border-radius: 10px;
-    background-color: #ffffff;
-    margin-bottom: 10px;
-    padding: 10px;
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    justify-content: flex-start;
-    overflow-y: auto;
-}
+    <!-- 과일 버튼 행 1 -->
+    <div class="buttons-row" id="fruits-row-1">
+        <!-- 5종류의 과일 버튼 -->
+        <button class="button fruit-button" data-fruit="apple">
+            <img src="images/사과.png" alt="사과">
+            <span class="fruit-name">사과</span>
+            <span class="fruit-count" id="count-apple">0</span>
+        </button>
+        <button class="button fruit-button" data-fruit="pear">
+            <img src="images/배.png" alt="배">
+            <span class="fruit-name">배</span>
+            <span class="fruit-count" id="count-pear">0</span>
+        </button>
+        <button class="button fruit-button" data-fruit="watermelon">
+            <img src="images/수박.png" alt="수박">
+            <span class="fruit-name">수박</span>
+            <span class="fruit-count" id="count-watermelon">0</span>
+        </button>
+        <button class="button fruit-button" data-fruit="kiwi">
+            <img src="images/키위.png" alt="키위">
+            <span class="fruit-name">키위</span>
+            <span class="fruit-count" id="count-kiwi">0</span>
+        </button>
+        <button class="button fruit-button" data-fruit="banana">
+            <img src="images/바나나.png" alt="바나나">
+            <span class="fruit-name">바나나</span>
+            <span class="fruit-count" id="count-banana">0</span>
+        </button>
+    </div>
 
-.display-area {
-    border-color: #4CAF50;
-}
+    <!-- 과일 버튼 행 2 -->
+    <div class="buttons-row" id="fruits-row-2">
+        <!-- 5종류의 과일 버튼 (똥 포함) -->
+        <button class="button fruit-button" data-fruit="orange">
+            <img src="images/오렌지.png" alt="오렌지">
+            <span class="fruit-name">오렌지</span>
+            <span class="fruit-count" id="count-orange">0</span>
+        </button>
+        <button class="button fruit-button" data-fruit="strawberry">
+            <img src="images/딸기.png" alt="딸기">
+            <span class="fruit-name">딸기</span>
+            <span class="fruit-count" id="count-strawberry">0</span>
+        </button>
+        <button class="button fruit-button" data-fruit="persimmon">
+            <img src="images/감.png" alt="감">
+            <span class="fruit-name">감</span>
+            <span class="fruit-count" id="count-persimmon">0</span>
+        </button>
+        <button class="button fruit-button" data-fruit="grape">
+            <img src="images/포도.png" alt="포도">
+            <span class="fruit-name">포도</span>
+            <span class="fruit-count" id="count-grape">0</span>
+        </button>
+        <button class="button fruit-button" data-fruit="poo">
+            <img src="images/poo.png" alt="똥">
+            <span class="fruit-name">똥</span>
+            <span class="fruit-count" id="count-poo">0</span>
+        </button>
+    </div>
 
-.result-area {
-    border-color: #ffa500;
-    font-size: 18px;
-    color: #333;
-    display: flex;
-    flex-direction: row; /* 한 줄로 표시 */
-    align-items: center;
-    flex-wrap: wrap; /* 필요 시 행바꿈 */
-}
+    <!-- 연산자 버튼 행 -->
+    <div class="buttons-row" id="operators-row">
+        <button class="button operator" data-operator="(">(</button>
+        <button class="button operator" data-operator=")">)</button>
+        <button class="button operator" data-operator="+">+</button>
+        <button class="button operator" data-operator="-">-</button>
+        <button class="button operator" data-operator="*">×</button>
+        <button class="button operator" data-operator="/">÷</button>
+        <button class="button operator backspace" data-operator="backspace">←</button> <!-- ← 버튼 -->
+        <button class="button operator clear-all" data-operator="clear">C</button> <!-- 지우기 버튼 추가 -->
+        <button class="button operator" data-operator="=">=</button>
+    </div>
 
-.buttons-row {
-    width: 100%;
-    max-width: 400px;
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    margin-bottom: 10px;
-    position: relative;
-}
+    <!-- 외부 JavaScript 파일 연결 -->
+    <script src="kidscalscript.js"></script>
 
-.button {
-    width: 60px; /* 버튼 크기 조정 */
-    height: 60px; /* 버튼 크기 조정 */
-    margin: 5px;
-    border: none;
-    border-radius: 10px;
-    background-color: #ffcccb;
-    font-size: 20px; /* 폰트 크기 조정 */
-    cursor: pointer;
-    transition: background-color 0.3s;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    position: relative;
-}
-
-.button img {
-    width: 40%; /* 이미지 크기 조정 */
-    height: 40%; /* 이미지 크기 조정 */
-    object-fit: contain;
-}
-
-.button .fruit-name {
-    margin-top: 2px;
-    font-size: 12px; /* 폰트 크기 조정 */
-    color: #333;
-}
-
-.button.operator {
-    width: 60px; /* 버튼 크기 조정 */
-    height: 60px; /* 버튼 크기 조정 */
-    background-color: #add8e6;
-    font-size: 20px; /* 폰트 크기 조정 */
-    padding: 0;
-    justify-content: center;
-}
-
-.button.operator.backspace {
-    background-color: #f08080; /* 백스페이스 버튼 색상 변경 */
-}
-
-.button.operator.clear-all {
-    background-color: #90ee90; /* 지우기 버튼 색상 변경 */
-}
-
-.button.operator:active {
-    background-color: #ddd;
-}
-
-.button:active {
-    background-color: #ddd;
-}
-
-.fruit-count {
-    position: absolute;
-    top: 2px;
-    right: 5px;
-    background-color: rgba(255, 255, 255, 0.8);
-    border-radius: 50%;
-    padding: 1px 4px;
-    font-size: 10px; /* 폰트 크기 조정 */
-    font-weight: bold;
-    color: #333;
-}
-
-.display-area img {
-    width: 25px;
-    height: 25px;
-    margin: 2px;
-    object-fit: contain;
-    border: 2px solid transparent; /* 기본 테두리 */
-}
-
-.display-area img:last-child {
-    border: 2px solid #ff0000; /* 마지막 과일 강조 테두리 */
-}
-
-.result-area img, .result-area .fruit-result img {
-    width: 20px;
-    height: 20px;
-    margin-right: 5px;
-    object-fit: contain;
-}
-
-.result-area .fruit-result {
-    display: flex;
-    align-items: center;
-    margin-right: 10px;
-}
-
-.result-area .fruit-result:last-child {
-    margin-right: 0;
-}
-
-/* 연산자 기호 스타일링 */
-.display-area span.operator-symbol {
-    font-size: 20px; /* 폰트 크기 조정 */
-    margin: 0 5px;
-}
-
-/* 결과 창의 과일 아이콘과 개수 정렬 */
-.result-area .fruit-result {
-    display: flex;
-    align-items: center;
-    margin-right: 10px;
-}
-
-.result-area .fruit-result img {
-    width: 20px;
-    height: 20px;
-    margin-right: 5px;
-}
-
-/* 추가된 클래스 */
-.display-fruit-img {
-    width: 25px;
-    height: 25px;
-    margin: 2px;
-    object-fit: contain;
-    border: 2px solid transparent; /* 기본 테두리 */
-}
-
-.display-fruit-img:last-child {
-    border: 2px solid #ff0000; /* 마지막 과일 강조 테두리 */
-}
-
-.result-fruit-img {
-    width: 20px;
-    height: 20px;
-    object-fit: contain;
-}
-
-/* 반응형 디자인 */
-@media (max-width: 600px) {
-    .button {
-        width: 50px; /* 더 작은 화면을 위한 버튼 크기 조정 */
-        height: 50px;
-    }
-
-    .button.operator {
-        width: 50px;
-        height: 50px;
-        font-size: 16px; /* 폰트 크기 조정 */
-    }
-
-    .result-area img, .display-area img {
-        width: 20px;
-        height: 20px;
-    }
-
-    h1 {
-        font-size: 20px;
-    }
-}
-
-@media (max-width: 400px) {
-    .button {
-        width: 40px; /* 더 작은 화면을 위한 버튼 크기 조정 */
-        height: 40px;
-    }
-
-    .button.operator {
-        width: 40px;
-        height: 40px;
-        font-size: 14px; /* 폰트 크기 조정 */
-    }
-
-    .result-area img, .display-area img {
-        width: 15px;
-        height: 15px;
-    }
-
-    h1 {
-        font-size: 18px;
-    }
-}
-
-/* 모바일 세로 화면 최적화 */
-@media (orientation: portrait) and (max-width: 600px) {
-    .buttons-row {
-        max-width: 100%;
-    }
-}
+</body>
+</html>
