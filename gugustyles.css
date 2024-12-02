@@ -107,7 +107,29 @@ button:hover {
     margin: 5px;
     animation: float 2s ease-in-out infinite;
 }
+.fruit-group {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    margin: 10px 0;
+}
 
+.bundle {
+    display: flex;
+    align-items: center;
+    margin: 5px;
+    padding: 5px;
+    border: 2px dashed #ff6347;
+    border-radius: 10px;
+    background-color: #ffe4e1; /* 연한 분홍색 배경 */
+}
+
+.bundle .fruit {
+    width: 50px;
+    height: 50px;
+    margin: 2px;
+    animation: float 2s ease-in-out infinite;
+}
 @keyframes float {
     0% { transform: translatey(0px); }
     50% { transform: translatey(-10px); }
