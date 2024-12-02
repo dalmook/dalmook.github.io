@@ -30,7 +30,6 @@ const DAN_SELECT = document.getElementById('dan-select');
 const SUBMIT_BUTTON = document.getElementById('submit-dan');
 const VISUAL_CONTAINER = document.getElementById('card-container');
 const CARD_CONTENT = document.getElementById('card-content');
-const CARD_DESCRIPTION = document.getElementById('card-description'); // 설명 텍스트 요소 추가
 const FEEDBACK = document.getElementById('feedback');
 const PREV_BUTTON = document.getElementById('prev-button');
 const NEXT_BUTTON = document.getElementById('next-button');
@@ -41,7 +40,7 @@ const totalSteps = 9;
 
 // 숫자를 한글로 변환하는 함수
 function getKoreanNumber(number){
-    const numbers = ["영", "한 ", "두 ", "세 ", "네 ", "다섯 ", "여섯 ", "일곱 ", "여덟 ", "아홉 ", "열 "];
+    const numbers = ["영", "하나", "둘", "셋", "넷", "다섯", "여섯", "일곱", "여덟", "아홉", "열"];
     if(number <=10){
         return numbers[number];
     } else if(number >10 && number <=20){
@@ -97,7 +96,7 @@ function generateCard(dan, step){
 
     // 상세 설명 생성
     // 예: "감 9개 아홉묶음, 총 81개"
-    let description = `${fruit} ${dan}개 ${getKoreanNumber(step)}묶음, 총 ${result}개`;
+    let description = `${fruit} ${dan}개 ${getKoreanNumber(step)}묶음, <span class="total-count">총 ${result}개</span>`;
 
     // 카드 내용 설정
     CARD_CONTENT.innerHTML = `
@@ -108,13 +107,6 @@ function generateCard(dan, step){
             ${generateFruitGroups(dan, step)}
         </div>
     `;
-
-    // 설명 텍스트 표시 여부 설정
-    if(description.trim() !== ""){
-        CARD_DESCRIPTION.classList.remove('hidden');
-    } else {
-        CARD_DESCRIPTION.classList.add('hidden');
-    }
 
     // 애니메이션 효과
     const card = document.getElementById('card-content');
