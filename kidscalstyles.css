@@ -70,6 +70,13 @@ h1 {
     flex-direction: column;
     align-items: center;
     justify-content: center;
+    position: relative;
+}
+
+.button img {
+    max-width: 60%;
+    max-height: 60%;
+    object-fit: contain;
 }
 
 .button .fruit-name {
@@ -83,6 +90,8 @@ h1 {
     height: 80px;
     background-color: #add8e6;
     font-size: 32px;
+    padding: 0;
+    justify-content: center;
 }
 
 .button.operator:active {
@@ -94,9 +103,10 @@ h1 {
 }
 
 .result-area img, .display-area img {
-    width: 40px;
-    height: 40px;
+    width: 30px;
+    height: 30px;
     margin: 2px;
+    object-fit: contain;
 }
 
 @media (max-width: 600px) {
@@ -112,8 +122,8 @@ h1 {
     }
 
     .result-area img, .display-area img {
-        width: 35px;
-        height: 35px;
+        width: 25px;
+        height: 25px;
     }
 
     h1 {
@@ -134,8 +144,8 @@ h1 {
     }
 
     .result-area img, .display-area img {
-        width: 30px;
-        height: 30px;
+        width: 20px;
+        height: 20px;
     }
 
     h1 {
