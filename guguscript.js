@@ -3,15 +3,15 @@
 // 이미지 URL (무료 이미지 사용)
 // 각 단을 나타낼 이미지를 설정합니다. 필요에 따라 추가하거나 변경할 수 있습니다.
 const DAN_IMAGES = {
-    1: 'https://i.imgur.com/1YcXGkS.png',   // 1단: 사과 이미지 URL
-    2: 'https://i.imgur.com/ZQ4YFQI.png',   // 2단: 오렌지 이미지 URL
-    3: 'https://i.imgur.com/2yaf2rJ.png',   // 3단: 바나나 이미지 URL
-    4: 'https://i.imgur.com/3L0G4fX.png',   // 4단: 포도 이미지 URL
-    5: 'https://i.imgur.com/1YcXGkS.png',   // 5단: 사과 이미지 URL
-    6: 'https://i.imgur.com/ZQ4YFQI.png',   // 6단: 오렌지 이미지 URL
-    7: 'https://i.imgur.com/2yaf2rJ.png',   // 7단: 바나나 이미지 URL
-    8: 'https://i.imgur.com/3L0G4fX.png',   // 8단: 포도 이미지 URL
-    9: 'https://i.imgur.com/1YcXGkS.png'    // 9단: 사과 이미지 URL
+    1: 'images/사과.png',   // 1단: 사과 이미지 URL
+    2: 'images/오렌지.png',   // 2단: 오렌지 이미지 URL
+    3: 'images/바나나.png',   // 3단: 바나나 이미지 URL
+    4: 'images/포도.png',   // 4단: 포도 이미지 URL
+    5: 'images/키위.png',   // 5단: 키위 이미지 URL
+    6: 'images/수박.png',   // 6단: 수박 이미지 URL
+    7: 'images/딸기.png',   // 7단: 딸기 이미지 URL
+    8: 'images/배.png',   // 8단: 배 이미지 URL
+    9: 'images/감.png'    // 9단: 감 이미지 URL
 };
 
 const DAN_SELECT = document.getElementById('dan-select');
