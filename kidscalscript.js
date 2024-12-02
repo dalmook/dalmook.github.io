@@ -14,7 +14,7 @@ const fruitsData = {
 };
 
 // 과일 카운트 데이터
-const fruitCounts = {
+let fruitCounts = {
     apple: 0,
     pear: 0,
     watermelon: 0,
@@ -79,7 +79,7 @@ function handleOperator(operator) {
         if (currentOperator && previousValue !== null) {
             const result = calculate(previousValue, currentOperator, currentValue);
             displayResult(result);
-            // 결과 창에 결과를 표시한 후, 초기화
+            // 계산이 완료된 후 초기화
             resetCalculator();
         }
     } else if (operator === 'backspace') {
@@ -184,7 +184,7 @@ function displayResult(result) {
     const fruitCountsEntries = Object.entries(fruitCounts)
         .filter(([fruit, count]) => count > 0);
 
-    const fruitElements = fruitCountsEntries.map(([fruit, count]) => {
+    const fruitElements = fruitCountsEntries.map(([fruit, count], index) => {
         const div = document.createElement('div');
         div.classList.add('fruit-result');
 
@@ -204,7 +204,7 @@ function displayResult(result) {
     // 결과 텍스트 설정
     resultArea.innerHTML = `결과: ${totalCount}개 (`; // 시작 부분
 
-    // 과일별 결과 추가
+    // 과일별 결과 추가 (+, , 사용)
     fruitElements.forEach((el, index) => {
         resultArea.appendChild(el);
         if (index < fruitElements.length - 1) {
@@ -244,6 +244,18 @@ function updateFruitCountDisplay(fruit) {
 
 // 계산 초기화 함수
 function resetCalculator() {
+    // 과일 카운트 초기화
+    for (const fruit in fruitCounts) {
+        if (fruitCounts.hasOwnProperty(fruit)) {
+            fruitCounts[fruit] = 0;
+            const countElement = document.getElementById(`count-${fruit}`);
+            if (countElement) {
+                countElement.textContent = '0';
+            }
+        }
+    }
+
+    // 기타 계산 상태 초기화
     currentValue = 0;
     currentOperator = null;
     previousValue = null;
