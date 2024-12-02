@@ -27,8 +27,6 @@ const DAN_FRUITS = {
 };
 
 const DAN_SELECT = document.getElementById('dan-select');
-// 입력란을 제거했으므로 해당 요소는 더 이상 존재하지 않습니다.
-// const DAN_INPUT = document.getElementById('dan-input');
 const SUBMIT_BUTTON = document.getElementById('submit-dan');
 const VISUAL_CONTAINER = document.getElementById('card-container');
 const CARD_CONTENT = document.getElementById('card-content');
@@ -111,9 +109,7 @@ function generateCard(dan, step){
         </div>
     `;
 
-    // 설명 텍스트 표시
-    // 이미 HTML에 포함되어 있으므로 추가 조작 불필요
-    // 단, 필요시 클래스 제거를 통해 숨김 해제
+    // 설명 텍스트 표시 여부 설정
     if(description.trim() !== ""){
         CARD_DESCRIPTION.classList.remove('hidden');
     } else {
