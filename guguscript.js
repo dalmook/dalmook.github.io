@@ -143,6 +143,7 @@ function getFruitImage(dan){
 
 
 
+
         VISUAL_CONTAINER.appendChild(row);
     }
 }
