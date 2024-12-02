@@ -128,8 +128,8 @@ function updateDisplay(lastFruit = null) {
         const lastFruitImg = document.createElement('img');
         lastFruitImg.src = fruitsData[lastFruit].img;
         lastFruitImg.alt = fruitsData[lastFruit].name;
-        lastFruitImg.style.width = '40px';
-        lastFruitImg.style.height = '40px';
+        lastFruitImg.style.width = '30px';
+        lastFruitImg.style.height = '30px';
         lastFruitImg.style.margin = '2px';
         lastFruitImg.style.border = '2px solid #ff0000';
         displayArea.appendChild(lastFruitImg);
