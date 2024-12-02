@@ -29,8 +29,12 @@ let fruitCounts = {
 };
 
 // 계산 로직 변수
-let operandStack = []; // 연산자를 포함한 피연산자 스택
-let operatorStack = []; // 연산자 스택
+let operand1 = 0;
+let operand2 = 0;
+let currentOperator = null;
+
+// 입력 기록을 저장하는 배열 (for display)
+let inputs = [];
 
 // DOM 요소
 const displayArea = document.getElementById('display-area');
@@ -49,35 +53,22 @@ fruitButtons.forEach(button => {
 
 // 연산자 버튼 클릭 이벤트
 operatorButtons.forEach(button => {
-    const operator = button.getAttribute('data-operator');
-    if (operator === 'clear') {
-        button.addEventListener('click', () => {
-            clearAll();
-        });
-    } else {
-        button.addEventListener('click', () => {
-            handleOperator(operator);
-        });
-    }
+    button.addEventListener('click', () => {
+        const operator = button.getAttribute('data-operator');
+        handleOperator(operator);
+    });
 });
 
 // 과일 추가 함수
 function addFruit(fruit) {
-    // 현재 연산자가 없으면 operand1에 추가
-    // 있으면 operand2에 추가
-    const fruitName = fruitsData[fruit].name;
-    if (operatorStack.length === 0) {
-        // operand1에 추가
-        if (!operandStack[0]) {
-            operandStack[0] = {};
-        }
-        operandStack[0][fruit] = (operandStack[0][fruit] || 0) + 1;
+    if (!currentOperator) {
+        // No operator yet, accumulate into operand1
+        operand1 += 1;
+        inputs.push({ type: 'fruit', name: fruit });
     } else {
-        // operand2에 추가
-        if (!operandStack[operandStack.length - 1]) {
-            operandStack[operandStack.length - 1] = {};
-        }
-        operandStack[operandStack.length - 1][fruit] = (operandStack[operandStack.length - 1][fruit] || 0) + 1;
+        // Operator set, accumulate into operand2
+        operand2 += 1;
+        inputs.push({ type: 'fruit', name: fruit });
     }
     updateDisplay();
 }
@@ -94,66 +85,63 @@ function updateFruitCount(fruit) {
 // 연산자 처리 함수
 function handleOperator(operator) {
     if (operator === '=') {
-        if (operandStack.length < 2 || operatorStack.length < 1) {
+        if (currentOperator && operand2 !== 0) {
+            const result = calculate(operand1, currentOperator, operand2);
+            displayResult(result);
+            // 계산이 완료된 후 초기화
+            resetCalculator();
+        } else {
             alert("올바른 계산을 위해 과일을 선택하고 연산자를 입력하세요.");
+        }
+    } else if (operator === 'backspace') {
+        handleBackspace();
+    } else {
+        if (currentOperator) {
+            // 이미 operator is set, prevent setting another operator
+            alert("이미 연산자가 설정되었습니다.");
             return;
         }
-        calculateResult();
-    } else {
-        if (operandStack.length === 0 || (operandStack.length === 1 && Object.keys(operandStack[0]).length === 0)) {
+        if (operand1 === 0) {
+            // No operand1 yet, prevent setting operator
             alert("먼저 과일을 선택해주세요.");
             return;
         }
-        operatorStack.push(operator);
-        operandStack.push({}); // 새로운 피연산자 추가
+        currentOperator = operator;
+        inputs.push({ type: 'operator', value: operator });
         updateDisplay();
     }
 }
 
-// 계산 함수
-function calculateResult() {
-    // 계산할 수 있는지 확인
-    if (operandStack.length < 2 || operatorStack.length < 1) {
-        alert("올바른 계산을 위해 과일을 선택하고 연산자를 입력하세요.");
-        return;
-    }
+// 백스페이스 처리 함수
+function handleBackspace() {
+    if (inputs.length === 0) return;
 
-    // 두 번째 피연산자 객체를 가져옴
-    const operand2Obj = operandStack.pop();
-    const operator = operatorStack.pop();
-    const operand1Obj = operandStack.pop();
+    const lastInput = inputs.pop();
 
-    // operand1과 operand2의 총 개수를 계산
-    const operand1Count = sumFruitCounts(operand1Obj);
-    const operand2Count = sumFruitCounts(operand2Obj);
-
-    // 연산 수행
-    const result = performOperation(operand1Count, operator, operand2Count);
-
-    // 결과를 operandStack에 다시 추가
-    operandStack.push({ result: result });
-
-    // 결과를 displayResult로 전달
-    displayResult(result, operand1Obj, operator, operand2Obj);
-
-    // 과일 카운트 초기화
-    resetCalculator();
-}
-
-// 과일 개수 합산 함수
-function sumFruitCounts(operandObj) {
-    let sum = 0;
-    for (const fruit in operandObj) {
-        if (operandObj.hasOwnProperty(fruit)) {
-            sum += operandObj[fruit];
+    if (lastInput.type === 'fruit') {
+        const fruitName = lastInput.name;
+        if (!currentOperator) {
+            // Removing from operand1
+            if (operand1 > 0) operand1 -= 1;
+        } else {
+            // Removing from operand2
+            if (operand2 > 0) operand2 -= 1;
         }
+        if (fruitCounts[fruitName] > 0) {
+            fruitCounts[fruitName] -= 1;
+            updateFruitCountDisplay(fruitName);
+        }
+    } else if (lastInput.type === 'operator') {
+        // Removing the operator
+        currentOperator = null;
     }
-    return sum;
+
+    updateDisplay();
 }
 
-// 연산 수행 함수
-function performOperation(a, operator, b) {
-    switch (operator) {
+// 계산 함수
+function calculate(a, operator, b) {
+    switch(operator) {
         case '+':
             return a + b;
         case '-':
@@ -167,103 +155,124 @@ function performOperation(a, operator, b) {
     }
 }
 
-// 결과 표시 함수
-function displayResult(result, operand1Obj, operator, operand2Obj) {
-    // 전체 카운트는 result
-    let totalCount = result;
-
-    // 과일별 피연산자 표현 생성
-    const operand1Str = constructFruitString(operand1Obj);
-    const operand2Str = constructFruitString(operand2Obj);
-
-    // 결과 표시 형식: 결과: 00개 [(과일1 + 과일2) * 과일3]
-    const equationStr = `(${operand1Str} ${getOperatorSymbol(operator)} ${operand2Str})`;
-
-    // 결과 영역에 표시
-    resultArea.innerHTML = `결과: ${totalCount}개 [${equationStr}]`;
-}
-
-// 과일 문자열 생성 함수
-function constructFruitString(fruitObj) {
-    return Object.entries(fruitObj).map(([fruit, count]) => {
-        return `${fruitsData[fruit].name} ${count}개`;
-    }).join(' + '); // 모든 과일을 더하기로 연결
-}
-
-// 연산자 기호 변환 함수
-function getOperatorSymbol(operator) {
-    switch (operator) {
-        case '+':
-            return '+';
-        case '-':
-            return '-';
-        case '*':
-            return '*';
-        case '/':
-            return '/';
-        default:
-            return '';
-    }
-}
-
 // 디스플레이 업데이트 함수
 function updateDisplay() {
     // 현재 계산식 표시
     displayArea.innerHTML = '';
 
-    operandStack.forEach((operandObj, index) => {
-        if (index > 0) {
-            // 연산자 표시
-            const operator = operatorStack[index - 1];
+    inputs.forEach(input => {
+        if (input.type === 'fruit') {
+            const fruitImg = document.createElement('img');
+            fruitImg.src = fruitsData[input.name].img;
+            fruitImg.alt = fruitsData[input.name].name;
+            fruitImg.title = fruitsData[input.name].name;
+            fruitImg.classList.add('display-fruit-img');
+            displayArea.appendChild(fruitImg);
+        } else if (input.type === 'operator') {
             const operatorSpan = document.createElement('span');
-            operatorSpan.textContent = ` ${getOperatorSymbol(operator)} `;
+            operatorSpan.textContent = ` ${getOperatorSymbol(input.value)} `;
             operatorSpan.classList.add('operator-symbol');
             displayArea.appendChild(operatorSpan);
         }
-
-        // 피연산자 과일 표시
-        Object.keys(operandObj).forEach(fruit => {
-            const count = operandObj[fruit];
-            const fruitImg = document.createElement('img');
-            fruitImg.src = fruitsData[fruit].img;
-            fruitImg.alt = fruitsData[fruit].name;
-            fruitImg.title = `${fruitsData[fruit].name} ${count}개`;
-            fruitImg.classList.add('display-fruit-img');
-            displayArea.appendChild(fruitImg);
-        });
     });
 
     // CSS에서 마지막 과일 이미지에만 테두리를 적용하도록 함
 }
 
-// 백스페이스 처리 함수
-function handleBackspace() {
-    if (operandStack.length === 0) return;
+// 결과 표시 함수
+function displayResult(result) {
+    // Clear previous result
+    resultArea.innerHTML = '';
 
-    const lastOperand = operandStack[operandStack.length - 1];
-    const fruitKeys = Object.keys(lastOperand);
-    if (fruitKeys.length === 0) {
-        // 마지막이 연산자일 경우
-        if (operatorStack.length > 0) {
-            operatorStack.pop();
-            operandStack.pop();
+    // Create text node for "결과: X개 ("
+    const resultText = document.createElement('span');
+    resultText.textContent = `결과: ${result}개 (`;
+    resultArea.appendChild(resultText);
+
+    // Split inputs into operand1 and operand2
+    let operand1Fruits = {};
+    let operand2Fruits = {};
+    let operatorSymbol = '';
+
+    let currentOperand = 'operand1';
+
+    inputs.forEach(input => {
+        if (input.type === 'operator') {
+            operatorSymbol = getOperatorSymbol(input.value);
+            currentOperand = 'operand2';
+        } else if (input.type === 'fruit') {
+            if (currentOperand === 'operand1') {
+                operand1Fruits[input.name] = (operand1Fruits[input.name] || 0) + 1;
+            } else if (currentOperand === 'operand2') {
+                operand2Fruits[input.name] = (operand2Fruits[input.name] || 0) + 1;
+            }
         }
-    } else {
-        // 마지막 과일을 하나 제거
-        const lastFruit = fruitKeys[fruitKeys.length - 1];
-        lastOperand[lastFruit] -= 1;
-        if (lastOperand[lastFruit] === 0) {
-            delete lastOperand[lastFruit];
-        }
-        fruitCounts[lastFruit] -= 1;
-        updateFruitCountDisplay(lastFruit);
+    });
+
+    // Function to append fruits to resultArea
+    function appendFruits(fruitObj) {
+        Object.entries(fruitObj).forEach(([fruit, count], index, array) => {
+            // Create image element
+            const img = document.createElement('img');
+            img.src = fruitsData[fruit].img;
+            img.alt = fruitsData[fruit].name;
+            img.title = fruitsData[fruit].name;
+            img.classList.add('result-fruit-img');
+
+            // Create span for count
+            const countSpan = document.createElement('span');
+            countSpan.textContent = `${count}개`;
+
+            // Create container for image and count
+            const fruitContainer = document.createElement('span');
+            fruitContainer.classList.add('fruit-result');
+            fruitContainer.appendChild(img);
+            fruitContainer.appendChild(countSpan);
+
+            resultArea.appendChild(fruitContainer);
+
+            // Add '+' or operator if not the last fruit
+            if (index < array.length - 1) {
+                const plus = document.createTextNode(' + ');
+                resultArea.appendChild(plus);
+            }
+        });
     }
 
-    // 계산식 업데이트
-    updateDisplay();
+    // Append operand1 fruits
+    appendFruits(operand1Fruits);
 
-    // 결과 영역 초기화
-    resultArea.innerHTML = '';
+    // Append operator symbol
+    const operatorSpan = document.createElement('span');
+    operatorSpan.textContent = ` ${operatorSymbol} `;
+    operatorSpan.classList.add('operator-symbol');
+    resultArea.appendChild(operatorSpan);
+
+    // Append operand2 fruits
+    appendFruits(operand2Fruits);
+
+    // Closing parenthesis
+    const closingParen = document.createElement('span');
+    closingParen.textContent = ')';
+    resultArea.appendChild(closingParen);
+}
+
+// 연산자 기호 변환 함수
+function getOperatorSymbol(operator) {
+    switch(operator) {
+        case '+':
+            return '+';
+        case '-':
+            return '-';
+        case '*':
+            return '×';
+        case '/':
+            return '÷';
+        case 'backspace':
+            return '←';
+        default:
+            return '';
+    }
 }
 
 // 과일 카운트 업데이트 디스플레이 함수
@@ -288,19 +297,9 @@ function resetCalculator() {
     }
 
     // 기타 계산 상태 초기화
-    operandStack = [];
-    operatorStack = [];
+    operand1 = 0;
+    operand2 = 0;
+    currentOperator = null;
+    inputs = [];
     updateDisplay();
-}
-
-// 전체 초기화 함수 (지우기 버튼용)
-function clearAll() {
-    // 모든 과일 카운트 초기화
-    resetCalculator();
-
-    // 결과 영역 초기화
-    resultArea.innerHTML = '';
-
-    // 계산식 표시 영역 초기화
-    displayArea.innerHTML = '';
 }
