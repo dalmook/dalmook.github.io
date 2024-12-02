@@ -161,6 +161,7 @@ button:hover {
     margin-top: 10px;
 }
 
+/* "총 00개" 부분 강조 */
 .total-count {
     font-weight: bold; /* 굵은 글씨 */
     color: #ff6347;     /* 눈에 띄는 색상 */
