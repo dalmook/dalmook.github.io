@@ -48,8 +48,9 @@ h1 {
     font-size: 18px;
     color: #333;
     display: flex;
-    flex-direction: column;
-    align-items: flex-start;
+    flex-direction: row; /* 한 줄로 표시 */
+    align-items: center;
+    flex-wrap: wrap; /* 필요 시 행바꿈 */
 }
 
 .buttons-row {
@@ -146,30 +147,17 @@ h1 {
 .result-area .fruit-result {
     display: flex;
     align-items: center;
-    margin-bottom: 5px;
+    margin-right: 10px;
 }
 
 .result-area .fruit-result:last-child {
-    margin-bottom: 0;
+    margin-right: 0;
 }
 
 /* 연산자 기호 스타일링 */
 .display-area span.operator-symbol {
     font-size: 24px;
     margin: 0 5px;
-}
-
-/* 결과 창의 과일 아이콘과 개수 정렬 */
-.result-area .fruit-result {
-    display: flex;
-    align-items: center;
-    margin-right: 10px;
-}
-
-.result-area .fruit-result img {
-    width: 20px;
-    height: 20px;
-    margin-right: 5px;
 }
 
 /* 반응형 디자인 */
