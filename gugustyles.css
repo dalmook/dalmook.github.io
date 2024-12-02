@@ -191,4 +191,8 @@ button:hover {
     .description {
         font-size: 0.9em;
     }
+    /* 추가: 부모 컨테이너도 중앙 정렬 유지 */
+    #card-container {
+        width: 90%;
+    }    
 }
