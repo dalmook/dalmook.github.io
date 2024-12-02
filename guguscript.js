@@ -1,155 +1,186 @@
-// guguscript.js
+/* gugustyles.css */
 
-// 단별 과일 이미지 설정 (로컬 이미지 경로로 업데이트)
-const DAN_IMAGES = {
-    1: 'images/사과.png',    // 1단: 사과 이미지 URL
-    2: 'images/오렌지.png',  // 2단: 오렌지 이미지 URL
-    3: 'images/바나나.png',  // 3단: 바나나 이미지 URL
-    4: 'images/포도.png',    // 4단: 포도 이미지 URL
-    5: 'images/키위.png',    // 5단: 키위 이미지 URL
-    6: 'images/수박.png',    // 6단: 수박 이미지 URL
-    7: 'images/딸기.png',    // 7단: 딸기 이미지 URL
-    8: 'images/배.png',      // 8단: 배 이미지 URL
-    9: 'images/감.png'       // 9단: 감 이미지 URL
-};
-
-// 단별 과일 이름 설정
-const DAN_FRUITS = {
-    1: '사과',
-    2: '오렌지',
-    3: '바나나',
-    4: '포도',
-    5: '키위',
-    6: '수박',
-    7: '딸기',
-    8: '배',
-    9: '감'
-};
-
-const DAN_SELECT = document.getElementById('dan-select');
-// 입력란을 제거했으므로 해당 요소는 더 이상 존재하지 않습니다.
-// const DAN_INPUT = document.getElementById('dan-input');
-const SUBMIT_BUTTON = document.getElementById('submit-dan');
-const VISUAL_CONTAINER = document.getElementById('card-container');
-const CARD_CONTENT = document.getElementById('card-content');
-const CARD_DESCRIPTION = document.getElementById('card-description'); // 설명 텍스트 요소 추가
-const FEEDBACK = document.getElementById('feedback');
-const PREV_BUTTON = document.getElementById('prev-button');
-const NEXT_BUTTON = document.getElementById('next-button');
-
-let currentDan = null;
-let currentStep = 1; // 현재 카드 단계 (1~9)
-const totalSteps = 9;
-
-// 숫자를 한글로 변환하는 함수
-function getKoreanNumber(number){
-    const numbers = ["영", "하나", "둘", "셋", "넷", "다섯", "여섯", "일곱", "여덟", "아홉", "열"];
-    if(number <=10){
-        return numbers[number];
-    } else if(number >10 && number <=20){
-        return `${numbers[10]} ${numbers[number-10]}`;
-    } else {
-        // 복잡한 숫자 처리는 여기서 추가 가능
-        return number;
-    }
+body {
+    font-family: 'Arial', sans-serif;
+    background-color: #ffefd5; /* 부드러운 배경색 */
+    text-align: center;
+    padding: 20px;
 }
 
-// 제출 버튼 클릭 시 단 선택 처리
-SUBMIT_BUTTON.addEventListener('click', function() {
-    let dan = DAN_SELECT.value;
-
-    dan = parseInt(dan);
-
-    if (dan >=1 && dan <=9){
-        FEEDBACK.textContent = '';
-        currentDan = dan;
-        currentStep = 1;
-        generateCard(dan, currentStep);
-        VISUAL_CONTAINER.classList.remove('hidden');
-        updateNavigationButtons();
-    } else {
-        VISUAL_CONTAINER.classList.add('hidden');
-        FEEDBACK.textContent = '1부터 9까지의 단을 선택해주세요.';
-    }
-});
-
-// 이전 버튼 클릭 시
-PREV_BUTTON.addEventListener('click', function() {
-    if (currentStep > 1){
-        currentStep--;
-        generateCard(currentDan, currentStep);
-        updateNavigationButtons();
-    }
-});
-
-// 다음 버튼 클릭 시
-NEXT_BUTTON.addEventListener('click', function() {
-    if (currentStep < totalSteps){
-        currentStep++;
-        generateCard(currentDan, currentStep);
-        updateNavigationButtons();
-    }
-});
-
-// 카드 생성 함수
-function generateCard(dan, step){
-    const result = dan * step;
-    const fruit = DAN_FRUITS[dan] || '과일';
-    const fruitImage = DAN_IMAGES[dan] || DAN_IMAGES[1];
-
-    // 상세 설명 생성
-    // 사용자가 제안한 방식으로 수정했습니다.
-    let description = `${fruit} ${dan}개 ${getKoreanNumber(step)}묶음, 총 ${result}개`;
-
-    // 카드 내용 설정
-    CARD_CONTENT.innerHTML = `
-        <h2>${dan}단</h2>
-        <p>${dan} × ${step} = ${result}</p>
-        <div class="fruit-group">
-            ${generateFruitGroups(dan, step)}
-        </div>
-    `;
-
-    // 설명 텍스트 업데이트
-    CARD_DESCRIPTION.textContent = description;
-    CARD_DESCRIPTION.classList.remove('hidden');
-
-    // 애니메이션 효과
-    const card = document.getElementById('card-content');
-    card.classList.remove('show');
-    void card.offsetWidth; // 리플로우 강제
-    card.classList.add('show');
+h1 {
+    color: #ff6347; /* 따뜻한 색상 */
+    margin-bottom: 30px;
 }
 
-// 과일 묶음 생성 함수
-function generateFruitGroups(dan, step){
-    let fruitHTML = '';
-    for(let i=0; i<step; i++){
-        fruitHTML += `
-            <div class="bundle">
-                ${generateFruits(dan)}
-            </div>
-        `;
-    }
-    return fruitHTML;
+.input-section {
+    margin: 20px 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
-// 묶음 내 과일 이미지 생성 함수
-function generateFruits(dan){
-    const numFruitsPerBundle = dan; // 각 단수에 따라 묶음 내 과일 개수 설정
-    let fruits = '';
-    for(let j=0; j<numFruitsPerBundle; j++){
-        fruits += `<img src="${DAN_IMAGES[dan]}" alt="${DAN_FRUITS[dan]}" class="fruit">`;
-    }
-    return fruits;
+label {
+    font-size: 1.2em;
+    margin-right: 10px;
 }
 
-// 이전/다음 버튼 활성화 상태 업데이트 함수
-function updateNavigationButtons(){
-    PREV_BUTTON.disabled = currentStep === 1;
-    NEXT_BUTTON.disabled = currentStep === totalSteps;
+select {
+    padding: 10px;
+    font-size: 1em;
+    margin-right: 10px;
+    border: 2px solid #ff6347;
+    border-radius: 5px;
+}
 
-    // 버튼 스타일 변경
-    PREV_BUTTON.style.opacity = currentStep === 1 ? '0.5' : '1';
-    NEXT_BUTTON.style.opacity = currentStep === totalSteps ? '0.5' : '1';
+button {
+    padding: 10px 20px;
+    font-size: 1em;
+    background-color: #ff6347;
+    color: white;
+    border: none;
+    cursor: pointer;
+    border-radius: 5px;
+    transition: background-color 0.3s ease;
+}
+
+button:hover {
+    background-color: #ff4500;
+}
+
+#feedback {
+    margin-top: 20px;
+    font-size: 1.1em;
+    color: #ff4500;
+}
+
+#card-container {
+    margin-top: 30px;
+}
+
+/* 이전/다음 버튼 스타일 */
+.navigation-buttons {
+    margin-bottom: 15px; /* 카드 위에 배치되므로 아래 여백 조정 */
+}
+
+.nav-button {
+    padding: 10px 15px;
+    font-size: 1em;
+    background-color: #87cefa;
+    color: white;
+    border: none;
+    cursor: pointer;
+    border-radius: 5px;
+    margin: 0 10px;
+    transition: background-color 0.3s ease;
+}
+
+.nav-button:hover {
+    background-color: #00bfff;
+}
+
+.card {
+    width: 350px;
+    height: auto; /* 높이를 자동으로 조정 */
+    /* max-height: 80vh; */ /* max-height 제거 */
+    margin: 0 auto;
+    perspective: 1000px;
+}
+
+.card-content {
+    width: 100%;
+    background-color: #fff8dc;
+    border: 2px solid #ff6347;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    transition: transform 0.6s;
+    transform-style: preserve-3d;
+    position: relative;
+    /* overflow-y: auto; */ /* overflow 제거 */
+}
+
+.hidden {
+    display: none;
+}
+
+.fruit-group {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    margin: 10px 0;
+    /* max-height: 150px; */ /* max-height 제거 */
+    /* overflow-y: auto; */   /* overflow 제거 */
+}
+
+.bundle {
+    display: flex;
+    align-items: center;
+    margin: 5px;
+    padding: 5px;
+    border: 2px dashed #ff6347;
+    border-radius: 10px;
+    background-color: #ffe4e1; /* 연한 분홍색 배경 */
+}
+
+.bundle .fruit {
+    width: 50px;
+    height: 50px;
+    margin: 2px;
+    animation: float 2s ease-in-out infinite;
+}
+
+@keyframes float {
+    0% { transform: translateY(0px); }
+    50% { transform: translateY(-10px); }
+    100% { transform: translateY(0px); }
+}
+
+/* 카드 애니메이션 */
+.card-content.show {
+    animation: flipIn 0.5s forwards;
+}
+
+@keyframes flipIn {
+    from { opacity: 0; transform: rotateY(90deg); }
+    to { opacity: 1; transform: rotateY(0deg); }
+}
+
+.description {
+    font-size: 1em;
+    color: #333;
+    margin-top: 10px;
+}
+
+/* 모바일(세로) 환경을 위한 반응형 디자인 */
+@media (max-width: 600px) {
+    .card {
+        width: 90%;
+        /* max-height: 70vh; */ /* max-height 제거 */
+    }
+
+    .bundle .fruit {
+        width: 30px;
+        height: 30px;
+    }
+
+    button, .nav-button {
+        padding: 8px 12px;
+        font-size: 0.9em;
+    }
+
+    label, select {
+        font-size: 1em;
+    }
+
+    .description {
+        font-size: 0.9em;
+    }
+
+    .fruit-group {
+        /* max-height: 150px; */ /* max-height 제거 */
+        /* overflow-y: auto; */   /* overflow 제거 */
+    }
 }
