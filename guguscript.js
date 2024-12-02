@@ -87,9 +87,7 @@ function generateCard(dan, step){
 
     // 상세 설명 생성
     let description = `${dan} × ${step} = `;
-    for(let i=1; i<=step; i++){
-        description += `${fruit} 두 개 한 묶음${i < step ? ', ' : ''}`;
-    }
+    description += `${fruit} ${dan}개 ${step}묶음${i < step ? ', ' : ''}`;    
     description += `, 총 ${result}개`;
 
     // 카드 내용 설정
