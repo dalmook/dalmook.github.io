@@ -154,6 +154,8 @@ function updateNavigationButtons(){
 document.addEventListener('DOMContentLoaded', function() {
     const defaultDan = parseInt(DAN_SELECT.value);
     if (defaultDan >=1 && defaultDan <=9){
+        currentDan = defaultDan; // 현재 단 설정
+        currentStep = 1;
         generateCard(defaultDan, currentStep);
         VISUAL_CONTAINER.classList.remove('hidden');
         updateNavigationButtons();
