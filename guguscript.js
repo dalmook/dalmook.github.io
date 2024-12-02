@@ -103,16 +103,13 @@ function generateCard(dan, step){
 
     // 카드 내용 설정
     CARD_CONTENT.innerHTML = `
-        <h2>${dan}단</h2>
-        <p>${dan} × ${step} = ${result}</p>
+        <h2 id="dan-title">${dan}단</h2>
+        <p id="multiplication-expression">${dan} × ${step} = ${result}</p>
+        <p id="card-description" class="description">${description}</p>
         <div class="fruit-group">
             ${generateFruitGroups(dan, step)}
         </div>
     `;
-
-    // 설명 텍스트 업데이트
-    CARD_DESCRIPTION.textContent = description;
-    CARD_DESCRIPTION.classList.remove('hidden');
 
     // 애니메이션 효과
     const card = document.getElementById('card-content');
