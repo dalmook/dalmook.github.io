@@ -10,7 +10,8 @@ const fruitsData = {
     orange: { name: '오렌지', img: 'images/오렌지.png' },
     strawberry: { name: '딸기', img: 'images/딸기.png' },
     persimmon: { name: '감', img: 'images/감.png' },
-    grape: { name: '포도', img: 'images/포도.png' }
+    grape: { name: '포도', img: 'images/포도.png' },
+    poo: { name: '똥', img: 'images/poo.png' }
 };
 
 // 과일 카운트 데이터
@@ -23,7 +24,8 @@ let fruitCounts = {
     orange: 0,
     strawberry: 0,
     persimmon: 0,
-    grape: 0
+    grape: 0,
+    poo: 0
 };
 
 // 계산 로직 변수
