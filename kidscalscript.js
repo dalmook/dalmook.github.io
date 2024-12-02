@@ -64,15 +64,6 @@ function addFruit(fruit) {
     updateDisplay();
 }
 
-// 과일 카운트 업데이트 함수
-function updateFruitCount(fruit) {
-    fruitCounts[fruit] += 1;
-    const countElement = document.getElementById(`count-${fruit}`);
-    if (countElement) {
-        countElement.textContent = fruitCounts[fruit];
-    }
-}
-
 // 연산자 처리 함수
 function handleOperator(operator) {
     if (operator === '=') {
@@ -195,32 +186,38 @@ function displayResult(result) {
         totalCount += count;
     }
 
-    // 과일별 카운트 텍스트 생성
-    const fruitCountsText = Object.entries(fruitCounts)
-        .filter(([fruit, count]) => count > 0)
-        .map(([fruit, count]) => {
-            return `${fruitsData[fruit].name} ${count}개`;
-        })
-        .join(', ');
+    // 과일별 카운트 텍스트 및 아이콘 생성
+    const fruitCountsEntries = Object.entries(fruitCounts)
+        .filter(([fruit, count]) => count > 0);
+
+    const fruitElements = fruitCountsEntries.map(([fruit, count]) => {
+        const div = document.createElement('div');
+        div.classList.add('fruit-result');
+
+        const img = document.createElement('img');
+        img.src = fruitsData[fruit].img;
+        img.alt = fruitsData[fruit].name;
+
+        const span = document.createElement('span');
+        span.textContent = `${count}개`;
+
+        div.appendChild(img);
+        div.appendChild(span);
+
+        return div;
+    });
 
     // 결과 텍스트 설정
-    resultArea.innerHTML = `결과: ${totalCount}개 (${fruitCountsText})`;
-}
+    resultArea.innerHTML = `결과: ${totalCount}개 (`; // 시작 부분
 
-// 연산자 기호 변환 함수
-function getOperatorSymbol(operator) {
-    switch(operator) {
-        case '+':
-            return '+';
-        case '-':
-            return '-';
-        case '*':
-            return '×';
-        case '/':
-            return '÷';
-        case 'backspace':
-            return '←';
-        default:
-            return '';
-    }
+    // 과일별 결과 추가
+    fruitElements.forEach((el, index) => {
+        resultArea.appendChild(el);
+        if (index < fruitElements.length - 1) {
+            const comma = document.createTextNode(', ');
+            resultArea.appendChild(comma);
+        }
+    });
+
+    resultArea.innerHTML += ')'; // 끝 부분
 }
