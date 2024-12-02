@@ -13,6 +13,20 @@ const DAN_IMAGES = {
     8: 'images/배.png',   // 8단: 배 이미지 URL
     9: 'images/감.png'    // 9단: 감 이미지 URL
 };
+
+// 단별 과일 이름 설정
+const DAN_FRUITS = {
+    1: '사과',
+    2: '오렌지',
+    3: '바나나',
+    4: '포도',
+    5: '사과',
+    6: '오렌지',
+    7: '바나나',
+    8: '포도',
+    9: '사과'
+};
+
 const DAN_SELECT = document.getElementById('dan-select');
 const DAN_INPUT = document.getElementById('dan-input');
 const SUBMIT_BUTTON = document.getElementById('submit-dan');
@@ -24,7 +38,7 @@ const NEXT_BUTTON = document.getElementById('next-button');
 
 let currentDan = null;
 let currentStep = 1; // 현재 카드 단계 (1~9)
-let totalSteps = 9;
+const totalSteps = 9;
 
 // 제출 버튼 클릭 시 단 선택 또는 입력 처리
 SUBMIT_BUTTON.addEventListener('click', function() {
@@ -69,18 +83,22 @@ NEXT_BUTTON.addEventListener('click', function() {
 // 카드 생성 함수
 function generateCard(dan, step){
     const result = dan * step;
-    const fruit = getFruitForDan(dan);
+    const fruit = DAN_FRUITS[dan] || '과일';
     const fruitImage = DAN_IMAGES[dan] || DAN_IMAGES[1];
 
     // 상세 설명 생성
-    const description = `${dan} × ${step} = ${fruit} ${getKoreanNumber(result)}개`;
+    let description = `${dan} × ${step} = `;
+    for(let i=1; i<=step; i++){
+        description += `${fruit} 두 개 한 묶음${i < step ? ', ' : ''}`;
+    }
+    description += `, 총 ${result}개`;
 
     // 카드 내용 설정
     CARD_CONTENT.innerHTML = `
         <h2>${dan}단</h2>
         <p>${dan} × ${step} = ${result}</p>
-        <div class="fruit-container">
-            ${generateFruits(dan, step)}
+        <div class="fruit-group">
+            ${generateFruitGroups(dan, step)}
         </div>
         <p class="description">${description}</p>
     `;
@@ -92,50 +110,26 @@ function generateCard(dan, step){
     card.classList.add('show');
 }
 
-// 과일 이미지 생성 함수
-function generateFruits(dan, step){
+// 과일 묶음 생성 함수
+function generateFruitGroups(dan, step){
     let fruitHTML = '';
     for(let i=0; i<step; i++){
-        fruitHTML += `<img src="${DAN_IMAGES[dan]}" alt="과일" class="fruit">`;
+        fruitHTML += `
+            <div class="bundle">
+                <img src="${DAN_IMAGES[dan]}" alt="${DAN_FRUITS[dan]}" class="fruit">
+                <img src="${DAN_IMAGES[dan]}" alt="${DAN_FRUITS[dan]}" class="fruit">
+            </div>
+        `;
     }
     return fruitHTML;
-}
-
-// 단에 따른 과일 이름 반환 함수
-function getFruitForDan(dan){
-    const fruitMap = {
-        1: '사과',
-        2: '오렌지',
-        3: '바나나',
-        4: '포도',
-        5: '사과',
-        6: '오렌지',
-        7: '바나나',
-        8: '포도',
-        9: '사과'
-    };
-    return fruitMap[dan] || '과일';
-}
-
-// 숫자를 한글로 변환하는 함수
-function getKoreanNumber(number){
-    const numbers = ["영", "하나", "둘", "셋", "넷", "다섯", "여섯", "일곱", "여덟", "아홉", "열"];
-    if(number <=10){
-        return numbers[number];
-    } else if(number >10 && number <=20){
-        return `${numbers[10]} ${numbers[number-10]}`;
-    } else {
-        return number;
-    }
 }
 
 // 이전/다음 버튼 활성화 상태 업데이트 함수
 function updateNavigationButtons(){
     PREV_BUTTON.disabled = currentStep === 1;
     NEXT_BUTTON.disabled = currentStep === totalSteps;
-}
 
-// 단에 따라 과일 이미지 반환 함수 (추후 확장 가능)
-function getFruitImage(dan){
-    return DAN_IMAGES[dan] || DAN_IMAGES[1];
+    // 버튼 스타일 변경
+    PREV_BUTTON.style.opacity = currentStep === 1 ? '0.5' : '1';
+    NEXT_BUTTON.style.opacity = currentStep === totalSteps ? '0.5' : '1';
 }
