@@ -2,21 +2,21 @@
 
 // 과일 데이터
 const fruitsData = {
-    apple: { name: '사과', img: 'https://via.placeholder.com/50x50.png?text=🍎' },
-    banana: { name: '바나나', img: 'https://via.placeholder.com/50x50.png?text=🍌' },
-    orange: { name: '오렌지', img: 'https://via.placeholder.com/50x50.png?text=🍊' },
-    grape: { name: '포도', img: 'https://via.placeholder.com/50x50.png?text=🍇' },
-    strawberry: { name: '딸기', img: 'https://via.placeholder.com/50x50.png?text=🍓' },
-    pineapple: { name: '파인애플', img: 'https://via.placeholder.com/50x50.png?text=🍍' },
-    watermelon: { name: '수박', img: 'https://via.placeholder.com/50x50.png?text=🍉' },
-    cherry: { name: '체리', img: 'https://via.placeholder.com/50x50.png?text=🍒' },
-    pear: { name: '배', img: 'https://via.placeholder.com/50x50.png?text=🍐' }
+    apple: { name: '사과', img: 'images/apple.png' },
+    pear: { name: '배', img: 'images/pear.png' },
+    watermelon: { name: '수박', img: 'images/watermelon.png' },
+    kiwi: { name: '키위', img: 'images/kiwi.png' },
+    banana: { name: '바나나', img: 'images/banana.png' },
+    orange: { name: '오렌지', img: 'images/orange.png' },
+    strawberry: { name: '딸기', img: 'images/strawberry.png' },
+    persimmon: { name: '감', img: 'images/persimmon.png' },
+    grape: { name: '포도', img: 'images/grape.png' }
 };
 
 // 계산 로직 변수
-let currentOperand = 0;
+let currentValue = 0;
 let currentOperator = null;
-let previousOperand = null;
+let previousValue = null;
 
 // DOM 요소
 const displayArea = document.getElementById('display-area');
@@ -27,7 +27,8 @@ const operatorButtons = document.querySelectorAll('.operator');
 // 과일 버튼 클릭 이벤트
 fruitButtons.forEach(button => {
     button.addEventListener('click', () => {
-        addFruit(button.getAttribute('data-fruit'));
+        const fruit = button.getAttribute('data-fruit');
+        addFruit(fruit);
     });
 });
 
@@ -41,32 +42,32 @@ operatorButtons.forEach(button => {
 
 // 과일 추가 함수
 function addFruit(fruit) {
-    currentOperand += 1;
+    currentValue += 1;
     updateDisplay(fruit);
 }
 
 // 연산자 처리 함수
 function handleOperator(operator) {
     if (operator === '=') {
-        if (currentOperator && previousOperand !== null) {
-            const result = calculate(previousOperand, currentOperator, currentOperand);
+        if (currentOperator && previousValue !== null) {
+            const result = calculate(previousValue, currentOperator, currentValue);
             displayResult(result);
             // 초기화
-            currentOperand = 0;
+            currentValue = 0;
             currentOperator = null;
-            previousOperand = null;
+            previousValue = null;
             updateDisplay();
         }
     } else {
-        if (currentOperator && previousOperand !== null) {
+        if (currentOperator && previousValue !== null) {
             // 연속된 연산자 처리
-            previousOperand = calculate(previousOperand, currentOperator, currentOperand);
+            previousValue = calculate(previousValue, currentOperator, currentValue);
             currentOperator = operator;
-            currentOperand = 0;
+            currentValue = 0;
         } else {
-            previousOperand = currentOperand;
+            previousValue = currentValue;
             currentOperator = operator;
-            currentOperand = 0;
+            currentValue = 0;
         }
         updateDisplay();
     }
@@ -93,14 +94,13 @@ function updateDisplay(lastFruit = null) {
     // 현재 계산식 표시
     displayArea.innerHTML = '';
 
-    if (previousOperand !== null) {
-        // 이전 피연산자 표시
-        for (let i = 0; i < previousOperand; i++) {
+    if (previousValue !== null) {
+        // 이전 피연산자 표시 (과일 이미지)
+        for (let i = 0; i < previousValue; i++) {
             const fruitImg = document.createElement('img');
-            fruitImg.src = getRandomFruitImage();
-            fruitImg.style.width = '30px';
-            fruitImg.style.height = '30px';
-            fruitImg.style.margin = '2px';
+            const randomFruit = getRandomFruit();
+            fruitImg.src = fruitsData[randomFruit].img;
+            fruitImg.alt = fruitsData[randomFruit].name;
             displayArea.appendChild(fruitImg);
         }
 
@@ -114,13 +114,12 @@ function updateDisplay(lastFruit = null) {
         }
     }
 
-    // 현재 피연산자 표시
-    for (let i = 0; i < currentOperand; i++) {
+    // 현재 피연산자 표시 (과일 이미지)
+    for (let i = 0; i < currentValue; i++) {
         const fruitImg = document.createElement('img');
-        fruitImg.src = getRandomFruitImage();
-        fruitImg.style.width = '30px';
-        fruitImg.style.height = '30px';
-        fruitImg.style.margin = '2px';
+        const randomFruit = getRandomFruit();
+        fruitImg.src = fruitsData[randomFruit].img;
+        fruitImg.alt = fruitsData[randomFruit].name;
         displayArea.appendChild(fruitImg);
     }
 
@@ -128,8 +127,9 @@ function updateDisplay(lastFruit = null) {
     if (lastFruit) {
         const lastFruitImg = document.createElement('img');
         lastFruitImg.src = fruitsData[lastFruit].img;
-        lastFruitImg.style.width = '30px';
-        lastFruitImg.style.height = '30px';
+        lastFruitImg.alt = fruitsData[lastFruit].name;
+        lastFruitImg.style.width = '40px';
+        lastFruitImg.style.height = '40px';
         lastFruitImg.style.margin = '2px';
         lastFruitImg.style.border = '2px solid #ff0000';
         displayArea.appendChild(lastFruitImg);
@@ -142,19 +142,18 @@ function displayResult(result) {
     const roundedResult = Math.round(result);
     for (let i = 0; i < roundedResult; i++) {
         const fruitImg = document.createElement('img');
-        fruitImg.src = getRandomFruitImage();
-        fruitImg.style.width = '50px';
-        fruitImg.style.height = '50px';
-        fruitImg.style.margin = '5px';
+        const randomFruit = getRandomFruit();
+        fruitImg.src = fruitsData[randomFruit].img;
+        fruitImg.alt = fruitsData[randomFruit].name;
         resultArea.appendChild(fruitImg);
     }
 }
 
-// 랜덤 과일 이미지 선택 함수
-function getRandomFruitImage() {
+// 랜덤 과일 선택 함수
+function getRandomFruit() {
     const fruitKeys = Object.keys(fruitsData);
     const randomKey = fruitKeys[Math.floor(Math.random() * fruitKeys.length)];
-    return fruitsData[randomKey].img;
+    return randomKey;
 }
 
 // 연산자 기호 변환 함수
