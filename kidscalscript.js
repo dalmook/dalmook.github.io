@@ -2,15 +2,15 @@
 
 // 과일 데이터
 const fruitsData = {
-    apple: { name: '사과', img: 'images/apple.png' },
-    pear: { name: '배', img: 'images/pear.png' },
-    watermelon: { name: '수박', img: 'images/watermelon.png' },
-    kiwi: { name: '키위', img: 'images/kiwi.png' },
-    banana: { name: '바나나', img: 'images/banana.png' },
-    orange: { name: '오렌지', img: 'images/orange.png' },
-    strawberry: { name: '딸기', img: 'images/strawberry.png' },
-    persimmon: { name: '감', img: 'images/persimmon.png' },
-    grape: { name: '포도', img: 'images/grape.png' }
+    apple: { name: '사과', img: 'images/사과.png' },
+    pear: { name: '배', img: 'images/배.png' },
+    watermelon: { name: '수박', img: 'images/수박.png' },
+    kiwi: { name: '키위', img: 'images/키위.png' },
+    banana: { name: '바나나', img: 'images/바나나.png' },
+    orange: { name: '오렌지', img: 'images/오렌지.png' },
+    strawberry: { name: '딸기', img: 'images/딸기.png' },
+    persimmon: { name: '감', img: 'images/감.png' },
+    grape: { name: '포도', img: 'images/포도.png' }
 };
 
 // 계산 로직 변수
