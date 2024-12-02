@@ -14,6 +14,9 @@ h1 {
 
 .input-section {
     margin: 20px 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
 label {
@@ -21,7 +24,7 @@ label {
     margin-right: 10px;
 }
 
-select, input[type="number"] {
+select {
     padding: 10px;
     font-size: 1em;
     margin-right: 10px;
@@ -165,11 +168,16 @@ button:hover {
         font-size: 0.9em;
     }
 
-    label, select, input[type="number"] {
+    label, select {
         font-size: 1em;
     }
 
     .description {
         font-size: 0.9em;
+    }
+
+    .fruit-group {
+        max-height: 150px; /* 카드 내 과일 그룹 최대 높이 설정 */
+        overflow-y: auto;   /* 과일 그룹 스크롤 가능 */
     }
 }
