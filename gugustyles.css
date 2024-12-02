@@ -160,8 +160,10 @@ button:hover {
     margin-top: 10px;
 }
 
-#card-description.hidden {
-    display: none;
+.total-count {
+    font-weight: bold; /* 굵은 글씨 */
+    color: #ff6347;     /* 눈에 띄는 색상 */
+    font-size: 1.1em;   /* 약간 큰 글씨 */
 }
 
 /* 모바일(세로) 환경을 위한 반응형 디자인 */
@@ -191,9 +193,4 @@ button:hover {
     .description {
         font-size: 0.9em;
     }
-    /* 추가: 부모 컨테이너도 중앙 정렬 유지 */
-    #card-container {
-        align-items: center; /* 카드 중앙 정렬 */
-        width: 90%;
-    }    
 }
