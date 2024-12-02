@@ -39,6 +39,19 @@ let currentDan = null;
 let currentStep = 1; // 현재 카드 단계 (1~9)
 const totalSteps = 9;
 
+// 숫자를 한글로 변환하는 함수
+function getKoreanNumber(number){
+    const numbers = ["영", "하나", "둘", "셋", "넷", "다섯", "여섯", "일곱", "여덟", "아홉", "열"];
+    if(number <=10){
+        return numbers[number];
+    } else if(number >10 && number <=20){
+        return `${numbers[10]} ${numbers[number-10]}`;
+    } else {
+        // 복잡한 숫자 처리는 여기서 추가 가능
+        return number;
+    }
+}
+
 // 제출 버튼 클릭 시 단 선택 또는 입력 처리
 SUBMIT_BUTTON.addEventListener('click', function() {
     let dan = DAN_SELECT.value;
@@ -86,9 +99,7 @@ function generateCard(dan, step){
     const fruitImage = DAN_IMAGES[dan] || DAN_IMAGES[1];
 
     // 상세 설명 생성
-    let description = `${dan} × ${step} = `;
-    description += `${fruit} ${dan}개 ${step}묶음${i < step ? ', ' : ''}`;    
-    description += `, 총 ${result}개`;
+    let description = `${fruit} ${dan}개 ${getKoreanNumber(step)}묶음, 총 ${result}개`;
 
     // 카드 내용 설정
     CARD_CONTENT.innerHTML = `
