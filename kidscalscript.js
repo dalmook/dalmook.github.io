@@ -13,6 +13,19 @@ const fruitsData = {
     grape: { name: '포도', img: 'images/포도.png' }
 };
 
+// 과일 카운트 데이터
+const fruitCounts = {
+    apple: 0,
+    pear: 0,
+    watermelon: 0,
+    kiwi: 0,
+    banana: 0,
+    orange: 0,
+    strawberry: 0,
+    persimmon: 0,
+    grape: 0
+};
+
 // 계산 로직 변수
 let currentValue = 0;
 let currentOperator = null;
@@ -29,6 +42,7 @@ fruitButtons.forEach(button => {
     button.addEventListener('click', () => {
         const fruit = button.getAttribute('data-fruit');
         addFruit(fruit);
+        updateFruitCount(fruit);
     });
 });
 
@@ -44,6 +58,15 @@ operatorButtons.forEach(button => {
 function addFruit(fruit) {
     currentValue += 1;
     updateDisplay(fruit);
+}
+
+// 과일 카운트 업데이트 함수
+function updateFruitCount(fruit) {
+    fruitCounts[fruit] += 1;
+    const countElement = document.getElementById(`count-${fruit}`);
+    if (countElement) {
+        countElement.textContent = fruitCounts[fruit];
+    }
 }
 
 // 연산자 처리 함수
