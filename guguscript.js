@@ -98,7 +98,7 @@ function generateCard(dan, step){
     const fruitImage = DAN_IMAGES[dan] || DAN_IMAGES[1];
 
     // 상세 설명 생성
-    // 사용자가 제안한 방식으로 수정했습니다.
+    // 예: "감 9개 아홉묶음, 총 81개"
     let description = `${fruit} ${dan}개 ${getKoreanNumber(step)}묶음, 총 ${result}개`;
 
     // 카드 내용 설정
@@ -110,6 +110,15 @@ function generateCard(dan, step){
             ${generateFruitGroups(dan, step)}
         </div>
     `;
+
+    // 설명 텍스트 표시
+    // 이미 HTML에 포함되어 있으므로 추가 조작 불필요
+    // 단, 필요시 클래스 제거를 통해 숨김 해제
+    if(description.trim() !== ""){
+        CARD_DESCRIPTION.classList.remove('hidden');
+    } else {
+        CARD_DESCRIPTION.classList.add('hidden');
+    }
 
     // 애니메이션 효과
     const card = document.getElementById('card-content');
