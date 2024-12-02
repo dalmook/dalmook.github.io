@@ -13,7 +13,6 @@ const DAN_IMAGES = {
     8: 'images/배.png',   // 8단: 배 이미지 URL
     9: 'images/감.png'    // 9단: 감 이미지 URL
 };
-
 const DAN_SELECT = document.getElementById('dan-select');
 const DAN_INPUT = document.getElementById('dan-input');
 const SUBMIT_BUTTON = document.getElementById('submit-dan');
@@ -139,11 +138,4 @@ function updateNavigationButtons(){
 // 단에 따라 과일 이미지 반환 함수 (추후 확장 가능)
 function getFruitImage(dan){
     return DAN_IMAGES[dan] || DAN_IMAGES[1];
-}
-
-
-
-
-        VISUAL_CONTAINER.appendChild(row);
-    }
 }
