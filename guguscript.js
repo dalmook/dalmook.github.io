@@ -27,7 +27,8 @@ const DAN_FRUITS = {
 };
 
 const DAN_SELECT = document.getElementById('dan-select');
-const DAN_INPUT = document.getElementById('dan-input');
+// 입력란을 제거했으므로 해당 요소는 더 이상 존재하지 않습니다.
+// const DAN_INPUT = document.getElementById('dan-input');
 const SUBMIT_BUTTON = document.getElementById('submit-dan');
 const VISUAL_CONTAINER = document.getElementById('card-container');
 const CARD_CONTENT = document.getElementById('card-content');
@@ -52,12 +53,12 @@ function getKoreanNumber(number){
     }
 }
 
-// 제출 버튼 클릭 시 단 선택 또는 입력 처리
+// 제출 버튼 클릭 시 단 선택 처리
 SUBMIT_BUTTON.addEventListener('click', function() {
     let dan = DAN_SELECT.value;
-    if (!dan) {
-        dan = DAN_INPUT.value;
-    }
+
+    // 입력란이 제거되었으므로 입력값을 가져올 필요가 없습니다.
+    // dan = parseInt(DAN_INPUT.value);
 
     dan = parseInt(dan);
 
@@ -70,7 +71,7 @@ SUBMIT_BUTTON.addEventListener('click', function() {
         updateNavigationButtons();
     } else {
         VISUAL_CONTAINER.classList.add('hidden');
-        FEEDBACK.textContent = '1부터 9까지의 단을 선택하거나 입력해주세요.';
+        FEEDBACK.textContent = '1부터 9까지의 단을 선택해주세요.';
     }
 });
 
@@ -99,6 +100,7 @@ function generateCard(dan, step){
     const fruitImage = DAN_IMAGES[dan] || DAN_IMAGES[1];
 
     // 상세 설명 생성
+    // 사용자가 제안한 방식으로 수정했습니다.
     let description = `${fruit} ${dan}개 ${getKoreanNumber(step)}묶음, 총 ${result}개`;
 
     // 카드 내용 설정
