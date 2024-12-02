@@ -124,41 +124,39 @@ h1 {
     color: #333;
 }
 
-.result-area img, .display-area img {
+.display-area img {
     width: 30px;
     height: 30px;
     margin: 2px;
     object-fit: contain;
+    border: 2px solid transparent; /* 기본 테두리 */
 }
 
-/* 결과 영역 내 텍스트 및 아이콘 정렬 */
-.result-area .result-text {
+.display-area img:last-child {
+    border: 2px solid #ff0000; /* 마지막 과일 강조 테두리 */
+}
+
+.result-area img, .result-area .fruit-result img {
+    width: 20px;
+    height: 20px;
+    margin-right: 5px;
+    object-fit: contain;
+}
+
+.result-area .fruit-result {
     display: flex;
     align-items: center;
     margin-bottom: 5px;
 }
 
-.result-area .result-text span {
-    margin-right: 10px;
+.result-area .fruit-result:last-child {
+    margin-bottom: 0;
 }
 
 /* 연산자 기호 스타일링 */
 .display-area span.operator-symbol {
     font-size: 24px;
     margin: 0 5px;
-}
-
-/* 결과 창의 과일 아이콘과 개수 정렬 */
-.result-area .fruit-result {
-    display: flex;
-    align-items: center;
-    margin-right: 10px;
-}
-
-.result-area .fruit-result img {
-    width: 20px;
-    height: 20px;
-    margin-right: 5px;
 }
 
 /* 반응형 디자인 */
