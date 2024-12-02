@@ -14,6 +14,7 @@ body {
     flex-direction: column;
     align-items: center; /* 전체 콘텐츠 중앙 정렬 */
     margin: 0; /* 기본 마진 제거 */
+    overflow-x: hidden; /* 수평 오버플로우 방지 */
 }
 
 h1 {
@@ -39,6 +40,7 @@ select {
     margin-right: 10px;
     border: 2px solid #ff6347;
     border-radius: 5px;
+    max-width: 100%; /* Prevent overflow */
 }
 
 button {
@@ -50,6 +52,7 @@ button {
     cursor: pointer;
     border-radius: 5px;
     transition: background-color 0.3s ease;
+    max-width: 100%; /* Prevent overflow */
 }
 
 button:hover {
@@ -65,6 +68,7 @@ button:hover {
 #card-container {
     margin-top: 30px;
     width: 100%;
+    max-width: 400px; /* Limit the max width */
     display: flex;
     flex-direction: column;
     align-items: center; /* 카드 중앙 정렬 */
@@ -74,6 +78,7 @@ button:hover {
     display: flex;
     justify-content: center; /* 버튼 중앙 정렬 */
     margin-bottom: 15px; /* 카드 위에 배치되므로 아래 여백 조정 */
+    width: 100%;
 }
 
 .nav-button {
@@ -86,6 +91,7 @@ button:hover {
     border-radius: 5px;
     margin: 0 10px;
     transition: background-color 0.3s ease;
+    flex: 1; /* Make buttons take equal space */
 }
 
 .nav-button:hover {
@@ -93,7 +99,7 @@ button:hover {
 }
 
 .card {
-    width: 350px;
+    width: 100%;
     max-width: 100%;
     height: auto; /* 높이를 자동으로 조정 */
     margin: 0 auto;
@@ -182,6 +188,11 @@ button:hover {
 
 /* 모바일(세로) 환경을 위한 반응형 디자인 */
 @media (max-width: 600px) {
+    /* body 패딩 조정 */
+    body {
+        padding: 10px 0; /* 수평 패딩을 0으로 설정하고, 수직 패딩만 유지 */
+    }
+
     /* .input-section 레이아웃 변경 */
     .input-section {
         flex-direction: column; /* 요소들을 세로로 배치 */
@@ -203,14 +214,16 @@ button:hover {
         max-width: 200px;
     }
 
+    /* #card-container 패딩 및 너비 조정 */
     #card-container {
         width: 100%; /* 화면 전체 너비 사용 */
+        padding: 0; /* 패딩 제거 */
         display: flex;
         flex-direction: column;
         align-items: center; /* 중앙 정렬 */
         justify-content: flex-start; /* 카드가 위쪽부터 시작 */
-        padding: 10px; /* 내부 여백 추가 */
         box-sizing: border-box; /* 패딩 포함한 크기 계산 */
+        margin: 0; /* 외부 마진 제거 */
     }
 
     .card {
