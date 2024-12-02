@@ -20,11 +20,11 @@ const DAN_FRUITS = {
     2: '오렌지',
     3: '바나나',
     4: '포도',
-    5: '사과',
-    6: '오렌지',
-    7: '바나나',
-    8: '포도',
-    9: '사과'
+    5: '키위',
+    6: '수박',
+    7: '딸기',
+    8: '배',
+    9: '감'
 };
 
 const DAN_SELECT = document.getElementById('dan-select');
