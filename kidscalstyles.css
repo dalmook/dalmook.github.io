@@ -159,6 +159,19 @@ h1 {
     margin: 0 5px;
 }
 
+/* 결과 창의 과일 아이콘과 개수 정렬 */
+.result-area .fruit-result {
+    display: flex;
+    align-items: center;
+    margin-right: 10px;
+}
+
+.result-area .fruit-result img {
+    width: 20px;
+    height: 20px;
+    margin-right: 5px;
+}
+
 /* 반응형 디자인 */
 @media (max-width: 600px) {
     .button {
