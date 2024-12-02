@@ -77,3 +77,8 @@ function generateVisual(dan){
         VISUAL_CONTAINER.appendChild(row);
     }
 }
+
+
+        VISUAL_CONTAINER.appendChild(row);
+    }
+}
