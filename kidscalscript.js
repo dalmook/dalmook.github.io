@@ -28,8 +28,9 @@ let fruitCounts = {
     poo: 0 // 새 과일 카운트 추가
 };
 
-// 입력 기록을 저장하는 배열 (operand와 operator 순서대로)
-let inputs = [];
+// 계산 로직 변수
+let operandStack = []; // 연산자를 포함한 피연산자 스택
+let operatorStack = []; // 연산자 스택
 
 // DOM 요소
 const displayArea = document.getElementById('display-area');
@@ -53,47 +54,31 @@ operatorButtons.forEach(button => {
         button.addEventListener('click', () => {
             clearAll();
         });
-    } else if (operator !== 'backspace' && operator !== '=') {
+    } else {
         button.addEventListener('click', () => {
             handleOperator(operator);
-        });
-    } else if (operator === 'backspace') {
-        button.addEventListener('click', () => {
-            handleBackspace();
-        });
-    } else if (operator === '=') {
-        button.addEventListener('click', () => {
-            calculateResult();
         });
     }
 });
 
 // 과일 추가 함수
 function addFruit(fruit) {
-    // 과일 카운트 증가는 이미 updateFruitCount에서 처리됨
-    const fruitCount = 1; // 각 클릭 시 1개 추가
-
-    const lastInput = inputs[inputs.length - 1];
-    if (lastInput && lastInput.type === 'operand') {
-        // 이미 operand가 있다면 합산
-        lastInput.value += fruitCount;
-        lastInput.fruits.push(fruit); // 어떤 과일이 추가되었는지 기록
-    } else if (lastInput && lastInput.type === 'fruit') {
-        // 같은 과일이 연속으로 클릭되었을 때는 합산
-        if (lastInput.value === fruit) {
-            lastInput.count += 1;
-            inputs[inputs.length - 1].value += 1;
-        } else {
-            // 다른 과일이 클릭되었을 때는 자동으로 '+' 연산자 삽입
-            inputs.push({ type: 'operator', value: '+' });
-            inputs.push({ type: 'fruit', value: fruit, count: 1 });
+    // 현재 연산자가 없으면 operand1에 추가
+    // 있으면 operand2에 추가
+    const fruitName = fruitsData[fruit].name;
+    if (operatorStack.length === 0) {
+        // operand1에 추가
+        if (!operandStack[0]) {
+            operandStack[0] = {};
         }
+        operandStack[0][fruit] = (operandStack[0][fruit] || 0) + 1;
     } else {
-        // 처음 과일 클릭 시 operand 추가
-        inputs.push({ type: 'operand', value: fruitCount });
-        inputs.push({ type: 'fruit', value: fruit, count: 1 });
+        // operand2에 추가
+        if (!operandStack[operandStack.length - 1]) {
+            operandStack[operandStack.length - 1] = {};
+        }
+        operandStack[operandStack.length - 1][fruit] = (operandStack[operandStack.length - 1][fruit] || 0) + 1;
     }
-
     updateDisplay();
 }
 
@@ -108,98 +93,173 @@ function updateFruitCount(fruit) {
 
 // 연산자 처리 함수
 function handleOperator(operator) {
-    if (operator === '(' || operator === ')') {
-        // 괄호는 특별히 처리
-        if (operator === '(') {
-            // '('는 바로 추가
-            inputs.push({ type: 'operator', value: operator });
-            updateDisplay();
+    if (operator === '=') {
+        if (operandStack.length < 2 || operatorStack.length < 1) {
+            alert("올바른 계산을 위해 과일을 선택하고 연산자를 입력하세요.");
             return;
         }
+        calculateResult();
+    } else {
+        if (operandStack.length === 0 || (operandStack.length === 1 && Object.keys(operandStack[0]).length === 0)) {
+            alert("먼저 과일을 선택해주세요.");
+            return;
+        }
+        operatorStack.push(operator);
+        operandStack.push({}); // 새로운 피연산자 추가
+        updateDisplay();
+    }
+}
 
-        if (operator === ')') {
-            // ')'를 추가할 때는 '('가 있어야 하고, ')' 앞에 operand가 있어야 함
-            const openParens = inputs.filter(input => input.type === 'operator' && input.value === '(').length;
-            const closeParens = inputs.filter(input => input.type === 'operator' && input.value === ')').length;
-            if (closeParens >= openParens) {
-                alert("닫는 괄호 ')'의 수가 부족합니다.");
-                return;
-            }
-            const lastInput = inputs[inputs.length -1];
-            if (!lastInput || lastInput.type !== 'operand') {
-                alert("닫는 괄호 ')' 앞에는 과일이 와야 합니다.");
-                return;
-            }
+// 계산 함수
+function calculateResult() {
+    // 계산할 수 있는지 확인
+    if (operandStack.length < 2 || operatorStack.length < 1) {
+        alert("올바른 계산을 위해 과일을 선택하고 연산자를 입력하세요.");
+        return;
+    }
+
+    // 두 번째 피연산자 객체를 가져옴
+    const operand2Obj = operandStack.pop();
+    const operator = operatorStack.pop();
+    const operand1Obj = operandStack.pop();
+
+    // operand1과 operand2의 총 개수를 계산
+    const operand1Count = sumFruitCounts(operand1Obj);
+    const operand2Count = sumFruitCounts(operand2Obj);
+
+    // 연산 수행
+    const result = performOperation(operand1Count, operator, operand2Count);
+
+    // 결과를 operandStack에 다시 추가
+    operandStack.push({ result: result });
+
+    // 결과를 displayResult로 전달
+    displayResult(result, operand1Obj, operator, operand2Obj);
+
+    // 과일 카운트 초기화
+    resetCalculator();
+}
+
+// 과일 개수 합산 함수
+function sumFruitCounts(operandObj) {
+    let sum = 0;
+    for (const fruit in operandObj) {
+        if (operandObj.hasOwnProperty(fruit)) {
+            sum += operandObj[fruit];
         }
     }
+    return sum;
+}
 
-    // 연산자가 연속해서 입력되는 것을 방지
-    const lastInput = inputs[inputs.length -1];
-    if (lastInput && lastInput.type === 'operator') {
-        alert("연산자는 과일 다음에만 입력할 수 있습니다.");
-        return;
+// 연산 수행 함수
+function performOperation(a, operator, b) {
+    switch (operator) {
+        case '+':
+            return a + b;
+        case '-':
+            return a - b;
+        case '*':
+            return a * b;
+        case '/':
+            return b !== 0 ? a / b : 0;
+        default:
+            return 0;
     }
+}
 
-    // '('를 제외한 모든 연산자는 과일 다음에만 입력 가능
-    if (operator !== '(' && operator !== ')' && (!lastInput || lastInput.type !== 'operand')) {
-        alert("연산자는 과일 다음에만 입력할 수 있습니다.");
-        return;
+// 결과 표시 함수
+function displayResult(result, operand1Obj, operator, operand2Obj) {
+    // 전체 카운트는 result
+    let totalCount = result;
+
+    // 과일별 피연산자 표현 생성
+    const operand1Str = constructFruitString(operand1Obj);
+    const operand2Str = constructFruitString(operand2Obj);
+
+    // 결과 표시 형식: 결과: 00개 [(과일1 + 과일2) * 과일3]
+    const equationStr = `(${operand1Str} ${getOperatorSymbol(operator)} ${operand2Str})`;
+
+    // 결과 영역에 표시
+    resultArea.innerHTML = `결과: ${totalCount}개 [${equationStr}]`;
+}
+
+// 과일 문자열 생성 함수
+function constructFruitString(fruitObj) {
+    return Object.entries(fruitObj).map(([fruit, count]) => {
+        return `${fruitsData[fruit].name} ${count}개`;
+    }).join(' + '); // 모든 과일을 더하기로 연결
+}
+
+// 연산자 기호 변환 함수
+function getOperatorSymbol(operator) {
+    switch (operator) {
+        case '+':
+            return '+';
+        case '-':
+            return '-';
+        case '*':
+            return '*';
+        case '/':
+            return '/';
+        default:
+            return '';
     }
+}
 
-    inputs.push({ type: 'operator', value: operator });
-    updateDisplay();
+// 디스플레이 업데이트 함수
+function updateDisplay() {
+    // 현재 계산식 표시
+    displayArea.innerHTML = '';
+
+    operandStack.forEach((operandObj, index) => {
+        if (index > 0) {
+            // 연산자 표시
+            const operator = operatorStack[index - 1];
+            const operatorSpan = document.createElement('span');
+            operatorSpan.textContent = ` ${getOperatorSymbol(operator)} `;
+            operatorSpan.classList.add('operator-symbol');
+            displayArea.appendChild(operatorSpan);
+        }
+
+        // 피연산자 과일 표시
+        Object.keys(operandObj).forEach(fruit => {
+            const count = operandObj[fruit];
+            const fruitImg = document.createElement('img');
+            fruitImg.src = fruitsData[fruit].img;
+            fruitImg.alt = fruitsData[fruit].name;
+            fruitImg.title = `${fruitsData[fruit].name} ${count}개`;
+            fruitImg.classList.add('display-fruit-img');
+            displayArea.appendChild(fruitImg);
+        });
+    });
+
+    // CSS에서 마지막 과일 이미지에만 테두리를 적용하도록 함
 }
 
 // 백스페이스 처리 함수
 function handleBackspace() {
-    if (inputs.length === 0) return;
+    if (operandStack.length === 0) return;
 
-    const lastInput = inputs.pop();
-
-    if (lastInput.type === 'operand') {
-        // Operand를 제거하면 해당 operand에 속한 과일 카운트 감소
-        const fruitCount = lastInput.value;
-        // 여기서는 정확한 과일을 추적하지 못하므로, 모든 과일 카운트를 감소시키기 어려움
-        // 따라서, 'fruit' 타입의 마지막 입력을 찾아 카운트를 감소시킴
-        for (let i = inputs.length -1; i >=0; i--) {
-            if (inputs[i].type === 'fruit') {
-                const fruit = inputs[i].value;
-                if (fruitCounts[fruit] >0) {
-                    fruitCounts[fruit] -=1;
-                    const countElement = document.getElementById(`count-${fruit}`);
-                    if (countElement) {
-                        countElement.textContent = fruitCounts[fruit];
-                    }
-                }
-                break;
-            }
+    const lastOperand = operandStack[operandStack.length - 1];
+    const fruitKeys = Object.keys(lastOperand);
+    if (fruitKeys.length === 0) {
+        // 마지막이 연산자일 경우
+        if (operatorStack.length > 0) {
+            operatorStack.pop();
+            operandStack.pop();
         }
-    } else if (lastInput.type === 'operator') {
-        // 연산자 제거 시 아무 작업 필요 없음
+    } else {
+        // 마지막 과일을 하나 제거
+        const lastFruit = fruitKeys[fruitKeys.length - 1];
+        lastOperand[lastFruit] -= 1;
+        if (lastOperand[lastFruit] === 0) {
+            delete lastOperand[lastFruit];
+        }
+        fruitCounts[lastFruit] -= 1;
+        updateFruitCountDisplay(lastFruit);
     }
 
     // 계산식 업데이트
-    updateDisplay();
-
-    // 결과 영역 초기화
-    resultArea.innerHTML = '';
-}
-
-// 지우기 (Clear All) 함수
-function clearAll() {
-    // 모든 과일 카운트를 0으로 초기화
-    for (const fruit in fruitCounts) {
-        if (fruitCounts.hasOwnProperty(fruit)) {
-            fruitCounts[fruit] = 0;
-            const countElement = document.getElementById(`count-${fruit}`);
-            if (countElement) {
-                countElement.textContent = '0';
-            }
-        }
-    }
-
-    // 입력 기록 초기화
-    inputs = [];
     updateDisplay();
 
     // 결과 영역 초기화
@@ -211,120 +271,6 @@ function updateFruitCountDisplay(fruit) {
     const countElement = document.getElementById(`count-${fruit}`);
     if (countElement) {
         countElement.textContent = fruitCounts[fruit];
-    }
-}
-
-// 디스플레이 업데이트 함수
-function updateDisplay() {
-    // 현재 계산식 표시
-    displayArea.innerHTML = '';
-
-    inputs.forEach(input => {
-        if (input.type === 'operand') {
-            // Display operand as sum of fruits
-            const operandDiv = document.createElement('div');
-            operandDiv.classList.add('operand');
-
-            // Find all fruits contributing to this operand
-            // Since we don't track which fruits are in which operand, we'll display as total
-            // To improve, we need to track fruits per operand
-            operandDiv.textContent = input.value;
-
-            displayArea.appendChild(operandDiv);
-        } else if (input.type === 'operator') {
-            const operatorSpan = document.createElement('span');
-            operatorSpan.textContent = ` ${getOperatorSymbol(input.value)} `;
-            operatorSpan.classList.add('operator-symbol');
-            displayArea.appendChild(operatorSpan);
-        }
-    });
-}
-
-// 계산 결과 함수
-function calculateResult() {
-    if (inputs.length === 0) return;
-
-    // Check for balanced parentheses
-    const openParens = inputs.filter(input => input.type === 'operator' && input.value === '(').length;
-    const closeParens = inputs.filter(input => input.type === 'operator' && input.value === ')').length;
-    if (openParens !== closeParens) {
-        alert("괄호의 개수가 맞지 않습니다.");
-        return;
-    }
-
-    // Build expression string
-    let expression = '';
-    inputs.forEach(input => {
-        if (input.type === 'operand') {
-            expression += input.value;
-        } else if (input.type === 'operator') {
-            expression += input.value;
-        }
-    });
-
-    try {
-        // 안전한 계산을 위해 Function을 사용
-        const total = Function('"use strict";return (' + expression + ')')();
-
-        // Build formatted expression with fruits and counts
-        // Since we don't track which fruits are in which operand, we'll display counts based on fruitCounts
-        let formattedExpression = '';
-        let currentSum = 0;
-        inputs.forEach(input => {
-            if (input.type === 'operand') {
-                currentSum = input.value;
-                formattedExpression += `${currentSum}`;
-            } else if (input.type === 'operator') {
-                formattedExpression += ` ${getOperatorSymbol(input.value)} `;
-            }
-        });
-
-        // Display the result with icons
-        // For simplicity, display each fruit with its count and include the operators
-        // Since we don't track which fruits are in which operand, display all fruits with their counts
-        let fruitIcons = '';
-        for (const fruit in fruitCounts) {
-            if (fruitCounts[fruit] > 0) {
-                fruitIcons += `<img src="${fruitsData[fruit].img}" alt="${fruitsData[fruit].name}" title="${fruitsData[fruit].name} ${fruitCounts[fruit]}개" class="result-fruit-img"> ${fruitCounts[fruit]}개 + `;
-            }
-        }
-        // Remove trailing ' + '
-        if (fruitIcons.endsWith(' + ')) {
-            fruitIcons = fruitIcons.slice(0, -3);
-        }
-
-        // 결과 표시 형식: 결과: 6개 [수박 3개 + 감 3개]
-        resultArea.innerHTML = `결과: ${total}개 [${fruitIcons}]`;
-
-        // 과일 카운트 초기화
-        resetCalculator();
-
-    } catch (error) {
-        alert("계산 중 오류가 발생했습니다. 입력을 확인해주세요.");
-    }
-}
-
-// 연산자 기호 변환 함수
-function getOperatorSymbol(operator) {
-    switch(operator) {
-        case '+':
-            return '+';
-        case '-':
-            return '-';
-        case '*':
-            return '×';
-        case '/':
-            return '÷';
-        case '(':
-            return '(';
-        case ')':
-            return ')';
-        case 'backspace':
-            return '←';
-        case 'clear':
-            return 'C';
-        default:
-            return '';
     }
 }
 
@@ -342,6 +288,19 @@ function resetCalculator() {
     }
 
     // 기타 계산 상태 초기화
-    inputs = [];
+    operandStack = [];
+    operatorStack = [];
     updateDisplay();
+}
+
+// 전체 초기화 함수 (지우기 버튼용)
+function clearAll() {
+    // 모든 과일 카운트 초기화
+    resetCalculator();
+
+    // 결과 영역 초기화
+    resultArea.innerHTML = '';
+
+    // 계산식 표시 영역 초기화
+    displayArea.innerHTML = '';
 }
