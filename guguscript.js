@@ -1,17 +1,16 @@
 // guguscript.js
 
-// 이미지 URL (무료 이미지 사용)
-// 각 단을 나타낼 이미지를 설정합니다. 필요에 따라 추가하거나 변경할 수 있습니다.
+// 단별 과일 이미지 설정 (로컬 이미지 경로로 업데이트)
 const DAN_IMAGES = {
-    1: 'images/사과.png',   // 1단: 사과 이미지 URL
-    2: 'images/오렌지.png',   // 2단: 오렌지 이미지 URL
-    3: 'images/바나나.png',   // 3단: 바나나 이미지 URL
-    4: 'images/포도.png',   // 4단: 포도 이미지 URL
-    5: 'images/키위.png',   // 5단: 키위 이미지 URL
-    6: 'images/수박.png',   // 6단: 수박 이미지 URL
-    7: 'images/딸기.png',   // 7단: 딸기 이미지 URL
-    8: 'images/배.png',   // 8단: 배 이미지 URL
-    9: 'images/감.png'    // 9단: 감 이미지 URL
+    1: 'images/사과.png',    // 1단: 사과 이미지 URL
+    2: 'images/오렌지.png',  // 2단: 오렌지 이미지 URL
+    3: 'images/바나나.png',  // 3단: 바나나 이미지 URL
+    4: 'images/포도.png',    // 4단: 포도 이미지 URL
+    5: 'images/키위.png',    // 5단: 키위 이미지 URL
+    6: 'images/수박.png',    // 6단: 수박 이미지 URL
+    7: 'images/딸기.png',    // 7단: 딸기 이미지 URL
+    8: 'images/배.png',      // 8단: 배 이미지 URL
+    9: 'images/감.png'       // 9단: 감 이미지 URL
 };
 
 // 단별 과일 이름 설정
@@ -116,12 +115,21 @@ function generateFruitGroups(dan, step){
     for(let i=0; i<step; i++){
         fruitHTML += `
             <div class="bundle">
-                <img src="${DAN_IMAGES[dan]}" alt="${DAN_FRUITS[dan]}" class="fruit">
-                <img src="${DAN_IMAGES[dan]}" alt="${DAN_FRUITS[dan]}" class="fruit">
+                ${generateFruits(dan)}
             </div>
         `;
     }
     return fruitHTML;
+}
+
+// 묶음 내 과일 이미지 생성 함수
+function generateFruits(dan){
+    const numFruitsPerBundle = dan; // 각 단수에 따라 묶음 내 과일 개수 설정
+    let fruits = '';
+    for(let j=0; j<numFruitsPerBundle; j++){
+        fruits += `<img src="${DAN_IMAGES[dan]}" alt="${DAN_FRUITS[dan]}" class="fruit">`;
+    }
+    return fruits;
 }
 
 // 이전/다음 버튼 활성화 상태 업데이트 함수
@@ -133,4 +141,3 @@ function updateNavigationButtons(){
     PREV_BUTTON.style.opacity = currentStep === 1 ? '0.5' : '1';
     NEXT_BUTTON.style.opacity = currentStep === totalSteps ? '0.5' : '1';
 }
-
