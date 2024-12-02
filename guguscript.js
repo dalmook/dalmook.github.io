@@ -42,9 +42,9 @@ const totalSteps = 9;
 function getKoreanNumber(number){
     const numbers = ["영", "한 ", "두 ", "세 ", "네 ", "다섯 ", "여섯 ", "일곱 ", "여덟 ", "아홉 ", "열 "];
     if(number <=10){
-        return numbers[number];
+        return numbers[number].trim(); // 앞뒤 공백 제거
     } else if(number >10 && number <=20){
-        return `${numbers[10]} ${numbers[number-10]}`;
+        return `${numbers[10].trim()} ${numbers[number-10].trim()}`;
     } else {
         // 복잡한 숫자 처리는 여기서 추가 가능
         return number;
