@@ -22,6 +22,11 @@ h1 {
     margin: 20px;
 }
 
+#timer {
+    margin-top: 10px;
+    font-size: 1.5em;
+}
+
 #gameArea {
     position: relative;
     display: flex; /* Flexbox 사용 */
@@ -42,16 +47,15 @@ h1 {
     /* pointer-events: none; */ /* 클릭 이벤트 방해 제거 */
 }
 
-.marker {
+.found-marker {
     position: absolute;
     width: 30px;
     height: 30px;
     background: rgba(255, 0, 0, 0.5);
     border: 2px solid red;
     border-radius: 50%;
-    cursor: pointer;
-    transform: translate(-50%, -50%);
-    pointer-events: none; /* 마커 자체에 클릭 이벤트 방지 */
+    pointer-events: none; /* 클릭 이벤트 전달 */
+    transform: translate(-50%, -50%); /* 가운데 정렬 */
 }
 
 #objectList {
@@ -66,11 +70,6 @@ h1 {
 #objectList li {
     font-size: 1.2em;
     margin: 5px 0;
-}
-
-#timer {
-    margin-top: 10px;
-    font-size: 1.5em;
 }
 
 #nameModal {
@@ -110,18 +109,6 @@ h1 {
     height: 100%;
     background: rgba(0, 0, 0, 0.5);
     z-index: 999;
-}
-
-/* 정답 객체에 빨간색 동그라미 추가 */
-.found-marker {
-    position: absolute;
-    width: 30px;
-    height: 30px;
-    background: rgba(255, 0, 0, 0.5);
-    border: 2px solid red;
-    border-radius: 50%;
-    pointer-events: none; /* 클릭 이벤트 전달 */
-    transform: translate(-50%, -50%); /* 가운데 정렬 */
 }
 
 /* 랭킹 테이블 스타일링 */
