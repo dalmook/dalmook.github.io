@@ -95,7 +95,7 @@ h1 {
     height: 10px;
     background: white;
     border-radius: 50%;
-    opacity: 0.8;
+    opacity: 1;
     /* 간단한 쌓임 효과 */
 }
 
