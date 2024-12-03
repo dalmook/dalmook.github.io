@@ -95,29 +95,38 @@ function startGame() {
 }
 
 function handleImageClick(event) {
-    const rect = gameImage.getBoundingClientRect(); // 현재 이미지의 화면 상 위치 및 크기
-    const scaleX = rect.width / gameImage.naturalWidth; // 가로 축 스케일
-    const scaleY = rect.height / gameImage.naturalHeight; // 세로 축 스케일
+    const rect = gameImage.getBoundingClientRect();
 
-    // 클릭 위치를 계산 (현재 표시 크기 기준)
-    const clickX = Math.round((event.clientX - rect.left) / scaleX);
-    const clickY = Math.round((event.clientY - rect.top) / scaleY);
+    // 현재 표시 크기와 원래 크기의 비율
+    const scaleX = gameImage.naturalWidth / rect.width;
+    const scaleY = gameImage.naturalHeight / rect.height;
 
-    console.log(`Clicked coordinates: (${clickX}, ${clickY})`); // 디버깅용
+    // 클릭 위치를 원래 크기 기준으로 변환
+    const clickX = Math.round((event.clientX - rect.left) * scaleX);
+    const clickY = Math.round((event.clientY - rect.top) * scaleY);
 
-    // 클릭 위치가 숨은 객체와 일치하는지 확인
+    console.log(`Clicked coordinates (original size): (${clickX}, ${clickY})`);
+
     for (let obj of remainingObjects) {
         const { x, y, width, height, name } = obj;
 
-        console.log(`Object ${name}: (${x}, ${y}, ${width}, ${height})`); // 객체 정보 로그
+        // 여유 범위 설정 (픽셀 단위로 확장)
+        const margin = 20; // 클릭 가능 영역에 추가할 여유 픽셀
+
+        // 객체 영역 계산 (여유 포함)
+        const adjustedX = x - margin;
+        const adjustedY = y - margin;
+        const adjustedWidth = width + margin * 2;
+        const adjustedHeight = height + margin * 2;
+
+        console.log(`Object ${name}: (${adjustedX}, ${adjustedY}, ${adjustedWidth}, ${adjustedHeight})`);
 
         if (
-            clickX >= x &&
-            clickX <= x + width &&
-            clickY >= y &&
-            clickY <= y + height
+            clickX >= adjustedX &&
+            clickX <= adjustedX + adjustedWidth &&
+            clickY >= adjustedY &&
+            clickY <= adjustedY + adjustedHeight
         ) {
-            // 객체 찾기 성공
             alert(`${name}을(를) 찾았습니다!`);
             markFound(name, x, y, width, height, scaleX, scaleY);
             remainingObjects = remainingObjects.filter(o => o.name !== name);
@@ -131,25 +140,26 @@ function handleImageClick(event) {
 
 
 
-function markFound(name, x, y, width, height, scaleX, scaleY) {
-    // 객체 목록에서 제거 또는 표시
-    const items = objectsToFindList.querySelectorAll('li');
-    items.forEach(item => {
-        if (item.dataset.name === name) {
-            item.style.textDecoration = 'line-through';
-            item.style.color = 'gray';
-        }
-    });
 
-    // 마커 표시 (스케일 반영)
+function markFound(name, x, y, width, height, scaleX, scaleY) {
+    const margin = 20; // 마커에 적용할 여유 범위
+    const displayWidth = gameImage.clientWidth;
+    const displayHeight = gameImage.clientHeight;
+
+    const left = (x - margin) * scaleX;
+    const top = (y - margin) * scaleY;
+    const adjustedWidth = (width + margin * 2) * scaleX;
+    const adjustedHeight = (height + margin * 2) * scaleY;
+
     const foundMarker = document.createElement('div');
     foundMarker.classList.add('found-marker');
-    foundMarker.style.left = `${x * scaleX}px`;
-    foundMarker.style.top = `${y * scaleY}px`;
-    foundMarker.style.width = `${width * scaleX}px`;
-    foundMarker.style.height = `${height * scaleY}px`;
+    foundMarker.style.left = `${left}px`;
+    foundMarker.style.top = `${top}px`;
+    foundMarker.style.width = `${adjustedWidth}px`;
+    foundMarker.style.height = `${adjustedHeight}px`;
     gameArea.appendChild(foundMarker);
 }
+
 
 
 
