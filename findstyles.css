@@ -37,7 +37,6 @@ h1 {
     width: 90vw; /* 화면 너비의 90% */
     max-width: 600px; /* 최대 너비 제한 */
     overflow: hidden; /* 넘치는 내용 숨기기 */
-    background-color: white; /* 배경색 추가 */
     background-color: #f9f9f9; /* 임시 배경색 추가 */
 }
 
@@ -52,12 +51,15 @@ h1 {
     position: absolute;
     width: 30px;
     height: 30px;
-    background: rgba(255, 0, 0, 0.5);
-    border: 2px solid red;
+    background: rgba(255, 0, 0, 0.7); /* 반투명 빨간색 배경 */
+    border: 2px solid red; /* 빨간색 테두리 */
     border-radius: 50%;
     pointer-events: none; /* 클릭 이벤트 전달 */
-    transform: translate(-50%, -50%); /* 가운데 정렬 */
-    z-index: 10; /* 마커가 이미지 위에 표시되도록 */
+    transform: translate(-50%, -50%); /* 센터 정렬 */
+    z-index: 1000; /* 높은 z-index로 이미지 위에 표시 */
+    /* 임시 스타일 */
+    background: red; /* 확실히 보이도록 */
+    opacity: 0.7; /* 약간 투명하게 */
 }
 
 #objectList {
