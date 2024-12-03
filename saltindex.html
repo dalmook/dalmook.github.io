@@ -2,7 +2,7 @@
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
-    <title>소금 모으기</title>
+    <title>아빠의 소금</title> <!-- 게임 제목 변경 -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="saltstyles.css">
     <!-- Firebase SDK -->
@@ -11,14 +11,14 @@
 </head>
 <body>
     <div class="game-container">
-        <h1>소금 모으기</h1>
-        <button id="start-game-button">게임 시작</button>
+        <h1>아빠의 소금</h1> <!-- 게임 제목 변경 -->
+        <button id="start-game-button">게임 시작</button> <!-- 게임 시작 버튼 추가 -->
         <div class="timer">시간: <span id="time">10</span>초</div>
         <div class="score">모은 소금: <span id="score">0</span>kg</div>
         <div class="head-container">
-            <img src="images/father_back.png" alt="아빠의 뒷통수" id="head">
+            <img src="images/father_back.png" alt="아빠의 뒷통수" id="head"> <!-- 이미지 경로 수정 -->
             <div id="flakes-container"></div>
-            <div id="accumulated-flakes-container"></div> <!-- 누적 비듬 컨테이너 추가 -->
+            <div id="accumulated-flakes-container"></div> <!-- 누적 비듬 컨테이너 -->
         </div>
         <!-- 이름 입력 모달 -->
         <div id="name-input-modal" class="modal hidden">
