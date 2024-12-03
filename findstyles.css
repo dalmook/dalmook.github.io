@@ -22,14 +22,16 @@ h1 {
     display: inline-block;
     border: 2px solid #333;
     margin-top: 20px;
-    width: 90vw; /* 화면 너비의 90%로 설정 */
+    width: 90vw; /* 화면 너비의 90% */
     max-width: 600px; /* 최대 너비 제한 */
+    overflow: hidden; /* 넘치는 내용 숨기기 */
 }
 
 #gameImage {
     width: 100%;
     height: auto;
     display: block;
+    pointer-events: none; /* 이미지 자체의 클릭 이벤트 방지 */
 }
 
 .marker {
