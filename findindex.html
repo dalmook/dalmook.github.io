@@ -2,7 +2,7 @@
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
-    <title>숨은 그림 찾기 게임</title>
+    <title>숨은 그림 찾기</title> <!-- 제목 변경 -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0"> <!-- Viewport 설정 -->
     <link rel="stylesheet" href="findstyles.css">
     <!-- Firebase SDK -->
@@ -11,7 +11,7 @@
     <script src="findfirebaseconfig.js" defer></script> <!-- Firebase 설정 -->
 </head>
 <body>
-    <h1>숨은 그림 찾기 게임</h1>
+    <h1>숨은 그림 찾기</h1> <!-- 제목 변경 -->
     
     <!-- 난이도 선택 -->
     <div id="difficultySelection">
@@ -22,6 +22,11 @@
             <option value="hard">어려움</option>
         </select>
         <button id="startGame">게임 시작</button>
+    </div>
+    
+    <!-- 타이머를 난이도 선택 아래에 중앙 배치 -->
+    <div id="timer" style="display: none;">
+        시간: <span id="time">0</span>초
     </div>
     
     <!-- 게임 영역 -->
@@ -36,11 +41,6 @@
         <ul id="objectsToFind">
             <!-- 객체 목록이 동적으로 추가됩니다 -->
         </ul>
-    </div>
-    
-    <!-- 타이머 -->
-    <div id="timer" style="display: none;">
-        시간: <span id="time">0</span>초
     </div>
     
     <!-- 이름 입력 모달 -->
