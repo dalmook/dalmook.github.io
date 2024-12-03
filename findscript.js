@@ -19,10 +19,12 @@ const rankingsList = document.getElementById("rankingsList"); // 랭킹 목록
 
 let findingData = {};
 let currentDifficulty = 'easy'; // 기본 난이도를 '쉬움'으로 설정
+let availableImages = []; // 사용 가능한 이미지 목록
 let currentImage = {};
 let startTime;
 let timerInterval;
 let remainingObjects = [];
+let completedImagesCount = 0; // 완료된 이미지 수
 
 // 게임 시작 버튼 클릭 시
 startButton.addEventListener('click', () => {
@@ -36,6 +38,7 @@ startButton.addEventListener('click', () => {
         .then(response => response.json())
         .then(data => {
             findingData = data;
+            initializeAvailableImages();
             startGame();
             fetchRankings(currentDifficulty); // 게임 시작 시 현재 난이도 랭킹 불러오기
         })
@@ -55,14 +58,28 @@ difficultySelect.addEventListener('change', () => {
     }
 });
 
-function startGame() {
-    // 난이도별 이미지 중 랜덤 선택
-    const images = findingData[currentDifficulty];
-    if (!images || images.length === 0) {
+// 초기 사용 가능한 이미지 목록 설정
+function initializeAvailableImages() {
+    if (findingData[currentDifficulty] && findingData[currentDifficulty].length > 0) {
+        // 사용 가능한 이미지 목록을 초기화
+        availableImages = [...findingData[currentDifficulty]];
+        completedImagesCount = 0;
+    } else {
         alert('해당 난이도에 사용할 이미지가 없습니다.');
+    }
+}
+
+function startGame() {
+    if (availableImages.length === 0) {
+        alert('모든 그림을 완료하셨습니다! 축하합니다!');
         return;
     }
-    currentImage = images[Math.floor(Math.random() * images.length)];
+
+    // 난이도별 이미지 중 랜덤 선택
+    const randomIndex = Math.floor(Math.random() * availableImages.length);
+    currentImage = availableImages[randomIndex];
+    // 선택된 이미지를 사용 가능한 이미지 목록에서 제거
+    availableImages.splice(randomIndex, 1);
 
     // 이미지 설정
     gameImage.src = currentImage.image;
@@ -80,7 +97,7 @@ function startGame() {
             li.textContent = obj.name;
             li.dataset.name = obj.name;
             objectsToFindList.appendChild(li);
-        }); // 수정된 부분: 닫는 괄호를 올바르게 추가
+        });
 
         // 타이머 시작
         startTime = Date.now();
@@ -99,12 +116,12 @@ function handleImageClick(event) {
     const rect = gameImage.getBoundingClientRect();
 
     // 현재 표시 크기와 원래 크기의 비율 (올바르게 수정)
-    const scaleX = rect.width / gameImage.naturalWidth;
-    const scaleY = rect.height / gameImage.naturalHeight;
+    const scaleX = gameImage.naturalWidth / rect.width;
+    const scaleY = gameImage.naturalHeight / rect.height;
 
     // 클릭 위치를 원래 크기 기준으로 변환
-    const clickX = Math.round((event.clientX - rect.left) / scaleX);
-    const clickY = Math.round((event.clientY - rect.top) / scaleY);
+    const clickX = Math.round((event.clientX - rect.left) * scaleX);
+    const clickY = Math.round((event.clientY - rect.top) * scaleY);
 
     console.log(`Clicked coordinates (original size): (${clickX}, ${clickY})`);
 
@@ -128,7 +145,8 @@ function handleImageClick(event) {
             clickY >= adjustedY &&
             clickY <= adjustedY + adjustedHeight
         ) {
-            // alert(`${name}을(를) 찾았습니다!`); // 알림 팝업 제거
+            // 객체를 찾았을 때 알림 팝업 제거
+            // alert(`${name}을(를) 찾았습니다!`);
             markFound(name, x, y, width, height, scaleX, scaleY);
             remainingObjects = remainingObjects.filter(o => o.name !== name);
             if (remainingObjects.length === 0) {
@@ -164,11 +182,20 @@ function endGame() {
     // 게임 이미지 클릭 이벤트 제거
     gameImage.removeEventListener('click', handleImageClick);
 
-    // 이름 입력 모달 표시
-    overlay.style.display = 'block';
-    nameModal.style.display = 'block';
+    // 완료된 이미지 수 증가
+    completedImagesCount++;
+
+    // 모든 이미지 완료 여부 확인
+    if (availableImages.length === 0) {
+        alert('모든 그림을 완료하셨습니다! 축하합니다!');
+        // 모든 게임 종료 로직 추가 (필요 시)
+    } else {
+        // 다음 이미지 자동으로 시작
+        startGame();
+    }
 }
 
+// 이름 제출 버튼 클릭 시 Firestore에 데이터 저장
 submitNameButton.addEventListener('click', () => {
     const playerName = document.getElementById("playerName").value.trim();
     const elapsedTime = Math.floor((Date.now() - startTime) / 1000);
@@ -196,6 +223,7 @@ submitNameButton.addEventListener('click', () => {
     resetGame();
 });
 
+// 모달 닫기 버튼 클릭 시 모달 닫기
 closeModalButton.addEventListener('click', () => {
     // 모달 닫기
     nameModal.style.display = 'none';
@@ -265,4 +293,5 @@ function resetGame() {
 
     // 다시 시작할 수 있도록 난이도 선택 표시
     difficultySelect.value = 'easy'; // 기본 난이도를 '쉬움'으로 재설정
+    initializeAvailableImages(); // 사용 가능한 이미지 목록 재초기화
 }
