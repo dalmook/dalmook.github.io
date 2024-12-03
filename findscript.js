@@ -1,18 +1,18 @@
-// findscript.js
-
 // Firebase 설정
 const firebaseConfig = {
     apiKey: "AIzaSyCwVxx0Pxd7poc_zGSp1aY9qfd89bpVUW0",
     authDomain: "finddalbong.firebaseapp.com",
     projectId: "finddalbong",
-    storageBucket: "finddalbong.firebasestorage.app",
+    storageBucket: "finddalbong.appspot.com", // 일반적으로 storageBucket은 .appspot.com 형식입니다.
     messagingSenderId: "982765399272",
     appId: "1:982765399272:web:02344ab408272c60e2ad5d"
 };
 
 // Firebase 초기화
 firebase.initializeApp(firebaseConfig);
-const db = firebase.firestore();    
+
+// Firestore 초기화
+const db = firebase.firestore();
 
 // DOM 요소 가져오기
 const difficultySelect = document.getElementById('difficulty');
@@ -138,9 +138,6 @@ function handleImageClick(event) {
     }
 }
 
-
-
-
 function markFound(name, x, y, width, height, scaleX, scaleY) {
     // 객체 목록에서 제거 또는 표시
     const items = objectsToFindList.querySelectorAll('li');
@@ -160,9 +157,6 @@ function markFound(name, x, y, width, height, scaleX, scaleY) {
     foundMarker.style.height = `${height * scaleY}px`;
     gameArea.appendChild(foundMarker);
 }
-
-
-
 
 function endGame() {
     // 타이머 중지
@@ -202,13 +196,13 @@ submitNameButton.addEventListener('click', () => {
     resetGame();
 });
 
-
 closeModalButton.addEventListener('click', () => {
     // 모달 닫기
     nameModal.style.display = 'none';
     overlay.style.display = 'none';
     resetGame();
 });
+
 function fetchRankings(difficulty) {
     db.collection(`rankings_${difficulty}`)
         .orderBy('time', 'asc') // 시간 기준 오름차순 정렬
@@ -234,6 +228,7 @@ function fetchRankings(difficulty) {
 document.getElementById('viewRankings').addEventListener('click', () => {
     fetchRankings(currentDifficulty);
 });
+
 function resetGame() {
     // 게임 초기화
     gameArea.style.display = 'none';
