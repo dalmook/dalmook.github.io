@@ -3,13 +3,12 @@
 // Firebase 설정
 // Firebase 콘솔에서 프로젝트를 생성하고 아래 설정을 채워 넣으세요.
 const firebaseConfig = {
-    apiKey: "YOUR_API_KEY",
-    authDomain: "YOUR_AUTH_DOMAIN",
-    databaseURL: "YOUR_DATABASE_URL",
-    projectId: "YOUR_PROJECT_ID",
-    storageBucket: "YOUR_STORAGE_BUCKET",
-    messagingSenderId: "YOUR_SENDER_ID",
-    appId: "YOUR_APP_ID"
+    apiKey: "AIzaSyCwVxx0Pxd7poc_zGSp1aY9qfd89bpVUW0",
+    authDomain: "finddalbong.firebaseapp.com",
+    projectId: "finddalbong",
+    storageBucket: "finddalbong.firebasestorage.app",
+    messagingSenderId: "982765399272",
+    appId: "1:982765399272:web:02344ab408272c60e2ad5d"
 };
 
 // Firebase 초기화
