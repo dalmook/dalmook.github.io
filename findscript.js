@@ -98,6 +98,8 @@ function startGame() {
 
     // 이미지가 완전히 로드된 후 실행
     gameImage.onload = () => {
+        console.log(`이미지 로드 성공: ${currentImage.image}`);
+
         // 객체 목록 표시
         objectsToFindList.innerHTML = '';
         remainingObjects = [...currentImage.objects];
@@ -190,6 +192,8 @@ function markFound(name, x, y, width, height, scaleX, scaleY) {
     foundMarker.style.left = `${x * scaleX}px`;
     foundMarker.style.top = `${y * scaleY}px`;
     gameArea.appendChild(foundMarker);
+
+    console.log(`마커 추가: ${name} at (${x * scaleX}, ${y * scaleY})`);
 }
 
 function endGame() {
