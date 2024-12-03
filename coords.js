@@ -1,5 +1,3 @@
-// coords.js
-
 document.addEventListener("DOMContentLoaded", () => {
     const gameImage = document.getElementById("gameImage");
     const coordinateList = document.getElementById("coordinateList");
@@ -12,11 +10,14 @@ document.addEventListener("DOMContentLoaded", () => {
     gameImage.addEventListener("click", (event) => {
         const rect = gameImage.getBoundingClientRect();
 
-        // 클릭 위치를 픽셀 단위로 계산
-        const clickX = Math.round(event.clientX - rect.left);
-        const clickY = Math.round(event.clientY - rect.top);
+        // 이미지의 원래 크기와 현재 표시 크기의 비율
+        const scaleX = gameImage.naturalWidth / rect.width;
+        const scaleY = gameImage.naturalHeight / rect.height;
 
-        // 좌표 출력
+        // 클릭 위치를 이미지 원래 크기 기준으로 계산
+        const clickX = Math.round((event.clientX - rect.left) * scaleX);
+        const clickY = Math.round((event.clientY - rect.top) * scaleY);
+
         const coordItem = {
             name: `Object ${coordinates.length + 1}`, // 기본 이름
             x: clickX,
@@ -24,6 +25,7 @@ document.addEventListener("DOMContentLoaded", () => {
             width: 50, // 기본 크기 (픽셀)
             height: 50 // 기본 크기 (픽셀)
         };
+
         coordinates.push(coordItem);
 
         // 좌표 목록에 추가
