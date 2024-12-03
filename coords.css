@@ -1,0 +1,61 @@
+/* coords.css */
+
+body {
+    font-family: Arial, sans-serif;
+    text-align: center;
+    margin: 0;
+    padding: 20px;
+    background-color: #f9f9f9;
+}
+
+h1 {
+    margin-bottom: 10px;
+}
+
+#gameArea {
+    display: flex;
+    justify-content: center;
+    margin-top: 20px;
+    border: 2px solid #ccc;
+    background: #fff;
+    position: relative;
+}
+
+#gameImage {
+    max-width: 100%;
+    height: auto;
+    cursor: crosshair;
+}
+
+#output {
+    margin-top: 20px;
+    text-align: left;
+    max-width: 800px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+#coordinateList {
+    list-style: none;
+    padding: 0;
+}
+
+#jsonOutput {
+    width: 100%;
+    font-family: monospace;
+    resize: none;
+}
+
+#copyButton {
+    padding: 10px 20px;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-top: 10px;
+}
+
+#copyButton:hover {
+    background-color: #45a049;
+}
