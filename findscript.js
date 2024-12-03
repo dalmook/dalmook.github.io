@@ -37,7 +37,12 @@ startButton.addEventListener('click', () => {
     }
 
     fetch('findimg.json')  // 파일 이름 확인
-        .then(response => response.json())
+        .then(response => {
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            return response.json();
+        })
         .then(data => {
             findingData = data;
             initializeAvailableImages();
@@ -46,6 +51,7 @@ startButton.addEventListener('click', () => {
         })
         .catch(error => {
             console.error('Error fetching findimg.json:', error);
+            alert('게임 데이터를 불러오는 데 문제가 발생했습니다. 나중에 다시 시도해주세요.');
         });
 });
 
@@ -66,6 +72,7 @@ function initializeAvailableImages() {
         // 사용 가능한 이미지 목록을 초기화
         availableImages = [...findingData[currentDifficulty]];
         completedImagesCount = 0;
+        console.log(`사용 가능한 이미지 수: ${availableImages.length}`);
     } else {
         alert('해당 난이도에 사용할 이미지가 없습니다.');
     }
@@ -112,6 +119,13 @@ function startGame() {
         // 기존 이벤트 리스너 제거 후 새로운 이벤트 리스너 추가
         gameImage.removeEventListener('click', handleImageClick);
         gameImage.addEventListener('click', handleImageClick);
+    };
+
+    gameImage.onerror = () => {
+        console.error(`이미지 로딩 오류: ${currentImage.image}`);
+        alert('이미지 로딩에 문제가 발생했습니다. 다른 이미지를 시도해주세요.');
+        // 다음 이미지를 시도하도록 startGame() 재호출
+        startGame();
     };
 }
 
@@ -188,18 +202,17 @@ function endGame() {
     // 완료된 이미지 수 증가
     completedImagesCount++;
 
-    // 모든 이미지 완료 여부 확인
+    // 이름 입력 모달 표시
+    overlay.style.display = 'block';
+    nameModal.style.display = 'block';
+
+    // 모든 이미지 완료 여부 확인 후 알림
     if (availableImages.length === 0) {
         alert('모든 그림을 완료하셨습니다! 축하합니다!');
-        // 모든 게임 종료 로직 추가 (필요 시)
     } else {
         // 다음 이미지 자동으로 시작
         startGame();
     }
-
-    // 이름 입력 모달 표시
-    overlay.style.display = 'block';
-    nameModal.style.display = 'block';
 }
 
 // 이름 제출 버튼 클릭 시 Firestore에 데이터 저장
@@ -297,6 +310,10 @@ function resetGame() {
 
     // 이름 입력 초기화
     document.getElementById('playerName').value = '';
+
+    // 마커 제거
+    const existingMarkers = document.querySelectorAll('.found-marker');
+    existingMarkers.forEach(marker => marker.remove());
 
     // 다시 시작할 수 있도록 난이도 선택 표시 (기존 선택 유지)
     // difficultySelect.value = 'easy'; // 제거: 사용자 선택 유지
