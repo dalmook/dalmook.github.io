@@ -60,7 +60,18 @@ h1 {
     transform: translateX(-50%);
 }
 
-.flate {
+#accumulated-flakes-container {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 100px; /* 누적될 공간 설정 */
+    pointer-events: none;
+    overflow: hidden;
+    z-index: 1;
+}
+
+.flake {
     position: absolute;
     top: 0;
     width: 10px;
@@ -73,11 +84,22 @@ h1 {
 
 @keyframes fall {
     to {
-        transform: translateY(400px) rotate(360deg);
+        transform: translateY(300px) rotate(360deg); /* 애니메이션 수정 */
         opacity: 0;
     }
 }
 
+.accumulated-flake {
+    position: absolute;
+    width: 10px;
+    height: 10px;
+    background: white;
+    border-radius: 50%;
+    opacity: 0.8;
+    /* 간단한 쌓임 효과 */
+}
+
+/* 이름 입력 및 리더보드 스타일 */
 #name-input-container {
     margin-top: 20px;
 }
