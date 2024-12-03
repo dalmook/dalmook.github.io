@@ -109,7 +109,8 @@ function startGame() {
             timeSpan.textContent = elapsed;
         }, 1000);
 
-        // 이미지 클릭 이벤트 설정
+        // 기존 이벤트 리스너 제거 후 새로운 이벤트 리스너 추가
+        gameImage.removeEventListener('click', handleImageClick);
         gameImage.addEventListener('click', handleImageClick);
     };
 }
@@ -297,7 +298,6 @@ function resetGame() {
     // 이름 입력 초기화
     document.getElementById('playerName').value = '';
 
-    // 다시 시작할 수 있도록 난이도 선택 표시
-    difficultySelect.value = 'easy'; // 기본 난이도를 '쉬움'으로 재설정
-    initializeAvailableImages(); // 사용 가능한 이미지 목록 재초기화
+    // 다시 시작할 수 있도록 난이도 선택 표시 (기존 선택 유지)
+    // difficultySelect.value = 'easy'; // 제거: 사용자 선택 유지
 }
