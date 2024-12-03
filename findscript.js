@@ -44,7 +44,7 @@ startButton.addEventListener('click', () => {
         return;
     }
     
-    fetch('findimg.json')
+    fetch('findimg.json')  // 파일 이름 변경
         .then(response => response.json())
         .then(data => {
             findingData = data;
