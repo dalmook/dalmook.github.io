@@ -24,7 +24,7 @@ const playerNameInput = document.getElementById('player-name');
 const leaderboardList = document.getElementById('leaderboard-list');
 const startGameButton = document.getElementById('start-game-button'); // 게임 시작 버튼
 
-let timeLeft = 15;
+let timeLeft = 15; // 10초에서 15초로 수정
 let score = 0;
 let gameActive = false;
 let timerInterval;
@@ -34,7 +34,7 @@ const accumulatedPositions = [];
 
 // 게임 시작 시 초기화
 function startGame() {
-    timeLeft = 15;
+    timeLeft = 15; // 10초에서 15초로 수정
     score = 0;
     gameActive = true;
     timeDisplay.textContent = timeLeft;
@@ -158,6 +158,7 @@ submitNameBtn.addEventListener('click', () => {
         alert("기록이 저장되었습니다!");
         nameInputModal.classList.add('hidden');
         startGameButton.classList.remove('hidden'); // 게임 시작 버튼 다시 보이기
+        fetchLeaderboard(); // 리더보드 즉시 업데이트
     }).catch((error) => {
         console.error("Error adding document: ", error);
     });
@@ -167,6 +168,7 @@ submitNameBtn.addEventListener('click', () => {
 closeModalBtn.addEventListener('click', () => {
     nameInputModal.classList.add('hidden');
     startGameButton.classList.remove('hidden'); // 게임 시작 버튼 다시 보이기
+    fetchLeaderboard(); // 리더보드 즉시 업데이트
 });
 
 // 게임 시작 버튼
@@ -185,7 +187,7 @@ playerNameInput.addEventListener('keypress', (e) => {
 function fetchLeaderboard() {
     db.collection('scores')
         .orderBy('score', 'desc')
-        .limit(20)
+        .limit(10)
         .get()
         .then((querySnapshot) => {
             leaderboardList.innerHTML = '';
