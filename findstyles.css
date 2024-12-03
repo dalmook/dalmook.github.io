@@ -31,7 +31,7 @@ h1 {
     width: 100%;
     height: auto;
     display: block;
-    pointer-events: none; /* 이미지 자체의 클릭 이벤트 방지 */
+    /* pointer-events: none; */ /* 클릭 이벤트 방해 제거 */
 }
 
 .marker {
