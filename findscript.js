@@ -142,21 +142,22 @@ function handleImageClick(event) {
 
 
 function markFound(name, x, y, width, height, scaleX, scaleY) {
-    const margin = 20; // 마커에 적용할 여유 범위
-    const displayWidth = gameImage.clientWidth;
-    const displayHeight = gameImage.clientHeight;
+    // 객체 목록에서 제거 또는 표시
+    const items = objectsToFindList.querySelectorAll('li');
+    items.forEach(item => {
+        if (item.dataset.name === name) {
+            item.style.textDecoration = 'line-through';
+            item.style.color = 'gray';
+        }
+    });
 
-    const left = (x - margin) * scaleX;
-    const top = (y - margin) * scaleY;
-    const adjustedWidth = (width + margin * 2) * scaleX;
-    const adjustedHeight = (height + margin * 2) * scaleY;
-
+    // 마커 표시 (스케일 반영)
     const foundMarker = document.createElement('div');
     foundMarker.classList.add('found-marker');
-    foundMarker.style.left = `${left}px`;
-    foundMarker.style.top = `${top}px`;
-    foundMarker.style.width = `${adjustedWidth}px`;
-    foundMarker.style.height = `${adjustedHeight}px`;
+    foundMarker.style.left = `${x * scaleX}px`;
+    foundMarker.style.top = `${y * scaleY}px`;
+    foundMarker.style.width = `${width * scaleX}px`;
+    foundMarker.style.height = `${height * scaleY}px`;
     gameArea.appendChild(foundMarker);
 }
 
