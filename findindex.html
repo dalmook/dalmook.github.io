@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>숨은 그림 찾기 게임</title>
+    <link rel="stylesheet" href="finds_tales.css">
+</head>
+<body>
+    <h1>숨은 그림 찾기 게임</h1>
+    
+    <!-- 난이도 선택 -->
+    <div id="difficultySelection">
+        <label for="difficulty">난이도 선택:</label>
+        <select id="difficulty">
+            <option value="">선택하세요</option>
+            <option value="easy">쉬움</option>
+            <option value="medium">보통</option>
+            <option value="hard">어려움</option>
+        </select>
+        <button id="startGame">게임 시작</button>
+    </div>
+    
+    <!-- 게임 영역 -->
+    <div id="gameArea" style="display: none;">
+        <img src="" id="gameImage" alt="숨은 그림 찾기 이미지">
+        <!-- 마커가 여기에 동적으로 추가됩니다 -->
+    </div>
+    
+    <!-- 찾을 객체 목록 -->
+    <div id="objectList" style="display: none;">
+        <h2>찾아야 할 객체:</h2>
+        <ul id="objectsToFind">
+            <!-- 객체 목록이 동적으로 추가됩니다 -->
+        </ul>
+    </div>
+    
+    <!-- 타이머 -->
+    <div id="timer" style="display: none;">
+        시간: <span id="time">0</span>초
+    </div>
+    
+    <!-- 이름 입력 모달 -->
+    <div id="overlay"></div>
+    <div id="nameModal">
+        <h2>축하합니다! 완료하셨습니다.</h2>
+        <p>이름을 입력하여 랭킹에 등록하세요:</p>
+        <input type="text" id="playerName" placeholder="이름을 입력하세요">
+        <br>
+        <button id="submitName">제출</button>
+        <button id="closeModal">닫기</button>
+    </div>
+    
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+    <script src="findscript.js"></script>
+</body>
+</html>
