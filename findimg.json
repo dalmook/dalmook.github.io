@@ -1,18 +1,6 @@
 {
     "easy": [
         {
-            "image": "images/saltimg.jpg",
-            "objects": [
-                {
-                    "name": "사과",
-                    "x": 0,
-                    "y": 0,
-                    "width": 50,
-                    "height": 50
-                }
-            ]
-        },
-        {
             "image": "images/hidden_puzzle.webp",
             "objects": [
                 {
