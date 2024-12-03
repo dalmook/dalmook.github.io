@@ -133,6 +133,53 @@
                     "height": 50
                 }
             ]
+        },
+        {
+            "image": "images/find_hidden_pictures_055.jpg",
+            "objects": [
+                {
+                    "name": "머핀",
+                    "x": 563,
+                    "y": 94,
+                    "width": 50,
+                    "height": 50
+                },
+                {
+                    "name": "덮개",
+                    "x": 652,
+                    "y": 537,
+                    "width": 50,
+                    "height": 50
+                },
+                {
+                    "name": "뒤집개",
+                    "x": 457,
+                    "y": 275,
+                    "width": 50,
+                    "height": 50
+                },
+                {
+                    "name": "칼",
+                    "x": 650,
+                    "y": 209,
+                    "width": 50,
+                    "height": 50
+                },
+                {
+                    "name": "중식칼",
+                    "x": 208,
+                    "y": 665,
+                    "width": 50,
+                    "height": 50
+                },
+                {
+                    "name": "냄비",
+                    "x": 98,
+                    "y": 281,
+                    "width": 50,
+                    "height": 50
+                }
+            ]
         }
     ],
     "medium": [],
