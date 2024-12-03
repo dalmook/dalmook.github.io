@@ -11,7 +11,6 @@ const firebaseConfig = {
     appId: "1:982765399272:web:02344ab408272c60e2ad5d"
 };
 
-
 // Firebase 초기화
 firebase.initializeApp(firebaseConfig);
 const database = firebase.database();
@@ -67,26 +66,29 @@ function startGame() {
     objectListDiv.style.display = 'block';
     timerDiv.style.display = 'block';
     
-    // 객체 목록 표시
-    objectsToFindList.innerHTML = '';
-    remainingObjects = [...currentImage.objects];
-    remainingObjects.forEach(obj => {
-        const li = document.createElement('li');
-        li.textContent = obj.name;
-        li.dataset.name = obj.name;
-        objectsToFindList.appendChild(li);
-    });
-    
-    // 타이머 시작
-    startTime = Date.now();
-    timeSpan.textContent = '0';
-    timerInterval = setInterval(() => {
-        const elapsed = Math.floor((Date.now() - startTime) / 1000);
-        timeSpan.textContent = elapsed;
-    }, 1000);
-    
-    // 이미지 클릭 이벤트 설정
-    gameImage.addEventListener('click', handleImageClick);
+    // 이미지가 완전히 로드된 후 실행
+    gameImage.onload = () => {
+        // 객체 목록 표시
+        objectsToFindList.innerHTML = '';
+        remainingObjects = [...currentImage.objects];
+        remainingObjects.forEach(obj => {
+            const li = document.createElement('li');
+            li.textContent = obj.name;
+            li.dataset.name = obj.name;
+            objectsToFindList.appendChild(li);
+        });
+        
+        // 타이머 시작
+        startTime = Date.now();
+        timeSpan.textContent = '0';
+        timerInterval = setInterval(() => {
+            const elapsed = Math.floor((Date.now() - startTime) / 1000);
+            timeSpan.textContent = elapsed;
+        }, 1000);
+        
+        // 이미지 클릭 이벤트 설정
+        gameImage.addEventListener('click', handleImageClick);
+    };
 }
 
 function handleImageClick(event) {
@@ -106,6 +108,8 @@ function handleImageClick(event) {
         const objY = obj.y * gameImage.naturalHeight;
         const objWidth = obj.width * gameImage.naturalWidth;
         const objHeight = obj.height * gameImage.naturalHeight;
+        
+        console.log(`Object ${obj.name}: (${objX}, ${objY}, ${objWidth}, ${objHeight})`); // 객체 좌표 로그
         
         if (
             clickX >= objX &&
@@ -223,4 +227,5 @@ function resetGame() {
     // 다시 시작할 수 있도록 난이도 선택 표시
     difficultySelect.value = '';
 }
+
 
