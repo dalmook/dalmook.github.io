@@ -1,11 +1,11 @@
 // Firebase 설정
 const firebaseConfig = {
-    apiKey: "AIzaSyCkhLwa7X5PEHa_rjhSfTSlyvsc8DrnuaU",
-    authDomain: "saltfather-fd901.firebaseapp.com",
-    projectId: "saltfather-fd901",
-    storageBucket: "saltfather-fd901.firebasestorage.app",
-    messagingSenderId: "508342774249",
-    appId: "1:508342774249:web:a860fdeeff162b8027c378"
+    apiKey: "YOUR_API_KEY",
+    authDomain: "YOUR_AUTH_DOMAIN",
+    projectId: "YOUR_PROJECT_ID",
+    storageBucket: "YOUR_STORAGE_BUCKET",
+    messagingSenderId: "YOUR_SENDER_ID",
+    appId: "YOUR_APP_ID"
 };
 
 // Firebase 초기화
@@ -38,7 +38,6 @@ function startGame() {
     timeDisplay.textContent = timeLeft;
     scoreDisplay.textContent = score.toFixed(2);
     nameInputModal.classList.add('hidden'); // 모달 숨기기
-    leaderboardList.innerHTML = '';
     // 누적된 비듬을 초기화
     accumulatedFlakesContainer.innerHTML = '';
     accumulatedPositions.length = 0;
@@ -93,8 +92,19 @@ function accumulateFlake(flake) {
     const currentHeight = accumulatedPositions[gridIndex] || 0;
     accumulatedFlake.style.bottom = `${currentHeight}px`;
 
+    // 비듬의 크기와 색상 다양화
+    const size = Math.random() * 5 + 5; // 5px ~ 10px
+    accumulatedFlake.style.width = `${size}px`;
+    accumulatedFlake.style.height = `${size}px`;
+    accumulatedFlake.style.background = `rgba(150, 150, 150, 1)`; // 더 진한 색상 설정
+
     // 높이 업데이트
-    accumulatedPositions[gridIndex] = currentHeight + 10; // 비듬 높이만큼 추가
+    accumulatedPositions[gridIndex] = currentHeight + size; // 비듬 높이만큼 추가
+
+    // 최대 비듬 개수 제한 (예: 100개)
+    if (accumulatedFlakesContainer.childElementCount > 100) {
+        accumulatedFlakesContainer.removeChild(accumulatedFlakesContainer.firstChild);
+    }
 
     accumulatedFlakesContainer.appendChild(accumulatedFlake);
 }
@@ -145,6 +155,13 @@ submitNameBtn.addEventListener('click', () => {
     }).catch((error) => {
         console.error("Error adding document: ", error);
     });
+});
+
+// Enter 키로 이름 제출
+playerNameInput.addEventListener('keypress', (e) => {
+    if (e.key === 'Enter') {
+        submitNameBtn.click();
+    }
 });
 
 // 리더보드 가져오기
