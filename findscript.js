@@ -1,7 +1,6 @@
 // findscript.js
 
 // Firebase 설정
-// Firebase 콘솔에서 프로젝트를 생성하고 아래 설정을 채워 넣으세요.
 const firebaseConfig = {
     apiKey: "AIzaSyCwVxx0Pxd7poc_zGSp1aY9qfd89bpVUW0",
     authDomain: "finddalbong.firebaseapp.com",
