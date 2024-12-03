@@ -43,7 +43,7 @@ startButton.addEventListener('click', () => {
         alert('난이도를 선택해주세요!');
         return;
     }
-    
+
     fetch('findimg.json')  // 파일 이름 변경
         .then(response => response.json())
         .then(data => {
@@ -58,14 +58,18 @@ startButton.addEventListener('click', () => {
 function startGame() {
     // 난이도별 이미지 중 랜덤 선택
     const images = findingData[currentDifficulty];
+    if (!images || images.length === 0) {
+        alert('해당 난이도에 사용할 이미지가 없습니다.');
+        return;
+    }
     currentImage = images[Math.floor(Math.random() * images.length)];
-    
+
     // 이미지 설정
     gameImage.src = currentImage.image;
     gameArea.style.display = 'block';
     objectListDiv.style.display = 'block';
     timerDiv.style.display = 'block';
-    
+
     // 이미지가 완전히 로드된 후 실행
     gameImage.onload = () => {
         // 객체 목록 표시
@@ -77,7 +81,7 @@ function startGame() {
             li.dataset.name = obj.name;
             objectsToFindList.appendChild(li);
         });
-        
+
         // 타이머 시작
         startTime = Date.now();
         timeSpan.textContent = '0';
@@ -85,7 +89,7 @@ function startGame() {
             const elapsed = Math.floor((Date.now() - startTime) / 1000);
             timeSpan.textContent = elapsed;
         }, 1000);
-        
+
         // 이미지 클릭 이벤트 설정
         gameImage.addEventListener('click', handleImageClick);
     };
@@ -95,12 +99,12 @@ function handleImageClick(event) {
     const rect = gameImage.getBoundingClientRect();
     const scaleX = gameImage.naturalWidth / rect.width;
     const scaleY = gameImage.naturalHeight / rect.height;
-    
+
     const clickX = (event.clientX - rect.left) * scaleX;
     const clickY = (event.clientY - rect.top) * scaleY;
-    
+
     console.log(`Clicked coordinates: (${clickX}, ${clickY})`); // 클릭 좌표 로그
-    
+
     // 클릭 위치가 숨은 객체와 일치하는지 확인
     for (let obj of remainingObjects) {
         // 상대 좌표를 절대 좌표로 변환
@@ -108,9 +112,9 @@ function handleImageClick(event) {
         const objY = obj.y * gameImage.naturalHeight;
         const objWidth = obj.width * gameImage.naturalWidth;
         const objHeight = obj.height * gameImage.naturalHeight;
-        
+
         console.log(`Object ${obj.name}: (${objX}, ${objY}, ${objWidth}, ${objHeight})`); // 객체 좌표 로그
-        
+
         if (
             clickX >= objX &&
             clickX <= objX + objWidth &&
@@ -119,7 +123,7 @@ function handleImageClick(event) {
         ) {
             // 객체 찾기 성공
             alert(`${obj.name}을(를) 찾았습니다!`);
-            markFound(obj.name, obj.x, obj.y, obj.width, obj.height);
+            markFound(name = obj.name, x = obj.x, y = obj.y, width = obj.width, height = obj.height);
             remainingObjects = remainingObjects.filter(o => o.name !== obj.name);
             if (remainingObjects.length === 0) {
                 endGame();
@@ -138,39 +142,29 @@ function markFound(name, x, y, width, height) {
             item.style.color = 'gray';
         }
     });
-    
-    // 마커 표시
-    const marker = document.createElement('div');
-    marker.classList.add('marker');
+
+    // 빨간색 동그라미 표시
+    const foundMarker = document.createElement('div');
+    foundMarker.classList.add('found-marker');
     // 이미지의 표시 크기에 맞게 상대 좌표로 위치 조정
     const displayWidth = gameImage.clientWidth;
     const displayHeight = gameImage.clientHeight;
-    
+
     const left = x * displayWidth;
     const top = y * displayHeight;
-    
-    marker.style.left = `${left}px`;
-    marker.style.top = `${top}px`;
-    gameArea.appendChild(marker);
-    
-    // 정답 객체에 빨간색 테두리 추가
-    const border = document.createElement('div');
-    border.classList.add('found-border');
-    border.style.left = `${left}px`;
-    border.style.top = `${top}px`;
-    border.style.width = `${width * displayWidth}px`;
-    border.style.height = `${height * displayHeight}px`;
-    
-    gameArea.appendChild(border);
+
+    foundMarker.style.left = `${left}px`;
+    foundMarker.style.top = `${top}px`;
+    gameArea.appendChild(foundMarker);
 }
 
 function endGame() {
     // 타이머 중지
     clearInterval(timerInterval);
-    
+
     // 게임 이미지 클릭 이벤트 제거
     gameImage.removeEventListener('click', handleImageClick);
-    
+
     // 이름 입력 모달 표시
     overlay.style.display = 'block';
     nameModal.style.display = 'block';
@@ -179,7 +173,7 @@ function endGame() {
 submitNameButton.addEventListener('click', () => {
     const playerName = document.getElementById('playerName').value.trim();
     const elapsedTime = Math.floor((Date.now() - startTime) / 1000);
-    
+
     if (playerName) {
         // Firebase에 기록 저장
         const newRecordRef = database.ref(`rankings/${currentDifficulty}`).push();
@@ -195,7 +189,7 @@ submitNameButton.addEventListener('click', () => {
             console.error('Error saving to Firebase:', error);
         });
     }
-    
+
     // 모달 닫기
     nameModal.style.display = 'none';
     overlay.style.display = 'none';
@@ -216,16 +210,14 @@ function resetGame() {
     timerDiv.style.display = 'none';
     objectsToFindList.innerHTML = '';
     gameArea.innerHTML = `<img src="" id="gameImage" alt="숨은 그림 찾기 이미지">`;
-    
+
     // 타이머 초기화
     clearInterval(timerInterval);
     timeSpan.textContent = '0';
-    
+
     // 이름 입력 초기화
     document.getElementById('playerName').value = '';
-    
+
     // 다시 시작할 수 있도록 난이도 선택 표시
     difficultySelect.value = '';
 }
-
-
