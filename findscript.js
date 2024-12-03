@@ -18,7 +18,7 @@ const closeModalButton = document.getElementById('closeModal');
 const rankingsList = document.getElementById("rankingsList"); // 랭킹 목록
 
 let findingData = {};
-let currentDifficulty = '';
+let currentDifficulty = 'easy'; // 기본 난이도를 '쉬움'으로 설정
 let currentImage = {};
 let startTime;
 let timerInterval;
@@ -99,12 +99,12 @@ function handleImageClick(event) {
     const rect = gameImage.getBoundingClientRect();
 
     // 현재 표시 크기와 원래 크기의 비율 (올바르게 수정)
-    const scaleX = gameImage.naturalWidth / rect.width;
-    const scaleY = gameImage.naturalHeight / rect.height;
+    const scaleX = rect.width / gameImage.naturalWidth;
+    const scaleY = rect.height / gameImage.naturalHeight;
 
     // 클릭 위치를 원래 크기 기준으로 변환
-    const clickX = Math.round((event.clientX - rect.left) * scaleX);
-    const clickY = Math.round((event.clientY - rect.top) * scaleY);
+    const clickX = Math.round((event.clientX - rect.left) / scaleX);
+    const clickY = Math.round((event.clientY - rect.top) / scaleY);
 
     console.log(`Clicked coordinates (original size): (${clickX}, ${clickY})`);
 
@@ -128,7 +128,7 @@ function handleImageClick(event) {
             clickY >= adjustedY &&
             clickY <= adjustedY + adjustedHeight
         ) {
-            alert(`${name}을(를) 찾았습니다!`);
+            // alert(`${name}을(를) 찾았습니다!`); // 알림 팝업 제거
             markFound(name, x, y, width, height, scaleX, scaleY);
             remainingObjects = remainingObjects.filter(o => o.name !== name);
             if (remainingObjects.length === 0) {
@@ -243,12 +243,9 @@ function fetchRankings(difficulty) {
         });
 }
 
-// 페이지 로드 시 기본 난이도에 따른 랭킹 불러오기 (선택된 난이도가 있으면)
+// 페이지 로드 시 기본 난이도에 따른 랭킹 불러오기
 window.addEventListener('load', () => {
-    const selectedDifficulty = difficultySelect.value;
-    if (selectedDifficulty) {
-        fetchRankings(selectedDifficulty);
-    }
+    fetchRankings(currentDifficulty); // 기본 난이도 '쉬움'에 따른 랭킹 불러오기
 });
 
 function resetGame() {
@@ -267,5 +264,5 @@ function resetGame() {
     document.getElementById('playerName').value = '';
 
     // 다시 시작할 수 있도록 난이도 선택 표시
-    difficultySelect.value = '';
+    difficultySelect.value = 'easy'; // 기본 난이도를 '쉬움'으로 재설정
 }
