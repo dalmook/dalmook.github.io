@@ -24,7 +24,7 @@ const playerNameInput = document.getElementById('player-name');
 const leaderboardList = document.getElementById('leaderboard-list');
 const startGameButton = document.getElementById('start-game-button'); // 게임 시작 버튼
 
-let timeLeft = 10;
+let timeLeft = 15;
 let score = 0;
 let gameActive = false;
 let timerInterval;
@@ -34,7 +34,7 @@ const accumulatedPositions = [];
 
 // 게임 시작 시 초기화
 function startGame() {
-    timeLeft = 10;
+    timeLeft = 15;
     score = 0;
     gameActive = true;
     timeDisplay.textContent = timeLeft;
@@ -185,7 +185,7 @@ playerNameInput.addEventListener('keypress', (e) => {
 function fetchLeaderboard() {
     db.collection('scores')
         .orderBy('score', 'desc')
-        .limit(10)
+        .limit(20)
         .get()
         .then((querySnapshot) => {
             leaderboardList.innerHTML = '';
