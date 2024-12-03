@@ -93,22 +93,28 @@ function handleImageClick(event) {
     const scaleX = gameImage.naturalWidth / rect.width;
     const scaleY = gameImage.naturalHeight / rect.height;
     
-    const x = Math.floor((event.clientX - rect.left) * scaleX);
-    const y = Math.floor((event.clientY - rect.top) * scaleY);
+    const clickX = (event.clientX - rect.left) * scaleX;
+    const clickY = (event.clientY - rect.top) * scaleY;
     
-    console.log(`Clicked coordinates: (${x}, ${y})`); // 클릭 좌표 로그
+    console.log(`Clicked coordinates: (${clickX}, ${clickY})`); // 클릭 좌표 로그
     
     // 클릭 위치가 숨은 객체와 일치하는지 확인
     for (let obj of remainingObjects) {
+        // 상대 좌표를 절대 좌표로 변환
+        const objX = obj.x * gameImage.naturalWidth;
+        const objY = obj.y * gameImage.naturalHeight;
+        const objWidth = obj.width * gameImage.naturalWidth;
+        const objHeight = obj.height * gameImage.naturalHeight;
+        
         if (
-            x >= obj.x &&
-            x <= obj.x + obj.width &&
-            y >= obj.y &&
-            y <= obj.y + obj.height
+            clickX >= objX &&
+            clickX <= objX + objWidth &&
+            clickY >= objY &&
+            clickY <= objY + objHeight
         ) {
             // 객체 찾기 성공
             alert(`${obj.name}을(를) 찾았습니다!`);
-            markFound(obj.name, obj.x, obj.y);
+            markFound(obj.name, obj.x, obj.y, obj.width, obj.height);
             remainingObjects = remainingObjects.filter(o => o.name !== obj.name);
             if (remainingObjects.length === 0) {
                 endGame();
@@ -118,7 +124,7 @@ function handleImageClick(event) {
     }
 }
 
-function markFound(name, x, y) {
+function markFound(name, x, y, width, height) {
     // 객체 목록에서 제거 또는 표시
     const items = objectsToFindList.querySelectorAll('li');
     items.forEach(item => {
@@ -134,11 +140,9 @@ function markFound(name, x, y) {
     // 이미지의 실제 크기에 맞게 위치 조정
     const displayWidth = gameImage.clientWidth;
     const displayHeight = gameImage.clientHeight;
-    const naturalWidth = gameImage.naturalWidth;
-    const naturalHeight = gameImage.naturalHeight;
     
-    const left = (x / naturalWidth) * displayWidth;
-    const top = (y / naturalHeight) * displayHeight;
+    const left = x * displayWidth;
+    const top = y * displayHeight;
     
     marker.style.left = `${left}px`;
     marker.style.top = `${top}px`;
@@ -147,13 +151,10 @@ function markFound(name, x, y) {
     // 정답 객체에 빨간색 테두리 추가
     const border = document.createElement('div');
     border.classList.add('found-border');
-    const borderWidth = (obj) => obj.width / naturalWidth * displayWidth;
-    const borderHeight = (obj) => obj.height / naturalHeight * displayHeight;
-    
     border.style.left = `${left}px`;
     border.style.top = `${top}px`;
-    border.style.width = `${(obj.width / naturalWidth) * displayWidth}px`;
-    border.style.height = `${(obj.height / naturalHeight) * displayHeight}px`;
+    border.style.width = `${width * displayWidth}px`;
+    border.style.height = `${height * displayHeight}px`;
     
     gameArea.appendChild(border);
 }
@@ -221,3 +222,4 @@ function resetGame() {
     // 다시 시작할 수 있도록 난이도 선택 표시
     difficultySelect.value = '';
 }
+
