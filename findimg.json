@@ -11,6 +11,46 @@
                     "height": 0.0625
                 }
             ]
+        },
+        {
+            "image": "images/hidden_puzzle.webp",
+            "objects": [
+                {
+                    "name": "빨간 사과",
+                    "x": 0.1,
+                    "y": 0.1,
+                    "width": 0.05,
+                    "height": 0.05
+                },
+                {
+                    "name": "노란 나비",
+                    "x": 0.8,
+                    "y": 0.8,
+                    "width": 0.05,
+                    "height": 0.05
+                },
+                {
+                    "name": "파란 공",
+                    "x": 0.5,
+                    "y": 0.5,
+                    "width": 0.05,
+                    "height": 0.05
+                },
+                {
+                    "name": "초록 잎",
+                    "x": 0.2,
+                    "y": 0.9,
+                    "width": 0.05,
+                    "height": 0.05
+                },
+                {
+                    "name": "보라색 모자",
+                    "x": 0.5,
+                    "y": 0.2,
+                    "width": 0.1,
+                    "height": 0.1
+                }
+            ]
         }
     ],
     "medium": [],
