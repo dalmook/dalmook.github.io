@@ -11,6 +11,7 @@ const firebaseConfig = {
     appId: "1:982765399272:web:02344ab408272c60e2ad5d"
 };
 
+
 // Firebase 초기화
 firebase.initializeApp(firebaseConfig);
 const database = firebase.database();
@@ -137,7 +138,7 @@ function markFound(name, x, y, width, height) {
     // 마커 표시
     const marker = document.createElement('div');
     marker.classList.add('marker');
-    // 이미지의 실제 크기에 맞게 위치 조정
+    // 이미지의 표시 크기에 맞게 상대 좌표로 위치 조정
     const displayWidth = gameImage.clientWidth;
     const displayHeight = gameImage.clientHeight;
     
