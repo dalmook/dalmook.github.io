@@ -12,7 +12,7 @@ const firebaseConfig = {
 
 // Firebase 초기화
 firebase.initializeApp(firebaseConfig);
-const database = firebase.database();
+const db = firebase.firestore();
 
 // DOM 요소 가져오기
 const difficultySelect = document.getElementById('difficulty');
@@ -176,23 +176,23 @@ function endGame() {
 }
 
 submitNameButton.addEventListener('click', () => {
-    const playerName = document.getElementById('playerName').value.trim();
+    const playerName = document.getElementById("playerName").value.trim();
     const elapsedTime = Math.floor((Date.now() - startTime) / 1000);
 
     if (playerName) {
-        // Firebase에 기록 저장
-        const newRecordRef = database.ref(`rankings/${currentDifficulty}`).push();
-        newRecordRef.set({
-            name: playerName,
-            time: elapsedTime,
-            date: new Date().toISOString()
-        })
-        .then(() => {
-            alert('랭킹에 등록되었습니다!');
-        })
-        .catch(error => {
-            console.error('Error saving to Firebase:', error);
-        });
+        // Firestore에 데이터 저장
+        db.collection(`rankings_${currentDifficulty}`)
+            .add({
+                name: playerName,
+                time: elapsedTime,
+                date: new Date().toISOString()
+            })
+            .then(() => {
+                alert('기록이 저장되었습니다!');
+            })
+            .catch((error) => {
+                console.error('Firestore 저장 오류:', error.message);
+            });
     }
 
     // 모달 닫기
@@ -201,13 +201,38 @@ submitNameButton.addEventListener('click', () => {
     resetGame();
 });
 
+
 closeModalButton.addEventListener('click', () => {
     // 모달 닫기
     nameModal.style.display = 'none';
     overlay.style.display = 'none';
     resetGame();
 });
+function fetchRankings(difficulty) {
+    db.collection(`rankings_${difficulty}`)
+        .orderBy('time', 'asc') // 시간 기준 오름차순 정렬
+        .limit(10) // 상위 10개 기록만 표시
+        .get()
+        .then((querySnapshot) => {
+            const rankingsList = document.getElementById("rankingsList");
+            rankingsList.innerHTML = ""; // 기존 데이터 초기화
 
+            querySnapshot.forEach((doc) => {
+                const data = doc.data();
+                const li = document.createElement("li");
+                li.textContent = `${data.name} - ${data.time}초 (${data.date})`;
+                rankingsList.appendChild(li);
+            });
+        })
+        .catch((error) => {
+            console.error('Firestore 조회 오류:', error.message);
+        });
+}
+
+// 예제 호출
+document.getElementById('viewRankings').addEventListener('click', () => {
+    fetchRankings(currentDifficulty);
+});
 function resetGame() {
     // 게임 초기화
     gameArea.style.display = 'none';
