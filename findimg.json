@@ -86,6 +86,53 @@
                     "height": 50
                 }
             ]
+        },
+        {
+            "image": "images/find_hidden_pictures_056.jpg",
+            "objects": [
+                {
+                    "name": "딸기",
+                    "x": 563,
+                    "y": 94,
+                    "width": 50,
+                    "height": 50
+                },
+                {
+                    "name": "후레쉬",
+                    "x": 652,
+                    "y": 537,
+                    "width": 50,
+                    "height": 50
+                },
+                {
+                    "name": "가지",
+                    "x": 457,
+                    "y": 275,
+                    "width": 50,
+                    "height": 50
+                },
+                {
+                    "name": "오리",
+                    "x": 650,
+                    "y": 209,
+                    "width": 50,
+                    "height": 50
+                },
+                {
+                    "name": "물병",
+                    "x": 208,
+                    "y": 665,
+                    "width": 50,
+                    "height": 50
+                },
+                {
+                    "name": "돛단배",
+                    "x": 98,
+                    "y": 281,
+                    "width": 50,
+                    "height": 50
+                }
+            ]
         }
     ],
     "medium": [],
