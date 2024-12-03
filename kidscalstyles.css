@@ -25,7 +25,7 @@ h1 {
 
 .display-area, .result-area {
     width: 100%;
-    max-width: 400px;
+    max-width: 500px;
     min-height: 120px;
     border: 2px solid;
     border-radius: 10px;
