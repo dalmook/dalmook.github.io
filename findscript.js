@@ -195,6 +195,7 @@ function handleImageTouch(event) {
 }
 
 function markFound(name, x, y, width, height, scaleX, scaleY) {
+function markFound(name, x, y, width, height, scaleX, scaleY) {
     // 객체 목록에서 제거 또는 표시
     const items = objectsToFindList.querySelectorAll('li');
     items.forEach(item => {
@@ -207,17 +208,11 @@ function markFound(name, x, y, width, height, scaleX, scaleY) {
     // 마커 표시 (스케일 반영)
     const foundMarker = document.createElement('div');
     foundMarker.classList.add('found-marker');
-
-    // 객체 중앙에 마커 배치
-    const centerX = (x + width / 2) * scaleX;
-    const centerY = (y + height / 2) * scaleY;
-    foundMarker.style.left = `${centerX}px`;
-    foundMarker.style.top = `${centerY}px`;
-
+    foundMarker.style.left = `${x * scaleX}px`;
+    foundMarker.style.top = `${y * scaleY}px`;
     gameArea.appendChild(foundMarker);
-
-    console.log(`마커 추가: ${name} at (${centerX}, ${centerY})`);
 }
+
 
 function endGame() {
     // 타이머 중지
