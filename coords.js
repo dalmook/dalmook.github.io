@@ -19,7 +19,7 @@ document.addEventListener("DOMContentLoaded", () => {
         const clickY = Math.round((event.clientY - rect.top) * scaleY);
 
         const coordItem = {
-            name: `Object ${coordinates.length + 1}`, // 기본 이름
+            name: `Object${coordinates.length + 1}`, // 기본 이름
             x: clickX,
             y: clickY,
             width: 50, // 기본 크기 (픽셀)
