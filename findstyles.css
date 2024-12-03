@@ -123,6 +123,7 @@ h1 {
     pointer-events: none; /* 클릭 이벤트 전달 */
     transform: translate(-50%, -50%); /* 가운데 정렬 */
 }
+
 /* 랭킹 테이블 스타일링 */
 #rankings {
     margin-top: 30px;
@@ -148,6 +149,7 @@ h1 {
 #rankingsTable tr:nth-child(even) {
     background-color: #f9f9f9;
 }
+
 @media (max-width: 600px) {
     h1 {
         font-size: 1.8em;
