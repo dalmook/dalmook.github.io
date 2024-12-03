@@ -195,7 +195,6 @@ function handleImageTouch(event) {
 }
 
 function markFound(name, x, y, width, height, scaleX, scaleY) {
-function markFound(name, x, y, width, height, scaleX, scaleY) {
     // 객체 목록에서 제거 또는 표시
     const items = objectsToFindList.querySelectorAll('li');
     items.forEach(item => {
@@ -205,14 +204,20 @@ function markFound(name, x, y, width, height, scaleX, scaleY) {
         }
     });
 
-    // 마커 표시 (스케일 반영)
+    // 마커 표시 (퍼센트 기반 위치 계산)
     const foundMarker = document.createElement('div');
     foundMarker.classList.add('found-marker');
-    foundMarker.style.left = `${x * scaleX}px`;
-    foundMarker.style.top = `${y * scaleY}px`;
-    gameArea.appendChild(foundMarker);
-}
 
+    // 객체의 중앙 좌표 계산 (퍼센트)
+    const percentX = ((x + width / 2) / gameImage.naturalWidth) * 100;
+    const percentY = ((y + height / 2) / gameImage.naturalHeight) * 100;
+
+    foundMarker.style.left = `${percentX}%`;
+    foundMarker.style.top = `${percentY}%`;
+    gameArea.appendChild(foundMarker);
+
+    console.log(`마커 추가: ${name} at (${percentX}%, ${percentY}%)`);
+}
 
 function endGame() {
     // 타이머 중지
@@ -318,6 +323,21 @@ function fetchRankings(difficulty) {
 window.addEventListener('load', () => {
     fetchRankings(currentDifficulty); // 기본 난이도 '쉬움'에 따른 랭킹 불러오기
 });
+
+// 테스트 마커 추가 (디버깅용)
+// function testMarker() {
+//     const foundMarker = document.createElement('div');
+//     foundMarker.classList.add('found-marker');
+//     foundMarker.style.left = `50%`;
+//     foundMarker.style.top = `50%`;
+//     gameArea.appendChild(foundMarker);
+//     console.log('테스트 마커 추가됨');
+// }
+
+// window.addEventListener('load', () => {
+//     // 페이지 로드 후 2초 뒤에 테스트 마커 추가
+//     setTimeout(testMarker, 2000);
+// });
 
 function resetGame() {
     // 게임 초기화
