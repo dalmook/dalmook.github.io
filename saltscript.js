@@ -19,8 +19,10 @@ const timeDisplay = document.getElementById('time');
 const scoreDisplay = document.getElementById('score');
 const nameInputModal = document.getElementById('name-input-modal'); // 모달 요소
 const submitNameBtn = document.getElementById('submit-name');
+const closeModalBtn = document.getElementById('close-modal'); // 닫기 버튼 요소
 const playerNameInput = document.getElementById('player-name');
 const leaderboardList = document.getElementById('leaderboard-list');
+const startGameButton = document.getElementById('start-game-button'); // 게임 시작 버튼
 
 let timeLeft = 10;
 let score = 0;
@@ -38,6 +40,7 @@ function startGame() {
     timeDisplay.textContent = timeLeft;
     scoreDisplay.textContent = score.toFixed(2);
     nameInputModal.classList.add('hidden'); // 모달 숨기기
+    startGameButton.classList.add('hidden'); // 게임 시작 버튼 숨기기
     // 누적된 비듬을 초기화
     accumulatedFlakesContainer.innerHTML = '';
     accumulatedPositions.length = 0;
@@ -151,10 +154,23 @@ submitNameBtn.addEventListener('click', () => {
     }).then(() => {
         alert("기록이 저장되었습니다!");
         nameInputModal.classList.add('hidden');
+        startGameButton.classList.remove('hidden'); // 게임 시작 버튼 다시 보이기
         startGame();
     }).catch((error) => {
         console.error("Error adding document: ", error);
     });
+});
+
+// 모달 닫기 버튼
+closeModalBtn.addEventListener('click', () => {
+    nameInputModal.classList.add('hidden');
+    startGameButton.classList.remove('hidden'); // 게임 시작 버튼 다시 보이기
+    startGame();
+});
+
+// 게임 시작 버튼
+startGameButton.addEventListener('click', () => {
+    startGame();
 });
 
 // Enter 키로 이름 제출
@@ -184,8 +200,7 @@ function fetchLeaderboard() {
         });
 }
 
-// 초기 로드 시 리더보드 가져오기 및 게임 시작
+// 초기 로드 시 리더보드 가져오기
 document.addEventListener('DOMContentLoaded', () => {
     fetchLeaderboard();
-    startGame();
 });
