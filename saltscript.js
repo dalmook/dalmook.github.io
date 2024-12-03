@@ -187,7 +187,7 @@ playerNameInput.addEventListener('keypress', (e) => {
 function fetchLeaderboard() {
     db.collection('scores')
         .orderBy('score', 'desc')
-        .limit(10)
+        .limit(20)
         .get()
         .then((querySnapshot) => {
             leaderboardList.innerHTML = '';
