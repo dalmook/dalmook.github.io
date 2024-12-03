@@ -1,0 +1,11 @@
+<div id="gameArea">
+    <img src="images/hidden_puzzle.webp" id="gameImage">
+</div>
+<script>
+    document.getElementById('gameImage').addEventListener('click', (event) => {
+        const rect = event.target.getBoundingClientRect();
+        const x = event.clientX - rect.left;
+        const y = event.clientY - rect.top;
+        console.log(`좌표: x=${x}, y=${y}`);
+    });
+</script>
