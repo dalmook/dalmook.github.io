@@ -28,13 +28,15 @@ let completedImagesCount = 0; // 완료된 이미지 수
 
 // 게임 시작 버튼 클릭 시
 startButton.addEventListener('click', () => {
+    resetGame(); // 새로운 게임 시작 전에 이전 게임 상태 초기화
+
     currentDifficulty = difficultySelect.value;
     if (!currentDifficulty) {
         alert('난이도를 선택해주세요!');
         return;
     }
 
-    fetch('findimg.json')  // 파일 이름 변경
+    fetch('findimg.json')  // 파일 이름 확인
         .then(response => response.json())
         .then(data => {
             findingData = data;
@@ -193,6 +195,10 @@ function endGame() {
         // 다음 이미지 자동으로 시작
         startGame();
     }
+
+    // 이름 입력 모달 표시
+    overlay.style.display = 'block';
+    nameModal.style.display = 'block';
 }
 
 // 이름 제출 버튼 클릭 시 Firestore에 데이터 저장
