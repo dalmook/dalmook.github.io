@@ -44,7 +44,7 @@ startButton.addEventListener('click', () => {
         return;
     }
     
-    fetch('finding.json')
+    fetch('findimg.json')
         .then(response => response.json())
         .then(data => {
             findingData = data;
