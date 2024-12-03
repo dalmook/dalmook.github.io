@@ -85,13 +85,13 @@ function startGame() {
 function handleImageClick(event) {
     const rect = gameImage.getBoundingClientRect();
 
-    // 현재 표시 크기와 원래 크기의 비율
-    const scaleX = gameImage.naturalWidth / rect.width;
-    const scaleY = gameImage.naturalHeight / rect.height;
+    // 현재 표시 크기와 원래 크기의 비율 (올바르게 수정)
+    const scaleX = rect.width / gameImage.naturalWidth;
+    const scaleY = rect.height / gameImage.naturalHeight;
 
     // 클릭 위치를 원래 크기 기준으로 변환
-    const clickX = Math.round((event.clientX - rect.left) * scaleX);
-    const clickY = Math.round((event.clientY - rect.top) * scaleY);
+    const clickX = Math.round((event.clientX - rect.left) / scaleX);
+    const clickY = Math.round((event.clientY - rect.top) / scaleY);
 
     console.log(`Clicked coordinates (original size): (${clickX}, ${clickY})`);
 
@@ -141,8 +141,10 @@ function markFound(name, x, y, width, height, scaleX, scaleY) {
     foundMarker.classList.add('found-marker');
     foundMarker.style.left = `${x * scaleX}px`;
     foundMarker.style.top = `${y * scaleY}px`;
-    foundMarker.style.width = `${width * scaleX}px`;
-    foundMarker.style.height = `${height * scaleY}px`;
+    // 마커의 크기를 고정하거나 동적으로 설정
+    // 예를 들어, 고정 크기로 유지하려면 width와 height 설정을 제거
+    // foundMarker.style.width = `${width * scaleX}px`;
+    // foundMarker.style.height = `${height * scaleY}px`;
     gameArea.appendChild(foundMarker);
 }
 
