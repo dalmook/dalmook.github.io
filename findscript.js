@@ -96,34 +96,29 @@ function startGame() {
 
 function handleImageClick(event) {
     const rect = gameImage.getBoundingClientRect();
-    const scaleX = gameImage.naturalWidth / rect.width;
-    const scaleY = gameImage.naturalHeight / rect.height;
 
-    const clickX = (event.clientX - rect.left) * scaleX;
-    const clickY = (event.clientY - rect.top) * scaleY;
+    // 클릭 위치를 픽셀 단위로 계산
+    const clickX = Math.round(event.clientX - rect.left);
+    const clickY = Math.round(event.clientY - rect.top);
 
     console.log(`Clicked coordinates: (${clickX}, ${clickY})`); // 클릭 좌표 로그
 
     // 클릭 위치가 숨은 객체와 일치하는지 확인
     for (let obj of remainingObjects) {
-        // 상대 좌표를 절대 좌표로 변환
-        const objX = obj.x * gameImage.naturalWidth;
-        const objY = obj.y * gameImage.naturalHeight;
-        const objWidth = obj.width * gameImage.naturalWidth;
-        const objHeight = obj.height * gameImage.naturalHeight;
+        const { x, y, width, height, name } = obj;
 
-        console.log(`Object ${obj.name}: (${objX}, ${objY}, ${objWidth}, ${objHeight})`); // 객체 좌표 로그
+        console.log(`Object ${name}: (${x}, ${y}, ${width}, ${height})`); // 객체 좌표 로그
 
         if (
-            clickX >= objX &&
-            clickX <= objX + objWidth &&
-            clickY >= objY &&
-            clickY <= objY + objHeight
+            clickX >= x &&
+            clickX <= x + width &&
+            clickY >= y &&
+            clickY <= y + height
         ) {
             // 객체 찾기 성공
-            alert(`${obj.name}을(를) 찾았습니다!`);
-            markFound(name = obj.name, x = obj.x, y = obj.y, width = obj.width, height = obj.height);
-            remainingObjects = remainingObjects.filter(o => o.name !== obj.name);
+            alert(`${name}을(를) 찾았습니다!`);
+            markFound(name, x, y, width, height);
+            remainingObjects = remainingObjects.filter(o => o.name !== name);
             if (remainingObjects.length === 0) {
                 endGame();
             }
@@ -131,6 +126,7 @@ function handleImageClick(event) {
         }
     }
 }
+
 
 function markFound(name, x, y, width, height) {
     // 객체 목록에서 제거 또는 표시
@@ -142,20 +138,16 @@ function markFound(name, x, y, width, height) {
         }
     });
 
-    // 빨간색 동그라미 표시
+    // 빨간색 마커 표시
     const foundMarker = document.createElement('div');
     foundMarker.classList.add('found-marker');
-    // 이미지의 표시 크기에 맞게 상대 좌표로 위치 조정
-    const displayWidth = gameImage.clientWidth;
-    const displayHeight = gameImage.clientHeight;
-
-    const left = x * displayWidth;
-    const top = y * displayHeight;
-
-    foundMarker.style.left = `${left}px`;
-    foundMarker.style.top = `${top}px`;
+    foundMarker.style.left = `${x}px`; // 절대 좌표 사용
+    foundMarker.style.top = `${y}px`;  // 절대 좌표 사용
+    foundMarker.style.width = `${width}px`;
+    foundMarker.style.height = `${height}px`;
     gameArea.appendChild(foundMarker);
 }
+
 
 function endGame() {
     // 타이머 중지
