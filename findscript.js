@@ -15,6 +15,7 @@ const nameModal = document.getElementById('nameModal');
 const overlay = document.getElementById('overlay');
 const submitNameButton = document.getElementById('submitName');
 const closeModalButton = document.getElementById('closeModal');
+const rankingsList = document.getElementById("rankingsList"); // 랭킹 목록
 
 let findingData = {};
 let currentDifficulty = '';
@@ -36,10 +37,22 @@ startButton.addEventListener('click', () => {
         .then(data => {
             findingData = data;
             startGame();
+            fetchRankings(currentDifficulty); // 게임 시작 시 현재 난이도 랭킹 불러오기
         })
         .catch(error => {
             console.error('Error fetching findimg.json:', error);
         });
+});
+
+// 난이도 선택 변경 시 랭킹 자동으로 업데이트
+difficultySelect.addEventListener('change', () => {
+    currentDifficulty = difficultySelect.value;
+    if (currentDifficulty) {
+        fetchRankings(currentDifficulty);
+    } else {
+        // 난이도가 선택되지 않았을 때 랭킹 초기화
+        rankingsList.innerHTML = '';
+    }
 });
 
 function startGame() {
@@ -67,7 +80,7 @@ function startGame() {
             li.textContent = obj.name;
             li.dataset.name = obj.name;
             objectsToFindList.appendChild(li);
-        });
+        }); // 수정된 부분: 닫는 괄호를 올바르게 추가
 
         // 타이머 시작
         startTime = Date.now();
@@ -169,11 +182,12 @@ submitNameButton.addEventListener('click', () => {
         db.collection(`rankings_${currentDifficulty}`)
             .add({
                 name: playerName,
-                time: elapsedTime,
+                // time: elapsedTime, // 기록 시간을 제외하도록 주석 처리
                 date: new Date().toISOString()
             })
             .then(() => {
                 alert('기록이 저장되었습니다!');
+                fetchRankings(currentDifficulty); // 기록 저장 후 랭킹 갱신
             })
             .catch((error) => {
                 console.error('Firestore 저장 오류:', error.message);
@@ -194,19 +208,39 @@ closeModalButton.addEventListener('click', () => {
 });
 
 function fetchRankings(difficulty) {
+    if (!difficulty) {
+        rankingsList.innerHTML = '';
+        return;
+    }
+
     db.collection(`rankings_${difficulty}`)
-        .orderBy('time', 'asc') // 시간 기준 오름차순 정렬
+        .orderBy('date', 'desc') // 날짜 기준 내림차순 정렬
         .limit(10) // 상위 10개 기록만 표시
         .get()
         .then((querySnapshot) => {
-            const rankingsList = document.getElementById("rankingsList");
             rankingsList.innerHTML = ""; // 기존 데이터 초기화
 
             querySnapshot.forEach((doc) => {
                 const data = doc.data();
-                const li = document.createElement("li");
-                li.textContent = `${data.name} - ${data.time}초 (${data.date})`;
-                rankingsList.appendChild(li);
+                const tr = document.createElement("tr");
+
+                // 난이도 셀
+                const difficultyTd = document.createElement("td");
+                difficultyTd.textContent = difficulty === 'easy' ? '쉬움' : difficulty === 'medium' ? '보통' : '어려움';
+                tr.appendChild(difficultyTd);
+
+                // 이름 셀
+                const nameTd = document.createElement("td");
+                nameTd.textContent = data.name;
+                tr.appendChild(nameTd);
+
+                // 기록 셀 (시간 제외, 예를 들어, 날짜)
+                const recordTd = document.createElement("td");
+                const date = new Date(data.date);
+                recordTd.textContent = `${date.getFullYear()}-${String(date.getMonth()+1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
+                tr.appendChild(recordTd);
+
+                rankingsList.appendChild(tr);
             });
         })
         .catch((error) => {
@@ -214,9 +248,12 @@ function fetchRankings(difficulty) {
         });
 }
 
-// 예제 호출
-document.getElementById('viewRankings').addEventListener('click', () => {
-    fetchRankings(currentDifficulty);
+// 페이지 로드 시 기본 난이도에 따른 랭킹 불러오기 (선택된 난이도가 있으면)
+window.addEventListener('load', () => {
+    const selectedDifficulty = difficultySelect.value;
+    if (selectedDifficulty) {
+        fetchRankings(selectedDifficulty);
+    }
 });
 
 function resetGame() {
