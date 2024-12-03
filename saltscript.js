@@ -104,6 +104,9 @@ function accumulateFlake(flake) {
     // 높이 업데이트
     accumulatedPositions[gridIndex] = currentHeight + size; // 비듬 높이만큼 추가
 
+    // 비듬이 화면 하단에 쌓이도록 설정
+    accumulatedFlake.style.bottom = `${currentHeight}px`;
+
     // 최대 비듬 개수 제한 (예: 100개)
     if (accumulatedFlakesContainer.childElementCount > 100) {
         accumulatedFlakesContainer.removeChild(accumulatedFlakesContainer.firstChild);
@@ -155,7 +158,6 @@ submitNameBtn.addEventListener('click', () => {
         alert("기록이 저장되었습니다!");
         nameInputModal.classList.add('hidden');
         startGameButton.classList.remove('hidden'); // 게임 시작 버튼 다시 보이기
-        startGame();
     }).catch((error) => {
         console.error("Error adding document: ", error);
     });
@@ -165,7 +167,6 @@ submitNameBtn.addEventListener('click', () => {
 closeModalBtn.addEventListener('click', () => {
     nameInputModal.classList.add('hidden');
     startGameButton.classList.remove('hidden'); // 게임 시작 버튼 다시 보이기
-    startGame();
 });
 
 // 게임 시작 버튼
