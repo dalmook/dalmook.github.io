@@ -1,0 +1,195 @@
+/* 기본 스타일 */
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f0f8ff;
+    text-align: center;
+    margin: 0;
+    padding: 0;
+}
+
+.game-container {
+    max-width: 600px;
+    width: 90%;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+h1 {
+    color: #333;
+    font-size: 2em;
+}
+
+.timer, .score {
+    font-size: 1.5em;
+    margin: 10px 0;
+}
+
+.head-container {
+    position: relative;
+    display: inline-block;
+    cursor: pointer;
+    margin: 20px 0;
+}
+
+#head {
+    width: 300px;
+    max-width: 80vw;
+    transition: transform 0.1s;
+}
+
+.shake {
+    animation: shake 0.2s;
+}
+
+@keyframes shake {
+    0% { transform: rotate(0deg); }
+    25% { transform: rotate(5deg); }
+    50% { transform: rotate(-5deg); }
+    75% { transform: rotate(5deg); }
+    100% { transform: rotate(0deg); }
+}
+
+#flakes-container {
+    position: absolute;
+    top: 0;
+    left: 50%;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    overflow: hidden;
+    transform: translateX(-50%);
+}
+
+.flate {
+    position: absolute;
+    top: 0;
+    width: 10px;
+    height: 10px;
+    background: white;
+    border-radius: 50%;
+    opacity: 0.8;
+    animation: fall 1s linear;
+}
+
+@keyframes fall {
+    to {
+        transform: translateY(400px) rotate(360deg);
+        opacity: 0;
+    }
+}
+
+#name-input-container {
+    margin-top: 20px;
+}
+
+#name-input-container input {
+    padding: 10px;
+    font-size: 1em;
+    width: 60%;
+    max-width: 250px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+#name-input-container button {
+    padding: 10px 20px;
+    font-size: 1em;
+    margin-left: 10px;
+    border: none;
+    background-color: #4CAF50;
+    color: white;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+#name-input-container button:hover {
+    background-color: #45a049;
+}
+
+.hidden {
+    display: none;
+}
+
+.leaderboard {
+    margin-top: 30px;
+    text-align: left;
+}
+
+.leaderboard h2 {
+    font-size: 1.5em;
+    color: #333;
+}
+
+.leaderboard ol {
+    padding-left: 20px;
+}
+
+.leaderboard li {
+    font-size: 1.2em;
+    margin: 5px 0;
+}
+
+/* 반응형 디자인 추가 */
+@media (max-width: 768px) {
+    h1 {
+        font-size: 1.8em;
+    }
+
+    .timer, .score {
+        font-size: 1.2em;
+    }
+
+    #head {
+        width: 80vw;
+    }
+
+    #name-input-container input {
+        width: 70%;
+    }
+
+    #name-input-container button {
+        width: 25%;
+        margin-left: 5px;
+    }
+
+    .leaderboard h2 {
+        font-size: 1.3em;
+    }
+
+    .leaderboard li {
+        font-size: 1em;
+    }
+}
+
+@media (max-width: 480px) {
+    h1 {
+        font-size: 1.5em;
+    }
+
+    .timer, .score {
+        font-size: 1em;
+    }
+
+    #head {
+        width: 90vw;
+    }
+
+    #name-input-container input {
+        width: 65%;
+        padding: 8px;
+        font-size: 0.9em;
+    }
+
+    #name-input-container button {
+        padding: 8px 15px;
+        font-size: 0.9em;
+    }
+
+    .leaderboard h2 {
+        font-size: 1.1em;
+    }
+
+    .leaderboard li {
+        font-size: 0.9em;
+    }
+}
