@@ -121,7 +121,9 @@ function startGame() {
 
         // 기존 이벤트 리스너 제거 후 새로운 이벤트 리스너 추가
         gameImage.removeEventListener('click', handleImageClick);
+        gameImage.removeEventListener('touchstart', handleImageTouch); // 기존 터치 이벤트 제거
         gameImage.addEventListener('click', handleImageClick);
+        gameImage.addEventListener('touchstart', handleImageTouch); // 새로운 터치 이벤트 추가
     };
 
     gameImage.onerror = () => {
@@ -138,6 +140,10 @@ function handleImageClick(event) {
     // 현재 표시 크기와 원래 크기의 비율 (올바르게 수정)
     const scaleX = gameImage.naturalWidth / rect.width;
     const scaleY = gameImage.naturalHeight / rect.height;
+
+    console.log(`Image display size: ${rect.width}x${rect.height}`);
+    console.log(`Image natural size: ${gameImage.naturalWidth}x${gameImage.naturalHeight}`);
+    console.log(`ScaleX: ${scaleX}, ScaleY: ${scaleY}`);
 
     // 클릭 위치를 원래 크기 기준으로 변환
     const clickX = Math.round((event.clientX - rect.left) * scaleX);
@@ -165,8 +171,7 @@ function handleImageClick(event) {
             clickY >= adjustedY &&
             clickY <= adjustedY + adjustedHeight
         ) {
-            // 객체를 찾았을 때 알림 팝업 제거
-            // alert(`${name}을(를) 찾았습니다!`);
+            // 객체를 찾았을 때
             markFound(name, x, y, width, height, scaleX, scaleY);
             remainingObjects = remainingObjects.filter(o => o.name !== name);
             if (remainingObjects.length === 0) {
@@ -175,6 +180,18 @@ function handleImageClick(event) {
             break;
         }
     }
+}
+
+function handleImageTouch(event) {
+    event.preventDefault(); // 기본 터치 동작 방지
+    const touch = event.touches[0];
+    const simulatedEvent = new MouseEvent('click', {
+        clientX: touch.clientX,
+        clientY: touch.clientY,
+        bubbles: true,
+        cancelable: true
+    });
+    gameImage.dispatchEvent(simulatedEvent);
 }
 
 function markFound(name, x, y, width, height, scaleX, scaleY) {
@@ -190,11 +207,16 @@ function markFound(name, x, y, width, height, scaleX, scaleY) {
     // 마커 표시 (스케일 반영)
     const foundMarker = document.createElement('div');
     foundMarker.classList.add('found-marker');
-    foundMarker.style.left = `${x * scaleX}px`;
-    foundMarker.style.top = `${y * scaleY}px`;
+
+    // 객체 중앙에 마커 배치
+    const centerX = (x + width / 2) * scaleX;
+    const centerY = (y + height / 2) * scaleY;
+    foundMarker.style.left = `${centerX}px`;
+    foundMarker.style.top = `${centerY}px`;
+
     gameArea.appendChild(foundMarker);
 
-    console.log(`마커 추가: ${name} at (${x * scaleX}, ${y * scaleY})`);
+    console.log(`마커 추가: ${name} at (${centerX}, ${centerY})`);
 }
 
 function endGame() {
@@ -203,6 +225,7 @@ function endGame() {
 
     // 게임 이미지 클릭 이벤트 제거
     gameImage.removeEventListener('click', handleImageClick);
+    gameImage.removeEventListener('touchstart', handleImageTouch);
 
     // 완료된 이미지 수 증가
     completedImagesCount++;
