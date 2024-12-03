@@ -1,7 +1,7 @@
 {
     "easy": [
         {
-            "image": "assets/images/easy1.jpg",
+            "image": "images/saltimg.jpg",
             "objects": [
                 {
                     "name": "사과",
@@ -21,7 +21,7 @@
             ]
         },
         {
-            "image": "assets/images/easy2.jpg",
+            "image": "images/saltimg.jpg",
             "objects": [
                 {
                     "name": "오렌지",
@@ -37,7 +37,7 @@
     ],
     "medium": [
         {
-            "image": "assets/images/medium1.jpg",
+            "image": "images/saltimg.jpg",
             "objects": [
                 {
                     "name": "포도",
@@ -53,7 +53,7 @@
     ],
     "hard": [
         {
-            "image": "assets/images/hard1.jpg",
+            "image": "images/saltimg.jpg",
             "objects": [
                 {
                     "name": "딸기",
