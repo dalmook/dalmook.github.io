@@ -5,6 +5,7 @@
     <title>숨은 그림 찾기 게임</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0"> <!-- Viewport 설정 -->
     <link rel="stylesheet" href="findstyles.css">
+    <!-- Firebase SDK -->
     <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js" defer></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js" defer></script>
     <script src="findfirebaseconfig.js" defer></script> <!-- Firebase 설정 -->
@@ -53,13 +54,25 @@
         <button id="submitName">제출</button>
         <button id="closeModal">닫기</button>
     </div>
+    
+    <!-- 랭킹 표시 영역 -->
     <div id="rankings">
-        <button id="viewRankings">랭킹 보기</button>
-        <ul id="rankingsList"></ul>
+        <h2>랭킹</h2>
+        <table id="rankingsTable">
+            <thead>
+                <tr>
+                    <th>난이도</th>
+                    <th>이름</th>
+                    <th>기록</th>
+                </tr>
+            </thead>
+            <tbody id="rankingsList">
+                <!-- 랭킹 데이터가 동적으로 추가됩니다 -->
+            </tbody>
+        </table>
     </div>
     
-    <!-- Firebase SDK -->
-
+    <!-- 메인 게임 스크립트 -->
     <script src="findscript.js" defer></script>
 </body>
 </html>
