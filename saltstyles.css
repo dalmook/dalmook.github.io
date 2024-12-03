@@ -99,24 +99,46 @@ h1 {
     /* 간단한 쌓임 효과 */
 }
 
-/* 이름 입력 및 리더보드 스타일 */
-#name-input-container {
-    margin-top: 20px;
+/* 모달 스타일 */
+.modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0,0,0,0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 10;
 }
 
-#name-input-container input {
+.modal-content {
+    background-color: white;
+    padding: 20px;
+    border-radius: 10px;
+    text-align: center;
+    width: 80%;
+    max-width: 300px;
+}
+
+.modal-content h2 {
+    margin-top: 0;
+}
+
+.modal-content input {
     padding: 10px;
     font-size: 1em;
-    width: 60%;
+    width: 80%;
     max-width: 250px;
     border: 1px solid #ccc;
     border-radius: 5px;
+    margin-bottom: 10px;
 }
 
-#name-input-container button {
+.modal-content button {
     padding: 10px 20px;
     font-size: 1em;
-    margin-left: 10px;
     border: none;
     background-color: #4CAF50;
     color: white;
@@ -124,7 +146,7 @@ h1 {
     cursor: pointer;
 }
 
-#name-input-container button:hover {
+.modal-content button:hover {
     background-color: #45a049;
 }
 
@@ -165,12 +187,12 @@ h1 {
         width: 80vw;
     }
 
-    #name-input-container input {
+    .modal-content input {
         width: 70%;
     }
 
-    #name-input-container button {
-        width: 25%;
+    .modal-content button {
+        width: 50%;
         margin-left: 5px;
     }
 
@@ -196,13 +218,13 @@ h1 {
         width: 90vw;
     }
 
-    #name-input-container input {
+    .modal-content input {
         width: 65%;
         padding: 8px;
         font-size: 0.9em;
     }
 
-    #name-input-container button {
+    .modal-content button {
         padding: 8px 15px;
         font-size: 0.9em;
     }
