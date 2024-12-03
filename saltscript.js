@@ -96,7 +96,7 @@ function accumulateFlake(flake) {
     const size = Math.random() * 5 + 5; // 5px ~ 10px
     accumulatedFlake.style.width = `${size}px`;
     accumulatedFlake.style.height = `${size}px`;
-    accumulatedFlake.style.background = `rgba(150, 150, 150, 1)`; // 더 진한 색상 설정
+    accumulatedFlake.style.background = `rgba(100, 100, 100, 1)`; // 더 진한 색상 설정
 
     // 높이 업데이트
     accumulatedPositions[gridIndex] = currentHeight + size; // 비듬 높이만큼 추가
@@ -184,5 +184,8 @@ function fetchLeaderboard() {
         });
 }
 
-// 게임 초기 시작
-startGame();
+// 초기 로드 시 리더보드 가져오기 및 게임 시작
+document.addEventListener('DOMContentLoaded', () => {
+    fetchLeaderboard();
+    startGame();
+});
