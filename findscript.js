@@ -51,7 +51,7 @@ startButton.addEventListener('click', () => {
             startGame();
         })
         .catch(error => {
-            console.error('Error fetching finding.json:', error);
+            console.error('Error fetching findimg.json:', error);
         });
 });
 
