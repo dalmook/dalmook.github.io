@@ -1,11 +1,11 @@
 // Firebase 설정
 const firebaseConfig = {
-    apiKey: "YOUR_API_KEY",
-    authDomain: "YOUR_AUTH_DOMAIN",
-    projectId: "YOUR_PROJECT_ID",
-    storageBucket: "YOUR_STORAGE_BUCKET",
-    messagingSenderId: "YOUR_SENDER_ID",
-    appId: "YOUR_APP_ID"
+    apiKey: "AIzaSyCkhLwa7X5PEHa_rjhSfTSlyvsc8DrnuaU",
+    authDomain: "saltfather-fd901.firebaseapp.com",
+    projectId: "saltfather-fd901",
+    storageBucket: "saltfather-fd901.firebasestorage.app",
+    messagingSenderId: "508342774249",
+    appId: "1:508342774249:web:a860fdeeff162b8027c378"
 };
 
 // Firebase 초기화
