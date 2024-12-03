@@ -17,8 +17,7 @@
     <div id="difficultySelection">
         <label for="difficulty">난이도 선택:</label>
         <select id="difficulty">
-            <option value="">선택하세요</option>
-            <option value="easy">쉬움</option>
+            <option value="easy" selected>쉬움</option> <!-- 기본 선택값을 '쉬움'으로 설정 -->
             <option value="medium">보통</option>
             <option value="hard">어려움</option>
         </select>
@@ -63,7 +62,7 @@
                 <tr>
                     <th>난이도</th>
                     <th>이름</th>
-                    <th>기록</th>
+                    <th>기록 (초)</th>
                 </tr>
             </thead>
             <tbody id="rankingsList">
