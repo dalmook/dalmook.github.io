@@ -5,10 +5,10 @@
             "objects": [
                 {
                     "name": "사과",
-                    "x": 0.2,  // 이미지 너비의 20%
-                    "y": 0.3,  // 이미지 높이의 30%
-                    "width": 0.05,  // 이미지 너비의 5%
-                    "height": 0.05  // 이미지 높이의 5%
+                    "x": 0.2,
+                    "y": 0.3,
+                    "width": 0.05,
+                    "height": 0.05
                 },
                 {
                     "name": "바나나",
@@ -16,34 +16,13 @@
                     "y": 0.4,
                     "width": 0.05,
                     "height": 0.05
-                }
-            ]
-        }
-    ],
-    "medium": [
-        {
-            "image": "images/medium1.jpg",
-            "objects": [
+                },
                 {
-                    "name": "포도",
-                    "x": 0.5,
-                    "y": 0.6,
-                    "width": 0.04,
-                    "height": 0.04
-                }
-            ]
-        }
-    ],
-    "hard": [
-        {
-            "image": "images/hard1.jpg",
-            "objects": [
-                {
-                    "name": "딸기",
-                    "x": 0.7,
-                    "y": 0.8,
-                    "width": 0.03,
-                    "height": 0.03
+                    "name": "오렌지",
+                    "x": 0.3,
+                    "y": 0.45,
+                    "width": 0.05,
+                    "height": 0.05
                 }
             ]
         }
