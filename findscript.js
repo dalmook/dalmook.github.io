@@ -6,7 +6,7 @@
 const difficultySelect = document.getElementById('difficulty');
 const startButton = document.getElementById('startGame');
 const gameArea = document.getElementById('gameArea');
-const gameImage = document.getElementById('gameImage');
+let gameImage = document.getElementById('gameImage'); // const에서 let으로 변경
 const objectsToFindList = document.getElementById('objectsToFind');
 const objectListDiv = document.getElementById('objectList');
 const timerDiv = document.getElementById('timer');
@@ -99,6 +99,7 @@ function startGame() {
     // 이미지가 완전히 로드된 후 실행
     gameImage.onload = () => {
         console.log(`이미지 로드 성공: ${currentImage.image}`);
+        console.log(`이미지 크기: ${gameImage.naturalWidth}x${gameImage.naturalHeight}`);
 
         // 객체 목록 표시
         objectsToFindList.innerHTML = '';
@@ -306,7 +307,8 @@ function resetGame() {
     objectListDiv.style.display = 'none';
     timerDiv.style.display = 'none';
     objectsToFindList.innerHTML = '';
-    gameArea.innerHTML = `<img src="" id="gameImage" alt="숨은 그림 찾기 이미지">`;
+    // 기존 방식대로 innerHTML을 재설정하지 않음
+    // gameArea.innerHTML = `<img src="" id="gameImage" alt="숨은 그림 찾기 이미지">`;
 
     // 타이머 초기화
     clearInterval(timerInterval);
