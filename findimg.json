@@ -17,11 +17,10 @@
                     "width": 50,
                     "height": 50
                 }
-                // 추가 객체
             ]
         },
         {
-            "image": "images/saltimg.jpg",
+            "image": "images/easy2.jpg",
             "objects": [
                 {
                     "name": "오렌지",
@@ -30,14 +29,12 @@
                     "width": 50,
                     "height": 50
                 }
-                // 추가 객체
             ]
         }
-        // 추가 이미지
     ],
     "medium": [
         {
-            "image": "images/saltimg.jpg",
+            "image": "images/medium1.jpg",
             "objects": [
                 {
                     "name": "포도",
@@ -46,14 +43,12 @@
                     "width": 40,
                     "height": 40
                 }
-                // 추가 객체
             ]
         }
-        // 추가 이미지
     ],
     "hard": [
         {
-            "image": "images/saltimg.jpg",
+            "image": "images/hard1.jpg",
             "objects": [
                 {
                     "name": "딸기",
@@ -62,9 +57,7 @@
                     "width": 30,
                     "height": 30
                 }
-                // 추가 객체
             ]
         }
-        // 추가 이미지
     ]
 }
