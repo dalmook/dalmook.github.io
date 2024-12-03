@@ -1,0 +1,70 @@
+{
+    "easy": [
+        {
+            "image": "assets/images/easy1.jpg",
+            "objects": [
+                {
+                    "name": "사과",
+                    "x": 100,
+                    "y": 150,
+                    "width": 50,
+                    "height": 50
+                },
+                {
+                    "name": "바나나",
+                    "x": 300,
+                    "y": 200,
+                    "width": 50,
+                    "height": 50
+                }
+                // 추가 객체
+            ]
+        },
+        {
+            "image": "assets/images/easy2.jpg",
+            "objects": [
+                {
+                    "name": "오렌지",
+                    "x": 120,
+                    "y": 180,
+                    "width": 50,
+                    "height": 50
+                }
+                // 추가 객체
+            ]
+        }
+        // 추가 이미지
+    ],
+    "medium": [
+        {
+            "image": "assets/images/medium1.jpg",
+            "objects": [
+                {
+                    "name": "포도",
+                    "x": 200,
+                    "y": 250,
+                    "width": 40,
+                    "height": 40
+                }
+                // 추가 객체
+            ]
+        }
+        // 추가 이미지
+    ],
+    "hard": [
+        {
+            "image": "assets/images/hard1.jpg",
+            "objects": [
+                {
+                    "name": "딸기",
+                    "x": 350,
+                    "y": 400,
+                    "width": 30,
+                    "height": 30
+                }
+                // 추가 객체
+            ]
+        }
+        // 추가 이미지
+    ]
+}
