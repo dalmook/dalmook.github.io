@@ -12,7 +12,7 @@ const firebaseConfig = {
 
 // Firebase 초기화
 firebase.initializeApp(firebaseConfig);
-const db = firebase.firestore();
+const db = firebase.firestore();    
 
 // DOM 요소 가져오기
 const difficultySelect = document.getElementById('difficulty');
