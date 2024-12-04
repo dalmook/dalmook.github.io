@@ -1,8 +1,8 @@
 /* wordstyles.css */
-@import url('https://fonts.googleapis.com/css2?family=Gamja+Flower&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Dongle:wght@300&family=Gamja+Flower&family=Gowun+Dodum&display=swap');
 /* 기본 스타일 */
 body {
-    font-family: "Gamja Flower", sans-serif;
+    font-family: "Gowun Dodum", sans-serif;
     background-color: #f5f5f5;
     margin: 0;
     padding: 0;
