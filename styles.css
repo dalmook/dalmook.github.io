@@ -1,5 +1,5 @@
 /* 기본 리셋 */
-@import url('https://fonts.googleapis.com/css2?family=Gamja+Flower&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Dongle:wght@300&family=Gamja+Flower&display=swap');
 * {
     margin: 0;
     padding: 0;
@@ -8,7 +8,7 @@
 
 /* 바디 스타일 */
 body {
-    font-family: "Gamja Flower", sans-serif;
+    font-family: "Dongle", sans-serif;
     background-color: #FFFAF0;
     color: #333;
     display: flex;
