@@ -285,6 +285,116 @@
                     "height": 50
                 }
             ]
+        },
+        {
+            "image": "images/find_hidden_pictures_058.jpg",
+            "objects": [
+                {
+                    "name": "잔디",
+                    "x": 87,
+                    "y": 144,
+                    "width": 50,
+                    "height": 50
+                },
+                {
+                    "name": "청소솔",
+                    "x": 139,
+                    "y": 197,
+                    "width": 50,
+                    "height": 50
+                },
+                {
+                    "name": "칫솔",
+                    "x": 247,
+                    "y": 166,
+                    "width": 50,
+                    "height": 50
+                },
+                {
+                    "name": "뼈다귀",
+                    "x": 345,
+                    "y": 185,
+                    "width": 50,
+                    "height": 50
+                },
+                {
+                    "name": "쥐",
+                    "x": 401,
+                    "y": 136,
+                    "width": 50,
+                    "height": 50
+                },
+                {
+                    "name": "판자",
+                    "x": 112,
+                    "y": 272,
+                    "width": 50,
+                    "height": 50
+                },
+                {
+                    "name": "물고기",
+                    "x": 254,
+                    "y": 327,
+                    "width": 50,
+                    "height": 50
+                },
+                {
+                    "name": "금화",
+                    "x": 423,
+                    "y": 363,
+                    "width": 50,
+                    "height": 50
+                },
+                {
+                    "name": "빗자루",
+                    "x": 367,
+                    "y": 326,
+                    "width": 50,
+                    "height": 50
+                },
+                {
+                    "name": "실타래",
+                    "x": 79,
+                    "y": 347,
+                    "width": 50,
+                    "height": 50
+                },
+                {
+                    "name": "양말",
+                    "x": 228,
+                    "y": 407,
+                    "width": 50,
+                    "height": 50
+                },
+                {
+                    "name": "모자",
+                    "x": 79,
+                    "y": 413,
+                    "width": 50,
+                    "height": 50
+                },
+                {
+                    "name": "테니스공",
+                    "x": 184,
+                    "y": 446,
+                    "width": 50,
+                    "height": 50
+                },
+                {
+                    "name": "치즈",
+                    "x": 360,
+                    "y": 456,
+                    "width": 50,
+                    "height": 50
+                },
+                {
+                    "name": "당근",
+                    "x": 413,
+                    "y": 473,
+                    "width": 50,
+                    "height": 50
+                }
+            ]
         }
     ],
     "hard": []
