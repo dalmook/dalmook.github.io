@@ -187,6 +187,53 @@
                     "height": 50
                 }
             ]
+        },
+        {
+            "image": "images/find_hidden_pictures_059.jpg",
+            "objects": [
+                {
+                    "name": "연필",
+                    "x": 216,
+                    "y": 114,
+                    "width": 50,
+                    "height": 50
+                },
+                {
+                    "name": "종",
+                    "x": 205,
+                    "y": 208,
+                    "width": 50,
+                    "height": 50
+                },
+                {
+                    "name": "깃털",
+                    "x": 22,
+                    "y": 194,
+                    "width": 50,
+                    "height": 50
+                },
+                {
+                    "name": "초생달",
+                    "x": 193,
+                    "y": 304,
+                    "width": 50,
+                    "height": 50
+                },
+                {
+                    "name": "잔디",
+                    "x": 104,
+                    "y": 202,
+                    "width": 50,
+                    "height": 50
+                },
+                {
+                    "name": "하키라켓",
+                    "x": 108,
+                    "y": 296,
+                    "width": 50,
+                    "height": 50
+                }
+            ]
         }
     ],
     "medium": [
