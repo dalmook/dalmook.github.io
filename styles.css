@@ -251,7 +251,7 @@ footer {
     }
 
     .gallery-item img {
-        max-width: 250px; /* 데스크탑에서 이미지 최대 너비 제한 */
+        max-width: 400px; /* 데스크탑에서 이미지 최대 너비 제한 */
     }
 
     header h1 {
@@ -259,8 +259,8 @@ footer {
     }
 
     .swing {
-        width: 50px; /* 데스크탑에서 아이콘 크기 조정 */
-        height: 50px;
+        width: 100px; /* 데스크탑에서 아이콘 크기 조정 */
+        height: 100px;
     }
 
     main {
