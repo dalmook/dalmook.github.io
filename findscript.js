@@ -155,7 +155,7 @@ function handleImageClick(event) {
         const { x, y, width, height, name } = obj;
 
         // 여유 범위 설정 (픽셀 단위로 확장)
-        const margin = 0; // 여유 없이 정확한 위치에 마커 배치
+        const margin = 20; // 클릭 가능 영역에 추가할 여유 픽셀
 
         // 객체 영역 계산 (여유 포함)
         const adjustedX = x - margin;
@@ -204,19 +204,19 @@ function markFound(name, x, y, width, height, scaleX, scaleY) {
         }
     });
 
-    // 마커 표시 (스케일 반영)
+    // 마커 표시 (퍼센트 기반 위치 계산)
     const foundMarker = document.createElement('div');
     foundMarker.classList.add('found-marker');
 
-    // 객체의 좌상단 좌표에 마커 배치
-    const posX = x * scaleX;
-    const posY = y * scaleY;
+    // 객체의 중앙 좌표 계산 (퍼센트)
+    const percentX = ((x + width / 2) / gameImage.naturalWidth) * 100;
+    const percentY = ((y + height / 2) / gameImage.naturalHeight) * 100;
 
-    foundMarker.style.left = `${posX}px`;
-    foundMarker.style.top = `${posY}px`;
+    foundMarker.style.left = `${percentX}%`;
+    foundMarker.style.top = `${percentY}%`;
     gameArea.appendChild(foundMarker);
 
-    console.log(`마커 추가: ${name} at (${posX}px, ${posY}px)`);
+    console.log(`마커 추가: ${name} at (${percentX}%, ${percentY}%)`);
 }
 
 function endGame() {
