@@ -32,70 +32,93 @@ header {
 }
 
 .swing {
-    width: 50px;
-    height: 50px;
-    animation: swing 3s ease-in-out infinite; /* 애니메이션 적용 */
+    width: 30px; /* 기본 크기 */
+    height: 30px;
+    animation: swing 3s ease-in-out infinite;
 }
 
-/* 좌측 이미지 추가 효과 */
-.swing-left {
-    transform-origin: center right;
+@media (min-width: 601px) and (max-width: 1200px) {
+    .swing {
+        width: 40px;
+        height: 40px;
+    }
 }
 
-/* 우측 이미지 추가 효과 */
-.swing-right {
-    transform-origin: center left;
+@media (min-width: 1201px) {
+    .swing {
+        width: 40px;
+        height: 40px;
+    }
 }
 
 /* 텍스트 스타일 */
 header h1 {
-    font-size: 2.5em;
+    font-size: 2em; /* 기본 크기 */
     color: #fff;
     animation: bounce 2s infinite;
+}
+
+@media (min-width: 601px) and (max-width: 1200px) {
+    header h1 {
+        font-size: 2.5em;
+    }
+}
+
+@media (min-width: 1201px) {
+    header h1 {
+        font-size: 3em;
+    }
 }
 
 /* 메인 갤러리 */
 main {
     flex: 1;
     padding: 10px;
+    max-width: 1200px; /* 최대 너비 설정 */
+    margin: 0 auto; /* 가운데 정렬 */
 }
+
 /* 갤러리 스타일 */
 .gallery {
     display: grid;
-    grid-template-columns: repeat(3, 1fr); /* 3열 레이아웃 */
-    gap: 15px; /* 아이템 간의 간격 */
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 15px;
     padding: 20px;
+    max-width: 1200px;
+    margin: 0 auto;
 }
+
 .gallery-item {
     display: flex;
-    flex-direction: column; /* 이미지와 텍스트를 세로로 정렬 */
-    align-items: center; /* 가운데 정렬 */
-    text-align: center; /* 텍스트 가운데 정렬 */
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
 }
 
 .gallery-item img {
-    width: 100%; /* 이미지 크기를 부모 컨테이너에 맞게 설정 */
-    height: auto; /* 이미지 비율 유지 */
-    border-radius: 10px; /* 이미지 모서리를 둥글게 */
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* 그림자 효과 */
-    transition: transform 0.3s; /* 호버 시 확대 효과를 위한 트랜지션 */
+    width: 100%;
+    height: auto;
+    max-width: 300px;
+    border-radius: 10px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s;
 }
 
 .gallery-item img:hover {
-    transform: scale(1.05); /* 호버 시 이미지 확대 */
+    transform: scale(1.05);
 }
 
 .gallery-text {
-    margin-top: 10px; /* 이미지와 텍스트 간격 */
-    font-size: 0.8em; /* 텍스트 크기 */
-    font-weight: bold; /* 텍스트 굵게 */
-    color: #333; /* 텍스트 색상 */
+    margin-top: 10px;
+    font-size: 0.8em;
+    font-weight: bold;
+    color: #333;
 }
-/* 이미지 컨테이너 스타일 */
+
 .image-container {
-    position: relative; /* 텍스트를 이미지 위에 배치하기 위해 필요 */
-    width: 100%; /* 부모의 너비를 가짐 */
-    padding-top: 100%; /* 정사각형 비율 유지 */
+    position: relative;
+    width: 100%;
+    padding-top: 100%;
     overflow: hidden;
 }
 
@@ -105,26 +128,27 @@ main {
     left: 0;
     width: 100%;
     height: 100%;
-    object-fit: cover; /* 이미지 비율 유지하며 꽉 채우기 */
-    border-radius: 10px; /* 모서리 둥글게 */
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* 그림자 효과 */
+    object-fit: cover;
+    border-radius: 10px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
-/* 텍스트 스타일 */
+
 .image-container span {
-    position: absolute; /* 이미지 위에 배치 */
-    top: 50%; /* 세로 중앙 정렬 */
-    left: 50%; /* 가로 중앙 정렬 */
-    transform: translate(-50%, -50%); /* 중앙 정렬을 위한 트랜스폼 */
-    color: white; /* 텍스트 색상 */
-    font-size: 1.2em; /* 텍스트 크기 */
-    font-weight: bold; /* 굵은 텍스트 */
-    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7); /* 텍스트 그림자 */
-    z-index: 2; /* 이미지보다 위에 표시 */
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: white;
+    font-size: 1.2em;
+    font-weight: bold;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7);
+    z-index: 2;
 }
+
 .gallery a {
     position: relative;
     width: 100%;
-    padding-top: 100%; /* 정사각형 비율 유지 */
+    padding-top: 100%;
     overflow: hidden;
     border-radius: 10px;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
@@ -144,7 +168,6 @@ main {
     object-fit: cover;
 }
 
-/* 갤러리 텍스트 스타일 */
 .gallery span {
     display: block;
     margin-top: 5px;
@@ -152,10 +175,9 @@ main {
     font-weight: bold;
     text-align: center;
     color: #333;
-    padding: 5px 0; /* 글자와 이미지 사이 간격 */
+    padding: 5px 0;
 }
 
-/* 텍스트에 괄호 스타일을 명시적으로 추가 (선택 사항) */
 .gallery span::before {
     content: '[';
 }
@@ -164,7 +186,6 @@ main {
     content: ']';
 }
 
-
 /* 푸터 스타일 */
 footer {
     background-color: #FF6F61;
@@ -172,6 +193,12 @@ footer {
     text-align: center;
     color: #fff;
     font-size: 0.9em;
+}
+
+@media (min-width: 1201px) {
+    footer {
+        font-size: 1em;
+    }
 }
 
 /* 흔들리는 애니메이션 */
@@ -203,21 +230,5 @@ footer {
     }
     60% {
         transform: translateY(-5px);
-    }
-}
-
-/* 반응형 디자인 */
-@media (max-width: 600px) {
-    .gallery {
-        grid-template-columns: repeat(3, 1fr); /* 작은 화면에서 3열 */
-        gap: 8px;
-    }
-
-    .gallery span {
-        font-size: 0.8em;
-    }
-
-    header h1 {
-        font-size: 2em;
     }
 }
