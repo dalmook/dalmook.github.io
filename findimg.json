@@ -189,6 +189,103 @@
             ]
         }
     ],
-    "medium": [],
+    "medium": [
+        {
+            "image": "images/find_hidden_pictures_057.jpg",
+            "objects": [
+                {
+                    "name": "셔틀콕",
+                    "x": 486,
+                    "y": 615,
+                    "width": 50,
+                    "height": 50
+                },
+                {
+                    "name": "편지봉투",
+                    "x": 338,
+                    "y": 289,
+                    "width": 50,
+                    "height": 50
+                },
+                {
+                    "name": "단추",
+                    "x": 354,
+                    "y": 355,
+                    "width": 50,
+                    "height": 50
+                },
+                {
+                    "name": "우산",
+                    "x": 576,
+                    "y": 520,
+                    "width": 50,
+                    "height": 50
+                },
+                {
+                    "name": "양초",
+                    "x": 533,
+                    "y": 208,
+                    "width": 50,
+                    "height": 50
+                },
+                {
+                    "name": "부채",
+                    "x": 304,
+                    "y": 181,
+                    "width": 50,
+                    "height": 50
+                },
+                {
+                    "name": "돛단배",
+                    "x": 129,
+                    "y": 143,
+                    "width": 50,
+                    "height": 50
+                },
+                {
+                    "name": "수박",
+                    "x": 244,
+                    "y": 486,
+                    "width": 50,
+                    "height": 50
+                },
+                {
+                    "name": "연필",
+                    "x": 515,
+                    "y": 273,
+                    "width": 50,
+                    "height": 50
+                },
+                {
+                    "name": "빨대",
+                    "x": 502,
+                    "y": 324,
+                    "width": 50,
+                    "height": 50
+                },
+                {
+                    "name": "삼각자",
+                    "x": 504,
+                    "y": 125,
+                    "width": 50,
+                    "height": 50
+                },
+                {
+                    "name": "칫솔",
+                    "x": 207,
+                    "y": 96,
+                    "width": 50,
+                    "height": 50
+                },
+                {
+                    "name": "책",
+                    "x": 369,
+                    "y": 97,
+                    "width": 50,
+                    "height": 50
+                }
+            ]
+        }
+    ],
     "hard": []
 }
