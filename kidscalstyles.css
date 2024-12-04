@@ -1,11 +1,11 @@
 /* kidscalstyles.css */
-@import url('https://fonts.googleapis.com/css2?family=Gamja+Flower&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Dongle:wght@300&family=Gamja+Flower&family=Gowun+Dodum&display=swap');
 * {
     box-sizing: border-box;
 }
 
 body {
-    font-family: "Gamja Flower", sans-serif;
+    font-family: "Gowun Dodum", sans-serif;
     background-color: #f0f8ff;
     display: flex;
     flex-direction: column;
