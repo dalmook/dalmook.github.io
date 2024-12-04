@@ -1,12 +1,12 @@
 /* gugustyles.css */
-
+@import url('https://fonts.googleapis.com/css2?family=Gamja+Flower&display=swap');
 /* 모든 요소에 box-sizing 적용 */
 *, *::before, *::after {
     box-sizing: border-box;
 }
 
 body {
-    font-family: 'Arial', sans-serif;
+    font-family: "Gamja Flower", sans-serif;
     background-color: #ffefd5; /* 부드러운 배경색 */
     text-align: center;
     padding: 20px;
