@@ -32,56 +32,38 @@ header {
 }
 
 .swing {
-    width: 30px; /* 기본 크기 */
+    width: 30px; /* 기본 크기 (모바일) */
     height: 30px;
     animation: swing 3s ease-in-out infinite;
 }
 
-@media (min-width: 601px) and (max-width: 1200px) {
-    .swing {
-        width: 40px;
-        height: 40px;
-    }
+.swing-left {
+    transform-origin: center right;
 }
 
-@media (min-width: 1201px) {
-    .swing {
-        width: 40px;
-        height: 40px;
-    }
+.swing-right {
+    transform-origin: center left;
 }
 
 /* 텍스트 스타일 */
 header h1 {
-    font-size: 2em; /* 기본 크기 */
+    font-size: 2em; /* 기본 크기 (모바일) */
     color: #fff;
     animation: bounce 2s infinite;
-}
-
-@media (min-width: 601px) and (max-width: 1200px) {
-    header h1 {
-        font-size: 2.5em;
-    }
-}
-
-@media (min-width: 1201px) {
-    header h1 {
-        font-size: 3em;
-    }
 }
 
 /* 메인 갤러리 */
 main {
     flex: 1;
     padding: 10px;
-    max-width: 1200px; /* 최대 너비 설정 */
+    max-width: 1200px; /* 모바일 및 태블릿 최대 너비 */
     margin: 0 auto; /* 가운데 정렬 */
 }
 
 /* 갤러리 스타일 */
 .gallery {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    grid-template-columns: repeat(2, 1fr); /* 모바일에서 2열 */
     gap: 15px;
     padding: 20px;
     max-width: 1200px;
@@ -98,7 +80,7 @@ main {
 .gallery-item img {
     width: 100%;
     height: auto;
-    max-width: 300px;
+    max-width: 300px; /* 모바일 최대 너비 */
     border-radius: 10px;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
     transition: transform 0.3s;
@@ -195,12 +177,6 @@ footer {
     font-size: 0.9em;
 }
 
-@media (min-width: 1201px) {
-    footer {
-        font-size: 1em;
-    }
-}
-
 /* 흔들리는 애니메이션 */
 @keyframes swing {
     0% {
@@ -230,5 +206,59 @@ footer {
     }
     60% {
         transform: translateY(-5px);
+    }
+}
+
+/* 반응형 디자인 */
+
+/* 태블릿 스타일 (601px ~ 1200px) */
+@media (min-width: 601px) and (max-width: 1200px) {
+    .gallery {
+        grid-template-columns: repeat(3, 1fr); /* 태블릿에서 3열 */
+        gap: 12px;
+    }
+
+    header h1 {
+        font-size: 2.5em;
+    }
+
+    .swing {
+        width: 40px; /* 태블릿에서 아이콘 크기 조정 */
+        height: 40px;
+    }
+
+    .gallery-item img {
+        max-width: 280px; /* 태블릿에서 이미지 크기 조정 */
+    }
+}
+
+/* 데스크탑 스타일 (1201px 이상) */
+@media (min-width: 1201px) {
+    .gallery {
+        grid-template-columns: repeat(4, 1fr); /* 데스크탑에서 4열 */
+        gap: 20px;
+        padding: 40px;
+    }
+
+    .gallery-item img {
+        max-width: 250px; /* 데스크탑에서 이미지 최대 너비 제한 */
+    }
+
+    header h1 {
+        font-size: 3em; /* 데스크탑에서 헤더 텍스트 크기 증가 */
+    }
+
+    .swing {
+        width: 50px; /* 데스크탑에서 아이콘 크기 조정 */
+        height: 50px;
+    }
+
+    main {
+        max-width: 1600px; /* 데스크탑에서 메인 최대 너비 확장 */
+        margin: 0 auto;
+    }
+
+    footer {
+        font-size: 1em; /* 데스크탑에서 푸터 텍스트 크기 조정 */
     }
 }
