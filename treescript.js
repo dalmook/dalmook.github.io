@@ -12,7 +12,8 @@ const TREE_STAGES = [
   { max: 2000, src: 'images/small_tree.png' },
   { max: 4000, src: 'images/medium_tree.png' },
   { max: 6000, src: 'images/large_tree.png' },
-  { max: Infinity, src: 'images/mature_tree.png' }
+  { max: 8000, src: 'images/mature_tree.png' },
+  { max: Infinity, src: 'images/treepino.png' }
 ];
 
 // Firestore 컬렉션 참조
