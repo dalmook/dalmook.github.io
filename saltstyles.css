@@ -1,6 +1,7 @@
 /* 기본 스타일 */
+@import url('https://fonts.googleapis.com/css2?family=Gamja+Flower&display=swap');
 body {
-    font-family: Arial, sans-serif;
+    font-family: "Gamja Flower", sans-serif;
     background-color: #f0f8ff;
     text-align: center;
     margin: 0;
