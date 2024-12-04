@@ -204,22 +204,19 @@ function markFound(name, x, y, width, height, scaleX, scaleY) {
         }
     });
 
-    // 마커 생성
+    // 마커 표시 (스케일 반영)
     const foundMarker = document.createElement('div');
     foundMarker.classList.add('found-marker');
 
-    // 객체의 중앙 좌표 계산 (픽셀 기반)
-    const centerX = (x + width / 2) * scaleX;
-    const centerY = (y + height / 2) * scaleY;
+    // 객체의 좌상단 좌표에 마커 배치
+    const posX = x * scaleX;
+    const posY = y * scaleY;
 
-    // 마커의 위치 설정
-    foundMarker.style.left = `${centerX}px`;
-    foundMarker.style.top = `${centerY}px`;
-
-    // 마커를 게임 영역에 추가
+    foundMarker.style.left = `${posX}px`;
+    foundMarker.style.top = `${posY}px`;
     gameArea.appendChild(foundMarker);
 
-    console.log(`마커 추가: ${name} at (${centerX}px, ${centerY}px)`);
+    console.log(`마커 추가: ${name} at (${posX}px, ${posY}px)`);
 }
 
 function endGame() {
