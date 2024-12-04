@@ -63,7 +63,7 @@ main {
 /* 갤러리 스타일 */
 .gallery {
     display: grid;
-    grid-template-columns: repeat(2, 1fr); /* 모바일에서 2열 */
+    grid-template-columns: repeat(3, 1fr); /* 모바일에서 2열 */
     gap: 15px;
     padding: 20px;
     max-width: 1200px;
