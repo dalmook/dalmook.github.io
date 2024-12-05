@@ -16,6 +16,27 @@ const db = firebase.firestore();
 let optionPools = {};
 let questionsData = {};
 
+// 이미지 캐시 객체
+const imageCache = {};
+
+// 이미지 로드 함수 (프라미스 기반)
+function loadImage(url) {
+    return new Promise((resolve, reject) => {
+        if (imageCache[url]) {
+            // 이미지가 이미 캐시에 있으면 즉시 반환
+            resolve(imageCache[url]);
+        } else {
+            const img = new Image();
+            img.src = url;
+            img.onload = () => {
+                imageCache[url] = img; // 캐시에 저장
+                resolve(img);
+            };
+            img.onerror = () => reject(new Error(`이미지를 로드하지 못했습니다: ${url}`));
+        }
+    });
+}
+
 // 데이터 로드 함수
 async function loadData() {
     try {
@@ -68,7 +89,6 @@ const playerNameInput = document.getElementById('playerName');
 const submitRecordButton = document.getElementById('submitRecordButton');
 const recordTableBody = document.getElementById('recordTable').querySelector('tbody');
 const closeRecordSectionButton = document.getElementById('closeRecordSection');
-// const backToGameButton = document.getElementById('backToGameButton'); // 제거
 
 const correctSoundEffect = document.getElementById('correctSoundEffect');
 const incorrectSound = document.getElementById('incorrectSound');
@@ -76,7 +96,7 @@ const incorrectSound = document.getElementById('incorrectSound');
 // 게임 시작 버튼 이벤트 리스너 설정 함수
 function setupEventListeners() {
     // 게임 시작 버튼 이벤트
-    startQuizButton.addEventListener('click', () => {
+    startQuizButton.addEventListener('click', async () => {
         // 카테고리와 난이도가 선택되었는지 확인
         selectedCategory = document.getElementById('categorySelect').value;
         selectedDifficulty = document.getElementById('difficultySelect').value;
@@ -99,7 +119,7 @@ function setupEventListeners() {
         }
 
         // 퀴즈 시작
-        startQuizGame();
+        await startQuizGame();
     });
     
     // 기록 보기 버튼 이벤트 리스너 추가
@@ -137,7 +157,7 @@ function setupEventListeners() {
 }
 
 // 게임 시작 함수
-function startQuizGame() {
+async function startQuizGame() {
     if (filteredQuestions.length === 0) {
         alert('선택한 카테고리에 맞는 질문이 없습니다!');
         return;
@@ -159,11 +179,11 @@ function startQuizGame() {
     scoreDisplay.textContent = `점수: ${score}`;
     quizContainer.style.display = 'flex';
     startQuizButton.disabled = true;
-    loadQuestion();
+    await loadQuestion();
 }
 
-// 질문 로드 함수 수정
-function loadQuestion() {
+// 질문 로드 함수 (비동기)
+async function loadQuestion() {
     // 난이도에 따라 시간 설정
     if (selectedDifficulty === 'easy') {
         countdown = 5; // 쉬움: 5초
@@ -179,7 +199,20 @@ function loadQuestion() {
     }
 
     const currentQuestion = filteredQuestions[currentQuestionIndex];
-    questionImage.style.backgroundImage = `url("${currentQuestion.image}")`;
+    
+    try {
+        // 현재 질문의 이미지 로드
+        await loadImage(currentQuestion.image);
+        // 배경 이미지 설정
+        questionImage.style.backgroundImage = `url("${currentQuestion.image}")`;
+    } catch (error) {
+        console.error(error);
+        alert('이미지를 불러오는데 실패했습니다.');
+        // 실패 시 다음 질문으로 이동
+        await nextQuestion();
+        return;
+    }
+
     feedback.innerHTML = ''; // 피드백 초기화
     correctAnswerDiv.innerHTML = ''; // 정답 표시 초기화
     correctAnswerDiv.style.display = 'none'; // 정답 표시 숨김
@@ -222,6 +255,14 @@ function loadQuestion() {
             markAsIncorrect(); // 시간이 초과되면 오답 처리
         }
     }, 1000);
+
+    // 다음 질문의 이미지 사전 로드
+    const nextQuestion = filteredQuestions[currentQuestionIndex + 1];
+    if (nextQuestion) {
+        loadImage(nextQuestion.image).catch(error => {
+            console.warn('다음 질문의 이미지를 로드하지 못했습니다:', error);
+        });
+    }
 }
 
 // 보기 선택 함수
@@ -293,13 +334,13 @@ function selectOption(selectedOption, button) {
     // 정답 표시
     displayCorrectAnswer(currentQuestion.correct);
 
-    setTimeout(() => {
-        nextQuestion();
+    setTimeout(async () => {
+        await nextQuestion();
     }, 2000); // 2초 후 다음 질문으로 이동 (정답 표시 시간 포함)
 }
 
 // 시간 초과 시 오답 처리 함수
-function markAsIncorrect() {                       
+async function markAsIncorrect() {                       
     const currentQuestion = filteredQuestions[currentQuestionIndex];
     
     // 난이도에 따른 오답 점수 설정
@@ -339,9 +380,8 @@ function markAsIncorrect() {
     displayCorrectAnswer(currentQuestion.correct);
 
     // 2초 후 다음 질문으로 이동
-    setTimeout(() => {
-        nextQuestion();
-    }, 2000);
+    await new Promise(resolve => setTimeout(resolve, 2000));
+    await nextQuestion();
 }
 
 // 정답 표시 함수
@@ -366,9 +406,9 @@ function displayCorrectAnswer(correctAnswer) {
 }
 
 // 다음 질문으로 이동 함수
-function nextQuestion() {
+async function nextQuestion() {
     currentQuestionIndex++;
-    loadQuestion();
+    await loadQuestion();
 }
 
 // 퀴즈 종료 함수
