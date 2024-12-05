@@ -44,7 +44,7 @@ h1 {
     width: 100%;
     height: auto;
     display: block;
-    border: 2px solid blue; /* 임시 테두리 추가 */
+    /* border: 2px solid blue; 임시 테두리 추가 */
 }
 
 .found-marker {
