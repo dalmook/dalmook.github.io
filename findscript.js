@@ -155,7 +155,7 @@ function handleImageClick(event) {
         const { x, y, width, height, name } = obj;
 
         // 여유 범위 설정 (픽셀 단위로 확장)
-        const margin = 20; // 클릭 가능 영역에 추가할 여유 픽셀
+        const margin = 10; // 클릭 가능 영역에 추가할 여유 픽셀
 
         // 객체 영역 계산 (여유 포함)
         const adjustedX = x - margin;
@@ -209,8 +209,8 @@ function markFound(name, x, y, width, height, scaleX, scaleY) {
     foundMarker.classList.add('found-marker');
 
     // 객체의 중앙 좌표 계산 (퍼센트)
-    const percentX = ((x + width / 2) / gameImage.naturalWidth) * 100;
-    const percentY = ((y + height / 2) / gameImage.naturalHeight) * 100;
+    const percentX = ((x + width / 2) / gameImage.naturalWidth) * 100-1;
+    const percentY = ((y + height / 2) / gameImage.naturalHeight) * 100-1;
 
     foundMarker.style.left = `${percentX}%`;
     foundMarker.style.top = `${percentY}%`;
