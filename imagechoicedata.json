@@ -8,7 +8,8 @@
             "Crab", "Jellyfish", "Starfish", "Seal", "Walrus", "Peacock", "Turkey", "Chicken", "Duck", "Goose",
             "Hedgehog", "Raccoon", "Koala", "Platypus", "Armadillo", "Sloth", "Gazelle", "Bison", "Llama", "Alpaca",
             "Seahorse", "Clownfish", "Swordfish", "Polar Bear", "Arctic Fox", "Meerkat", "Jaguar",
-            "Antelope", "Gorilla", "Orangutan", "Bat", "Toucan", "Pelican", "Stingray"
+            "Antelope", "Gorilla", "Orangutan", "Bat", "Toucan", "Pelican", "Stingray", "Desert fox","Ostrich","Capybara","Red panda",
+            "Sheep","Donkey","Spider"
         ],
         "foods": [
             "Pizza", "Hamburger", "Pasta", "Sandwich", "Rice", "Noodles", "Soup", "Salad", "Bread", "Cheese",
@@ -304,6 +305,34 @@
             {
                 "image": "images/수달.png",
                 "correct": "Otter"
+            },
+            {
+                "image": "images/사막여우.png",
+                "correct": "Desert fox"
+            },
+            {
+                "image": "images/타조.png",
+                "correct": "Ostrich"
+            },
+            {
+                "image": "images/카피바라.png",
+                "correct": "Capybara"
+            },
+            {
+                "image": "images/레서판다.png",
+                "correct": "Red panda"
+            },
+            {
+                "image": "images/양.png",
+                "correct": "Sheep"
+            },
+            {
+                "image": "images/당나귀.png",
+                "correct": "Donkey"
+            },
+            {
+                "image": "images/거미.png",
+                "correct": "Spider"
             }
         ],
         "foods": [
