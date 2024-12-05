@@ -210,7 +210,7 @@ function markFound(name, x, y, width, height, scaleX, scaleY) {
 
     // 객체의 중앙 좌표 계산 (퍼센트)
     const percentX = (((x + width / 2) / gameImage.naturalWidth)-0.02) * 100;
-    const percentY = (((y + height / 2) / gameImage.naturalHeight)-0.02) * 100;
+    const percentY = (((y + height / 2) / gameImage.naturalHeight)-0.04) * 100;
 
     foundMarker.style.left = `${percentX}%`;
     foundMarker.style.top = `${percentY}%`;
