@@ -14,7 +14,8 @@ const TREE_STAGES = [
   { max: 6000, src: 'images/large_tree.png' },
   { max: 8000, src: 'images/mature_tree.png' },
   { max: 10000, src: 'images/진핵생물.png' },
-  { max: Infinity, src: 'images/절지류.jpg' }
+  { max: 12000, src: 'images/절지류.jpg' },
+  { max: Infinity, src: 'images/고대어류.png' }
 ];
 
 // Firestore 컬렉션 참조
