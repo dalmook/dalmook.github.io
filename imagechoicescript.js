@@ -391,7 +391,14 @@ function displayCorrectAnswer(correctAnswer) {
     correctAnswerDiv.style.display = 'block';
 
     // 텍스트 음성 변환 (선택 사항)
-    if ('speechSynthesis' in window) {
+    if (typeof Android !== 'undefined' && Android.speak) {
+        // Android 애플리케이션의 네이티브 TTS를 사용
+        // 언어 설정: 한글인지 영어인지 판단
+        const koreanRegex = /[가-힣]/; // 한글 확인용 정규식
+        const lang = koreanRegex.test(message) ? 'ko-KR' : 'en-US';
+        Android.speak(message, lang); // Android.speak 함수가 두 개의 파라미터를 받도록 수정
+    }
+    else if ('speechSynthesis' in window) {
         const utterance = new SpeechSynthesisUtterance(message);
 
         // 언어 설정: 한글인지 영어인지 판단
@@ -401,9 +408,13 @@ function displayCorrectAnswer(correctAnswer) {
         } else {
             utterance.lang = 'en-US'; // 영어 발음
         }
-        speechSynthesis.speak(utterance);
+        window.speechSynthesis.speak(utterance);
+    }
+    else {
+        console.warn("이 브라우저는 음성 합성을 지원하지 않습니다.");
     }
 }
+
 
 // 다음 질문으로 이동 함수
 async function nextQuestion() {
