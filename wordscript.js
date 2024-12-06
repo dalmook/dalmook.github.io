@@ -150,16 +150,23 @@ function flipCard(flip) {
 }
 
 function speakWord(word) {
-    if ('speechSynthesis' in window) {
+    // Android 애플리케이션의 JavaScript Interface를 통한 TTS 호출
+    if (typeof Android !== 'undefined' && Android.speak) {
+        Android.speak(word);
+    }
+    // 웹 브라우저에서는 Web Speech API 사용
+    else if ('speechSynthesis' in window) {
         const utterance = new SpeechSynthesisUtterance(word);
         utterance.lang = 'en-US'; // 영어 발음 설정
-        utterance.rate = 1; // 속도 (0.1 ~ 10)
-        utterance.pitch = 1; // 음의 높낮이 (0 ~ 2)
+        utterance.rate = 1;        // 속도 (0.1 ~ 10)
+        utterance.pitch = 1;       // 음의 높낮이 (0 ~ 2)
         window.speechSynthesis.speak(utterance);
-    } else {
+    }
+    else {
         console.warn("이 브라우저는 음성 합성을 지원하지 않습니다.");
     }
 }
+
 
 function loadFlashcards(difficulty) {
     // 난이도별 단어 필터링
