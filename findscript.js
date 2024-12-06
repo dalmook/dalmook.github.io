@@ -237,11 +237,10 @@ function endGame() {
     // 모든 이미지 완료 여부 확인 후 알림
     if (availableImages.length === 0) {
         alert('모든 그림을 완료하셨습니다! 축하합니다!');
-    } else {
-        // 다음 이미지 자동으로 시작
-        startGame();
     }
+    // else 블록 제거: 새로운 게임을 바로 시작하지 않음
 }
+
 
 // 이름 제출 버튼 클릭 시 Firestore에 데이터 저장
 submitNameButton.addEventListener('click', () => {
