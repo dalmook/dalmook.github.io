@@ -267,8 +267,14 @@ submitNameButton.addEventListener('click', () => {
     // 모달 닫기
     nameModal.style.display = 'none';
     overlay.style.display = 'none';
+
+    // 게임 상태 초기화
     resetGame();
+
+    // 새로운 게임 시작
+    startGame();
 });
+
 
 // 모달 닫기 버튼 클릭 시 모달 닫기
 closeModalButton.addEventListener('click', () => {
