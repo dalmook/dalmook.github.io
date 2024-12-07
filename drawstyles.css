@@ -38,7 +38,7 @@ body {
 }
 
 .tool-button {
-    padding: 10px 15px;
+    padding: 10px;
     margin-right: 10px;
     border: none;
     background-color: #e0e0e0;
@@ -47,11 +47,19 @@ body {
     font-size: 14px;
     flex: 1 1 auto;
     text-align: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
-.tool-button.active {
-    background-color: #4CAF50;
-    color: white;
+.tool-button svg {
+    fill: #555;
+    width: 20px;
+    height: 20px;
+}
+
+.tool-button.active svg {
+    fill: white;
 }
 
 #colorPicker {
@@ -103,6 +111,22 @@ canvas {
     height: auto;
     border: 1px solid #ccc;
     border-radius: 8px;
+    cursor: none; /* 기본 커서를 숨김 */
+}
+
+/* 커스텀 커서 스타일 */
+#customCursor {
+    position: fixed;
+    top: 0;
+    left: 0;
+    pointer-events: none; /* 마우스 이벤트 무시 */
+    width: 20px;
+    height: 20px;
+    border: 2px solid #000;
+    border-radius: 50%;
+    transform: translate(-50%, -50%);
+    transition: background-color 0.1s, border-color 0.1s, width 0.1s, height 0.1s;
+    z-index: 1000;
 }
 
 /* 반응형 디자인 - 모바일 세로 */
