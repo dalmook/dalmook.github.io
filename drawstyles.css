@@ -7,9 +7,10 @@ body {
     flex-direction: column;
     align-items: center;
     font-family: Arial, sans-serif;
+    height: 100vh; /* 전체 높이를 채우도록 설정 */
+    box-sizing: border-box;
 }
 
-/* 툴바 및 난이도 툴바 스타일 */
 .toolbar, .difficulty-toolbar {
     display: flex;
     justify-content: space-between;
@@ -32,7 +33,7 @@ body {
     margin-bottom: 20px;
 }
 
-.tools, .colors, .actions, .thickness {
+.tools, .colors, .actions, .thickness, .stamp-size {
     display: flex;
     align-items: center;
     margin: 5px 0;
@@ -79,17 +80,17 @@ body {
     flex: 1 1 auto;
 }
 
-.thickness label {
+.thickness label, .stamp-size label {
     margin-right: 10px;
     font-size: 14px;
 }
 
-#thicknessRange {
+#thicknessRange, #stampSizeRange {
     width: 100px;
     margin-right: 10px;
 }
 
-#thicknessValue {
+#thicknessValue, #stampSizeValue {
     font-weight: bold;
 }
 
@@ -106,7 +107,7 @@ body {
     text-align: center;
 }
 
-.actions button#save, .difficulty-toolbar button#prevDesign, .difficulty-toolbar button#nextDesign {
+.actions button#save, .difficulty-toolbar button#prevDesign, .difficulty-toolbar button#nextDesign, .actions button#undo, .actions button#redo {
     background-color: #4CAF50;
 }
 
@@ -120,7 +121,7 @@ body {
     position: relative;
     width: 90%;
     max-width: 800px;
-    /* 비율 유지 (예: 4:3) */
+    /* 비율 유지 (4:3) */
     padding-top: 75%; /* 600 / 800 = 0.75 -> 75% */
     background-color: #ffffff;
     border: 1px solid #ccc;
@@ -130,7 +131,6 @@ body {
     overflow: hidden;
 }
 
-/* 배경 캔버스 및 그림 캔버스 스타일링 */
 #backgroundCanvas, #drawingCanvas {
     position: absolute;
     top: 0;
@@ -162,6 +162,40 @@ body {
     z-index: 1000;
 }
 
+/* 도장 팔레트 스타일 */
+#stampPalette {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+#stampPalette button {
+    margin: 5px 0;
+    border: none;
+    background: transparent;
+    cursor: pointer;
+}
+
+#stampPalette button img {
+    width: 50px;
+    height: 50px;
+    object-fit: contain;
+}
+
+/* Undo/Redo 버튼 스타일링 */
+.actions button#undo, .actions button#redo {
+    background-color: #2196F3;
+}
+
+/* 닫기 버튼 스타일링 */
+#stampPalette button.close-button {
+    background-color: #ff6666;
+    color: white;
+    padding: 5px 10px;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
 /* 반응형 디자인 */
 
 /* 모바일 세로 화면 */
@@ -171,20 +205,20 @@ body {
         align-items: stretch;
     }
 
-    .tools, .colors, .actions, .thickness {
+    .tools, .colors, .actions, .thickness, .stamp-size {
         justify-content: center;
     }
 
-    .tool-button, .actions button, .difficulty-toolbar button, .difficulty-toolbar select, #colorPicker, #thicknessRange {
+    .tool-button, .actions button, .difficulty-toolbar button, .difficulty-toolbar select, #colorPicker, #thicknessRange, #stampSizeRange {
         width: 100%;
         margin: 5px 0;
     }
 
-    #thicknessRange {
+    #thicknessRange, #stampSizeRange {
         width: 100%;
     }
 
-    #thicknessValue {
+    #thicknessValue, #stampSizeValue {
         display: none; /* 작은 화면에서는 두께 값을 숨김 */
     }
 
@@ -212,17 +246,17 @@ body {
         flex-wrap: nowrap;
     }
 
-    .tools, .colors, .actions, .thickness {
+    .tools, .colors, .actions, .thickness, .stamp-size {
         flex: 1 1 100%;
         justify-content: center;
     }
 
-    .tool-button, .actions button, .difficulty-toolbar button, .difficulty-toolbar select, #colorPicker, #thicknessRange {
+    .tool-button, .actions button, .difficulty-toolbar button, .difficulty-toolbar select, #colorPicker, #thicknessRange, #stampSizeRange {
         flex: 1 1 auto;
         margin: 5px;
     }
 
-    #thicknessValue {
+    #thicknessValue, #stampSizeValue {
         display: inline; /* 두께 값을 표시 */
     }
 
@@ -250,20 +284,20 @@ body {
         align-items: stretch;
     }
 
-    .tools, .colors, .actions, .thickness {
+    .tools, .colors, .actions, .thickness, .stamp-size {
         justify-content: center;
     }
 
-    .tool-button, .actions button, .difficulty-toolbar button, .difficulty-toolbar select, #colorPicker, #thicknessRange {
+    .tool-button, .actions button, .difficulty-toolbar button, .difficulty-toolbar select, #colorPicker, #thicknessRange, #stampSizeRange {
         width: 100%;
         margin: 5px 0;
     }
 
-    #thicknessRange {
+    #thicknessRange, #stampSizeRange {
         width: 100%;
     }
 
-    #thicknessValue {
+    #thicknessValue, #stampSizeValue {
         display: none;
     }
 
@@ -280,17 +314,17 @@ body {
         flex-wrap: nowrap;
     }
 
-    .tools, .colors, .actions, .thickness {
+    .tools, .colors, .actions, .thickness, .stamp-size {
         flex: 1 1 100%;
         justify-content: center;
     }
 
-    .tool-button, .actions button, .difficulty-toolbar button, .difficulty-toolbar select, #colorPicker, #thicknessRange {
+    .tool-button, .actions button, .difficulty-toolbar button, .difficulty-toolbar select, #colorPicker, #thicknessRange, #stampSizeRange {
         flex: 1 1 auto;
         margin: 5px;
     }
 
-    #thicknessValue {
+    #thicknessValue, #stampSizeValue {
         display: inline;
     }
 
@@ -307,17 +341,17 @@ body {
         flex-wrap: nowrap;
     }
 
-    .tools, .colors, .actions, .thickness {
+    .tools, .colors, .actions, .thickness, .stamp-size {
         flex: 1 1 auto;
         justify-content: center;
     }
 
-    .tool-button, .actions button, .difficulty-toolbar button, .difficulty-toolbar select, #colorPicker, #thicknessRange {
+    .tool-button, .actions button, .difficulty-toolbar button, .difficulty-toolbar select, #colorPicker, #thicknessRange, #stampSizeRange {
         flex: 1 1 auto;
         margin: 0 5px;
     }
 
-    #thicknessValue {
+    #thicknessValue, #stampSizeValue {
         display: inline;
     }
 
