@@ -33,6 +33,9 @@ window.addEventListener('load', () => {
         }
 
         const designPath = designs[currentDifficulty][currentDesignIndex];
+        drawingImage = new Image();
+        // 만약 외부 출처에서 이미지를 로드할 경우 아래 주석 해제
+        // drawingImage.crossOrigin = 'anonymous';
         drawingImage.src = designPath;
         drawingImage.onload = () => {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -200,7 +203,11 @@ window.addEventListener('load', () => {
 
     // 저장하기 기능
     const saveBtn = document.getElementById('save');
-    saveBtn.addEventListener('click', () => {
+    saveBtn.addEventListener('click', saveDrawing);
+    saveBtn.addEventListener('touchend', saveDrawing); // 모바일 터치 이벤트 추가
+
+    function saveDrawing(e) {
+        e.preventDefault(); // 기본 터치 동작 방지
         canvas.toBlob((blob) => {
             const url = URL.createObjectURL(blob);
             const link = document.createElement('a');
@@ -216,6 +223,9 @@ window.addEventListener('load', () => {
                 document.body.appendChild(link);
                 link.click();
                 document.body.removeChild(link);
+
+                // 사용자에게 저장 방법 안내
+                alert('이미지가 새 탭에서 열렸습니다. 이미지를 길게 눌러 저장하세요.');
             } else {
                 // 다른 디바이스에서는 다운로드를 트리거합니다
                 link.style.display = 'none';
@@ -226,7 +236,7 @@ window.addEventListener('load', () => {
 
             URL.revokeObjectURL(url);
         }, 'image/png');
-    });
+    }
 
     // 난이도 선택
     const difficultySelect = document.getElementById('difficultySelect');
