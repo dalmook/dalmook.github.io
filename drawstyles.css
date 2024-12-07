@@ -201,9 +201,29 @@ body {
 
 /* 모바일 세로 화면 */
 @media (max-width: 600px) and (orientation: portrait) {
-    .toolbar, .difficulty-toolbar {
+    .toolbar {
         flex-direction: column;
         align-items: stretch;
+    }
+
+    .difficulty-toolbar {
+        flex-direction: row; /* 컬럼에서 로우로 변경 */
+        justify-content: space-between; /* 요소들 사이에 공간 분배 */
+        align-items: center; /* 요소들을 수직 가운데 정렬 */
+    }
+
+    .difficulty-toolbar label {
+        margin-right: 10px; /* 라벨과 셀렉트 박스 사이에 여백 추가 */
+    }
+
+    .difficulty-toolbar select {
+        flex: 1; /* 셀렉트 박스가 가능한 공간을 차지하도록 설정 */
+        margin-right: 10px; /* 셀렉트 박스와 버튼 사이에 여백 추가 */
+    }
+
+    .difficulty-toolbar button {
+        flex: none; /* 버튼의 크기를 고정 */
+        margin-left: 5px; /* 버튼 사이에 여백 추가 */
     }
 
     .tools, .colors, .actions, .thickness, .stamp-size {
