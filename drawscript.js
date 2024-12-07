@@ -370,7 +370,6 @@ window.addEventListener('load', () => {
                     y: 0,
                     width: stampSize,
                     height: 0 // Will be set when drawing
-                    // rotation: 0 // 회전 관련 코드 제거
                 };
                 palette.remove(); // 팔레트 제거
                 // 도장 도구 선택 후, 사용자에게 도장을 찍을 위치를 클릭하도록 안내
@@ -431,6 +430,7 @@ window.addEventListener('load', () => {
                 if (undoStack.length > 20) {
                     undoStack.shift();
                 }
+                // Redo 히스토리 초기화
                 redoStack = [];
             };
         }
@@ -438,7 +438,7 @@ window.addEventListener('load', () => {
 
     // 도장 모두 그리기 함수
     function drawAllStamps() {
-        ctx.clearRect(0, 0, drawingCanvas.width, drawingCanvas.height);
+        // 기존 그린 선들을 지우지 않고 도장만 그리기
         stampsPlaced.forEach(stamp => {
             const img = new Image();
             img.src = stamp.src;
@@ -447,6 +447,105 @@ window.addEventListener('load', () => {
             };
         });
     }
+
+    // 지우기 기능 (그림 캔버스만 초기화)
+    const clearBtn = document.getElementById('clear');
+    clearBtn.addEventListener('click', clearDrawing);
+    clearBtn.addEventListener('touchend', clearDrawing); // 모바일 터치 이벤트 추가
+
+    function clearDrawing(e) {
+        e.preventDefault();
+        // 히스토리 저장
+        undoStack.push({
+            imageData: ctx.getImageData(0, 0, drawingCanvas.width, drawingCanvas.height),
+            stampsPlaced: JSON.parse(JSON.stringify(stampsPlaced))
+        });
+        // 히스토리 제한
+        if (undoStack.length > 20) {
+            undoStack.shift();
+        }
+        // Redo 히스토리 초기화
+        redoStack = [];
+        ctx.clearRect(0, 0, drawingCanvas.width, drawingCanvas.height);
+        stampsPlaced = []; // 모든 도장 제거
+    }
+
+    // 저장하기 기능
+    const saveBtn = document.getElementById('save');
+    saveBtn.addEventListener('click', saveDrawing);
+    saveBtn.addEventListener('touchend', saveDrawing); // 모바일 터치 이벤트 추가
+
+    function saveDrawing(e) {
+        e.preventDefault(); // 기본 터치 동작 방지
+        // 두 개의 캔버스를 합쳐서 하나의 이미지로 저장
+        const tempCanvas = document.createElement('canvas');
+        const tempCtx = tempCanvas.getContext('2d');
+        tempCanvas.width = backgroundCanvas.width;
+        tempCanvas.height = backgroundCanvas.height;
+
+        // 배경 캔버스 그리기
+        tempCtx.drawImage(backgroundCanvas, 0, 0, tempCanvas.width, tempCanvas.height);
+        // 그림 캔버스 그리기
+        tempCtx.drawImage(drawingCanvas, 0, 0, tempCanvas.width, tempCanvas.height);
+
+        // Android 인터페이스로 전송
+        if (window.Android && window.Android.saveImage) {
+            window.Android.saveImage(base64Data);
+        } else {
+            // Web 브라우저에서의 동작 유지
+            const link = document.createElement('a');
+            link.href = dataURL;
+            link.download = 'my_drawing.png';
+        
+            // iOS 디바이스인지 확인
+            const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+        
+            if (isIOS) {
+                // iOS에서는 다운로드 링크가 동작하지 않으므로 새 탭에서 이미지를 엽니다
+                link.setAttribute('target', '_blank');
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+            
+                // 사용자에게 저장 방법 안내
+                alert('이미지가 새 탭에서 열렸습니다. 이미지를 길게 눌러 저장하세요.');
+            } else {
+                // 다른 디바이스에서는 다운로드를 트리거합니다
+                link.style.display = 'none';
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+            }
+        }
+    }
+
+    // 난이도 선택
+    const difficultySelect = document.getElementById('difficultySelect');
+    difficultySelect.addEventListener('change', (e) => {
+        currentDifficulty = e.target.value;
+        currentDesignIndex = 0; // 난이도 변경 시 첫 번째 도안으로 초기화
+        loadDesign();
+    });
+
+    // 다음/이전 도안 버튼
+    const prevBtn = document.getElementById('prevDesign');
+    const nextBtn = document.getElementById('nextDesign');
+
+    prevBtn.addEventListener('click', () => {
+        if (!designs[currentDifficulty]) return;
+        const designCount = designs[currentDifficulty].length;
+        if (designCount === 0) return;
+        currentDesignIndex = (currentDesignIndex - 1 + designCount) % designCount;
+        loadDesign();
+    });
+
+    nextBtn.addEventListener('click', () => {
+        if (!designs[currentDifficulty]) return;
+        const designCount = designs[currentDifficulty].length;
+        if (designCount === 0) return;
+        currentDesignIndex = (currentDesignIndex + 1) % designCount;
+        loadDesign();
+    });
 
     // 커스텀 커서 이동 업데이트
     function moveCursor(e) {
