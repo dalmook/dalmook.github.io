@@ -16,7 +16,7 @@ body {
     justify-content: space-between;
     align-items: center;
     width: 90%;
-    max-width: 800px;
+    max-width: 1200px;
     padding: 10px;
     background-color: #ffffff;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
@@ -120,7 +120,7 @@ body {
 .canvas-container {
     position: relative;
     width: 90%;
-    max-width: 800px;
+    max-width: 1200px;
     /* 비율 유지 (4:3) */
     padding-top: 75%; /* 600 / 800 = 0.75 -> 75% */
     background-color: #ffffff;
@@ -241,6 +241,7 @@ body {
 
 /* 모바일 가로 화면 */
 @media (max-width: 600px) and (orientation: landscape) {
+    
     .toolbar, .difficulty-toolbar {
         flex-direction: row;
         flex-wrap: nowrap;
