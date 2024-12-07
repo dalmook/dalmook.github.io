@@ -190,19 +190,18 @@ window.addEventListener('load', () => {
         [lastX, lastY] = [x, y];
     }
 
-    // 마우스 이벤트
+    // 그림 캔버스 이벤트
     drawingCanvas.addEventListener('mousedown', startDrawing);
     drawingCanvas.addEventListener('mousemove', draw);
     drawingCanvas.addEventListener('mouseup', stopDrawing);
     drawingCanvas.addEventListener('mouseout', stopDrawing);
 
-    // 터치 이벤트
     drawingCanvas.addEventListener('touchstart', startDrawing);
     drawingCanvas.addEventListener('touchmove', draw);
     drawingCanvas.addEventListener('touchend', stopDrawing);
     drawingCanvas.addEventListener('touchcancel', stopDrawing);
 
-    // 지우기 기능
+    // 지우기 기능 (그림 캔버스만 초기화)
     const clearBtn = document.getElementById('clear');
     clearBtn.addEventListener('click', clearDrawing);
     clearBtn.addEventListener('touchend', clearDrawing); // 모바일 터치 이벤트 추가
