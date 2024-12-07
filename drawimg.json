@@ -2,12 +2,12 @@
     "easy": [
         "images/easy/가오리.png",
         "images/easy/가젤.png",
-        "images/easy/간호.png"
+        "images/easy/간호.webp"
     ],
     "medium": [
-        "images/medium/고고.png",
+        "images/medium/고고.webp",
         "images/medium/고대어류.png",
-        "images/medium/고대파충류.png"
+        "images/medium/고대파충류.jpg"
     ],
     "hard": [
         "images/hard/감자.png",
