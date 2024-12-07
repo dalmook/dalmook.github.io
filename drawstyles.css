@@ -1,0 +1,226 @@
+/* 기본 스타일 */
+body {
+    margin: 0;
+    padding: 0;
+    background-color: #f0f0f0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    font-family: Arial, sans-serif;
+}
+
+.toolbar, .difficulty-toolbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 90%;
+    max-width: 800px;
+    padding: 10px;
+    background-color: #ffffff;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    margin-top: 20px;
+    border-radius: 8px;
+    flex-wrap: wrap;
+}
+
+.toolbar {
+    margin-bottom: 10px;
+}
+
+.difficulty-toolbar {
+    margin-bottom: 20px;
+}
+
+.tools, .colors, .actions, .thickness {
+    display: flex;
+    align-items: center;
+    margin: 5px 0;
+}
+
+.tool-button {
+    padding: 10px 15px;
+    margin-right: 10px;
+    border: none;
+    background-color: #e0e0e0;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+    flex: 1 1 auto;
+    text-align: center;
+}
+
+.tool-button.active {
+    background-color: #4CAF50;
+    color: white;
+}
+
+#colorPicker {
+    padding: 5px;
+    border: none;
+    cursor: pointer;
+    flex: 1 1 auto;
+}
+
+.thickness label {
+    margin-right: 10px;
+    font-size: 14px;
+}
+
+#thicknessRange {
+    width: 100px;
+    margin-right: 10px;
+}
+
+#thicknessValue {
+    font-weight: bold;
+}
+
+.actions button, .difficulty-toolbar button, .difficulty-toolbar select {
+    padding: 10px 15px;
+    margin-left: 10px;
+    border: none;
+    background-color: #ff6666;
+    color: white;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+    flex: 1 1 auto;
+    text-align: center;
+}
+
+.actions button#save, .difficulty-toolbar button#prevDesign, .difficulty-toolbar button#nextDesign {
+    background-color: #4CAF50;
+}
+
+.difficulty-toolbar label {
+    margin-right: 10px;
+    font-size: 16px;
+}
+
+canvas {
+    width: 90%;
+    max-width: 800px;
+    height: auto;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+}
+
+/* 반응형 디자인 - 모바일 세로 */
+@media (max-width: 600px) and (orientation: portrait) {
+    .toolbar, .difficulty-toolbar {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .tools, .colors, .actions, .thickness {
+        justify-content: center;
+    }
+
+    .tool-button, .actions button, .difficulty-toolbar button, .difficulty-toolbar select, #colorPicker, #thicknessRange {
+        width: 100%;
+        margin: 5px 0;
+    }
+
+    #thicknessRange {
+        width: 100%;
+    }
+
+    #thicknessValue {
+        display: none; /* 작은 화면에서는 두께 값을 숨김 */
+    }
+}
+
+/* 반응형 디자인 - 모바일 가로 */
+@media (max-width: 600px) and (orientation: landscape) {
+    .toolbar, .difficulty-toolbar {
+        flex-direction: row;
+        flex-wrap: nowrap;
+    }
+
+    .tools, .colors, .actions, .thickness {
+        flex: 1 1 100%;
+        justify-content: center;
+    }
+
+    .tool-button, .actions button, .difficulty-toolbar button, .difficulty-toolbar select, #colorPicker, #thicknessRange {
+        flex: 1 1 auto;
+        margin: 5px;
+    }
+
+    #thicknessValue {
+        display: inline; /* 두께 값을 표시 */
+    }
+}
+
+/* 반응형 디자인 - 태블릿 세로 */
+@media (min-width: 601px) and (max-width: 1024px) and (orientation: portrait) {
+    .toolbar, .difficulty-toolbar {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .tools, .colors, .actions, .thickness {
+        justify-content: center;
+    }
+
+    .tool-button, .actions button, .difficulty-toolbar button, .difficulty-toolbar select, #colorPicker, #thicknessRange {
+        width: 100%;
+        margin: 5px 0;
+    }
+
+    #thicknessRange {
+        width: 100%;
+    }
+
+    #thicknessValue {
+        display: none;
+    }
+}
+
+/* 반응형 디자인 - 태블릿 가로 */
+@media (min-width: 601px) and (max-width: 1024px) and (orientation: landscape) {
+    .toolbar, .difficulty-toolbar {
+        flex-direction: row;
+        flex-wrap: nowrap;
+    }
+
+    .tools, .colors, .actions, .thickness {
+        flex: 1 1 100%;
+        justify-content: center;
+    }
+
+    .tool-button, .actions button, .difficulty-toolbar button, .difficulty-toolbar select, #colorPicker, #thicknessRange {
+        flex: 1 1 auto;
+        margin: 5px;
+    }
+
+    #thicknessValue {
+        display: inline;
+    }
+}
+
+/* 데스크탑 이상 */
+@media (min-width: 1025px) {
+    .toolbar, .difficulty-toolbar {
+        flex-direction: row;
+        flex-wrap: nowrap;
+    }
+
+    .tools, .colors, .actions, .thickness {
+        flex: 1 1 auto;
+        justify-content: center;
+    }
+
+    .tool-button, .actions button, .difficulty-toolbar button, .difficulty-toolbar select, #colorPicker, #thicknessRange {
+        flex: 1 1 auto;
+        margin: 0 5px;
+    }
+
+    #thicknessValue {
+        display: inline;
+    }
+
+    canvas {
+        height: 600px; /* 고정 높이 유지 */
+    }
+}
