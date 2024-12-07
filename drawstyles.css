@@ -161,6 +161,17 @@ canvas {
     #thicknessValue {
         display: none; /* 작은 화면에서는 두께 값을 숨김 */
     }
+
+    /* 모바일에서 버튼 크기 증가 */
+    .tool-button {
+        width: 60px;
+        height: 60px;
+    }
+
+    .tool-button img {
+        width: 28px;
+        height: 28px;
+    }
 }
 
 /* 반응형 디자인 - 모바일 가로 */
@@ -182,6 +193,17 @@ canvas {
 
     #thicknessValue {
         display: inline; /* 두께 값을 표시 */
+    }
+
+    /* 모바일 가로에서도 버튼 크기 증가 */
+    .tool-button {
+        width: 60px;
+        height: 60px;
+    }
+
+    .tool-button img {
+        width: 28px;
+        height: 28px;
     }
 }
 
