@@ -1,6 +1,7 @@
 window.addEventListener('load', () => {
     const canvas = document.getElementById('drawingCanvas');
     const ctx = canvas.getContext('2d');
+    const customCursor = document.getElementById('customCursor');
 
     let designs = {}; // JSON에서 로드된 도안 데이터
     let currentDifficulty = 'easy';
@@ -18,6 +19,7 @@ window.addEventListener('load', () => {
         .then(data => {
             designs = data;
             loadDesign(); // 도안 로드
+            resizeCanvas(); // 초기 캔버스 크기 설정
         })
         .catch(error => {
             console.error('오류:', error);
@@ -49,6 +51,27 @@ window.addEventListener('load', () => {
     let lastY = 0;
     let lineWidth = 5; // 기본 두께
 
+    // 캔버스 크기 조정 함수
+    function resizeCanvas() {
+        // 캔버스의 실제 표시 크기 가져오기
+        const rect = canvas.getBoundingClientRect();
+        // 내부 해상도를 표시 크기에 맞게 설정
+        canvas.width = rect.width;
+        canvas.height = rect.height;
+
+        // 도안 이미지 다시 그리기
+        if (drawingImage.src) {
+            ctx.drawImage(drawingImage, 0, 0, canvas.width, canvas.height);
+        }
+
+        // 커스텀 커서 업데이트
+        updateCursor();
+    }
+
+    // 창 크기 변경 시 캔버스 리사이즈
+    window.addEventListener('resize', resizeCanvas);
+    window.addEventListener('orientationchange', resizeCanvas);
+
     // 도구 선택
     const tools = document.querySelectorAll('.tool-button');
     tools.forEach(tool => {
@@ -57,20 +80,15 @@ window.addEventListener('load', () => {
             tool.classList.add('active');
             currentTool = tool.id;
 
-            // 도구에 따른 기본 두께 설정 (사용자가 슬라이더로 조절할 수 있음)
-            switch(currentTool) {
-                case 'brush':
-                    // 브러시의 경우 슬라이더로 두께 조절
-                    break;
-                case 'pen':
-                    // 볼펜의 경우 슬라이더로 두께 조절
-                    break;
-                case 'pencil':
-                    // 연필의 경우 슬라이더로 두께 조절
-                    break;
-                default:
-                    // 기본값 유지
+            if (currentTool === 'eraser') {
+                ctx.globalCompositeOperation = 'destination-out'; // 지우개 모드
+                ctx.strokeStyle = 'rgba(0,0,0,1)'; // 지우개 색상 (투명하게 지워짐)
+            } else {
+                ctx.globalCompositeOperation = 'source-over'; // 기본 그리기 모드
+                ctx.strokeStyle = currentColor;
             }
+
+            updateCursor();
         });
     });
 
@@ -78,6 +96,10 @@ window.addEventListener('load', () => {
     const colorPicker = document.getElementById('colorPicker');
     colorPicker.addEventListener('change', (e) => {
         currentColor = e.target.value;
+        if (currentTool !== 'eraser') {
+            ctx.strokeStyle = currentColor;
+        }
+        updateCursor();
     });
 
     // 두께 선택
@@ -86,18 +108,34 @@ window.addEventListener('load', () => {
     thicknessRange.addEventListener('input', (e) => {
         lineWidth = e.target.value;
         thicknessValue.textContent = lineWidth;
+        ctx.lineWidth = lineWidth;
+        updateCursor();
     });
+
+    // 커스텀 커서 업데이트 함수
+    function updateCursor() {
+        customCursor.style.width = `${lineWidth * 2}px`;
+        customCursor.style.height = `${lineWidth * 2}px`;
+        if (currentTool === 'eraser') {
+            customCursor.style.borderColor = '#000000'; // 지우개는 검은색 테두리
+            customCursor.style.backgroundColor = 'transparent';
+        } else {
+            customCursor.style.borderColor = currentColor;
+            customCursor.style.backgroundColor = currentColor;
+        }
+    }
 
     // 마우스 및 터치 이벤트 핸들러
     function getPointerPosition(e) {
         let x, y;
         if (e.touches && e.touches.length > 0) {
             const rect = canvas.getBoundingClientRect();
-            x = e.touches[0].clientX - rect.left;
-            y = e.touches[0].clientY - rect.top;
+            x = (e.touches[0].clientX - rect.left) * (canvas.width / rect.width);
+            y = (e.touches[0].clientY - rect.top) * (canvas.height / rect.height);
         } else {
-            x = e.offsetX;
-            y = e.offsetY;
+            const rect = canvas.getBoundingClientRect();
+            x = (e.clientX - rect.left) * (canvas.width / rect.width);
+            y = (e.clientY - rect.top) * (canvas.height / rect.height);
         }
         return [x, y];
     }
@@ -119,16 +157,18 @@ window.addEventListener('load', () => {
 
         const [x, y] = getPointerPosition(e);
 
-        ctx.strokeStyle = currentColor;
-        ctx.lineWidth = lineWidth;
         ctx.lineCap = 'round';
 
-        if (currentTool === 'brush') {
-            ctx.globalAlpha = 1.0;
-        } else if (currentTool === 'pen') {
-            ctx.globalAlpha = 0.6;
-        } else if (currentTool === 'pencil') {
-            ctx.globalAlpha = 0.3;
+        if (currentTool !== 'eraser') {
+            ctx.strokeStyle = currentColor;
+            ctx.globalCompositeOperation = 'source-over';
+        }
+
+        ctx.lineWidth = lineWidth;
+
+        if (currentTool === 'eraser') {
+            ctx.globalCompositeOperation = 'destination-out';
+            ctx.strokeStyle = 'rgba(0,0,0,1)'; // 지우개 색상 (실제로는 투명)
         }
 
         ctx.beginPath();
@@ -194,4 +234,26 @@ window.addEventListener('load', () => {
         currentDesignIndex = (currentDesignIndex + 1) % designCount;
         loadDesign();
     });
+
+    // 커스텀 커서 이동 업데이트
+    function moveCursor(e) {
+        let x, y;
+        if (e.touches && e.touches.length > 0) {
+            x = e.touches[0].clientX;
+            y = e.touches[0].clientY;
+        } else {
+            x = e.clientX;
+            y = e.clientY;
+        }
+        customCursor.style.left = `${x}px`;
+        customCursor.style.top = `${y}px`;
+    }
+
+    // 마우스 이동 이벤트
+    document.addEventListener('mousemove', moveCursor);
+    // 터치 이동 이벤트
+    document.addEventListener('touchmove', moveCursor, { passive: false });
+
+    // 초기 커서 설정
+    updateCursor();
 });
