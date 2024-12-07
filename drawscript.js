@@ -293,6 +293,8 @@ window.addEventListener('load', () => {
     drawingCanvas.addEventListener('mouseout', stopDrawing);
 
     drawingCanvas.addEventListener('touchstart', (e) => {
+        e.preventDefault(); // 기본 터치 동작 방지
+        e.stopPropagation(); // 이벤트 전파 방지
         const touch = e.touches[0];
         const simulatedEvent = new MouseEvent('mousedown', {
             clientX: touch.clientX,
@@ -302,6 +304,8 @@ window.addEventListener('load', () => {
     }, { passive: false });
 
     drawingCanvas.addEventListener('touchmove', (e) => {
+        e.preventDefault(); // 기본 터치 동작 방지
+        e.stopPropagation(); // 이벤트 전파 방지
         const touch = e.touches[0];
         const simulatedEvent = new MouseEvent('mousemove', {
             clientX: touch.clientX,
@@ -311,6 +315,8 @@ window.addEventListener('load', () => {
     }, { passive: false });
 
     drawingCanvas.addEventListener('touchend', (e) => {
+        e.preventDefault(); // 기본 터치 동작 방지
+        e.stopPropagation(); // 이벤트 전파 방지
         const simulatedEvent = new MouseEvent('mouseup', {});
         drawingCanvas.dispatchEvent(simulatedEvent);
     }, { passive: false });
@@ -448,7 +454,7 @@ window.addEventListener('load', () => {
         });
     }
 
-    // 지우기 기능 (그림 캔버스만 초기화)
+    // 지우기 기능 (그림 캔버스 및 도장 모두 초기화)
     const clearBtn = document.getElementById('clear');
     clearBtn.addEventListener('click', clearDrawing);
     clearBtn.addEventListener('touchend', clearDrawing); // 모바일 터치 이벤트 추가
@@ -572,6 +578,24 @@ window.addEventListener('load', () => {
     document.addEventListener('mousemove', moveCursor);
     // 터치 이동 이벤트
     document.addEventListener('touchmove', moveCursor, { passive: false });
+
+    // Prevent default touchmove on the canvas to prevent scrolling
+    drawingCanvas.addEventListener('touchmove', function(e) {
+        e.preventDefault();
+    }, { passive: false });
+
+    // Prevent page from scrolling while interacting with the canvas
+    drawingCanvas.addEventListener('touchstart', function(e) {
+        e.stopPropagation();
+    }, { passive: false });
+
+    drawingCanvas.addEventListener('touchmove', function(e) {
+        e.stopPropagation();
+    }, { passive: false });
+
+    drawingCanvas.addEventListener('touchend', function(e) {
+        e.stopPropagation();
+    }, { passive: false });
 
     // 초기 커서 설정
     updateCursor();
