@@ -223,29 +223,37 @@ window.addEventListener('load', () => {
         const tempCtx = tempCanvas.getContext('2d');
         tempCanvas.width = backgroundCanvas.width;
         tempCanvas.height = backgroundCanvas.height;
-
+    
         // 배경 캔버스 그리기
         tempCtx.drawImage(backgroundCanvas, 0, 0, tempCanvas.width, tempCanvas.height);
         // 그림 캔버스 그리기
         tempCtx.drawImage(drawingCanvas, 0, 0, tempCanvas.width, tempCanvas.height);
-
-        // Blob으로 변환하여 다운로드
-        tempCanvas.toBlob((blob) => {
-            const url = URL.createObjectURL(blob);
+    
+        // DataURL으로 변환
+        const dataURL = tempCanvas.toDataURL('image/png');
+    
+        // Base64 데이터 추출
+        const base64Data = dataURL.replace(/^data:image\/png;base64,/, '');
+    
+        // Android 인터페이스로 전송
+        if (window.Android && window.Android.saveImage) {
+            window.Android.saveImage(base64Data);
+        } else {
+            // Web 브라우저에서의 동작 유지
             const link = document.createElement('a');
-            link.href = url;
+            link.href = dataURL;
             link.download = 'my_drawing.png';
-
+    
             // iOS 디바이스인지 확인
             const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
-
+    
             if (isIOS) {
                 // iOS에서는 다운로드 링크가 동작하지 않으므로 새 탭에서 이미지를 엽니다
                 link.setAttribute('target', '_blank');
                 document.body.appendChild(link);
                 link.click();
                 document.body.removeChild(link);
-
+    
                 // 사용자에게 저장 방법 안내
                 alert('이미지가 새 탭에서 열렸습니다. 이미지를 길게 눌러 저장하세요.');
             } else {
@@ -255,10 +263,9 @@ window.addEventListener('load', () => {
                 link.click();
                 document.body.removeChild(link);
             }
-
-            URL.revokeObjectURL(url);
-        }, 'image/png');
+        }
     }
+    
 
     // 난이도 선택
     const difficultySelect = document.getElementById('difficultySelect');
