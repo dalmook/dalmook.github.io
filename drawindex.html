@@ -11,19 +11,19 @@
         <div class="tools">
             <button id="brush" class="tool-button active" title="브러시">
                 <!-- 브러시 아이콘 (PNG) -->
-                <img src="images/brush.png" alt="브러시" />
+                <img src="icons/brush.png" alt="브러시" />
             </button>
             <button id="pen" class="tool-button" title="볼펜">
                 <!-- 볼펜 아이콘 (PNG) -->
-                <img src="images/pen.png" alt="볼펜" />
+                <img src="icons/pen.png" alt="볼펜" />
             </button>
             <button id="pencil" class="tool-button" title="연필">
                 <!-- 연필 아이콘 (PNG) -->
-                <img src="images/pencil.png" alt="연필" />
+                <img src="icons/pencil.png" alt="연필" />
             </button>
             <button id="eraser" class="tool-button" title="지우개">
                 <!-- 지우개 아이콘 (PNG) -->
-                <img src="images/eraser.png" alt="지우개" />
+                <img src="icons/eraser.png" alt="지우개" />
             </button>
         </div>
         <div class="colors">
@@ -51,10 +51,15 @@
         <button id="nextDesign">다음</button>
     </div>
 
-    <canvas id="drawingCanvas" width="800" height="600"></canvas>
-
-    <!-- 커스텀 커서를 위한 요소 추가 -->
-    <div id="customCursor"></div>
+    <!-- 캔버스 컨테이너 추가 -->
+    <div class="canvas-container">
+        <!-- 배경 캔버스 -->
+        <canvas id="backgroundCanvas" width="800" height="600"></canvas>
+        <!-- 그림 캔버스 -->
+        <canvas id="drawingCanvas" width="800" height="600"></canvas>
+        <!-- 커스텀 커서 -->
+        <div id="customCursor"></div>
+    </div>
 
     <!-- defer 속성 추가 -->
     <script src="drawscript.js" defer></script>
