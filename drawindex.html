@@ -9,9 +9,30 @@
 <body>
     <div class="toolbar">
         <div class="tools">
-            <button id="brush" class="tool-button active">브러시</button>
-            <button id="pen" class="tool-button">볼펜</button>
-            <button id="pencil" class="tool-button">연필</button>
+            <button id="brush" class="tool-button active" title="브러시">
+                <!-- 브러시 아이콘 (SVG) -->
+                <svg width="24" height="24" viewBox="0 0 24 24">
+                    <path d="M2 21l3.5-3.5L5 18l-3 3zm16.5-4.75L20.75 18l-2.75-2.75-1.5 1.5L18 19.5l1.5-1.5zM3 17.25L7.75 12 3 6.75v10.5z"/>
+                </svg>
+            </button>
+            <button id="pen" class="tool-button" title="볼펜">
+                <!-- 볼펜 아이콘 (SVG) -->
+                <svg width="24" height="24" viewBox="0 0 24 24">
+                    <path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04a1.003 1.003 0 000-1.42l-2.34-2.34a1.003 1.003 0 00-1.42 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/>
+                </svg>
+            </button>
+            <button id="pencil" class="tool-button" title="연필">
+                <!-- 연필 아이콘 (SVG) -->
+                <svg width="24" height="24" viewBox="0 0 24 24">
+                    <path d="M14.06 9.02l-3.37-3.37 9.19-9.19a1.003 1.003 0 011.42 0l2.34 2.34a1.003 1.003 0 010 1.42l-9.19 9.19zM2 22h20v-2H2v2z"/>
+                </svg>
+            </button>
+            <button id="eraser" class="tool-button" title="지우개">
+                <!-- 지우개 아이콘 (SVG) -->
+                <svg width="24" height="24" viewBox="0 0 24 24">
+                    <path d="M16.24 4.24L19.88 7.88 17.76 10 14.12 6.36 16.24 4.24zM3 21h18v-2H3v2zm0-4h18v-2H3v2z"/>
+                </svg>
+            </button>
         </div>
         <div class="colors">
             <input type="color" id="colorPicker" value="#000000">
@@ -40,6 +61,10 @@
 
     <canvas id="drawingCanvas" width="800" height="600"></canvas>
 
-    <script src="drawscript.js"></script>
+    <!-- 커스텀 커서를 위한 요소 추가 -->
+    <div id="customCursor"></div>
+
+    <!-- defer 속성 추가 -->
+    <script src="drawscript.js" defer></script>
 </body>
 </html>
