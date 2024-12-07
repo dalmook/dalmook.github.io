@@ -201,10 +201,31 @@ window.addEventListener('load', () => {
     // 저장하기 기능
     const saveBtn = document.getElementById('save');
     saveBtn.addEventListener('click', () => {
-        const link = document.createElement('a');
-        link.download = 'my_drawing.png';
-        link.href = canvas.toDataURL();
-        link.click();
+        canvas.toBlob((blob) => {
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = 'my_drawing.png';
+
+            // iOS 디바이스인지 확인
+            const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+
+            if (isIOS) {
+                // iOS에서는 다운로드 링크가 동작하지 않으므로 새 탭에서 이미지를 엽니다
+                link.setAttribute('target', '_blank');
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+            } else {
+                // 다른 디바이스에서는 다운로드를 트리거합니다
+                link.style.display = 'none';
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+            }
+
+            URL.revokeObjectURL(url);
+        }, 'image/png');
     });
 
     // 난이도 선택
