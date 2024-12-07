@@ -379,7 +379,6 @@ window.addEventListener('load', () => {
                 };
                 palette.remove(); // 팔레트 제거
                 // 도장 도구 선택 후, 사용자에게 도장을 찍을 위치를 클릭하도록 안내
-                alert('캔버스를 클릭하여 도장을 찍으세요.');
             });
 
             palette.appendChild(stampButton);
