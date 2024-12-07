@@ -10,21 +10,15 @@ window.addEventListener('load', () => {
     let currentDesignIndex = 0;
     let drawingImage = new Image();
 
-    // 도장 이미지 로드
+    // 도장 이미지 경로 설정
     const stamps = {
-        star: new Image(),
-        heart: new Image(),
-        circle: new Image(),
-        smiley: new Image(),
+        star: 'stamps/star.png',
+        heart: 'stamps/heart.png',
+        circle: 'stamps/circle.png',
+        smiley: 'stamps/smiley.png',
         // 기본 도장 아이콘 (도구 바에 사용)
-        stamp: new Image()
+        stamp: 'stamps/stamp.png'
     };
-
-    stamps.star.src = 'stamps/star.png';
-    stamps.heart.src = 'stamps/heart.png';
-    stamps.circle.src = 'stamps/circle.png';
-    stamps.smiley.src = 'stamps/smiley.png';
-    stamps.stamp.src = 'stamps/stamp.png'; // 도구 바에 사용되는 도장 아이콘
 
     // JSON 파일에서 도안 데이터 로드
     fetch('drawimg.json')
@@ -66,6 +60,7 @@ window.addEventListener('load', () => {
             // 히스토리 초기화
             undoStack = [];
             redoStack = [];
+            stampsPlaced = []; // stampsPlaced 배열 초기화
         };
         drawingImage.onerror = () => {
             console.error(`도안 이미지를 불러올 수 없습니다: ${designPath}`);
@@ -84,9 +79,13 @@ window.addEventListener('load', () => {
     let currentStamp = null;
     let stampSize = 50; // 기본 도장 크기
 
-    // 히스토리 스택
+    // 히스토리 스택 (Undo/Redo)
+    // 각 스냅샷은 { imageData, stampsPlaced: [...] }
     let undoStack = [];
     let redoStack = [];
+
+    // 도장 객체 배열
+    let stampsPlaced = [];
 
     // 캔버스 크기 조정 함수
     function resizeCanvas() {
@@ -103,10 +102,9 @@ window.addEventListener('load', () => {
         // 배경 이미지 다시 그리기
         if (drawingImage.src) {
             bgCtx.drawImage(drawingImage, 0, 0, backgroundCanvas.width, backgroundCanvas.height);
+            // 그림 캔버스 다시 그리기
             ctx.clearRect(0, 0, drawingCanvas.width, drawingCanvas.height);
-            // 히스토리 초기화
-            undoStack = [];
-            redoStack = [];
+            drawAllStamps();
         }
 
         // 커스텀 커서 업데이트
@@ -180,17 +178,27 @@ window.addEventListener('load', () => {
 
     function undo() {
         if (undoStack.length > 0) {
-            const imageData = undoStack.pop();
-            redoStack.push(ctx.getImageData(0, 0, drawingCanvas.width, drawingCanvas.height));
-            ctx.putImageData(imageData, 0, 0);
+            const lastState = undoStack.pop();
+            redoStack.push({
+                imageData: ctx.getImageData(0, 0, drawingCanvas.width, drawingCanvas.height),
+                stampsPlaced: JSON.parse(JSON.stringify(stampsPlaced))
+            });
+            ctx.putImageData(lastState.imageData, 0, 0);
+            stampsPlaced = JSON.parse(JSON.stringify(lastState.stampsPlaced));
+            drawAllStamps();
         }
     }
 
     function redo() {
         if (redoStack.length > 0) {
-            const imageData = redoStack.pop();
-            undoStack.push(ctx.getImageData(0, 0, drawingCanvas.width, drawingCanvas.height));
-            ctx.putImageData(imageData, 0, 0);
+            const nextState = redoStack.pop();
+            undoStack.push({
+                imageData: ctx.getImageData(0, 0, drawingCanvas.width, drawingCanvas.height),
+                stampsPlaced: JSON.parse(JSON.stringify(stampsPlaced))
+            });
+            ctx.putImageData(nextState.imageData, 0, 0);
+            stampsPlaced = JSON.parse(JSON.stringify(nextState.stampsPlaced));
+            drawAllStamps();
         }
     }
 
@@ -233,8 +241,11 @@ window.addEventListener('load', () => {
         }
         drawing = true;
         [lastX, lastY] = getPointerPosition(e);
-        // 히스토리 저장
-        undoStack.push(ctx.getImageData(0, 0, drawingCanvas.width, drawingCanvas.height));
+        // 히스토리 저장 (이전에 실행한 undo를 대체하기 위해 redoStack을 초기화)
+        undoStack.push({
+            imageData: ctx.getImageData(0, 0, drawingCanvas.width, drawingCanvas.height),
+            stampsPlaced: JSON.parse(JSON.stringify(stampsPlaced))
+        });
         // 히스토리 제한 (예: 20단계)
         if (undoStack.length > 20) {
             undoStack.shift();
@@ -281,10 +292,28 @@ window.addEventListener('load', () => {
     drawingCanvas.addEventListener('mouseup', stopDrawing);
     drawingCanvas.addEventListener('mouseout', stopDrawing);
 
-    drawingCanvas.addEventListener('touchstart', startDrawing);
-    drawingCanvas.addEventListener('touchmove', draw);
-    drawingCanvas.addEventListener('touchend', stopDrawing);
-    drawingCanvas.addEventListener('touchcancel', stopDrawing);
+    drawingCanvas.addEventListener('touchstart', (e) => {
+        const touch = e.touches[0];
+        const simulatedEvent = new MouseEvent('mousedown', {
+            clientX: touch.clientX,
+            clientY: touch.clientY
+        });
+        drawingCanvas.dispatchEvent(simulatedEvent);
+    }, { passive: false });
+
+    drawingCanvas.addEventListener('touchmove', (e) => {
+        const touch = e.touches[0];
+        const simulatedEvent = new MouseEvent('mousemove', {
+            clientX: touch.clientX,
+            clientY: touch.clientY
+        });
+        drawingCanvas.dispatchEvent(simulatedEvent);
+    }, { passive: false });
+
+    drawingCanvas.addEventListener('touchend', (e) => {
+        const simulatedEvent = new MouseEvent('mouseup', {});
+        drawingCanvas.dispatchEvent(simulatedEvent);
+    }, { passive: false });
 
     // 도장 툴 활성화 시 도장 선택 팔레트 표시
     const stampTool = document.getElementById('stamp');
@@ -327,13 +356,22 @@ window.addEventListener('load', () => {
             stampButton.style.background = 'transparent';
             stampButton.style.cursor = 'pointer';
 
-            const img = stamps[key];
+            const img = document.createElement('img');
+            img.src = stamps[key];
+            img.alt = key;
             img.style.width = '50px';
             img.style.height = '50px';
             stampButton.appendChild(img);
 
             stampButton.addEventListener('click', () => {
-                currentStamp = stamps[key];
+                currentStamp = {
+                    src: stamps[key],
+                    x: 0,
+                    y: 0,
+                    width: stampSize,
+                    height: 0 // Will be set when drawing
+                    // rotation: 0 // 회전 관련 코드 제거
+                };
                 palette.remove(); // 팔레트 제거
                 // 도장 도구 선택 후, 사용자에게 도장을 찍을 위치를 클릭하도록 안내
                 alert('캔버스를 클릭하여 도장을 찍으세요.');
@@ -368,128 +406,47 @@ window.addEventListener('load', () => {
     function placeStamp(e) {
         const [x, y] = getPointerPosition(e);
         if (currentStamp) {
-            // 도장 크기와 회전 각도에 따라 조정
-            const angle = 0; // 기본 회전 각도 (추후 회전 기능 추가 가능)
-            const width = stampSize;
-            const height = (currentStamp.height / currentStamp.width) * width;
+            const img = new Image();
+            img.src = currentStamp.src;
+            img.onload = () => {
+                const aspectRatio = img.height / img.width;
+                const height = stampSize * aspectRatio;
 
-            ctx.save();
-            ctx.translate(x, y);
-            ctx.rotate(angle * Math.PI / 180);
-            ctx.drawImage(currentStamp, -width / 2, -height / 2, width, height);
-            ctx.restore();
+                // Create stamp object without rotation
+                const stampObj = {
+                    src: currentStamp.src,
+                    x: x,
+                    y: y,
+                    width: stampSize,
+                    height: height
+                };
+                stampsPlaced.push(stampObj);
+                drawAllStamps();
 
-            // 히스토리 저장
-            undoStack.push(ctx.getImageData(0, 0, drawingCanvas.width, drawingCanvas.height));
-            // 히스토리 제한 (예: 20단계)
-            if (undoStack.length > 20) {
-                undoStack.shift();
-            }
-            // Redo 히스토리 초기화
-            redoStack = [];
+                // 히스토리 저장
+                undoStack.push({
+                    imageData: ctx.getImageData(0, 0, drawingCanvas.width, drawingCanvas.height),
+                    stampsPlaced: JSON.parse(JSON.stringify(stampsPlaced))
+                });
+                if (undoStack.length > 20) {
+                    undoStack.shift();
+                }
+                redoStack = [];
+            };
         }
     }
 
-    // 지우기 기능 (그림 캔버스만 초기화)
-    const clearBtn = document.getElementById('clear');
-    clearBtn.addEventListener('click', clearDrawing);
-    clearBtn.addEventListener('touchend', clearDrawing); // 모바일 터치 이벤트 추가
-
-    function clearDrawing(e) {
-        e.preventDefault();
-        // 히스토리 저장
-        undoStack.push(ctx.getImageData(0, 0, drawingCanvas.width, drawingCanvas.height));
-        // 히스토리 제한
-        if (undoStack.length > 20) {
-            undoStack.shift();
-        }
-        // Redo 히스토리 초기화
-        redoStack = [];
+    // 도장 모두 그리기 함수
+    function drawAllStamps() {
         ctx.clearRect(0, 0, drawingCanvas.width, drawingCanvas.height);
+        stampsPlaced.forEach(stamp => {
+            const img = new Image();
+            img.src = stamp.src;
+            img.onload = () => {
+                ctx.drawImage(img, stamp.x - stamp.width / 2, stamp.y - stamp.height / 2, stamp.width, stamp.height);
+            };
+        });
     }
-
-    // 저장하기 기능
-    const saveBtn = document.getElementById('save');
-    saveBtn.addEventListener('click', saveDrawing);
-    saveBtn.addEventListener('touchend', saveDrawing); // 모바일 터치 이벤트 추가
-
-    function saveDrawing(e) {
-        e.preventDefault(); // 기본 터치 동작 방지
-        // 두 개의 캔버스를 합쳐서 하나의 이미지로 저장
-        const tempCanvas = document.createElement('canvas');
-        const tempCtx = tempCanvas.getContext('2d');
-        tempCanvas.width = backgroundCanvas.width;
-        tempCanvas.height = backgroundCanvas.height;
-
-        // 배경 캔버스 그리기
-        tempCtx.drawImage(backgroundCanvas, 0, 0, tempCanvas.width, tempCanvas.height);
-        // 그림 캔버스 그리기
-        tempCtx.drawImage(drawingCanvas, 0, 0, tempCanvas.width, tempCanvas.height);
-
-        // Blob으로 변환하여 다운로드
-        tempCanvas.toBlob((blob) => {
-            const url = URL.createObjectURL(blob);
-            const link = document.createElement('a');
-            link.href = url;
-            link.download = 'my_drawing.png';
-
-            // iOS 디바이스인지 확인
-            const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
-
-            if (isIOS) {
-                // iOS에서는 다운로드 링크가 동작하지 않으므로 새 탭에서 이미지를 엽니다
-                link.setAttribute('target', '_blank');
-                document.body.appendChild(link);
-                link.click();
-                document.body.removeChild(link);
-
-                // 사용자에게 저장 방법 안내
-                alert('이미지가 새 탭에서 열렸습니다. 이미지를 길게 눌러 저장하세요.');
-            } else {
-                // 다른 디바이스에서는 다운로드를 트리거합니다
-                link.style.display = 'none';
-                document.body.appendChild(link);
-                link.click();
-                document.body.removeChild(link);
-            }
-
-            URL.revokeObjectURL(url);
-        }, 'image/png');
-    }
-
-    // 난이도 선택
-    const difficultySelect = document.getElementById('difficultySelect');
-    difficultySelect.addEventListener('change', (e) => {
-        currentDifficulty = e.target.value;
-        currentDesignIndex = 0; // 난이도 변경 시 첫 번째 도안으로 초기화
-        loadDesign();
-    });
-
-    // 다음/이전 도안 버튼
-    const prevBtn = document.getElementById('prevDesign');
-    const nextBtn = document.getElementById('nextDesign');
-
-    prevBtn.addEventListener('click', () => {
-        if (!designs[currentDifficulty]) return;
-        const designCount = designs[currentDifficulty].length;
-        if (designCount === 0) return;
-        currentDesignIndex = (currentDesignIndex - 1 + designCount) % designCount;
-        loadDesign();
-    });
-
-    nextBtn.addEventListener('click', () => {
-        if (!designs[currentDifficulty]) return;
-        const designCount = designs[currentDifficulty].length;
-        if (designCount === 0) return;
-        currentDesignIndex = (currentDesignIndex + 1) % designCount;
-        loadDesign();
-    });
-
-    // 도장 회전 각도 (추후 회전 기능 추가 가능)
-    let stampRotation = 0;
-
-    // 회전 버튼 추가 (UI에 추가 필요)
-    // 예를 들어, 회전 버튼을 toolbar에 추가하고 이벤트 리스너를 설정할 수 있습니다.
 
     // 커스텀 커서 이동 업데이트
     function moveCursor(e) {
