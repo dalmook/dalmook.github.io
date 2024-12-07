@@ -3,6 +3,8 @@ window.addEventListener('load', () => {
     const bgCtx = backgroundCanvas.getContext('2d');
     const drawingCanvas = document.getElementById('drawingCanvas');
     const ctx = drawingCanvas.getContext('2d');
+    const stampCanvas = document.getElementById('stampCanvas'); // 도장 캔버스 추가
+    const stampCtx = stampCanvas.getContext('2d'); // 도장 캔버스 컨텍스트
     const customCursor = document.getElementById('customCursor');
 
     let designs = {}; // JSON에서 로드된 도안 데이터
@@ -57,6 +59,8 @@ window.addEventListener('load', () => {
             bgCtx.drawImage(drawingImage, 0, 0, backgroundCanvas.width, backgroundCanvas.height);
             // 그림 캔버스 초기화 (사용자 그리기)
             ctx.clearRect(0, 0, drawingCanvas.width, drawingCanvas.height);
+            // 도장 캔버스 초기화
+            stampCtx.clearRect(0, 0, stampCanvas.width, stampCanvas.height);
             // 히스토리 초기화
             undoStack = [];
             redoStack = [];
@@ -84,7 +88,7 @@ window.addEventListener('load', () => {
     let undoStack = [];
     let redoStack = [];
 
-    // 도장 객체 배열
+    // 도장 객체 배열 (stampCanvas 사용)
     let stampsPlaced = [];
 
     // 캔버스 크기 조정 함수
@@ -93,17 +97,25 @@ window.addEventListener('load', () => {
         const container = document.querySelector('.canvas-container');
         const rect = container.getBoundingClientRect();
 
-        // 캔버스의 내부 해상도 조정
+        // 배경 캔버스 크기 조정
         backgroundCanvas.width = rect.width;
         backgroundCanvas.height = rect.height;
+
+        // 그림 캔버스 크기 조정
         drawingCanvas.width = rect.width;
         drawingCanvas.height = rect.height;
+
+        // 도장 캔버스 크기 조정
+        stampCanvas.width = rect.width;
+        stampCanvas.height = rect.height;
 
         // 배경 이미지 다시 그리기
         if (drawingImage.src) {
             bgCtx.drawImage(drawingImage, 0, 0, backgroundCanvas.width, backgroundCanvas.height);
             // 그림 캔버스 다시 그리기
             ctx.clearRect(0, 0, drawingCanvas.width, drawingCanvas.height);
+            // 도장 캔버스 다시 그리기
+            stampCtx.clearRect(0, 0, stampCanvas.width, stampCanvas.height);
             drawAllStamps();
         }
 
@@ -407,7 +419,7 @@ window.addEventListener('load', () => {
         container.appendChild(palette);
     }
 
-    // 도장 찍기 함수
+    // 도장 찍기 함수 (stampCanvas에 그리기)
     function placeStamp(e) {
         const [x, y] = getPointerPosition(e);
         if (currentStamp) {
@@ -442,19 +454,21 @@ window.addEventListener('load', () => {
         }
     }
 
-    // 도장 모두 그리기 함수
+    // 도장 모두 그리기 함수 (stampCanvas에 그리기)
     function drawAllStamps() {
-        // 기존 그린 선들을 지우지 않고 도장만 그리기
+        // 도장 캔버스 초기화
+        stampCtx.clearRect(0, 0, stampCanvas.width, stampCanvas.height);
+        // 도장 그리기
         stampsPlaced.forEach(stamp => {
             const img = new Image();
             img.src = stamp.src;
             img.onload = () => {
-                ctx.drawImage(img, stamp.x - stamp.width / 2, stamp.y - stamp.height / 2, stamp.width, stamp.height);
+                stampCtx.drawImage(img, stamp.x - stamp.width / 2, stamp.y - stamp.height / 2, stamp.width, stamp.height);
             };
         });
     }
 
-    // 지우기 기능 (그림 캔버스 및 도장 모두 초기화)
+    // 지우기 기능 (그림 캔버스 및 도장 캔버스 모두 초기화)
     const clearBtn = document.getElementById('clear');
     clearBtn.addEventListener('click', clearDrawing);
     clearBtn.addEventListener('touchend', clearDrawing); // 모바일 터치 이벤트 추가
@@ -473,6 +487,7 @@ window.addEventListener('load', () => {
         // Redo 히스토리 초기화
         redoStack = [];
         ctx.clearRect(0, 0, drawingCanvas.width, drawingCanvas.height);
+        stampCtx.clearRect(0, 0, stampCanvas.width, stampCanvas.height);
         stampsPlaced = []; // 모든 도장 제거
     }
 
@@ -483,7 +498,7 @@ window.addEventListener('load', () => {
 
     function saveDrawing(e) {
         e.preventDefault(); // 기본 터치 동작 방지
-        // 두 개의 캔버스를 합쳐서 하나의 이미지로 저장
+        // 세 개의 캔버스를 합쳐서 하나의 이미지로 저장
         const tempCanvas = document.createElement('canvas');
         const tempCtx = tempCanvas.getContext('2d');
         tempCanvas.width = backgroundCanvas.width;
@@ -493,6 +508,8 @@ window.addEventListener('load', () => {
         tempCtx.drawImage(backgroundCanvas, 0, 0, tempCanvas.width, tempCanvas.height);
         // 그림 캔버스 그리기
         tempCtx.drawImage(drawingCanvas, 0, 0, tempCanvas.width, tempCanvas.height);
+        // 도장 캔버스 그리기
+        tempCtx.drawImage(stampCanvas, 0, 0, tempCanvas.width, tempCanvas.height);
 
         // DataURL으로 변환
         const dataURL = tempCanvas.toDataURL('image/png');
