@@ -219,10 +219,6 @@ body {
         align-items: center; /* 요소들을 수직 가운데 정렬 */
     }
 
-    .difficulty-toolbar label {
-        margin-right: 10px; /* 라벨과 셀렉트 박스 사이에 여백 추가 */
-    }
-
     .difficulty-toolbar select {
         flex: 1; /* 셀렉트 박스가 가능한 공간을 차지하도록 설정 */
         margin-right: 10px; /* 셀렉트 박스와 버튼 사이에 여백 추가 */
@@ -238,8 +234,8 @@ body {
     }
 
     .tool-button, .actions button, .difficulty-toolbar button, .difficulty-toolbar select, #colorPicker, #thicknessRange, #stampSizeRange {
-        width: 100%;
-        margin: 5px 0;
+        width: 20%;
+        margin-left: 5px;
     }
 
     #thicknessRange, #stampSizeRange {
