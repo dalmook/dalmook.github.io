@@ -1,6 +1,8 @@
 window.addEventListener('load', () => {
-    const canvas = document.getElementById('drawingCanvas');
-    const ctx = canvas.getContext('2d');
+    const backgroundCanvas = document.getElementById('backgroundCanvas');
+    const bgCtx = backgroundCanvas.getContext('2d');
+    const drawingCanvas = document.getElementById('drawingCanvas');
+    const ctx = drawingCanvas.getContext('2d');
     const customCursor = document.getElementById('customCursor');
 
     let designs = {}; // JSON에서 로드된 도안 데이터
@@ -34,12 +36,14 @@ window.addEventListener('load', () => {
 
         const designPath = designs[currentDifficulty][currentDesignIndex];
         drawingImage = new Image();
-        // 만약 외부 출처에서 이미지를 로드할 경우 아래 주석 해제
-        // drawingImage.crossOrigin = 'anonymous';
+        // 동일한 출처에서 이미지를 로드하므로 crossOrigin 설정 불필요
         drawingImage.src = designPath;
         drawingImage.onload = () => {
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            ctx.drawImage(drawingImage, 0, 0, canvas.width, canvas.height);
+            // 배경 캔버스에 도안 이미지 그리기
+            bgCtx.clearRect(0, 0, backgroundCanvas.width, backgroundCanvas.height);
+            bgCtx.drawImage(drawingImage, 0, 0, backgroundCanvas.width, backgroundCanvas.height);
+            // 그림 캔버스 초기화 (사용자 그리기)
+            ctx.clearRect(0, 0, drawingCanvas.width, drawingCanvas.height);
         };
         drawingImage.onerror = () => {
             console.error(`도안 이미지를 불러올 수 없습니다: ${designPath}`);
@@ -56,15 +60,20 @@ window.addEventListener('load', () => {
 
     // 캔버스 크기 조정 함수
     function resizeCanvas() {
-        // 캔버스의 실제 표시 크기 가져오기
-        const rect = canvas.getBoundingClientRect();
-        // 내부 해상도를 표시 크기에 맞게 설정
-        canvas.width = rect.width;
-        canvas.height = rect.height;
+        // 표시 크기 가져오기
+        const rectBg = backgroundCanvas.getBoundingClientRect();
+        const rectDraw = drawingCanvas.getBoundingClientRect();
+
+        // 내부 해상도 조정
+        backgroundCanvas.width = rectBg.width;
+        backgroundCanvas.height = rectBg.height;
+        drawingCanvas.width = rectDraw.width;
+        drawingCanvas.height = rectDraw.height;
 
         // 도안 이미지 다시 그리기
         if (drawingImage.src) {
-            ctx.drawImage(drawingImage, 0, 0, canvas.width, canvas.height);
+            bgCtx.drawImage(drawingImage, 0, 0, backgroundCanvas.width, backgroundCanvas.height);
+            ctx.clearRect(0, 0, drawingCanvas.width, drawingCanvas.height);
         }
 
         // 커스텀 커서 업데이트
@@ -132,13 +141,13 @@ window.addEventListener('load', () => {
     function getPointerPosition(e) {
         let x, y;
         if (e.touches && e.touches.length > 0) {
-            const rect = canvas.getBoundingClientRect();
-            x = (e.touches[0].clientX - rect.left) * (canvas.width / rect.width);
-            y = (e.touches[0].clientY - rect.top) * (canvas.height / rect.height);
+            const rect = drawingCanvas.getBoundingClientRect();
+            x = (e.touches[0].clientX - rect.left) * (drawingCanvas.width / rect.width);
+            y = (e.touches[0].clientY - rect.top) * (drawingCanvas.height / rect.height);
         } else {
-            const rect = canvas.getBoundingClientRect();
-            x = (e.clientX - rect.left) * (canvas.width / rect.width);
-            y = (e.clientY - rect.top) * (canvas.height / rect.height);
+            const rect = drawingCanvas.getBoundingClientRect();
+            x = (e.clientX - rect.left) * (drawingCanvas.width / rect.width);
+            y = (e.clientY - rect.top) * (drawingCanvas.height / rect.height);
         }
         return [x, y];
     }
@@ -182,24 +191,26 @@ window.addEventListener('load', () => {
     }
 
     // 마우스 이벤트
-    canvas.addEventListener('mousedown', startDrawing);
-    canvas.addEventListener('mousemove', draw);
-    canvas.addEventListener('mouseup', stopDrawing);
-    canvas.addEventListener('mouseout', stopDrawing);
+    drawingCanvas.addEventListener('mousedown', startDrawing);
+    drawingCanvas.addEventListener('mousemove', draw);
+    drawingCanvas.addEventListener('mouseup', stopDrawing);
+    drawingCanvas.addEventListener('mouseout', stopDrawing);
 
     // 터치 이벤트
-    canvas.addEventListener('touchstart', startDrawing);
-    canvas.addEventListener('touchmove', draw);
-    canvas.addEventListener('touchend', stopDrawing);
-    canvas.addEventListener('touchcancel', stopDrawing);
+    drawingCanvas.addEventListener('touchstart', startDrawing);
+    drawingCanvas.addEventListener('touchmove', draw);
+    drawingCanvas.addEventListener('touchend', stopDrawing);
+    drawingCanvas.addEventListener('touchcancel', stopDrawing);
 
     // 지우기 기능
     const clearBtn = document.getElementById('clear');
-    clearBtn.addEventListener('click', () => {
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-        // 도안 이미지 다시 그리기
-        loadDesign();
-    });
+    clearBtn.addEventListener('click', clearDrawing);
+    clearBtn.addEventListener('touchend', clearDrawing); // 모바일 터치 이벤트 추가
+
+    function clearDrawing(e) {
+        e.preventDefault();
+        ctx.clearRect(0, 0, drawingCanvas.width, drawingCanvas.height);
+    }
 
     // 저장하기 기능
     const saveBtn = document.getElementById('save');
@@ -208,7 +219,19 @@ window.addEventListener('load', () => {
 
     function saveDrawing(e) {
         e.preventDefault(); // 기본 터치 동작 방지
-        canvas.toBlob((blob) => {
+        // 두 개의 캔버스를 합쳐서 하나의 이미지로 저장
+        const tempCanvas = document.createElement('canvas');
+        const tempCtx = tempCanvas.getContext('2d');
+        tempCanvas.width = backgroundCanvas.width;
+        tempCanvas.height = backgroundCanvas.height;
+
+        // 배경 캔버스 그리기
+        tempCtx.drawImage(backgroundCanvas, 0, 0, tempCanvas.width, tempCanvas.height);
+        // 그림 캔버스 그리기
+        tempCtx.drawImage(drawingCanvas, 0, 0, tempCanvas.width, tempCanvas.height);
+
+        // Blob으로 변환하여 다운로드
+        tempCanvas.toBlob((blob) => {
             const url = URL.createObjectURL(blob);
             const link = document.createElement('a');
             link.href = url;
