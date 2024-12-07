@@ -488,6 +488,13 @@ window.addEventListener('load', () => {
         // 그림 캔버스 그리기
         tempCtx.drawImage(drawingCanvas, 0, 0, tempCanvas.width, tempCanvas.height);
 
+        // DataURL으로 변환
+        const dataURL = tempCanvas.toDataURL('image/png');
+
+        // Base64 데이터 추출
+        const base64Data = dataURL.replace(/^data:image\/png;base64,/, '');
+
+
         // Android 인터페이스로 전송
         if (window.Android && window.Android.saveImage) {
             window.Android.saveImage(base64Data);
