@@ -240,7 +240,7 @@ body {
 }
 
 /* 모바일 가로 화면 */
-@media (max-width: 600px) and (orientation: landscape) {
+@media (max-width: 800px) and (orientation: landscape) {
     
     .toolbar, .difficulty-toolbar {
         flex-direction: row;
