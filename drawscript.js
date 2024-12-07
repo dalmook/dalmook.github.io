@@ -3,8 +3,6 @@ window.addEventListener('load', () => {
     const bgCtx = backgroundCanvas.getContext('2d');
     const drawingCanvas = document.getElementById('drawingCanvas');
     const ctx = drawingCanvas.getContext('2d');
-    const stampCanvas = document.getElementById('stampCanvas'); // 도장 캔버스 추가
-    const stampCtx = stampCanvas.getContext('2d'); // 도장 캔버스 컨텍스트
     const customCursor = document.getElementById('customCursor');
 
     let designs = {}; // JSON에서 로드된 도안 데이터
@@ -47,9 +45,8 @@ window.addEventListener('load', () => {
         }
 
         const designPaths = designs[currentDifficulty];
-        // 무작위로 도안 선택
-        const randomIndex = Math.floor(Math.random() * designPaths.length);
-        const designPath = designPaths[randomIndex];
+        // 현재 Design Index 사용하여 도안 선택
+        const designPath = designPaths[currentDesignIndex % designPaths.length];
         drawingImage = new Image();
         // 동일한 출처에서 이미지를 로드하므로 crossOrigin 설정 불필요
         drawingImage.src = designPath;
@@ -59,8 +56,6 @@ window.addEventListener('load', () => {
             bgCtx.drawImage(drawingImage, 0, 0, backgroundCanvas.width, backgroundCanvas.height);
             // 그림 캔버스 초기화 (사용자 그리기)
             ctx.clearRect(0, 0, drawingCanvas.width, drawingCanvas.height);
-            // 도장 캔버스 초기화
-            stampCtx.clearRect(0, 0, stampCanvas.width, stampCanvas.height);
             // 히스토리 초기화
             undoStack = [];
             redoStack = [];
@@ -88,39 +83,34 @@ window.addEventListener('load', () => {
     let undoStack = [];
     let redoStack = [];
 
-    // 도장 객체 배열 (stampCanvas 사용)
+    // 도장 객체 배열
     let stampsPlaced = [];
 
     // 캔버스 크기 조정 함수
     function resizeCanvas() {
-        // 캔버스 컨테이너의 실제 크기 가져오기
+        // 현재 그려진 선과 도장 저장
+        const savedImageData = ctx.getImageData(0, 0, drawingCanvas.width, drawingCanvas.height);
+        const savedStamps = JSON.parse(JSON.stringify(stampsPlaced));
+
+        // 캔버스 컨테이너의 크기 가져오기
         const container = document.querySelector('.canvas-container');
         const rect = container.getBoundingClientRect();
 
-        // 배경 캔버스 크기 조정
+        // 캔버스의 내부 해상도 조정
         backgroundCanvas.width = rect.width;
         backgroundCanvas.height = rect.height;
-
-        // 그림 캔버스 크기 조정
         drawingCanvas.width = rect.width;
         drawingCanvas.height = rect.height;
-
-        // 도장 캔버스 크기 조정
-        stampCanvas.width = rect.width;
-        stampCanvas.height = rect.height;
 
         // 배경 이미지 다시 그리기
         if (drawingImage.src) {
             bgCtx.drawImage(drawingImage, 0, 0, backgroundCanvas.width, backgroundCanvas.height);
-            // 그림 캔버스 다시 그리기
-            ctx.clearRect(0, 0, drawingCanvas.width, drawingCanvas.height);
-            // 도장 캔버스 다시 그리기
-            stampCtx.clearRect(0, 0, stampCanvas.width, stampCanvas.height);
-            drawAllStamps();
         }
 
-        // 커스텀 커서 업데이트
-        updateCursor();
+        // 저장된 그리기 상태 복원
+        ctx.putImageData(savedImageData, 0, 0);
+        stampsPlaced = savedStamps;
+        drawAllStamps();
     }
 
     // 창 크기 변경 시 캔버스 리사이즈
@@ -143,6 +133,7 @@ window.addEventListener('load', () => {
                 drawing = false;
                 currentStamp = null; // 초기화
                 ctx.globalCompositeOperation = 'source-over';
+                showStampPalette(); // 도장 팔레트 바로 열기
             } else {
                 ctx.globalCompositeOperation = 'source-over'; // 기본 그리기 모드
                 ctx.strokeStyle = currentColor;
@@ -304,8 +295,9 @@ window.addEventListener('load', () => {
     drawingCanvas.addEventListener('mouseup', stopDrawing);
     drawingCanvas.addEventListener('mouseout', stopDrawing);
 
+    // 터치 이벤트 핸들러 수정
     drawingCanvas.addEventListener('touchstart', (e) => {
-        e.preventDefault(); // 기본 터치 동작 방지
+        e.preventDefault(); // 기본 터치 동작 방지 (스크롤, 확대/축소 등)
         e.stopPropagation(); // 이벤트 전파 방지
         const touch = e.touches[0];
         const simulatedEvent = new MouseEvent('mousedown', {
@@ -333,12 +325,8 @@ window.addEventListener('load', () => {
         drawingCanvas.dispatchEvent(simulatedEvent);
     }, { passive: false });
 
-    // 도장 툴 활성화 시 도장 선택 팔레트 표시
-    const stampTool = document.getElementById('stamp');
-    stampTool.addEventListener('click', () => {
-        if (currentTool !== 'stamp') return;
-        showStampPalette();
-    });
+    // 도장 팔레트 바로 열기 기능 제거 (이미 도구 선택 시 열리도록 변경)
+    // 도장 툴 활성화 시 도장 선택 팔레트 표시 (이미 도구 선택 시 showStampPalette() 호출)
 
     // 도장 팔레트 표시 함수
     function showStampPalette() {
@@ -419,7 +407,7 @@ window.addEventListener('load', () => {
         container.appendChild(palette);
     }
 
-    // 도장 찍기 함수 (stampCanvas에 그리기)
+    // 도장 찍기 함수
     function placeStamp(e) {
         const [x, y] = getPointerPosition(e);
         if (currentStamp) {
@@ -454,21 +442,19 @@ window.addEventListener('load', () => {
         }
     }
 
-    // 도장 모두 그리기 함수 (stampCanvas에 그리기)
+    // 도장 모두 그리기 함수
     function drawAllStamps() {
-        // 도장 캔버스 초기화
-        stampCtx.clearRect(0, 0, stampCanvas.width, stampCanvas.height);
-        // 도장 그리기
+        // 기존 그린 선들을 지우지 않고 도장만 그리기
         stampsPlaced.forEach(stamp => {
             const img = new Image();
             img.src = stamp.src;
             img.onload = () => {
-                stampCtx.drawImage(img, stamp.x - stamp.width / 2, stamp.y - stamp.height / 2, stamp.width, stamp.height);
+                ctx.drawImage(img, stamp.x - stamp.width / 2, stamp.y - stamp.height / 2, stamp.width, stamp.height);
             };
         });
     }
 
-    // 지우기 기능 (그림 캔버스 및 도장 캔버스 모두 초기화)
+    // 지우기 기능 (그림 캔버스 및 도장 모두 초기화)
     const clearBtn = document.getElementById('clear');
     clearBtn.addEventListener('click', clearDrawing);
     clearBtn.addEventListener('touchend', clearDrawing); // 모바일 터치 이벤트 추가
@@ -487,7 +473,6 @@ window.addEventListener('load', () => {
         // Redo 히스토리 초기화
         redoStack = [];
         ctx.clearRect(0, 0, drawingCanvas.width, drawingCanvas.height);
-        stampCtx.clearRect(0, 0, stampCanvas.width, stampCanvas.height);
         stampsPlaced = []; // 모든 도장 제거
     }
 
@@ -498,7 +483,7 @@ window.addEventListener('load', () => {
 
     function saveDrawing(e) {
         e.preventDefault(); // 기본 터치 동작 방지
-        // 세 개의 캔버스를 합쳐서 하나의 이미지로 저장
+        // 두 개의 캔버스를 합쳐서 하나의 이미지로 저장
         const tempCanvas = document.createElement('canvas');
         const tempCtx = tempCanvas.getContext('2d');
         tempCanvas.width = backgroundCanvas.width;
@@ -508,8 +493,6 @@ window.addEventListener('load', () => {
         tempCtx.drawImage(backgroundCanvas, 0, 0, tempCanvas.width, tempCanvas.height);
         // 그림 캔버스 그리기
         tempCtx.drawImage(drawingCanvas, 0, 0, tempCanvas.width, tempCanvas.height);
-        // 도장 캔버스 그리기
-        tempCtx.drawImage(stampCanvas, 0, 0, tempCanvas.width, tempCanvas.height);
 
         // DataURL으로 변환
         const dataURL = tempCanvas.toDataURL('image/png');
