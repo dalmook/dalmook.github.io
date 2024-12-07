@@ -37,29 +37,38 @@ body {
     margin: 5px 0;
 }
 
+/* 도구 버튼 스타일링 */
 .tool-button {
-    padding: 10px;
-    margin-right: 10px;
+    width: 50px; /* 버튼의 고정 너비 */
+    height: 50px; /* 버튼의 고정 높이 */
+    padding: 5px; /* 버튼 내부 패딩 조정 */
+    margin-right: 5px; /* 버튼 사이의 마진 조정 */
     border: none;
     background-color: #e0e0e0;
     border-radius: 4px;
     cursor: pointer;
-    font-size: 14px;
-    flex: 1 1 auto;
-    text-align: center;
     display: flex;
     align-items: center;
     justify-content: center;
+    transition: background-color 0.3s;
 }
 
-.tool-button svg {
-    fill: #555;
-    width: 20px;
-    height: 20px;
+.tool-button:hover {
+    background-color: #d5d5d5; /* 호버 시 배경색 변경 */
 }
 
-.tool-button.active svg {
-    fill: white;
+.tool-button.active {
+    background-color: #4CAF50; /* 활성화된 버튼의 배경색 */
+}
+
+.tool-button img {
+    width: 24px; /* 아이콘의 너비 조정 */
+    height: 24px; /* 아이콘의 높이 조정 */
+    object-fit: contain; /* 아이콘의 비율 유지 */
+}
+
+.tool-button.active img {
+    filter: brightness(0) invert(1); /* 아이콘 색상 반전 */
 }
 
 #colorPicker {
