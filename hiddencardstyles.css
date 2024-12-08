@@ -96,7 +96,7 @@ header h1 {
     left: 0;
     width: 100%;
     height: 100%;
-    object-fit: cover; /* 이미지가 컨테이너에 꽉 차도록 설정 */
+    object-fit: contain; /* 이미지가 컨테이너에 꽉 차도록 설정 */
 }
 
 /* 덮여 있는 마스크 */
