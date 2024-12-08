@@ -455,6 +455,52 @@
                 "image": "샌드위치.png",
                 "correct": "Sandwich"
             }
+        ],
+        "cars": [
+            {
+                "image": "그렌져.png",
+                "correct": "Grandeur"
+            },
+            {
+                "image": "소나타.png",
+                "correct": "Sonata"
+            },
+            {
+                "image": "아반떼.png",
+                "correct": "Avante"
+            },
+            {
+                "image": "티뷰론.png",
+                "correct": "Tiburon"
+            },
+            {
+                "image": "갤로퍼.png",
+                "correct": "Galloper"
+            },
+            {
+                "image": "무쏘.png",
+                "correct": "Musso"
+            },
+            {
+                "image": "티코.png",
+                "correct": "Tico"
+            },
+            {
+                "image": "람보르기니.png",
+                "correct": "Lamborghini"
+            },
+            {
+                "image": "구급차.png",
+                "correct": "Ambulance"
+            },
+            {
+                "image": "경찰차.png",
+                "correct": "Police car"
+            },
+            {
+                "image": "소방차.png",
+                "correct": "Fire engine"
+            }
         ]
     }
 }
