@@ -167,26 +167,18 @@ function handleDrag(event) {
     }
 
     // 드래그 거리 계산
-    let deltaX = currentX - startX;
-    let deltaY = startY - currentY; // 드래그 방향 반전
-
-    cumulativeDeltaX += Math.abs(deltaX);
-    cumulativeDeltaY += Math.abs(deltaY);
-
-    // Apply changes only if cumulative movement exceeds the threshold
-    if (cumulativeDeltaX < MIN_DRAG_DISTANCE && cumulativeDeltaY < MIN_DRAG_DISTANCE) {
-        return; // Do not apply mask changes
-    }
+    let deltaX = currentX - startX; // X축 드래그 거리
+    let deltaY = currentY - startY; // Y축 드래그 거리
 
     // 드래그 거리를 백분율로 변환
     let deltaXPercent = (deltaX / mask.parentElement.clientWidth) * 100;
     let deltaYPercent = (deltaY / mask.parentElement.clientHeight) * 100;
 
     // 마스크의 새로운 위치와 크기 계산
-    let newTop = initialTop - deltaYPercent;
-    let newLeft = initialLeft + deltaXPercent;
-    let newWidth = initialWidth - deltaXPercent;
-    let newHeight = initialHeight - deltaYPercent;
+    let newTop = initialTop - Math.max(0, -deltaYPercent); // 위로 이동
+    let newLeft = initialLeft + Math.max(0, deltaXPercent); // 오른쪽으로 이동
+    let newWidth = initialWidth - Math.abs(deltaXPercent); // 너비 감소
+    let newHeight = initialHeight - Math.abs(deltaYPercent); // 높이 감소
 
     // 마스크의 위치와 크기를 0% 이상, 100% 이하로 제한
     newTop = Math.max(0, Math.min(newTop, 100 - newHeight));
