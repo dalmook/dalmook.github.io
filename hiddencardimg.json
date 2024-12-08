@@ -8,6 +8,310 @@
             {
                 "image": "너구리.png",
                 "correct": "Raccoon"
+            },
+            {
+                "image": "코알라.png",
+                "correct": "Koala"
+            },
+            {
+                "image": "오리너구리.png",
+                "correct": "Platypus"
+            },
+            {
+                "image": "아르마딜로.png",
+                "correct": "Armadillo"
+            },
+            {
+                "image": "나무늘보.png",
+                "correct": "Sloth"
+            },
+            {
+                "image": "가젤.png",
+                "correct": "Gazelle"
+            },
+            {
+                "image": "물소.png",
+                "correct": "Bison"
+            },
+            {
+                "image": "라마.png",
+                "correct": "Llama"
+            },
+            {
+                "image": "알파카.png",
+                "correct": "Alpaca"
+            },
+            {
+                "image": "해마.png",
+                "correct": "Seahorse"
+            },
+            {
+                "image": "니모.png",
+                "correct": "Clownfish"
+            },
+            {
+                "image": "황새치.png",
+                "correct": "Swordfish"
+            },
+            {
+                "image": "북극곰.png",
+                "correct": "Polar Bear"
+            },
+            {
+                "image": "북극여우.png",
+                "correct": "Arctic Fox"
+            },
+            {
+                "image": "미어캣.png",
+                "correct": "Meerkat"
+            },
+            {
+                "image": "재규어.png",
+                "correct": "Jaguar"
+            },
+            {
+                "image": "영양.png",
+                "correct": "Antelope"
+            },
+            {
+                "image": "고릴라.png",
+                "correct": "Gorilla"
+            },
+            {
+                "image": "오랑우탄.png",
+                "correct": "Orangutan"
+            },
+            {
+                "image": "박쥐.png",
+                "correct": "Bat"
+            },
+            {
+                "image": "Toucan.png",
+                "correct": "Toucan"
+            },
+            {
+                "image": "팰리컨.png",
+                "correct": "Pelican"
+            },
+            {
+                "image": "가오리.png",
+                "correct": "Stingray"
+            },
+            {
+                "image": "거위.png",
+                "correct": "Goose"
+            },
+            {
+                "image": "오리.png",
+                "correct": "Duck"
+            },
+            {
+                "image": "불가사리.png",
+                "correct": "Starfish"
+            },
+            {
+                "image": "게.png",
+                "correct": "Crab"
+            },
+            {
+                "image": "문어.png",
+                "correct": "Octopus"
+            },
+            {
+                "image": "개미.png",
+                "correct": "Ant"
+            },
+            {
+                "image": "벌.png",
+                "correct": "Bee"
+            },
+            {
+                "image": "나비.png",
+                "correct": "Butterfly"
+            },
+            {
+                "image": "도마뱀.png",
+                "correct": "Lizard"
+            },
+            {
+                "image": "뱀.png",
+                "correct": "Snake"
+            },
+            {
+                "image": "개구리.png",
+                "correct": "Frog"
+            },
+            {
+                "image": "거북이.png",
+                "correct": "Turtle"
+            },
+            {
+                "image": "악어.png",
+                "correct": "Crocodile"
+            },
+            {
+                "image": "낙타.png",
+                "correct": "Camel"
+            },
+            {
+                "image": "플라밍고.png",
+                "correct": "Flamingo"
+            },
+            {
+                "image": "펭귄.png",
+                "correct": "Penguin"
+            },
+            {
+                "image": "앵무새.png",
+                "correct": "Parrot"
+            },
+            {
+                "image": "올빼미.png",
+                "correct": "Owl"
+            },
+            {
+                "image": "토끼.png",
+                "correct": "Rabbit"
+            },
+            {
+                "image": "염소.png",
+                "correct": "Goat"
+            },
+            {
+                "image": "돼지.png",
+                "correct": "Pig"
+            },
+            {
+                "image": "고양이.png",
+                "correct": "Cat"
+            },
+            {
+                "image": "쥐.png",
+                "correct": "Mouse"
+            },
+            {
+                "image": "다람쥐.png",
+                "correct": "Squirrel"
+            },
+            {
+                "image": "독수리.png",
+                "correct": "Eagle"
+            },
+            {
+                "image": "상어.png",
+                "correct": "Shark"
+            },
+            {
+                "image": "고래.png",
+                "correct": "Whale"
+            },
+            {
+                "image": "사자.png",
+                "correct": "Lion"
+            },
+            {
+                "image": "호랑이.png",
+                "correct": "Tiger"
+            },
+            {
+                "image": "표범.png",
+                "correct": "Leopard"
+            },
+            {
+                "image": "얼룩말.png",
+                "correct": "Zebra"
+            },
+            {
+                "image": "기린.png",
+                "correct": "Giraffe"
+            },
+            {
+                "image": "코끼리.png",
+                "correct": "Elephant"
+            },
+            {
+                "image": "곰.png",
+                "correct": "Bear"
+            },
+            {
+                "image": "말.png",
+                "correct": "Horse"
+            },
+            {
+                "image": "캥거루.png",
+                "correct": "Kangaroo"
+            },
+            {
+                "image": "팬더.png",
+                "correct": "Panda"
+            },
+            {
+                "image": "늑대.png",
+                "correct": "Wolf"
+            },
+            {
+                "image": "여우.png",
+                "correct": "Fox"
+            },
+            {
+                "image": "사슴.png",
+                "correct": "Deer"
+            },
+            {
+                "image": "코뿔소.png",
+                "correct": "Rhinoceros"
+            },
+            {
+                "image": "치타.png",
+                "correct": "Cheetah"
+            },
+            {
+                "image": "하이에나.png",
+                "correct": "Hyena"
+            },
+            {
+                "image": "버팔로.png",
+                "correct": "Buffalo"
+            },
+            {
+                "image": "침펜지.png",
+                "correct": "Chimpanzee"
+            },
+            {
+                "image": "하마.png",
+                "correct": "Hippopotamus"
+            },
+            {
+                "image": "수달.png",
+                "correct": "Otter"
+            },
+            {
+                "image": "사막여우.png",
+                "correct": "Desert fox"
+            },
+            {
+                "image": "타조.png",
+                "correct": "Ostrich"
+            },
+            {
+                "image": "카피바라.png",
+                "correct": "Capybara"
+            },
+            {
+                "image": "레서판다.png",
+                "correct": "Red panda"
+            },
+            {
+                "image": "양.png",
+                "correct": "Sheep"
+            },
+            {
+                "image": "당나귀.png",
+                "correct": "Donkey"
+            },
+            {
+                "image": "거미.png",
+                "correct": "Spider"
             }
         ],
         "foods": [
@@ -18,6 +322,138 @@
             {
                 "image": "핫도그.png",
                 "correct": "Hotdog"
+            },
+            {
+                "image": "스시.png",
+                "correct": "Sushi"
+            },
+            {
+                "image": "토스트.png",
+                "correct": "Toast"
+            },
+            {
+                "image": "와플.png",
+                "correct": "Waffle"
+            },
+            {
+                "image": "버터.png",
+                "correct": "Butter"
+            },
+            {
+                "image": "팝콘.png",
+                "correct": "Popcorn"
+            },
+            {
+                "image": "사탕.png",
+                "correct": "Candy"
+            },
+            {
+                "image": "초콜릿.png",
+                "correct": "Chocolate"
+            },
+            {
+                "image": "케이크.png",
+                "correct": "Cake"
+            },
+            {
+                "image": "아이스크림.png",
+                "correct": "IceCream"
+            },
+            {
+                "image": "브로콜리.png",
+                "correct": "Broccoli"
+            },
+            {
+                "image": "오이.png",
+                "correct": "Cucumber"
+            },
+            {
+                "image": "토마토.png",
+                "correct": "Tomato"
+            },
+            {
+                "image": "감자.png",
+                "correct": "Potato"
+            },
+            {
+                "image": "당근.png",
+                "correct": "Carrot"
+            },
+            {
+                "image": "파인애플.png",
+                "correct": "Pineapple"
+            },
+            {
+                "image": "수박.png",
+                "correct": "Watermelon"
+            },
+            {
+                "image": "딸기.png",
+                "correct": "Strawberry"
+            },
+            {
+                "image": "망고.png",
+                "correct": "Mango"
+            },
+            {
+                "image": "오렌지.png",
+                "correct": "Orange"
+            },
+            {
+                "image": "포도.png",
+                "correct": "Grape"
+            },
+            {
+                "image": "바나나.png",
+                "correct": "Banana"
+            },
+            {
+                "image": "사과.png",
+                "correct": "Apple"
+            },
+            {
+                "image": "스테이크.png",
+                "correct": "Steak"
+            },
+            {
+                "image": "치킨.png",
+                "correct": "Chicken"
+            },
+            {
+                "image": "달걀.png",
+                "correct": "Egg"
+            },
+            {
+                "image": "요거트.png",
+                "correct": "Yogurt"
+            },
+            {
+                "image": "치즈.png",
+                "correct": "Cheese"
+            },
+            {
+                "image": "우유.png",
+                "correct": "Milk"
+            },
+            {
+                "image": "국수.png",
+                "correct": "Noodles"
+            },
+            {
+                "image": "피자.png",
+                "correct": "Pizza"
+            },
+            {
+                "image": "햄버거.png",
+                "correct": "Hamburger"
+            },
+            {
+                "image": "파스타.png",
+                "correct": "Pasta"
+            },
+            {
+                "image": "샌드위치.png",
+                "correct": "Sandwich"
             }
         ]
     }
