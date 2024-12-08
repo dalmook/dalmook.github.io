@@ -194,6 +194,7 @@ header h1 {
 @media (max-width: 480px) {
     .game-container {
         width: 100%; /* 모바일 화면 너비에 꽉 차게 */
+        min-width: 320px;
     }
 
     .image-wrapper {
