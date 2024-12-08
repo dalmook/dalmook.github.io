@@ -27,6 +27,7 @@ const hiddenImage = document.getElementById("hidden-image");
 const mask = document.getElementById("mask");
 const prevButton = document.getElementById("prev-button");
 const nextButton = document.getElementById("next-button");
+const showAnswerButton = document.getElementById("show-answer-button"); // 정답 보기 버튼
 const categorySelection = document.getElementById("category-selection");
 const gameContainer = document.getElementById("game-container");
 const categoryButtons = document.querySelectorAll(".category-button");
@@ -141,7 +142,7 @@ function stopDragging() {
         const currentHeight = parseFloat(mask.style.height);
         if (currentWidth <= 5 && currentHeight <= 5) {
             speakWord(currentQuestions[currentQuestionIndex].correct);
-            displayCorrectAnswer();
+            showCorrectAnswer(currentQuestions[currentQuestionIndex].correct);
         }
     }
 }
@@ -212,6 +213,14 @@ nextButton.addEventListener("click", () => {
     }
 });
 
+// "정답 보기" 버튼 클릭 이벤트
+showAnswerButton.addEventListener("click", () => {
+    const question = currentQuestions[currentQuestionIndex];
+    const correctText = question.correct;
+    showCorrectAnswer(correctText);
+    speakWord(correctText);
+});
+
 // 음성 합성 함수 (웹 브라우저와 Android 앱 지원)
 function speakWord(word) {
     // Android 애플리케이션의 JavaScript Interface를 통한 TTS 호출
@@ -231,13 +240,6 @@ function speakWord(word) {
     }
 }
 
-// 정답 표시 함수
-function displayCorrectAnswer() {
-    const question = currentQuestions[currentQuestionIndex];
-    const correctText = question.correct;
-    showCorrectAnswer(correctText);
-}
-
 // 초기 이미지 로드 (카테고리 선택 후 호출)
 loadImages();
 
@@ -246,6 +248,7 @@ categoryButtons.forEach(button => {
     button.addEventListener("click", handleCategorySelection);
 });
 
+// 마스크 이벤트 리스너
 mask.addEventListener("mousedown", (e) => {
     e.preventDefault(); // 드래그 시 텍스트 선택 방지
     startDragging(e);
