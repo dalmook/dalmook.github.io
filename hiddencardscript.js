@@ -128,7 +128,7 @@ function stopDragging() {
 
         // 마스크가 완전히 제거되었는지 확인
         if (parseFloat(mask.style.width) === 0 && parseFloat(mask.style.height) === 0) {
-            playCorrectWord();
+            speakWord(currentQuestions[currentQuestionIndex].correct);
             displayCorrectAnswer();
         }
     }
@@ -150,7 +150,7 @@ function handleDrag(event) {
     }
 
     let deltaX = currentX - startX;
-    let deltaY = startY - currentY; // 위로 드래그하면 양수
+    let deltaY = currentY - startY;
 
     // 드래그 거리를 백분율로 변환
     let deltaXPercent = (deltaX / mask.parentElement.clientWidth) * 100;
@@ -191,17 +191,22 @@ nextButton.addEventListener("click", () => {
     }
 });
 
-// 음성 합성 함수
-function playCorrectWord() {
-    const question = currentQuestions[currentQuestionIndex];
-    const text = question.correct;
-
-    if ('speechSynthesis' in window) {
-        const utterance = new SpeechSynthesisUtterance(text);
-        utterance.lang = 'en-US'; // 영어로 설정
+// 음성 합성 함수 (웹 브라우저와 Android 앱 지원)
+function speakWord(word) {
+    // Android 애플리케이션의 JavaScript Interface를 통한 TTS 호출
+    if (typeof Android !== 'undefined' && Android.speak) {
+        Android.speak(word);
+    }
+    // 웹 브라우저에서는 Web Speech API 사용
+    else if ('speechSynthesis' in window) {
+        const utterance = new SpeechSynthesisUtterance(word);
+        utterance.lang = 'en-US'; // 영어 발음 설정
+        utterance.rate = 1;        // 속도 (0.1 ~ 10)
+        utterance.pitch = 1;       // 음의 높낮이 (0 ~ 2)
         window.speechSynthesis.speak(utterance);
-    } else {
-        console.warn("Web Speech API를 지원하지 않는 브라우저입니다.");
+    }
+    else {
+        console.warn("이 브라우저는 음성 합성을 지원하지 않습니다.");
     }
 }
 
