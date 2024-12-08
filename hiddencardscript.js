@@ -126,8 +126,10 @@ function stopDragging() {
         isDragging = false;
         mask.classList.remove('dragging');
 
-        // 마스크가 완전히 제거되었는지 확인
-        if (parseFloat(mask.style.width) === 0 && parseFloat(mask.style.height) === 0) {
+        // 마스크가 완전히 제거되었는지 확인 (임계값 설정)
+        const currentWidth = parseFloat(mask.style.width);
+        const currentHeight = parseFloat(mask.style.height);
+        if (currentWidth <= 0.1 && currentHeight <= 0.1) {
             speakWord(currentQuestions[currentQuestionIndex].correct);
             displayCorrectAnswer();
         }
@@ -149,8 +151,9 @@ function handleDrag(event) {
         currentY = event.touches[0].clientY;
     }
 
+    // 드래그 거리 계산 (방향 수정: startY - currentY)
     let deltaX = currentX - startX;
-    let deltaY = currentY - startY;
+    let deltaY = startY - currentY; // 드래그 방향 반전
 
     // 드래그 거리를 백분율로 변환
     let deltaXPercent = (deltaX / mask.parentElement.clientWidth) * 100;
