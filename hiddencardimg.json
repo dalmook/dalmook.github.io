@@ -500,6 +500,34 @@
             {
                 "image": "소방차.png",
                 "correct": "Fire engine"
+            },
+            {
+                "image": "콩코드.png",
+                "correct": "Concord"
+            },
+            {
+                "image": "K5.png",
+                "correct": "K5"
+            },
+            {
+                "image": "로체.png",
+                "correct": "Lotze"
+            },
+            {
+                "image": "옵티마리갈.png",
+                "correct": "Optima Regal"
+            },
+            {
+                "image": "크레도스.png",
+                "correct": "Credos"
+            },
+            {
+                "image": "캐피탈.png",
+                "correct": "Capital"
+            },
+            {
+                "image": "봉고.png",
+                "correct": "Bongo"
             }
         ]
     }
