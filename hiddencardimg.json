@@ -1,9 +1,24 @@
 {
-    "images": [
-        "나무늘보.png",
-        "나비.png",
-        "낙타.png",
-        "너구리.png",
-        "늑대.png"
-    ]
+    "questions": {
+        "animals": [
+            {
+                "image": "고슴도치.png",
+                "correct": "Hedgehog"
+            },
+            {
+                "image": "너구리.png",
+                "correct": "Raccoon"
+            }
+        ],
+        "foods": [
+            {
+                "image": "김치.png",
+                "correct": "Kimchi"
+            },
+            {
+                "image": "핫도그.png",
+                "correct": "Hotdog"
+            }
+        ]
+    }
 }
