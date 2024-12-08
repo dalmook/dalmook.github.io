@@ -212,7 +212,6 @@ prevButton.addEventListener("click", () => {
 // 다음 버튼 클릭 이벤트
 nextButton.addEventListener("click", () => {
     if (currentQuestionIndex < currentQuestions.length - 1) {
-        resetMask();
         currentQuestionIndex++;
         loadQuestion(currentQuestionIndex);
     }
