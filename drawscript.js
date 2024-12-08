@@ -139,8 +139,6 @@ window.addEventListener('load', () => {
                 ctx.strokeStyle = currentColor;
                 currentStamp = null; // 도장 도구 외 선택 시 도장 초기화
             }
-
-            updateCursor();
         });
     });
 
@@ -151,7 +149,6 @@ window.addEventListener('load', () => {
         if (currentTool !== 'eraser') {
             ctx.strokeStyle = currentColor;
         }
-        updateCursor();
     });
 
     // 두께 선택
@@ -161,7 +158,6 @@ window.addEventListener('load', () => {
         lineWidth = e.target.value;
         thicknessValue.textContent = lineWidth;
         ctx.lineWidth = lineWidth;
-        updateCursor();
     });
 
     // 도장 크기 선택
@@ -202,22 +198,6 @@ window.addEventListener('load', () => {
             ctx.putImageData(nextState.imageData, 0, 0);
             stampsPlaced = JSON.parse(JSON.stringify(nextState.stampsPlaced));
             drawAllStamps();
-        }
-    }
-
-    // 커스텀 커서 업데이트 함수
-    function updateCursor() {
-        customCursor.style.width = `${lineWidth * 2}px`;
-        customCursor.style.height = `${lineWidth * 2}px`;
-        if (currentTool === 'eraser') {
-            customCursor.style.borderColor = '#000000'; // 지우개는 검은색 테두리
-            customCursor.style.backgroundColor = 'transparent';
-        } else if (currentTool === 'stamp') {
-            customCursor.style.borderColor = '#000000'; // 도장 선택 시 검은색 테두리
-            customCursor.style.backgroundColor = '#ffffff'; // 흰색 배경
-        } else {
-            customCursor.style.borderColor = currentColor;
-            customCursor.style.backgroundColor = currentColor;
         }
     }
 
@@ -559,25 +539,6 @@ window.addEventListener('load', () => {
         loadDesign();
     });
 
-    // 커스텀 커서 이동 업데이트
-    function moveCursor(e) {
-        let x, y;
-        if (e.touches && e.touches.length > 0) {
-            x = e.touches[0].clientX;
-            y = e.touches[0].clientY;
-        } else {
-            x = e.clientX;
-            y = e.clientY;
-        }
-        customCursor.style.left = `${x}px`;
-        customCursor.style.top = `${y}px`;
-    }
-
-    // 마우스 이동 이벤트
-    document.addEventListener('mousemove', moveCursor);
-    // 터치 이동 이벤트
-    document.addEventListener('touchmove', moveCursor, { passive: false });
-
     // Prevent default touchmove on the canvas to prevent scrolling
     drawingCanvas.addEventListener('touchmove', function(e) {
         e.preventDefault();
@@ -595,9 +556,6 @@ window.addEventListener('load', () => {
     drawingCanvas.addEventListener('touchend', function(e) {
         e.stopPropagation();
     }, { passive: false });
-
-    // 초기 커서 설정
-    updateCursor();
 
     // 애니메이션 추가 (fadeIn)
     const style = document.createElement('style');
