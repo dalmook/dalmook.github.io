@@ -11,7 +11,18 @@
         <h1>사진 맞추기 게임</h1>
     </header>
     <main>
-        <div class="game-container">
+        <!-- 카테고리 선택 섹션 -->
+        <div class="category-selection" id="category-selection">
+            <h2>카테고리를 선택하세요:</h2>
+            <div class="categories">
+                <button class="category-button" data-category="animals">동물</button>
+                <button class="category-button" data-category="foods">음식</button>
+                <!-- 추가 카테고리를 여기에 삽입 -->
+            </div>
+        </div>
+
+        <!-- 게임 컨테이너 (초기에는 숨김) -->
+        <div class="game-container" id="game-container" style="display: none;">
             <div class="image-wrapper">
                 <!-- 숨겨진 이미지 -->
                 <img id="hidden-image" src="" alt="숨겨진 이미지">
