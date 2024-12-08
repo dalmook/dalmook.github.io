@@ -23,7 +23,7 @@ header {
 }
 
 header h1 {
-    font-size: 2em;
+    font-size: 2.5em;
     color: #ff69b4; /* 핑크색 */
     text-align: center;
 }
@@ -34,7 +34,7 @@ header h1 {
     flex-direction: column;
     align-items: center;
     width: 90%;
-    max-width: 400px;
+    max-width: 600px; /* 카드 크기 확대 */
 }
 
 /* 이미지 래퍼 */
@@ -55,7 +55,7 @@ header h1 {
     left: 0;
     width: 100%;
     height: 100%;
-    object-fit: cover; /* 이미지를 컨테이너에 꽉 차게 표시 */
+    object-fit: contain; /* 이미지가 잘리지 않도록 설정 */
 }
 
 /* 덮여 있는 마스크 */
@@ -93,17 +93,18 @@ header h1 {
     margin-top: 20px;
     display: flex;
     gap: 10px;
+    width: 100%;
 }
 
 .controls button {
     flex: 1;
-    padding: 10px 0;
+    padding: 15px 0; /* 버튼 크기 확대 */
     border: none;
     background-color: #007BFF;
     color: white;
     border-radius: 5px;
     cursor: pointer;
-    font-size: 16px;
+    font-size: 18px; /* 버튼 글자 크기 확대 */
     transition: background-color 0.3s ease;
 }
 
@@ -112,6 +113,25 @@ header h1 {
 }
 
 /* 반응형 디자인 */
+@media (max-width: 1200px) {
+    .game-container {
+        max-width: 500px;
+    }
+
+    header h1 {
+        font-size: 2.2em;
+    }
+
+    .mask-text {
+        font-size: 2.8em;
+    }
+
+    .controls button {
+        font-size: 16px;
+        padding: 12px 0;
+    }
+}
+
 @media (max-width: 768px) {
     .game-container {
         max-width: 90%;
@@ -123,12 +143,13 @@ header h1 {
 
     .controls button {
         font-size: 14px;
+        padding: 10px 0;
     }
 }
 
 @media (max-width: 480px) {
     header h1 {
-        font-size: 1.5em;
+        font-size: 1.8em;
     }
 
     .mask-text {
