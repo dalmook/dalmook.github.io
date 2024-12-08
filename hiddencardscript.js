@@ -1,11 +1,12 @@
 // 카드 이미지 폴더 경로
 const IMAGE_FOLDER = "images/";
 
-// 이미지 목록을 저장할 배열
-let imageList = [];
+// 이미지 목록을 저장할 객체
+let questions = {};
 
-// 현재 이미지 인덱스
-let currentIndex = 0;
+// 현재 질문 리스트와 인덱스
+let currentQuestions = [];
+let currentQuestionIndex = 0;
 
 // 마스크 상태 저장 변수
 let isDragging = false;
@@ -22,15 +23,16 @@ const mask = document.getElementById("mask");
 const prevButton = document.getElementById("prev-button");
 const nextButton = document.getElementById("next-button");
 const maskText = mask.querySelector('.mask-text');
+const categorySelection = document.getElementById("category-selection");
+const gameContainer = document.getElementById("game-container");
+const categoryButtons = document.querySelectorAll(".category-button");
 
 // 이미지 목록을 JSON에서 불러오기
 async function loadImages() {
     try {
         const response = await fetch('hiddencardimg.json');
         const data = await response.json();
-        imageList = data.images.map(img => IMAGE_FOLDER + img);
-        shuffleArray(imageList); // 이미지 목록 랜덤화
-        updateImage();
+        questions = data.questions;
     } catch (error) {
         console.error("이미지 로딩 오류:", error);
     }
@@ -44,9 +46,30 @@ function shuffleArray(array) {
     }
 }
 
-// 이미지 업데이트 함수
-function updateImage() {
-    hiddenImage.src = imageList[currentIndex];
+// 카테고리 선택 핸들러
+function handleCategorySelection(event) {
+    const selectedCategory = event.target.getAttribute('data-category');
+    if (!selectedCategory || !questions[selectedCategory]) return;
+
+    // 선택된 카테고리의 질문을 가져오고 랜덤 섞기
+    currentQuestions = [...questions[selectedCategory]];
+    shuffleArray(currentQuestions);
+    currentQuestionIndex = 0;
+
+    // 카테고리 선택 UI 숨기고 게임 컨테이너 표시
+    categorySelection.style.display = "none";
+    gameContainer.style.display = "flex";
+
+    // 첫 번째 질문 로드
+    loadQuestion(currentQuestionIndex);
+}
+
+// 질문 로드 함수
+function loadQuestion(index) {
+    if (index < 0 || index >= currentQuestions.length) return;
+
+    const question = currentQuestions[index];
+    hiddenImage.src = IMAGE_FOLDER + question.image;
     resetMask();
 }
 
@@ -86,8 +109,11 @@ function stopDragging() {
     if (isDragging) {
         isDragging = false;
         mask.classList.remove('dragging');
-        // 드래그가 완료되면 "?" 표시 숨기기
-        maskText.style.display = "none";
+
+        // 마스크가 완전히 제거되었는지 확인
+        if (parseFloat(mask.style.width) === 0 && parseFloat(mask.style.height) === 0) {
+            playCorrectWord();
+        }
     }
 }
 
@@ -134,20 +160,42 @@ function handleDrag(event) {
 
 // 이전 버튼 클릭 이벤트
 prevButton.addEventListener("click", () => {
-    currentIndex = (currentIndex - 1 + imageList.length) % imageList.length;
-    updateImage();
+    if (currentQuestionIndex > 0) {
+        currentQuestionIndex--;
+        loadQuestion(currentQuestionIndex);
+    }
 });
 
 // 다음 버튼 클릭 이벤트
 nextButton.addEventListener("click", () => {
-    currentIndex = (currentIndex + 1) % imageList.length;
-    updateImage();
+    if (currentQuestionIndex < currentQuestions.length - 1) {
+        currentQuestionIndex++;
+        loadQuestion(currentQuestionIndex);
+    }
 });
 
-// 초기 이미지 로드
+// 음성 합성 함수
+function playCorrectWord() {
+    const question = currentQuestions[currentQuestionIndex];
+    const text = question.correct;
+
+    if ('speechSynthesis' in window) {
+        const utterance = new SpeechSynthesisUtterance(text);
+        utterance.lang = 'en-US'; // 영어로 설정
+        window.speechSynthesis.speak(utterance);
+    } else {
+        console.warn("Web Speech API를 지원하지 않는 브라우저입니다.");
+    }
+}
+
+// 초기 이미지 로드 (카테고리 선택 후 호출)
 loadImages();
 
 // 이벤트 리스너 추가
+categoryButtons.forEach(button => {
+    button.addEventListener("click", handleCategorySelection);
+});
+
 mask.addEventListener("mousedown", (e) => {
     e.preventDefault(); // 드래그 시 텍스트 선택 방지
     startDragging(e);
