@@ -17,12 +17,16 @@ let initialLeft = 0;
 let initialWidth = 100; // 백분율
 let initialHeight = 100; // 백분율
 
+// 드래그 최소 거리 (픽셀)
+const MIN_DRAG_DISTANCE = 10;
+let cumulativeDeltaX = 0;
+let cumulativeDeltaY = 0;
+
 // DOM 요소 가져오기
 const hiddenImage = document.getElementById("hidden-image");
 const mask = document.getElementById("mask");
 const prevButton = document.getElementById("prev-button");
 const nextButton = document.getElementById("next-button");
-const maskText = mask.querySelector('.mask-text'); // 제거할 예정
 const categorySelection = document.getElementById("category-selection");
 const gameContainer = document.getElementById("game-container");
 const categoryButtons = document.querySelectorAll(".category-button");
@@ -82,12 +86,12 @@ function resetMask() {
     mask.style.width = "100%";
     mask.style.height = "100%";
     mask.style.background = "rgba(0, 0, 0, 1)"; // 완전 불투명
-    // maskText.style.display = "none"; // "?" 마크 제거
-    maskText.style.display = "none"; // 마스크 텍스트 숨김
     correctAnswer.style.display = "none"; // 정답 숨김
     correctAnswer.textContent = ""; // 정답 텍스트 초기화
     initialWidth = 100;
     initialHeight = 100;
+    cumulativeDeltaX = 0;
+    cumulativeDeltaY = 0;
 }
 
 // 정답 표시 함수
@@ -120,6 +124,10 @@ function startDragging(event) {
     initialLeft = parseFloat(mask.style.left);
     initialWidth = parseFloat(mask.style.width);
     initialHeight = parseFloat(mask.style.height);
+
+    // Reset cumulative deltas
+    cumulativeDeltaX = 0;
+    cumulativeDeltaY = 0;
 }
 
 // 드래그 종료 함수
@@ -153,9 +161,17 @@ function handleDrag(event) {
         currentY = event.touches[0].clientY;
     }
 
-    // 드래그 거리 계산 (드래그 방향에 따라 deltaY 조정)
+    // 드래그 거리 계산
     let deltaX = currentX - startX;
     let deltaY = startY - currentY; // 드래그 방향 반전
+
+    cumulativeDeltaX += Math.abs(deltaX);
+    cumulativeDeltaY += Math.abs(deltaY);
+
+    // Apply changes only if cumulative movement exceeds the threshold
+    if (cumulativeDeltaX < MIN_DRAG_DISTANCE && cumulativeDeltaY < MIN_DRAG_DISTANCE) {
+        return; // Do not apply mask changes
+    }
 
     // 드래그 거리를 백분율로 변환
     let deltaXPercent = (deltaX / mask.parentElement.clientWidth) * 100;
@@ -179,7 +195,7 @@ function handleDrag(event) {
     mask.style.width = `${newWidth}%`;
     mask.style.height = `${newHeight}%`;
 
-    // 추가: 마스크 배경 투명도 조절 (드래그할수록 투명해짐)
+    // 마스크 배경 투명도 조절 (드래그할수록 투명해짐)
     const transparency = Math.min(1, (100 - newWidth) / 100);
     mask.style.background = `rgba(0, 0, 0, ${transparency})`;
 }
