@@ -73,7 +73,7 @@ header h1 {
     align-items: center;
     width: 100%;
     max-width: 100%; /* 카드 크기 확대 */
-    height: 100vh; /* 전체 화면 높이 사용 */
+    height: auto; /* 높이를 자동으로 조정 */
     box-sizing: border-box;
 }
 
@@ -89,13 +89,14 @@ header h1 {
     background-color: #000;
 }
 
+/* 숨겨진 이미지 */
 #hidden-image {
     position: absolute;
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
-    object-fit: contain; /* 이미지가 잘리지 않도록 설정 */
+    object-fit: cover; /* 이미지가 컨테이너에 꽉 차도록 설정 */
 }
 
 /* 덮여 있는 마스크 */
@@ -117,15 +118,6 @@ header h1 {
 .mask.dragging {
     cursor: grabbing;
 }
-
-/* 마스크 내부의 "?" 스타일 제거 */
-/* .mask-text {
-    font-size: 3em;
-    color: #ffffff;
-    font-weight: bold;
-    text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
-    user-select: none; /* 텍스트 선택 방지 */
-} */
 
 /* 정답 표시 스타일 */
 .correct-answer {
@@ -164,6 +156,15 @@ header h1 {
 
 .controls button:hover {
     background-color: #0056b3;
+}
+
+/* "정답 보기" 버튼 스타일 */
+#show-answer-button {
+    background-color: #ffc107;
+}
+
+#show-answer-button:hover {
+    background-color: #e0a800;
 }
 
 /* 반응형 디자인 */
@@ -228,11 +229,11 @@ header h1 {
 
 @media (max-width: 480px) {
     header h1 {
-        font-size: 1.8em;
+        font-size: 2em;
     }
 
     .category-selection h2 {
-        font-size: 1.4em;
+        font-size: 1.5em;
     }
 
     .categories {
