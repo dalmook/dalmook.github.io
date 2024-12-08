@@ -155,21 +155,6 @@ body {
     pointer-events: none; /* 도장 캔버스에서 마우스 이벤트 무시 */
 }
 
-
-#customCursor {
-    position: fixed;
-    top: 0;
-    left: 0;
-    pointer-events: none; /* 마우스 이벤트 무시 */
-    width: 20px;
-    height: 20px;
-    border: 2px solid #000;
-    border-radius: 50%;
-    transform: translate(-50%, -50%);
-    transition: background-color 0.1s, border-color 0.1s, width 0.1s, height 0.1s;
-    z-index: 1000;
-}
-
 /* 도장 팔레트 스타일 */
 #stampPalette {
     display: flex;
