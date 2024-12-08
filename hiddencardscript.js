@@ -26,6 +26,7 @@ const maskText = mask.querySelector('.mask-text');
 const categorySelection = document.getElementById("category-selection");
 const gameContainer = document.getElementById("game-container");
 const categoryButtons = document.querySelectorAll(".category-button");
+const correctAnswer = document.getElementById("correct-answer");
 
 // 이미지 목록을 JSON에서 불러오기
 async function loadImages() {
@@ -71,6 +72,7 @@ function loadQuestion(index) {
     const question = currentQuestions[index];
     hiddenImage.src = IMAGE_FOLDER + question.image;
     resetMask();
+    clearCorrectAnswer();
 }
 
 // 마스크 초기화 함수
@@ -80,8 +82,22 @@ function resetMask() {
     mask.style.width = "100%";
     mask.style.height = "100%";
     maskText.style.display = "block";
+    correctAnswer.style.display = "none"; // 정답 숨김
+    correctAnswer.textContent = ""; // 정답 텍스트 초기화
     initialWidth = 100;
     initialHeight = 100;
+}
+
+// 정답 표시 함수
+function showCorrectAnswer(text) {
+    correctAnswer.textContent = `정답: ${text}`;
+    correctAnswer.style.display = "block";
+}
+
+// 정답 숨김 함수
+function clearCorrectAnswer() {
+    correctAnswer.style.display = "none";
+    correctAnswer.textContent = "";
 }
 
 // 드래그 시작 함수
@@ -113,6 +129,7 @@ function stopDragging() {
         // 마스크가 완전히 제거되었는지 확인
         if (parseFloat(mask.style.width) === 0 && parseFloat(mask.style.height) === 0) {
             playCorrectWord();
+            displayCorrectAnswer();
         }
     }
 }
@@ -186,6 +203,13 @@ function playCorrectWord() {
     } else {
         console.warn("Web Speech API를 지원하지 않는 브라우저입니다.");
     }
+}
+
+// 정답 표시 함수
+function displayCorrectAnswer() {
+    const question = currentQuestions[currentQuestionIndex];
+    const correctText = question.correct;
+    showCorrectAnswer(correctText);
 }
 
 // 초기 이미지 로드 (카테고리 선택 후 호출)
