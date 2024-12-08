@@ -218,7 +218,7 @@ showAnswerButton.addEventListener("click", () => {
     const question = currentQuestions[currentQuestionIndex];
     const correctText = question.correct;
     showCorrectAnswer(correctText);
-    speakWord(correctText);
+    speakWord(question.correct);
 });
 
 // 음성 합성 함수 (웹 브라우저와 Android 앱 지원)
