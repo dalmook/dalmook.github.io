@@ -84,8 +84,8 @@ function loadQuestion(index) {
 function resetMask() {
     mask.style.top = "0%";
     mask.style.left = "0%";
-    mask.style.width = "100%";
-    mask.style.height = "100%";
+    //mask.style.width = "100%";
+    //mask.style.height = "100%";
     mask.style.background = "rgba(0, 0, 0, 1)"; // 완전 불투명
     correctAnswer.style.display = "none"; // 정답 숨김
     correctAnswer.textContent = ""; // 정답 텍스트 초기화
@@ -164,7 +164,7 @@ function handleDrag(event) {
 
     // 드래그 거리 계산
     let deltaX = currentX - startX;
-    let deltaY = startY - currentY; // 드래그 방향 반전
+    let deltaY = currentY - startY; // 드래그 방향 수정
 
     cumulativeDeltaX += Math.abs(deltaX);
     cumulativeDeltaY += Math.abs(deltaY);
