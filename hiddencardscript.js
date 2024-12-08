@@ -194,10 +194,6 @@ function handleDrag(event) {
     mask.style.left = `${newLeft}%`;
     mask.style.width = `${newWidth}%`;
     mask.style.height = `${newHeight}%`;
-
-    // 마스크 배경 투명도 조절 (드래그할수록 투명해짐)
-    const transparency = Math.min(1, (100 - newWidth) / 100);
-    mask.style.background = `rgba(0, 0, 0, ${transparency})`;
 }
 
 // 이전 버튼 클릭 이벤트
