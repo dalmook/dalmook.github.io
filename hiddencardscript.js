@@ -75,9 +75,13 @@ function loadQuestion(index) {
     if (index < 0 || index >= currentQuestions.length) return;
 
     const question = currentQuestions[index];
+    // 이미지 로드 이벤트
+    hiddenImage.onload = () => {
+        console.log("이미지 로드 완료");
+        resetMask(); // 이미지 로드 완료 후 마스크 초기화
+        clearCorrectAnswer(); // 정답 초기화
+    };    
     hiddenImage.src = IMAGE_FOLDER + question.image;
-    resetMask();
-    clearCorrectAnswer();
 }
 
 // 마스크 초기화 함수
