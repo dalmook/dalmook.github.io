@@ -147,7 +147,7 @@ body {
 
 #drawingCanvas {
     z-index: 1;
-    cursor: none; /* 기본 커서를 숨김 */
+    cursor: crosshair; /* 기본 커서를 크로스헤어로 설정 */
 }
 
 #stampCanvas {
