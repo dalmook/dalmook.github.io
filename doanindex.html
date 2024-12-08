@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>색칠하기 도안 생성기</title>
+    <link rel="stylesheet" href="doanstyles.css">
+</head>
+<body>
+    <div class="container">
+        <h1>이미지에서 색칠하기 도안 생성하기</h1>
+        <input type="file" id="imageUpload" accept="image/*">
+        
+        <div class="options">
+            <label>
+                <input type="checkbox" id="includeOriginal">
+                원본 이미지 우측 상단에 추가
+            </label>
+        </div>
+        
+        <div class="canvas-container">
+            <canvas id="outlineCanvas"></canvas>
+        </div>
+        
+        <button id="generateBtn">도안 생성</button>
+        <button id="downloadBtn">도안 다운로드</button>
+    </div>
+
+    <!-- OpenCV.js 라이브러리 로드 -->
+    <script async src="https://docs.opencv.org/4.x/opencv.js" onload="onOpenCvReady();"></script>
+    <script src="doanscript.js"></script>
+</body>
+</html>
