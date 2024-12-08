@@ -208,6 +208,7 @@ prevButton.addEventListener("click", () => {
 // 다음 버튼 클릭 이벤트
 nextButton.addEventListener("click", () => {
     if (currentQuestionIndex < currentQuestions.length - 1) {
+        resetMask();
         currentQuestionIndex++;
         loadQuestion(currentQuestionIndex);
     }
@@ -219,6 +220,8 @@ showAnswerButton.addEventListener("click", () => {
     const correctText = question.correct;
     showCorrectAnswer(correctText);
     speakWord(question.correct);
+    mask.style.width = "0%";
+    mask.style.height = "0%";
 });
 
 // 음성 합성 함수 (웹 브라우저와 Android 앱 지원)
