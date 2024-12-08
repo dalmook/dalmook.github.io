@@ -139,6 +139,8 @@ window.addEventListener('load', () => {
                 ctx.strokeStyle = currentColor;
                 currentStamp = null; // 도장 도구 외 선택 시 도장 초기화
             }
+
+            updateCursor();
         });
     });
 
@@ -149,6 +151,7 @@ window.addEventListener('load', () => {
         if (currentTool !== 'eraser') {
             ctx.strokeStyle = currentColor;
         }
+        updateCursor();
     });
 
     // 두께 선택
@@ -158,6 +161,7 @@ window.addEventListener('load', () => {
         lineWidth = e.target.value;
         thicknessValue.textContent = lineWidth;
         ctx.lineWidth = lineWidth;
+        updateCursor();
     });
 
     // 도장 크기 선택
@@ -201,6 +205,22 @@ window.addEventListener('load', () => {
         }
     }
 
+    // 커스텀 커서 업데이트 함수
+    function updateCursor() {
+        customCursor.style.width = `${lineWidth * 2}px`;
+        customCursor.style.height = `${lineWidth * 2}px`;
+        if (currentTool === 'eraser') {
+            customCursor.style.borderColor = '#000000'; // 지우개는 검은색 테두리
+            customCursor.style.backgroundColor = 'transparent';
+        } else if (currentTool === 'stamp') {
+            customCursor.style.borderColor = '#000000'; // 도장 선택 시 검은색 테두리
+            customCursor.style.backgroundColor = '#ffffff'; // 흰색 배경
+        } else {
+            customCursor.style.borderColor = currentColor;
+            customCursor.style.backgroundColor = currentColor;
+        }
+    }
+
     // 마우스 및 터치 이벤트 핸들러
     function getPointerPosition(e) {
         let x, y;
@@ -218,9 +238,6 @@ window.addEventListener('load', () => {
 
     function startDrawing(e) {
         e.preventDefault();
-
-        [lastX, lastY] = getPointerPosition(e);
-
         if (currentTool === 'stamp') {
             placeStamp(e);
             return;
@@ -248,33 +265,27 @@ window.addEventListener('load', () => {
     function draw(e) {
         e.preventDefault();
         if (!drawing) return;
-    
+
         const [x, y] = getPointerPosition(e);
-    
-        if (currentTool === 'eraser') {
-            // 지우개 사용 중이면 영역 업데이트
-            lastX = x;
-            lastY = y;
-    
-            // 기존 로직 (캔버스 상의 그리기 내용 지우기)
-            ctx.globalCompositeOperation = 'destination-out';
-            ctx.lineWidth = lineWidth;
-            ctx.strokeStyle = 'rgba(0,0,0,1)';
-            ctx.beginPath();
-            ctx.moveTo(lastX, lastY);
-            ctx.lineTo(x, y);
-            ctx.stroke();
-        } else {
-            // 일반 그리기 도구
-            ctx.globalCompositeOperation = 'source-over';
-            ctx.lineWidth = lineWidth;
+
+        ctx.lineCap = 'round';
+
+        if (currentTool !== 'eraser') {
             ctx.strokeStyle = currentColor;
-            ctx.beginPath();
-            ctx.moveTo(lastX, lastY);
-            ctx.lineTo(x, y);
-            ctx.stroke();
+            ctx.globalCompositeOperation = 'source-over';
         }
-    
+
+        ctx.lineWidth = lineWidth;
+
+        if (currentTool === 'eraser') {
+            ctx.globalCompositeOperation = 'destination-out';
+            ctx.strokeStyle = 'rgba(0,0,0,1)'; // 지우개 색상 (실제로는 투명)
+        }
+
+        ctx.beginPath();
+        ctx.moveTo(lastX, lastY);
+        ctx.lineTo(x, y);
+        ctx.stroke();
         [lastX, lastY] = [x, y];
     }
 
@@ -432,6 +443,7 @@ window.addEventListener('load', () => {
 
     // 도장 모두 그리기 함수
     function drawAllStamps() {
+        // 기존 그린 선들을 지우지 않고 도장만 그리기
         stampsPlaced.forEach(stamp => {
             const img = new Image();
             img.src = stamp.src;
@@ -441,34 +453,6 @@ window.addEventListener('load', () => {
         });
     }
 
-    function removeStampsInEraseArea() {
-        const erasedStamps = [];
-        const eraseThreshold = lineWidth * 2; // 지우개 크기 기준
-    
-        // stampsPlaced 배열에서 지워야 할 도장을 필터링
-        stampsPlaced = stampsPlaced.filter(stamp => {
-            // 도장의 중심 좌표
-            const stampCenterX = stamp.x;
-            const stampCenterY = stamp.y;
-    
-            // 도장이 지우개 영역에 포함되는지 확인
-            const isErased = (
-                Math.abs(stampCenterX - lastX) <= eraseThreshold &&
-                Math.abs(stampCenterY - lastY) <= eraseThreshold
-            );
-    
-            if (isErased) {
-                erasedStamps.push(stamp); // 지워진 도장을 추적 (디버깅용)
-            }
-    
-            return !isErased; // 지워진 도장은 배열에서 제거
-        });
-    
-        if (erasedStamps.length > 0) {
-            console.log(`${erasedStamps.length}개의 도장이 지워졌습니다.`);
-        }
-    }
-    
     // 지우기 기능 (그림 캔버스 및 도장 모두 초기화)
     const clearBtn = document.getElementById('clear');
     clearBtn.addEventListener('click', clearDrawing);
@@ -487,11 +471,8 @@ window.addEventListener('load', () => {
         }
         // Redo 히스토리 초기화
         redoStack = [];
-        // 지운 도장을 stampsPlaced 배열에서 제거        
-        removeStampsInEraseArea();        
         ctx.clearRect(0, 0, drawingCanvas.width, drawingCanvas.height);
-       // 지운 후 다시 도장들을 그려줌 (남아 있는 도장만)
-        drawAllStamps();
+        stampsPlaced = []; // 모든 도장 제거
     }
 
     // 저장하기 기능
@@ -578,6 +559,25 @@ window.addEventListener('load', () => {
         loadDesign();
     });
 
+    // 커스텀 커서 이동 업데이트
+    function moveCursor(e) {
+        let x, y;
+        if (e.touches && e.touches.length > 0) {
+            x = e.touches[0].clientX;
+            y = e.touches[0].clientY;
+        } else {
+            x = e.clientX;
+            y = e.clientY;
+        }
+        customCursor.style.left = `${x}px`;
+        customCursor.style.top = `${y}px`;
+    }
+
+    // 마우스 이동 이벤트
+    document.addEventListener('mousemove', moveCursor);
+    // 터치 이동 이벤트
+    document.addEventListener('touchmove', moveCursor, { passive: false });
+
     // Prevent default touchmove on the canvas to prevent scrolling
     drawingCanvas.addEventListener('touchmove', function(e) {
         e.preventDefault();
@@ -595,6 +595,9 @@ window.addEventListener('load', () => {
     drawingCanvas.addEventListener('touchend', function(e) {
         e.stopPropagation();
     }, { passive: false });
+
+    // 초기 커서 설정
+    updateCursor();
 
     // 애니메이션 추가 (fadeIn)
     const style = document.createElement('style');
