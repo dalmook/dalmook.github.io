@@ -171,6 +171,7 @@ header h1 {
 @media (max-width: 1200px) {
     .game-container {
         max-width: 100%; /* 디바이스 너비에 맞춤 */
+        min-width: 800px;
     }
 
     .image-wrapper {
@@ -183,6 +184,7 @@ header h1 {
 @media (max-width: 768px) {
     .game-container {
         max-width: 100%; /* 디바이스 너비에 맞춤 */
+        min-width: 420px;
     }
 
     .image-wrapper {
