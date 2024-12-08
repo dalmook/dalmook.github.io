@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>사진 맞추기 게임</title>
+    <link rel="stylesheet" href="cardstyles.css">
+</head>
+<body>
+    <header>
+        <h1>사진 맞추기 게임</h1>
+    </header>
+    <main>
+        <div class="game-container">
+            <div class="image-wrapper">
+                <!-- 숨겨진 이미지 -->
+                <img id="hidden-image" src="" alt="숨겨진 이미지">
+                <!-- 덮여 있는 마스크 -->
+                <div class="mask" id="mask">
+                    <span class="mask-text">?</span>
+                </div>
+            </div>
+            <div class="controls">
+                <button id="prev-button">이전</button>
+                <button id="next-button">다음</button>
+            </div>
+        </div>
+    </main>
+    <script src="cardscript.js"></script>
+</body>
+</html>
