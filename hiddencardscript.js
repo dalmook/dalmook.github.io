@@ -175,24 +175,19 @@ function handleDrag(event) {
     let deltaXPercent = (deltaX / mask.parentElement.clientWidth) * 100;
     let deltaYPercent = (deltaY / mask.parentElement.clientHeight) * 100;
 
-    // 마스크의 새로운 위치와 크기 계산
-    let newTop = initialTop - Math.max(0, -deltaYPercent); // 위로 이동
-    let newLeft = initialLeft + Math.max(0, deltaXPercent); // 오른쪽으로 이동
-    let newWidth = initialWidth - Math.abs(deltaXPercent); // 너비 감소
-    let newHeight = initialHeight - Math.abs(deltaYPercent); // 높이 감소
+    // 마스크의 새로운 위치 계산
+    let newTop = initialTop + deltaYPercent; // 상하 이동
+    let newLeft = initialLeft + deltaXPercent; // 좌우 이동
 
-    // 마스크의 위치와 크기를 0% 이상, 100% 이하로 제한
-    newTop = Math.max(0, Math.min(newTop, 100 - newHeight));
-    newLeft = Math.max(0, Math.min(newLeft, 100 - newWidth));
-    newWidth = Math.max(0, Math.min(newWidth, 100));
-    newHeight = Math.max(0, Math.min(newHeight, 100));
+    // 마스크의 위치를 0% 이상, 100% 이하로 제한
+    newTop = Math.max(0, Math.min(newTop, 100 - parseFloat(mask.style.height)));
+    newLeft = Math.max(0, Math.min(newLeft, 100 - parseFloat(mask.style.width)));
 
-    // 마스크 스타일 업데이트
+    // 마스크 스타일 업데이트 (크기는 유지, 위치만 변경)
     mask.style.top = `${newTop}%`;
     mask.style.left = `${newLeft}%`;
-    mask.style.width = `${newWidth}%`;
-    mask.style.height = `${newHeight}%`;
 }
+
 
 // 이전 버튼 클릭 이벤트
 prevButton.addEventListener("click", () => {
