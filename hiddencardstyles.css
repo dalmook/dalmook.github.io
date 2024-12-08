@@ -228,6 +228,21 @@ header h1 {
 }
 
 @media (max-width: 480px) {
+    #game-container {
+        width: 100%;
+        height: auto; /* 높이를 자동으로 조정 */
+        padding: 10px; /* 패딩 줄이기 */
+        max-width: 100%; /* 최대 너비를 100%로 설정 */
+        min-height: auto; /* 최소 높이 제거 */
+    }
+
+    .image-wrapper {
+        width: 90%; /* 전체 너비의 90% 사용 */
+        height: auto; /* 높이를 내용에 맞게 조정 */
+        aspect-ratio: 1 / 1; /* 정사각형 유지 */
+        margin-bottom: 15px; /* 마진 조정 */
+        background-size: contain; /* 이미지가 잘리지 않도록 */
+    }
     header h1 {
         font-size: 2em;
     }
