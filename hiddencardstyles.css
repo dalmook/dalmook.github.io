@@ -72,21 +72,23 @@ header h1 {
     flex-direction: column;
     align-items: center;
     width: 100%;
-    max-width: 800px; /* 카드 크기 확대 */
+    max-width: 100%; /* 카드 크기 확대 */
+    height: 100vh; /* 전체 화면 높이 사용 */
+    box-sizing: border-box;
 }
 
 /* 이미지 래퍼 */
 .image-wrapper {
     position: relative;
     width: 100%;
-    padding-top: 133.33%; /* 3:4 비율 */
+    height: 80vh; /* 높이 확대 */
+    max-width: 800px; /* 카드 크기 확대 */
     overflow: hidden;
     border: 3px solid #ccc; /* 두께 확대 */
     border-radius: 15px; /* 라운드 확대 */
     background-color: #000;
 }
 
-/* 숨겨진 이미지 */
 #hidden-image {
     position: absolute;
     top: 0;
@@ -109,7 +111,7 @@ header h1 {
     display: flex;
     align-items: center;
     justify-content: center;
-    transition: top 0.2s ease, left 0.2s ease, width 0.2s ease, height 0.2s ease, background 0.2s ease;
+    transition: top 0.2s ease, left 0.2s ease, width 0.2s ease, height 0.2s ease;
 }
 
 .mask.dragging {
@@ -123,7 +125,7 @@ header h1 {
     font-weight: bold;
     text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
     user-select: none; /* 텍스트 선택 방지 */
-/* } */
+} */
 
 /* 정답 표시 스타일 */
 .correct-answer {
@@ -145,6 +147,7 @@ header h1 {
     display: flex;
     gap: 15px; /* 간격 확대 */
     width: 100%;
+    max-width: 800px; /* 카드 크기 확대 */
 }
 
 .controls button {
@@ -195,7 +198,8 @@ header h1 {
 
 @media (max-width: 768px) {
     .game-container {
-        max-width: 90%;
+        max-width: 100%;
+        height: auto;
     }
 
     header h1 {
