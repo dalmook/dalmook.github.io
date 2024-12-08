@@ -22,7 +22,7 @@ const hiddenImage = document.getElementById("hidden-image");
 const mask = document.getElementById("mask");
 const prevButton = document.getElementById("prev-button");
 const nextButton = document.getElementById("next-button");
-const maskText = mask.querySelector('.mask-text');
+const maskText = mask.querySelector('.mask-text'); // 제거할 예정
 const categorySelection = document.getElementById("category-selection");
 const gameContainer = document.getElementById("game-container");
 const categoryButtons = document.querySelectorAll(".category-button");
@@ -81,7 +81,9 @@ function resetMask() {
     mask.style.left = "0%";
     mask.style.width = "100%";
     mask.style.height = "100%";
-    maskText.style.display = "block";
+    mask.style.background = "rgba(0, 0, 0, 1)"; // 완전 불투명
+    // maskText.style.display = "none"; // "?" 마크 제거
+    maskText.style.display = "none"; // 마스크 텍스트 숨김
     correctAnswer.style.display = "none"; // 정답 숨김
     correctAnswer.textContent = ""; // 정답 텍스트 초기화
     initialWidth = 100;
@@ -126,10 +128,10 @@ function stopDragging() {
         isDragging = false;
         mask.classList.remove('dragging');
 
-        // 마스크가 완전히 제거되었는지 확인 (임계값 설정)
+        // 마스크가 거의 제거되었는지 확인 (5% 이하)
         const currentWidth = parseFloat(mask.style.width);
         const currentHeight = parseFloat(mask.style.height);
-        if (currentWidth <= 0.1 && currentHeight <= 0.1) {
+        if (currentWidth <= 5 && currentHeight <= 5) {
             speakWord(currentQuestions[currentQuestionIndex].correct);
             displayCorrectAnswer();
         }
@@ -151,7 +153,7 @@ function handleDrag(event) {
         currentY = event.touches[0].clientY;
     }
 
-    // 드래그 거리 계산 (방향 수정: startY - currentY)
+    // 드래그 거리 계산 (드래그 방향에 따라 deltaY 조정)
     let deltaX = currentX - startX;
     let deltaY = startY - currentY; // 드래그 방향 반전
 
@@ -176,6 +178,10 @@ function handleDrag(event) {
     mask.style.left = `${newLeft}%`;
     mask.style.width = `${newWidth}%`;
     mask.style.height = `${newHeight}%`;
+
+    // 추가: 마스크 배경 투명도 조절 (드래그할수록 투명해짐)
+    const transparency = Math.min(1, (100 - newWidth) / 100);
+    mask.style.background = `rgba(0, 0, 0, ${transparency})`;
 }
 
 // 이전 버튼 클릭 이벤트
