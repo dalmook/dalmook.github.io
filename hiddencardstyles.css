@@ -11,21 +11,59 @@ body {
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: center;
+    justify-content: flex-start;
     min-height: 100vh;
     background-color: #f7f7f7;
     color: #333;
+    padding: 20px;
 }
 
 /* 헤더 스타일 */
 header {
     margin-bottom: 20px;
+    text-align: center;
 }
 
 header h1 {
     font-size: 2.5em;
     color: #ff69b4; /* 핑크색 */
+}
+
+/* 카테고리 선택 섹션 */
+.category-selection {
+    width: 100%;
+    max-width: 600px;
+    margin-bottom: 30px;
     text-align: center;
+}
+
+.category-selection h2 {
+    margin-bottom: 15px;
+    font-size: 1.8em;
+    color: #333;
+}
+
+.categories {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    flex-wrap: wrap;
+}
+
+.category-button {
+    flex: 1 1 100px;
+    padding: 15px 20px;
+    border: none;
+    background-color: #28a745;
+    color: white;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 1em;
+    transition: background-color 0.3s ease;
+}
+
+.category-button:hover {
+    background-color: #218838;
 }
 
 /* 게임 컨테이너 */
@@ -33,7 +71,7 @@ header h1 {
     display: flex;
     flex-direction: column;
     align-items: center;
-    width: 90%;
+    width: 100%;
     max-width: 600px; /* 카드 크기 확대 */
 }
 
@@ -48,7 +86,6 @@ header h1 {
     background-color: #000;
 }
 
-/* 숨겨진 이미지 */
 #hidden-image {
     position: absolute;
     top: 0;
@@ -74,12 +111,10 @@ header h1 {
     transition: top 0.2s ease, left 0.2s ease, width 0.2s ease, height 0.2s ease;
 }
 
-/* 드래그 중일 때 커서 변경 */
 .mask.dragging {
     cursor: grabbing;
 }
 
-/* 마스크 내부의 "?" 스타일 */
 .mask-text {
     font-size: 3em;
     color: #ffffff;
@@ -159,5 +194,15 @@ header h1 {
     .controls button {
         font-size: 12px;
         padding: 8px 0;
+    }
+
+    .category-button {
+        flex: 1 1 80px;
+        padding: 12px 16px;
+        font-size: 0.9em;
+    }
+
+    .category-selection h2 {
+        font-size: 1.5em;
     }
 }
