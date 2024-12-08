@@ -238,6 +238,9 @@ window.addEventListener('load', () => {
 
     function startDrawing(e) {
         e.preventDefault();
+
+        [lastX, lastY] = getPointerPosition(e);
+
         if (currentTool === 'stamp') {
             placeStamp(e);
             return;
@@ -265,27 +268,33 @@ window.addEventListener('load', () => {
     function draw(e) {
         e.preventDefault();
         if (!drawing) return;
-
+    
         const [x, y] = getPointerPosition(e);
-
-        ctx.lineCap = 'round';
-
-        if (currentTool !== 'eraser') {
-            ctx.strokeStyle = currentColor;
-            ctx.globalCompositeOperation = 'source-over';
-        }
-
-        ctx.lineWidth = lineWidth;
-
+    
         if (currentTool === 'eraser') {
+            // 지우개 사용 중이면 영역 업데이트
+            lastX = x;
+            lastY = y;
+    
+            // 기존 로직 (캔버스 상의 그리기 내용 지우기)
             ctx.globalCompositeOperation = 'destination-out';
-            ctx.strokeStyle = 'rgba(0,0,0,1)'; // 지우개 색상 (실제로는 투명)
+            ctx.lineWidth = lineWidth;
+            ctx.strokeStyle = 'rgba(0,0,0,1)';
+            ctx.beginPath();
+            ctx.moveTo(lastX, lastY);
+            ctx.lineTo(x, y);
+            ctx.stroke();
+        } else {
+            // 일반 그리기 도구
+            ctx.globalCompositeOperation = 'source-over';
+            ctx.lineWidth = lineWidth;
+            ctx.strokeStyle = currentColor;
+            ctx.beginPath();
+            ctx.moveTo(lastX, lastY);
+            ctx.lineTo(x, y);
+            ctx.stroke();
         }
-
-        ctx.beginPath();
-        ctx.moveTo(lastX, lastY);
-        ctx.lineTo(x, y);
-        ctx.stroke();
+    
         [lastX, lastY] = [x, y];
     }
 
@@ -443,7 +452,6 @@ window.addEventListener('load', () => {
 
     // 도장 모두 그리기 함수
     function drawAllStamps() {
-        // 기존 그린 선들을 지우지 않고 도장만 그리기
         stampsPlaced.forEach(stamp => {
             const img = new Image();
             img.src = stamp.src;
@@ -453,6 +461,34 @@ window.addEventListener('load', () => {
         });
     }
 
+    function removeStampsInEraseArea() {
+        const erasedStamps = [];
+        const eraseThreshold = lineWidth * 2; // 지우개 크기 기준
+    
+        // stampsPlaced 배열에서 지워야 할 도장을 필터링
+        stampsPlaced = stampsPlaced.filter(stamp => {
+            // 도장의 중심 좌표
+            const stampCenterX = stamp.x;
+            const stampCenterY = stamp.y;
+    
+            // 도장이 지우개 영역에 포함되는지 확인
+            const isErased = (
+                Math.abs(stampCenterX - lastX) <= eraseThreshold &&
+                Math.abs(stampCenterY - lastY) <= eraseThreshold
+            );
+    
+            if (isErased) {
+                erasedStamps.push(stamp); // 지워진 도장을 추적 (디버깅용)
+            }
+    
+            return !isErased; // 지워진 도장은 배열에서 제거
+        });
+    
+        if (erasedStamps.length > 0) {
+            console.log(`${erasedStamps.length}개의 도장이 지워졌습니다.`);
+        }
+    }
+    
     // 지우기 기능 (그림 캔버스 및 도장 모두 초기화)
     const clearBtn = document.getElementById('clear');
     clearBtn.addEventListener('click', clearDrawing);
@@ -471,8 +507,11 @@ window.addEventListener('load', () => {
         }
         // Redo 히스토리 초기화
         redoStack = [];
+        // 지운 도장을 stampsPlaced 배열에서 제거        
+        removeStampsInEraseArea();        
         ctx.clearRect(0, 0, drawingCanvas.width, drawingCanvas.height);
-        stampsPlaced = []; // 모든 도장 제거
+       // 지운 후 다시 도장들을 그려줌 (남아 있는 도장만)
+        drawAllStamps();
     }
 
     // 저장하기 기능
