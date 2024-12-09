@@ -190,6 +190,7 @@ header h1 {
 
     .image-wrapper {
         width: 100%;
+        max-width: 100%;
         aspect-ratio: 1 / 1; /* 정사각형 유지 */
     }
 }
@@ -202,6 +203,7 @@ header h1 {
 
     .image-wrapper {
         width: 100%;
+        max-width: 100%;
         aspect-ratio: 1 / 1; /* 정사각형 유지 */
     }
 }
