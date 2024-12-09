@@ -529,6 +529,100 @@
                 "image": "봉고.png",
                 "correct": "Bongo"
             }
+        ],
+        "drinks": [
+            {
+                "image": "코코뿌요.png",
+                "correct": "코코뿌요"
+            },
+            {
+                "image": "코코팜.png",
+                "correct": "코코팜"
+            },
+            {
+                "image": "코코에몽.png",
+                "correct": "코코에몽"
+            },
+            {
+                "image": "카프리썬.png",
+                "correct": "카프리썬"
+            },
+            {
+                "image": "뿌요소다.png",
+                "correct": "뿌요소다"
+            },
+            {
+                "image": "뽀로로보리차.png",
+                "correct": "뽀로로보리차"
+            },
+            {
+                "image": "미닛메이드.png",
+                "correct": "미닛메이드"
+            },
+            {
+                "image": "환타.png",
+                "correct": "환타"
+            },
+            {
+                "image": "탐스.png",
+                "correct": "탐스"
+            },
+            {
+                "image": "바나나맛우유.png",
+                "correct": "바나나맛우유"
+            },
+            {
+                "image": "밀키스.png",
+                "correct": "밀키스"
+            },
+            {
+                "image": "815.png",
+                "correct": "815"
+            },
+            {
+                "image": "쌕쌕.png",
+                "correct": "쌕쌕"
+            },
+            {
+                "image": "칠성사이다.png",
+                "correct": "칠성사이다"
+            },
+            {
+                "image": "이프로.png",
+                "correct": "이프로"
+            },
+            {
+                "image": "코카콜라.png",
+                "correct": "코카콜라"
+            },
+            {
+                "image": "암바사.png",
+                "correct": "암바사"
+            },
+            {
+                "image": "갈아만든배.png",
+                "correct": "갈아만든배"
+            },
+            {
+                "image": "비락식혜.png",
+                "correct": "비락식혜"
+            },
+            {
+                "image": "맥콜.png",
+                "correct": "맥콜"
+            },
+            {
+                "image": "스프라이트.png",
+                "correct": "스프라이트"
+            },
+            {
+                "image": "탁터페퍼.png",
+                "correct": "탁터페퍼"
+            },
+            {
+                "image": "펩시.png",
+                "correct": "펩시"
+            }
         ]
     }
 }
