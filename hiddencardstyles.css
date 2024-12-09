@@ -169,7 +169,7 @@ header h1 {
 }
 
 /* 반응형 디자인 */
-@media (max-width: 1200px) {
+@media (max-width: 1600px) {
     .game-container {
         max-width: 100%; /* 디바이스 너비에 맞춤 */
         min-width: 800px;
