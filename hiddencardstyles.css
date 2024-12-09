@@ -74,8 +74,8 @@ header h1 {
     align-items: center;
     width: 100%;
     max-width: 1200px; /* PC 최대 너비 */
-    min-width: 800px;
-    height: auto;
+    min-width: 700px;
+    height: 90vh;
     box-sizing: border-box;
 }
 
