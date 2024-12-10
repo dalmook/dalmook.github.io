@@ -721,6 +721,136 @@
                 "image": "멸치칼국수.webp",
                 "correct": "멸치칼국수"
             }
+        ],
+        "snack": [
+            {
+                "image": "알새우칩.jpg",
+                "correct": "알새우칩"
+            },
+            {
+                "image": "오징어집.webp",
+                "correct": "오징어집"
+            },
+            {
+                "image": "오잉.jpg",
+                "correct": "오잉"
+            },
+            {
+                "image": "쌀로별.jpeg",
+                "correct": "쌀로별"
+            },
+            {
+                "image": "칸츄리콘.webp",
+                "correct": "칸츄리콘"
+            },
+            {
+                "image": "카라멜땅콩.jpg",
+                "correct": "카라멜땅콩"
+            },
+            {
+                "image": "메이플콘.jpg",
+                "correct": "메이플콘"
+            },
+            {
+                "image": "통크.jpg",
+                "correct": "통크"
+            },
+            {
+                "image": "빼빼로.jpg",
+                "correct": "빼빼로"
+            },
+            {
+                "image": "초코송이.webp",
+                "correct": "초코송이"
+            },
+            {
+                "image": "씨리얼.webp",
+                "correct": "씨리얼"
+            },
+            {
+                "image": "칸쵸.webp",
+                "correct": "칸쵸"
+            },
+            {
+                "image": "버터와플.jpg",
+                "correct": "버터와플"
+            },
+            {
+                "image": "쿠쿠다스.jpg",
+                "correct": "쿠쿠다스"
+            },
+            {
+                "image": "치토스.jpg",
+                "correct": "치토스"
+            },
+            {
+                "image": "양파링.jpg",
+                "correct": "양파링"
+            },
+            {
+                "image": "포카칩.jpg",
+                "correct": "포카칩"
+            },
+            {
+                "image": "포테토칩.jpeg",
+                "correct": "포테토칩"
+            },
+            {
+                "image": "바나나킥.jpg",
+                "correct": "바나나킥"
+            },
+            {
+                "image": "꼬깔콘.jpg",
+                "correct": "꼬깔콘"
+            },
+            {
+                "image": "스윙칩.webp",
+                "correct": "스윙칩"
+            },
+            {
+                "image": "새우깡.jpg",
+                "correct": "새우깡"
+            },
+            {
+                "image": "꽃게랑.jpg",
+                "correct": "꽃게랑"
+            },
+            {
+                "image": "신당동떡볶이.webp",
+                "correct": "신당동떡볶이"
+            },
+            {
+                "image": "인디안밥.jpg",
+                "correct": "인디안밥"
+            },
+            {
+                "image": "포스틱.jpg",
+                "correct": "포스틱"
+            },
+            {
+                "image": "고구마깡.jpg",
+                "correct": "고구마깡"
+            },
+            {
+                "image": "꿀꽈배기.jpg",
+                "correct": "꿀꽈배기"
+            },
+            {
+                "image": "자갈치.webp",
+                "correct": "자갈치"
+            },
+            {
+                "image": "신짱.jpg",
+                "correct": "못말리는 신짱"
+            },
+            {
+                "image": "옥수수깡.jpg",
+                "correct": "옥수수깡"
+            },
+            {
+                "image": "감자깡.jpg",
+                "correct": "감자깡"
+            }
         ]
     }
 }
