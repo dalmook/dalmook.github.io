@@ -623,6 +623,104 @@
                 "image": "펩시.png",
                 "correct": "펩시"
             }
+        ],
+        "ramen": [
+            {
+                "image": "신라면1.jpg",
+                "correct": "신라면"
+            },
+            {
+                "image": "김치라면.webp",
+                "correct": "김치라면"
+            },
+            {
+                "image": "마열라면.jpg",
+                "correct": "마열라면"
+            },
+            {
+                "image": "진라면매운맛.jpg",
+                "correct": "진라면 매운맛"
+            },
+            {
+                "image": "틈새라면.png",
+                "correct": "틈새라면"
+            },
+            {
+                "image": "된장라면.webp",
+                "correct": "된장라면"
+            },
+            {
+                "image": "김통깨.jpg",
+                "correct": "김통깨"
+            },
+            {
+                "image": "해물라면.png",
+                "correct": "해물라면"
+            },
+            {
+                "image": "미역국라면.jpg",
+                "correct": "미역국라면"
+            },
+            {
+                "image": "열라면.webp",
+                "correct": "열라면"
+            },
+            {
+                "image": "남자라면.webp",
+                "correct": "남자라면"
+            },
+            {
+                "image": "빽라면.jpg",
+                "correct": "빽라면"
+            },
+            {
+                "image": "무파마.jpg",
+                "correct": "무파마"
+            },
+            {
+                "image": "신라면레드.jpg",
+                "correct": "신라면레드"
+            },
+            {
+                "image": "오징어짬뽕.webp",
+                "correct": "오징어짬뽕"
+            },
+            {
+                "image": "짜파게티.webp",
+                "correct": "짜파게티"
+            },
+            {
+                "image": "참깨라면.webp",
+                "correct": "참깨라면"
+            },
+            {
+                "image": "스파게티.webp",
+                "correct": "스파게티"
+            },
+            {
+                "image": "불닭볶음면.webp",
+                "correct": "불닭볶음면"
+            },
+            {
+                "image": "미역국라면.webp",
+                "correct": "미역국라면"
+            },
+            {
+                "image": "삼양라면.jpg",
+                "correct": "삼양라면"
+            },
+            {
+                "image": "꼬꼬면.webp",
+                "correct": "꼬꼬면"
+            },
+            {
+                "image": "나가사키짬뽕.webp",
+                "correct": "나가사키짬뽕"
+            },
+            {
+                "image": "멸치칼국수.webp",
+                "correct": "멸치칼국수"
+            }
         ]
     }
 }
