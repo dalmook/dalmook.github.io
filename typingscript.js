@@ -1,18 +1,25 @@
 // typingscript.js
 
 document.addEventListener("DOMContentLoaded", () => {
+    const startScreen = document.getElementById("start-screen");
+    const gameScreen = document.getElementById("game-screen");
+    const difficultyButtons = document.querySelectorAll(".difficulty-button");
+    const startButton = document.getElementById("start-button");
     const wordContainer = document.getElementById("word-container");
     const wordInput = document.getElementById("word-input");
     const scoreElement = document.getElementById("score");
     const levelElement = document.getElementById("level");
     const livesElement = document.getElementById("lives");
     const successSound = document.getElementById("success-sound");
+
+    let selectedDifficulty = null;
     let score = 0;
     let level = 1;
     let lives = 3;
     let wordList = [];
     let gameInterval;
     let levelInterval;
+    let speedIncreaseInterval;
     const initialWordSpeed = 5000; // 초기 단어 생성 간격 (밀리초)
     let currentWordSpeed = initialWordSpeed;
 
@@ -21,20 +28,72 @@ document.addEventListener("DOMContentLoaded", () => {
         .then(response => response.json())
         .then(data => {
             wordList = data;
-            startGame();
         })
         .catch(error => console.error('단어 데이터를 로드하는 중 오류 발생:', error));
 
-    function startGame() {
+    // 난이도 선택
+    difficultyButtons.forEach(button => {
+        button.addEventListener("click", () => {
+            // 모든 버튼의 선택 상태 제거
+            difficultyButtons.forEach(btn => btn.classList.remove("selected"));
+            // 클릭한 버튼만 선택 상태 추가
+            button.classList.add("selected");
+            selectedDifficulty = button.dataset.difficulty;
+            // 게임 시작 버튼 활성화
+            startButton.disabled = false;
+        });
+    });
+
+    // 게임 시작 버튼 클릭
+    startButton.addEventListener("click", () => {
+        if (!selectedDifficulty) return;
+        // 시작 화면 숨기기
+        startScreen.classList.remove("active");
+        startScreen.classList.add("hidden");
+        // 게임 화면 보이기
+        gameScreen.style.display = "block";
+        // 게임 초기화
+        initializeGame();
+    });
+
+    function initializeGame() {
+        score = 0;
+        level = 1;
+        lives = 3;
+        currentWordSpeed = initialWordSpeed;
+        updateScore();
+        updateLevel();
+        updateLives();
+        wordInput.value = "";
+        wordInput.focus();
+
+        // 단어 생성 간격 설정
         gameInterval = setInterval(addWord, currentWordSpeed);
-        levelInterval = setInterval(increaseLevel, 30000); // 30초마다 레벨 증가
+        // 레벨 증가 간격 설정 (예: 30초마다 레벨 증가)
+        levelInterval = setInterval(increaseLevel, 30000);
+        // 속도 증가 간격 설정 (예: 10초마다 속도 10% 증가)
+        speedIncreaseInterval = setInterval(increaseSpeed, 10000);
     }
 
     function addWord() {
         if (lives <= 0) return; // 게임 종료 시 단어 추가 중단
 
-        const randomIndex = Math.floor(Math.random() * wordList.length);
-        const wordObj = wordList[randomIndex];
+        // 난이도에 따른 필터링
+        const filteredList = wordList.filter(wordObj => {
+            if (selectedDifficulty === "easy") {
+                return wordObj.difficulty === "easy";
+            } else if (selectedDifficulty === "medium") {
+                return wordObj.difficulty === "easy" || wordObj.difficulty === "medium";
+            } else if (selectedDifficulty === "hard") {
+                return wordObj.difficulty === "medium" || wordObj.difficulty === "hard";
+            }
+            return true;
+        });
+
+        if (filteredList.length === 0) return; // 필터링된 단어가 없을 경우 추가하지 않음
+
+        const randomIndex = Math.floor(Math.random() * filteredList.length);
+        const wordObj = filteredList[randomIndex];
         const type = wordObj.type;
 
         let displayText, correctAnswer;
@@ -93,14 +152,16 @@ document.addEventListener("DOMContentLoaded", () => {
 
     function increaseLevel() {
         level += 1;
-        levelElement.textContent = level.toString();
+        updateLevel();
+        // 레벨이 올라갈 때마다 추가적인 난이도 조정 가능
+    }
 
-        // 단어 생성 간격을 줄이고, 단어 떨어지는 속도를 증가
-        currentWordSpeed = Math.max(initialWordSpeed - level * 500, 1000); // 최소 1초
+    function increaseSpeed() {
+        currentWordSpeed = Math.max(currentWordSpeed - 500, 1000); // 최소 단어 생성 간격 1초
         clearInterval(gameInterval);
         gameInterval = setInterval(addWord, currentWordSpeed);
 
-        // 모든 현재 단어의 애니메이션 속도 증가
+        // 현재 단어들의 애니메이션 속도 증가
         Array.from(wordContainer.children).forEach(word => {
             const newDuration = parseFloat(word.style.animationDuration) * 0.9; // 10% 빠르게
             word.style.animationDuration = `${newDuration}s`;
@@ -110,6 +171,7 @@ document.addEventListener("DOMContentLoaded", () => {
     function endGame() {
         clearInterval(gameInterval);
         clearInterval(levelInterval);
+        clearInterval(speedIncreaseInterval);
         alert(`게임 종료! 최종 점수: ${score}`);
         // 페이지 새로 고침 또는 재시작 로직 추가 가능
         window.location.reload();
@@ -145,6 +207,10 @@ document.addEventListener("DOMContentLoaded", () => {
 
     function updateScore() {
         scoreElement.textContent = score.toString();
+    }
+
+    function updateLevel() {
+        levelElement.textContent = level.toString();
     }
 
     function updateLives() {
