@@ -40,75 +40,59 @@ body {
     }
 }
 
+/* stats-container styles */
+#stats-container {
+    position: absolute;
+    bottom: 80px; /* 입력창 위에 위치 */
+    left: 50%;
+    transform: translateX(-50%);
+    width: 90%;
+    max-width: 600px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 20px;
+    background-color: rgba(255, 255, 255, 0.8);
+    border-radius: 8px;
+    z-index: 2; /* Ensure it's above other elements */
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+/* Individual stats styles */
+#score-board,
+#level-board,
+#lives-board,
+#wpm-board {
+    font-size: 18px;
+    color: #333;
+    padding: 5px 10px;
+    border-radius: 5px;
+    background: rgba(255, 255, 255, 0.7);
+    min-width: 60px;
+    text-align: center;
+}
+
 /* input-container styles */
 #input-container {
     position: absolute;
     bottom: 20px;
     left: 50%;
     transform: translateX(-50%);
-    width: 320px; /* Adjusted width to accommodate score and WPM */
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
+    width: 90%;
+    max-width: 600px;
     z-index: 2; /* Ensure it's above other elements */
-    background-color: rgba(255, 255, 255, 0.8); /* Optional: background for better visibility */
-    padding: 5px 10px;
-    border-radius: 5px;
+    display: flex;
+    justify-content: center;
 }
 
 #word-input {
-    flex: 1;
-    padding: 10px;
+    width: 100%;
+    padding: 12px 20px;
     font-size: 18px;
     border: 2px solid #333;
-    border-radius: 5px;
+    border-radius: 8px;
     outline: none;
-}
-
-#score-board {
-    margin-left: 10px;
-    font-size: 20px;
-    color: #333;
-    background: rgba(255, 255, 255, 0.7);
-    padding: 5px 10px;
-    border-radius: 5px;
-}
-
-#wpm-board {
-    margin-left: 10px;
-    font-size: 20px;
-    color: #333;
-    background: rgba(255, 255, 255, 0.7);
-    padding: 5px 10px;
-    border-radius: 5px;
-}
-
-/* level-board styles */
-#level-board {
-    position: absolute;
-    bottom: 80px; /* input-container 위에 위치 */
-    left: 50%;
-    transform: translateX(-50%);
-    font-size: 20px;
-    color: #333;
-    background: rgba(255, 255, 255, 0.7);
-    padding: 5px 10px;
-    border-radius: 5px;
-    z-index: 2;
-}
-
-/* lives-board styles */
-#lives-board {
-    position: absolute;
-    bottom: 140px; /* level-board 위에 위치 */
-    left: 50%;
-    transform: translateX(-50%);
-    font-size: 20px;
-    color: #333;
-    background: rgba(255, 255, 255, 0.7);
-    padding: 5px 10px;
-    border-radius: 5px;
-    z-index: 2;
+    box-sizing: border-box;
 }
 
 /* Visual effect for matched word */
@@ -121,23 +105,47 @@ body {
     to { background-color: transparent; }
 }
 
-/* 모바일 화면용 스타일 */
-@media (max-width: 600px) {
+/* 모바일 및 반응형 스타일 */
+@media (max-width: 768px) {
+    #stats-container {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+    }
+
+    #score-board,
+    #level-board,
+    #lives-board,
+    #wpm-board {
+        width: 100%;
+        text-align: left;
+    }
+
     #input-container {
-        width: 90%; /* 더 작은 화면에 맞게 조정 */
+        width: 90%;
     }
 
     #word-input {
         font-size: 16px;
-        padding: 8px;
+        padding: 10px 15px;
+    }
+}
+
+@media (max-width: 480px) {
+    #stats-container {
+        padding: 8px 16px;
     }
 
-    #score-board, #level-board, #lives-board, #wpm-board {
-        font-size: 18px;
+    #score-board,
+    #level-board,
+    #lives-board,
+    #wpm-board {
+        font-size: 16px;
         padding: 4px 8px;
     }
 
-    .falling-word {
-        font-size: 20px;
+    #word-input {
+        font-size: 14px;
+        padding: 8px 12px;
     }
 }
