@@ -5,10 +5,8 @@ document.addEventListener("DOMContentLoaded", () => {
     const wordInput = document.getElementById("word-input");
     const scoreElement = document.getElementById("score");
     let score = 0;
-    let words = [];
     let wordList = [];
-    let gameInterval;
-    const wordSpeed = 2000; // 단어가 떨어지는 속도 (밀리초)
+    const wordSpeed = 3000; // 단어 생성 간격을 3초로 설정
 
     // 단어 데이터 로드
     fetch('typingdata.json')
@@ -20,7 +18,7 @@ document.addEventListener("DOMContentLoaded", () => {
         .catch(error => console.error('단어 데이터를 로드하는 중 오류 발생:', error));
 
     function startGame() {
-        gameInterval = setInterval(addWord, wordSpeed);
+        setInterval(addWord, wordSpeed);
     }
 
     function addWord() {
@@ -38,29 +36,33 @@ document.addEventListener("DOMContentLoaded", () => {
 
         wordContainer.appendChild(wordElement);
 
-        // 단어가 화면을 벗어났을 때 제거 및 점수 감소
+        // 단어가 화면을 벗어났을 때 제거
         wordElement.addEventListener("animationend", () => {
             wordContainer.removeChild(wordElement);
-            // 선택적으로, 놓친 단어에 대한 처리를 추가할 수 있습니다.
+            // 선택적으로, 놓친 단어에 대한 페널티 추가 가능
             // 예: score -= 1;
             // updateScore();
         });
     }
 
     function getRandomSpeed() {
-        return Math.random() * 3 + 2; // 2초에서 5초 사이
+        return Math.random() * 3 + 3; // 3초에서 6초 사이로 변경
     }
 
-    wordInput.addEventListener("input", () => {
-        const inputValue = wordInput.value.trim();
-        if (inputValue === "") return;
+    // 'keydown' 이벤트로 변경하여 'Enter' 키 입력 시 단어 확인
+    wordInput.addEventListener("keydown", (event) => {
+        if (event.key === "Enter") {
+            const inputValue = wordInput.value.trim().toLowerCase();
+            if (inputValue === "") return;
 
-        const matchedWord = Array.from(wordContainer.children).find(word => word.textContent === inputValue);
-        if (matchedWord) {
-            score += 10;
-            updateScore();
-            wordContainer.removeChild(matchedWord);
-            wordInput.value = "";
+            const matchedWord = Array.from(wordContainer.children).find(word => word.textContent.toLowerCase() === inputValue);
+            if (matchedWord) {
+                score += 10;
+                updateScore();
+                wordContainer.removeChild(matchedWord);
+                wordInput.value = "";
+                wordInput.focus();
+            }
         }
     });
 
