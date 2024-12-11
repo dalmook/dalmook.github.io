@@ -6,7 +6,6 @@ document.addEventListener("DOMContentLoaded", () => {
     const scoreElement = document.getElementById("score");
     const levelElement = document.getElementById("level");
     const livesElement = document.getElementById("lives");
-    const wpmElement = document.getElementById("wpm");
     const successSound = document.getElementById("success-sound");
     let score = 0;
     let level = 1;
@@ -16,10 +15,6 @@ document.addEventListener("DOMContentLoaded", () => {
     let levelInterval;
     const initialWordSpeed = 5000; // 초기 단어 생성 간격 (밀리초)
     let currentWordSpeed = initialWordSpeed;
-
-    // 타이핑 속도 추적 변수
-    let startTime;
-    let correctWords = 0;
 
     // 단어 데이터 로드
     fetch('typingdata.json')
@@ -31,10 +26,8 @@ document.addEventListener("DOMContentLoaded", () => {
         .catch(error => console.error('단어 데이터를 로드하는 중 오류 발생:', error));
 
     function startGame() {
-        startTime = new Date(); // 게임 시작 시간 기록
         gameInterval = setInterval(addWord, currentWordSpeed);
         levelInterval = setInterval(increaseLevel, 30000); // 30초마다 레벨 증가
-        updateWPM(); // WPM 초기화
     }
 
     function addWord() {
@@ -42,19 +35,32 @@ document.addEventListener("DOMContentLoaded", () => {
 
         const randomIndex = Math.floor(Math.random() * wordList.length);
         const wordObj = wordList[randomIndex];
-        const wordText = wordObj.word;
-        const difficulty = wordObj.difficulty;
+        const type = wordObj.type;
+
+        let displayText, correctAnswer;
+
+        if (type === "word") {
+            displayText = wordObj.word;
+            correctAnswer = wordObj.word.toLowerCase();
+        } else if (type === "math") {
+            displayText = wordObj.question;
+            correctAnswer = wordObj.answer.toLowerCase();
+        } else {
+            // 타입이 지정되지 않은 경우 기본 단어 사용
+            displayText = wordObj.word;
+            correctAnswer = wordObj.word.toLowerCase();
+        }
 
         const wordElement = document.createElement("div");
         wordElement.classList.add("falling-word");
-        wordElement.textContent = wordText;
-        wordElement.dataset.difficulty = difficulty;
+        wordElement.textContent = displayText;
+        wordElement.dataset.correctAnswer = correctAnswer;
 
         // 난이도에 따른 점수 설정
         let wordScore = 10; // 기본 점수
-        if (difficulty === "medium") {
+        if (wordObj.difficulty === "medium") {
             wordScore = 20;
-        } else if (difficulty === "hard") {
+        } else if (wordObj.difficulty === "hard") {
             wordScore = 30;
         }
         wordElement.dataset.score = wordScore;
@@ -109,12 +115,14 @@ document.addEventListener("DOMContentLoaded", () => {
         window.location.reload();
     }
 
-    // 'input' 이벤트로 변경하여 입력할 때마다 단어 확인
+    // 'input' 이벤트로 변경하여 입력할 때마다 단어(문제) 확인
     wordInput.addEventListener("input", () => {
         const inputValue = wordInput.value.trim().toLowerCase();
         if (inputValue === "") return;
 
-        const matchedWord = Array.from(wordContainer.children).find(word => word.textContent.toLowerCase() === inputValue);
+        // 맞춘 단어(문제) 찾기
+        const matchedWord = Array.from(wordContainer.children).find(word => word.dataset.correctAnswer === inputValue);
+
         if (matchedWord) {
             const wordScore = parseInt(matchedWord.dataset.score) || 10;
             score += wordScore;
@@ -132,9 +140,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
             wordInput.value = "";
             wordInput.focus(); // 입력창에 포커스 유지
-
-            // 타이핑 속도 추적: 맞춘 단어 수 증가
-            correctWords += 1;
         }
     });
 
@@ -144,16 +149,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
     function updateLives() {
         livesElement.textContent = lives.toString();
-    }
-
-    // 타이핑 속도(WPM) 업데이트 함수
-    function updateWPM() {
-        const now = new Date();
-        const timeElapsed = (now - startTime) / 1000 / 60; // 분 단위로 변환
-        const wpm = Math.round(correctWords / timeElapsed) || 0;
-        wpmElement.textContent = wpm.toString();
-        // 매 5초마다 업데이트
-        setTimeout(updateWPM, 5000);
     }
 
     // 모바일에서 가상 키보드가 나타날 때 입력창에 포커스 유지
