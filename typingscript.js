@@ -147,7 +147,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     function getRandomSpeed() {
-        return Math.random() * 3 + 4; // 4초에서 7초 사이
+        return Math.random() * 7 + 11; // 4초에서 7초 사이
     }
 
     function increaseLevel() {
