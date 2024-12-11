@@ -10,22 +10,38 @@
 </head>
 <body>
     <div id="game-container">
-        <div id="word-container"></div>
         
-        <!-- 통계 표시 컨테이너 -->
-        <div id="stats-container">
-            <div id="score-board">점수: <span id="score">0</span></div>
-            <div id="level-board">레벨: <span id="level">1</span></div>
-            <div id="lives-board">생명: <span id="lives">3</span></div>
+        <!-- 시작 화면 -->
+        <div id="start-screen" class="active">
+            <h1>타이핑 게임</h1>
+            <p>난이도를 선택하세요:</p>
+            <div id="difficulty-buttons">
+                <button class="difficulty-button" data-difficulty="easy">쉬움</button>
+                <button class="difficulty-button" data-difficulty="medium">보통</button>
+                <button class="difficulty-button" data-difficulty="hard">어려움</button>
+            </div>
+            <button id="start-button" disabled>게임 시작</button>
         </div>
         
-        <!-- 입력창 컨테이너 -->
-        <div id="input-container">
-            <input type="text" id="word-input" placeholder="단어를 입력하세요..." autofocus>
+        <!-- 게임 화면 -->
+        <div id="game-screen">
+            <div id="word-container"></div>
+            
+            <!-- 통계 표시 컨테이너 -->
+            <div id="stats-container">
+                <div id="score-board">점수: <span id="score">0</span></div>
+                <div id="level-board">레벨: <span id="level">1</span></div>
+                <div id="lives-board">생명: <span id="lives">3</span></div>
+            </div>
+            
+            <!-- 입력창 컨테이너 -->
+            <div id="input-container">
+                <input type="text" id="word-input" placeholder="단어를 입력하세요..." autofocus>
+            </div>
+            
+            <!-- 효과음 -->
+            <audio id="success-sound" src="success.mp3" preload="auto"></audio>
         </div>
-        
-        <!-- 효과음 -->
-        <audio id="success-sound" src="success.mp3" preload="auto"></audio>
     </div>
     <script src="typingscript.js"></script>
 </body>
