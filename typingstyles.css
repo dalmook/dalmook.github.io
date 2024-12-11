@@ -119,10 +119,10 @@ body {
     justify-content: space-between;
     align-items: center;
     padding: 10px 20px;
-    background-color: rgba(255, 255, 255, 0.8);
+    background-color: rgba(255, 255, 255, 0.3); /* 배경 투명도 30%로 설정 */
     border-radius: 8px;
     z-index: 2; /* Ensure it's above other elements */
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    box-shadow: none; /* 그림자 제거 */
 }
 
 /* Individual stats styles */
@@ -133,9 +133,10 @@ body {
     color: #333;
     padding: 5px 10px;
     border-radius: 5px;
-    background: rgba(255, 255, 255, 0.7);
+    background: rgba(255, 255, 255, 0.0); /* 배경 완전 투명 */
     min-width: 60px;
     text-align: center;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5); /* 텍스트 그림자 추가 */
 }
 
 /* input-container styles */
