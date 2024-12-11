@@ -147,7 +147,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     function getRandomSpeed() {
-        return Math.random() * 7 + 11; // 4초에서 7초 사이
+        return Math.random() * 3 + 4; // 4초에서 7초 사이
     }
 
     function increaseLevel() {
@@ -200,8 +200,12 @@ document.addEventListener("DOMContentLoaded", () => {
                 }
             }, 500); // 애니메이션 효과 시간과 일치시킴
 
+            // 입력창 초기화 강화
             wordInput.value = "";
-            wordInput.focus(); // 입력창에 포커스 유지
+            wordInput.blur(); // 포커스 잠시 제거
+            setTimeout(() => {
+                wordInput.focus(); // 포커스 다시 설정
+            }, 0);
         }
     });
 
