@@ -3,15 +3,22 @@
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <!-- 뷰포트 메타 태그 -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>타이핑 게임</title>
     <link rel="stylesheet" href="typingstyles.css">
 </head>
 <body>
     <div id="game-container">
-        <div id="score-board">점수: <span id="score">0</span></div>
         <div id="word-container"></div>
-        <input type="text" id="word-input" placeholder="단어를 입력하세요..." autofocus>
+        <div id="input-container">
+            <input type="text" id="word-input" placeholder="단어를 입력하세요..." autofocus>
+            <div id="score-board">점수: <span id="score">0</span></div>
+        </div>
+        <div id="level-board">레벨: <span id="level">1</span></div>
+        <div id="lives-board">생명: <span id="lives">3</span></div>
+        <!-- 효과음 -->
+        <audio id="success-sound" src="success.mp3" preload="auto"></audio>
     </div>
     <script src="typingscript.js"></script>
 </body>
