@@ -61,8 +61,7 @@ body {
 /* Individual stats styles */
 #score-board,
 #level-board,
-#lives-board,
-#wpm-board {
+#lives-board {
     font-size: 18px;
     color: #333;
     padding: 5px 10px;
@@ -115,8 +114,7 @@ body {
 
     #score-board,
     #level-board,
-    #lives-board,
-    #wpm-board {
+    #lives-board {
         width: 100%;
         text-align: left;
     }
@@ -138,8 +136,7 @@ body {
 
     #score-board,
     #level-board,
-    #lives-board,
-    #wpm-board {
+    #lives-board {
         font-size: 16px;
         padding: 4px 8px;
     }
