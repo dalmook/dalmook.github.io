@@ -11,13 +11,20 @@
 <body>
     <div id="game-container">
         <div id="word-container"></div>
-        <div id="input-container">
-            <input type="text" id="word-input" placeholder="단어를 입력하세요..." autofocus>
+        
+        <!-- 통계 표시 컨테이너 -->
+        <div id="stats-container">
             <div id="score-board">점수: <span id="score">0</span></div>
+            <div id="level-board">레벨: <span id="level">1</span></div>
+            <div id="lives-board">생명: <span id="lives">3</span></div>
             <div id="wpm-board">WPM: <span id="wpm">0</span></div>
         </div>
-        <div id="level-board">레벨: <span id="level">1</span></div>
-        <div id="lives-board">생명: <span id="lives">3</span></div>
+        
+        <!-- 입력창 컨테이너 -->
+        <div id="input-container">
+            <input type="text" id="word-input" placeholder="단어를 입력하세요..." autofocus>
+        </div>
+        
         <!-- 효과음 -->
         <audio id="success-sound" src="success.mp3" preload="auto"></audio>
     </div>
