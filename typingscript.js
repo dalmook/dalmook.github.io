@@ -50,17 +50,6 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     });
 
-    // 게임 시작 버튼 클릭
-    startButton.addEventListener("click", () => {
-        if (!selectedDifficulty) return;
-        // 시작 화면 숨기기
-        startScreen.classList.remove("active");
-        startScreen.classList.add("hidden");
-        // 게임 화면 보이기
-        gameScreen.style.display = "block";
-        // 게임 초기화
-        initializeGame();
-    });
 
     function initializeGame() {
         score = 0;
