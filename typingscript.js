@@ -180,11 +180,11 @@ document.addEventListener("DOMContentLoaded", () => {
     function getWordScore(difficulty) {
         switch (difficulty) {
             case "영어":
-                return 20;
+                return 30;
             case "산수":
                 return 30;
             default:
-                return 10;
+                return 30;
         }
     }
 
