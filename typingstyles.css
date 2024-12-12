@@ -1,6 +1,166 @@
 /* typingstyles.css */
 
-/* 기존 스타일 유지 */
+/* 기본 리셋 및 폰트 설정 */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: Arial, Helvetica, sans-serif;
+    background-color: #f0f0f0;
+    overflow: hidden; /* 단어가 화면 밖으로 나가는 것을 방지 */
+}
+
+/* 게임 컨테이너 */
+#game-container {
+    position: relative;
+    width: 100vw;
+    height: 100vh;
+    overflow: hidden;
+}
+
+/* 시작 화면 스타일 */
+#start-screen {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(135deg, #6B73FF 0%, #000DFF 100%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    z-index: 1;
+}
+
+#start-screen.hidden {
+    display: none;
+}
+
+#start-screen h1 {
+    font-size: 48px;
+    margin-bottom: 20px;
+}
+
+#start-screen p {
+    font-size: 24px;
+    margin-bottom: 30px;
+}
+
+#difficulty-buttons {
+    display: flex;
+    gap: 20px;
+}
+
+.difficulty-button {
+    padding: 15px 30px;
+    font-size: 18px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    background-color: #ffffff;
+    color: #000DFF;
+    transition: background-color 0.3s, color 0.3s;
+}
+
+.difficulty-button:hover {
+    background-color: #000DFF;
+    color: white;
+}
+
+.difficulty-button.selected {
+    background-color: #FF6B6B;
+    color: white;
+}
+
+/* 게임 화면 스타일 */
+#game-screen {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+}
+
+/* 단어 컨테이너 스타일 */
+#word-container {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none; /* 단어를 클릭하지 못하도록 설정 */
+}
+
+/* 단어 스타일 */
+.falling-word {
+    position: absolute;
+    top: -50px; /* 화면 위에서 시작 */
+    font-size: 24px;
+    font-weight: bold;
+    color: #333;
+    animation-name: fall;
+    animation-timing-function: linear;
+    animation-fill-mode: forwards;
+}
+
+.falling-word.matched {
+    color: #28a745; /* 맞춘 단어는 녹색으로 표시 */
+    text-decoration: line-through;
+}
+
+/* 단어 떨어지는 애니메이션 */
+@keyframes fall {
+    from {
+        top: -50px;
+    }
+    to {
+        top: 100vh;
+    }
+}
+
+/* 통계 표시 컨테이너 */
+#stats-container {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    display: flex;
+    gap: 20px;
+    background: rgba(255, 255, 255, 0.8);
+    padding: 10px 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+#stats-container div {
+    font-size: 18px;
+    font-weight: bold;
+    color: #333;
+}
+
+/* 입력창 컨테이너 */
+#input-container {
+    position: absolute;
+    bottom: 40px;
+    width: 80%;
+}
+
+#word-input {
+    width: 100%;
+    padding: 15px;
+    font-size: 20px;
+    border: 2px solid #333;
+    border-radius: 8px;
+    outline: none;
+    text-align: center;
+}
 
 /* 팝업 스타일 */
 .popup {
@@ -32,6 +192,14 @@
 
 .popup-content h2 {
     margin-top: 0;
+    font-size: 28px;
+    color: #333;
+}
+
+.popup-content p {
+    font-size: 18px;
+    margin: 15px 0;
+    color: #555;
 }
 
 .popup-content input {
@@ -66,12 +234,7 @@
     background-color: #005f6a;
 }
 
-#rankings {
-    margin-top: 20px;
-    text-align: left;
-}
-
-/* 테이블 스타일 */
+/* 순위 테이블 스타일 */
 .rank-table {
     width: 100%;
     border-collapse: collapse;
@@ -98,18 +261,26 @@
     background-color: #ddd;
 }
 
+/* 순위 목록 헤더 */
+#rankings h3 {
+    margin-top: 20px;
+    font-size: 22px;
+    color: #333;
+}
+
 /* 모바일 및 반응형 스타일 */
 @media (max-width: 768px) {
-    /* 기존 반응형 스타일 유지 */
-
+    /* 팝업 컨텐츠 패딩 조정 */
     .popup-content {
         padding: 15px 20px;
     }
 
+    /* 입력창 폭 조정 */
     .popup-content input {
         width: 100%;
     }
 
+    /* 버튼 레이아웃 변경 */
     .popup-buttons {
         flex-direction: column;
     }
@@ -118,20 +289,57 @@
         width: 100%;
     }
 
+    /* 순위 테이블 패딩 및 폰트 크기 조정 */
     .rank-table th,
     .rank-table td {
         padding: 6px;
         font-size: 14px;
     }
+
+    /* 통계 표시 컨테이너 크기 조정 */
+    #stats-container {
+        top: 10px;
+        left: 10px;
+        padding: 8px 16px;
+    }
+
+    #stats-container div {
+        font-size: 16px;
+    }
+
+    /* 단어 폰트 크기 조정 */
+    .falling-word {
+        font-size: 20px;
+    }
+
+    /* 입력창 폰트 크기 조정 */
+    #word-input {
+        font-size: 18px;
+        padding: 12px;
+    }
+
+    /* 시작 화면 폰트 크기 조정 */
+    #start-screen h1 {
+        font-size: 36px;
+    }
+
+    #start-screen p {
+        font-size: 20px;
+    }
+
+    .difficulty-button {
+        padding: 12px 24px;
+        font-size: 16px;
+    }
 }
 
 @media (max-width: 480px) {
-    /* 기존 모바일 스타일 유지 */
-
+    /* 팝업 컨텐츠 패딩 조정 */
     .popup-content {
         padding: 10px 15px;
     }
 
+    /* 팝업 헤더 폰트 크기 조정 */
     .popup-content h2 {
         font-size: 20px;
     }
@@ -148,9 +356,46 @@
         font-size: 14px;
     }
 
+    /* 순위 테이블 패딩 및 폰트 크기 조정 */
     .rank-table th,
     .rank-table td {
         padding: 4px;
         font-size: 12px;
+    }
+
+    /* 시작 화면 폰트 크기 조정 */
+    #start-screen h1 {
+        font-size: 28px;
+    }
+
+    #start-screen p {
+        font-size: 16px;
+    }
+
+    .difficulty-button {
+        padding: 10px 20px;
+        font-size: 14px;
+    }
+
+    /* 단어 폰트 크기 조정 */
+    .falling-word {
+        font-size: 18px;
+    }
+
+    /* 입력창 폰트 크기 조정 */
+    #word-input {
+        font-size: 16px;
+        padding: 10px;
+    }
+
+    /* 통계 표시 컨테이너 크기 조정 */
+    #stats-container {
+        top: 5px;
+        left: 5px;
+        padding: 6px 12px;
+    }
+
+    #stats-container div {
+        font-size: 14px;
     }
 }
