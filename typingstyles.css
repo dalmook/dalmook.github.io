@@ -77,6 +77,28 @@ body {
     color: white;
 }
 
+/* 기록보기 버튼 컨테이너 스타일 */
+#view-records-container {
+    margin-top: 20px; /* 난이도 버튼과의 간격 */
+}
+
+/* 기록보기 버튼 스타일 */
+.view-records-button {
+    padding: 12px 24px;
+    font-size: 16px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    background-color: #FFD700; /* 금색 배경 */
+    color: #000;
+    transition: background-color 0.3s, color 0.3s;
+}
+
+.view-records-button:hover {
+    background-color: #FFA500; /* 주황색 배경으로 변경 */
+    color: white;
+}
+
 /* 게임 화면 스타일 */
 #game-screen {
     position: relative;
@@ -346,6 +368,12 @@ body {
     }
 
     .difficulty-button {
+        padding: 12px 24px;
+        font-size: 16px;
+    }
+
+    /* 기록보기 버튼 스타일 조정 (반응형) */
+    .view-records-button {
         padding: 12px 24px;
         font-size: 16px;
     }
