@@ -331,7 +331,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
             // 입력창 초기화 강화
             wordInput.value = "";
-            wordInput.blur(); // 포커스 잠시 제거
+            // wordInput.blur(); // 포커스 잠시 제거
             setTimeout(() => {
                 wordInput.focus(); // 포커스 다시 설정
             }, 0);
