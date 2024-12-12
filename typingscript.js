@@ -19,16 +19,16 @@ document.addEventListener("DOMContentLoaded", () => {
     const rankingsContainer = document.getElementById("rankings");
 
     // Firestore 컬렉션 이름
-    const COLLECTION_NAME = "scores";
+    const COLLECTION_NAME = "typingscores";
 
     // Firebase 초기화
     const firebaseConfig = {
-        apiKey: "YOUR_API_KEY", // 실제 API 키로 대체
-        authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
-        projectId: "YOUR_PROJECT_ID",
-        storageBucket: "YOUR_PROJECT_ID.appspot.com",
-        messagingSenderId: "YOUR_SENDER_ID",
-        appId: "YOUR_APP_ID"
+        apiKey: "AIzaSyCwVxx0Pxd7poc_zGSp1aY9qfd89bpVUW0", // 실제 API 키로 대체
+        authDomain: "finddalbong.firebaseapp.com",
+        projectId: "finddalbong",
+        storageBucket: "finddalbong.firebasestorage.app",
+        messagingSenderId: "982765399272",
+        appId: "1:982765399272:web:02344ab408272c60e2ad5d"
     };
 
     // Firebase 초기화
