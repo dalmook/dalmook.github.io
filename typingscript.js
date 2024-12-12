@@ -248,7 +248,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
         // 난이도별로 상위 5개만 표시
         const rankingList = document.createElement("div");
-        rankingList.innerHTML = `<h4>${capitalizeFirstLetter(selectedDifficulty)} 난이도 순위</h4>`;
+        rankingList.innerHTML = `<h4>${capitalizeFirstLetter(selectedDifficulty)}</h4>`;
 
         try {
             const querySnapshot = await db.collection(COLLECTION_NAME)
