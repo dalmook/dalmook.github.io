@@ -200,6 +200,7 @@ document.addEventListener("DOMContentLoaded", () => {
         clearInterval(gameInterval);
         clearInterval(levelInterval);
         clearInterval(speedIncreaseInterval);
+        // alert(`게임 종료! 최종 점수: ${score}`); // 사용자 경험을 위해 alert 대신 팝업 사용
         // 모든 단어 제거
         removeAllWords();
         // 팝업 표시
@@ -239,35 +240,70 @@ document.addEventListener("DOMContentLoaded", () => {
     async function loadRankings() {
         rankingsContainer.innerHTML = ""; // 기존 순위 초기화
 
-        const difficulties = ["easy", "medium", "hard"];
+        if (!selectedDifficulty) {
+            // 난이도가 선택되지 않았으면 순위 표시 안 함
+            return;
+        }
 
-        for (const difficulty of difficulties) {
-            const rankingList = document.createElement("div");
-            rankingList.innerHTML = `<h4>${capitalizeFirstLetter(difficulty)} 난이도 순위</h4>`;
+        // 난이도별로 상위 5개만 표시
+        const rankingList = document.createElement("div");
+        rankingList.innerHTML = `<h4>${capitalizeFirstLetter(selectedDifficulty)} 난이도 순위</h4>`;
 
+        try {
             const querySnapshot = await db.collection(COLLECTION_NAME)
-                .where("difficulty", "==", difficulty)
+                .where("difficulty", "==", selectedDifficulty)
                 .orderBy("score", "desc")
                 .limit(5)
                 .get();
 
-            const list = document.createElement("ul");
-            list.classList.add("rank-list");
+            const table = document.createElement("table");
+            table.classList.add("rank-table");
+
+            // 테이블 헤더 생성
+            const thead = document.createElement("thead");
+            const headerRow = document.createElement("tr");
+            const nameHeader = document.createElement("th");
+            nameHeader.textContent = "이름";
+            const scoreHeader = document.createElement("th");
+            scoreHeader.textContent = "점수";
+            headerRow.appendChild(nameHeader);
+            headerRow.appendChild(scoreHeader);
+            thead.appendChild(headerRow);
+            table.appendChild(thead);
+
+            const tbody = document.createElement("tbody");
 
             if (querySnapshot.empty) {
-                const noData = document.createElement("li");
-                noData.textContent = "아직 기록이 없습니다.";
-                list.appendChild(noData);
+                const noDataRow = document.createElement("tr");
+                const noDataCell = document.createElement("td");
+                noDataCell.colSpan = 2;
+                noDataCell.textContent = "아직 기록이 없습니다.";
+                noDataRow.appendChild(noDataCell);
+                tbody.appendChild(noDataRow);
             } else {
                 querySnapshot.forEach((doc, index) => {
                     const data = doc.data();
-                    const listItem = document.createElement("li");
-                    listItem.textContent = `${index + 1}. ${data.name} - ${data.score}점`;
-                    list.appendChild(listItem);
+                    const row = document.createElement("tr");
+
+                    const nameCell = document.createElement("td");
+                    nameCell.textContent = data.name;
+                    const scoreCell = document.createElement("td");
+                    scoreCell.textContent = `${data.score}점`;
+
+                    row.appendChild(nameCell);
+                    row.appendChild(scoreCell);
+                    tbody.appendChild(row);
                 });
             }
 
-            rankingList.appendChild(list);
+            table.appendChild(tbody);
+            rankingList.appendChild(table);
+            rankingsContainer.appendChild(rankingList);
+        } catch (error) {
+            console.error("순위 로드 중 오류 발생:", error);
+            const errorMessage = document.createElement("p");
+            errorMessage.textContent = "순위를 불러오는 중 오류가 발생했습니다.";
+            rankingList.appendChild(errorMessage);
             rankingsContainer.appendChild(rankingList);
         }
     }
@@ -331,7 +367,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
             // 입력창 초기화 강화
             wordInput.value = "";
-            // wordInput.blur(); // 포커스 잠시 제거
+            wordInput.blur(); // 포커스 잠시 제거
             setTimeout(() => {
                 wordInput.focus(); // 포커스 다시 설정
             }, 0);
