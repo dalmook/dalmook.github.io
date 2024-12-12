@@ -31,6 +31,7 @@ document.addEventListener("DOMContentLoaded", () => {
         appId: "1:982765399272:web:02344ab408272c60e2ad5d"
     };
 
+
     // Firebase 초기화
     firebase.initializeApp(firebaseConfig);
     const db = firebase.firestore();
@@ -75,7 +76,7 @@ document.addEventListener("DOMContentLoaded", () => {
         startScreen.classList.remove("active");
         startScreen.classList.add("hidden");
         // 게임 화면 보이기
-        gameScreen.style.display = "block";
+        gameScreen.style.display = "flex";
         // 게임 초기화
         initializeGame();
     }
@@ -389,6 +390,7 @@ document.addEventListener("DOMContentLoaded", () => {
             const img = document.createElement('img');
             img.src = 'images/poo.png'; // 이미지 경로
             img.alt = 'Life';
+            img.title = '생명'; // 도구 팁 추가
             livesElement.appendChild(img);
         }
     }
