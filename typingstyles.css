@@ -276,7 +276,22 @@ body {
     background-color: #005f6a;
 }
 
-/* 순위 테이블 스타일 */
+/* 전체 기록 팝업 스타일 */
+#records-popup .popup-content {
+    max-height: 80vh;
+    overflow-y: auto;
+}
+
+#records-popup h2 {
+    margin-top: 0;
+    font-size: 28px;
+    color: #333;
+}
+
+#records-popup #all-rankings {
+    margin-top: 10px;
+}
+
 .rank-table {
     width: 100%;
     border-collapse: collapse;
@@ -304,7 +319,8 @@ body {
 }
 
 /* 순위 목록 헤더 */
-#rankings h3 {
+#rankings h3,
+#all-rankings h3 {
     margin-top: 20px;
     font-size: 22px;
     color: #333;
@@ -386,7 +402,8 @@ body {
     }
 
     /* 팝업 헤더 폰트 크기 조정 */
-    .popup-content h2 {
+    .popup-content h2,
+    #records-popup h2 {
         font-size: 20px;
     }
 
