@@ -46,6 +46,9 @@ document.addEventListener("DOMContentLoaded", () => {
     const initialWordSpeed = 5000; // 초기 단어 생성 간격 (밀리초)
     let currentWordSpeed = initialWordSpeed;
 
+    // 게임 종료 상태 플래그 추가
+    let isGameOver = false;
+
     // 단어 데이터 로드
     fetch('typingdata.json')
         .then(response => response.json())
@@ -81,6 +84,7 @@ document.addEventListener("DOMContentLoaded", () => {
         score = 0;
         level = 1;
         lives = 3;
+        isGameOver = false; // 게임 시작 시 플래그 초기화
         currentWordSpeed = initialWordSpeed;
         updateScore();
         updateLevel();
@@ -97,7 +101,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     function addWord() {
-        if (lives <= 0) return; // 게임 종료 시 단어 추가 중단
+        if (isGameOver) return; // 게임 종료 시 단어 추가 중단
 
         // 난이도와 타입에 따른 필터링
         const filteredList = wordList.filter(wordObj => {
@@ -158,6 +162,8 @@ document.addEventListener("DOMContentLoaded", () => {
         wordElement.addEventListener("animationend", () => {
             if (wordContainer.contains(wordElement)) {
                 wordContainer.removeChild(wordElement);
+                if (isGameOver) return; // 게임 종료 시 생명 감소 방지
+
                 lives -= 1;
                 updateLives();
                 if (lives <= 0) {
@@ -190,12 +196,21 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     function endGame() {
+        isGameOver = true; // 게임 종료 플래그 설정
         clearInterval(gameInterval);
         clearInterval(levelInterval);
         clearInterval(speedIncreaseInterval);
         alert(`게임 종료! 최종 점수: ${score}`);
+        // 모든 단어 제거
+        removeAllWords();
         // 팝업 표시
         showScorePopup();
+    }
+
+    function removeAllWords() {
+        while (wordContainer.firstChild) {
+            wordContainer.removeChild(wordContainer.firstChild);
+        }
     }
 
     function showScorePopup() {
