@@ -200,7 +200,6 @@ document.addEventListener("DOMContentLoaded", () => {
         clearInterval(gameInterval);
         clearInterval(levelInterval);
         clearInterval(speedIncreaseInterval);
-        alert(`게임 종료! 최종 점수: ${score}`);
         // 모든 단어 제거
         removeAllWords();
         // 팝업 표시
@@ -221,6 +220,20 @@ document.addEventListener("DOMContentLoaded", () => {
 
     function hideScorePopup() {
         scorePopup.classList.add("hidden");
+        // 게임 상태 초기화 및 화면 전환
+        resetGame();
+    }
+
+    function resetGame() {
+        // 게임 화면 숨기기
+        gameScreen.style.display = "none";
+        // 시작 화면 보이기
+        startScreen.classList.remove("hidden");
+        startScreen.classList.add("active");
+        // 선택된 난이도 초기화
+        selectedDifficulty = null;
+        // 모든 난이도 버튼의 선택 상태 제거
+        difficultyButtons.forEach(btn => btn.classList.remove("selected"));
     }
 
     async function loadRankings() {
@@ -318,7 +331,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
             // 입력창 초기화 강화
             wordInput.value = "";
-            // wordInput.blur(); // 포커스 잠시 제거
+            wordInput.blur(); // 포커스 잠시 제거
             setTimeout(() => {
                 wordInput.focus(); // 포커스 다시 설정
             }, 0);
