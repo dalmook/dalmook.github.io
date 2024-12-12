@@ -192,7 +192,6 @@ document.addEventListener("DOMContentLoaded", () => {
             matchedWord.classList.add("matched"); // 시각 효과 추가
             successSound.currentTime = 0;
             successSound.play(); // 효과음 재생
-            wordInput.value = "";
             // 단어 제거 후 애니메이션 효과 제거
             setTimeout(() => {
                 if (wordContainer.contains(matchedWord)) {
@@ -202,10 +201,11 @@ document.addEventListener("DOMContentLoaded", () => {
 
             // 입력창 초기화 강화
             wordInput.value = "";
-            //wordInput.blur(); // 포커스 잠시 제거
-            //setTimeout(() => {
-              //  wordInput.focus(); // 포커스 다시 설정
-            //}, 0);
+            wordInput.addEventListener('keydown', (event) => {
+                if (event.key === 'Backspace') {
+                    // backspace 동작을 추가합니다.
+                }
+            });
         }
     });
 
