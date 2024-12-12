@@ -201,11 +201,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
             // 입력창 초기화 강화
             wordInput.value = "";
-            wordInput.addEventListener('keydown', (event) => {
-                if (event.key === 'Backspace') {
-                    // backspace 동작을 추가합니다.
-                }
-            });
         }
     });
 
