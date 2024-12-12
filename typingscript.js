@@ -1,14 +1,16 @@
 // typingscript.js
 
 document.addEventListener("DOMContentLoaded", () => {
+    // DOM 요소 선택
     const startScreen = document.getElementById("start-screen");
     const gameScreen = document.getElementById("game-screen");
     const difficultyButtons = document.querySelectorAll(".difficulty-button");
+    const viewRecordsButton = document.querySelector(".view-records-button");
     const wordContainer = document.getElementById("word-container");
     const wordInput = document.getElementById("word-input");
     const scoreElement = document.getElementById("score");
     const levelElement = document.getElementById("level");
-    const livesElement = document.getElementById("lives"); // 생명 이미지 컨테이너
+    const livesElement = document.getElementById("lives");
     const successSound = document.getElementById("success-sound");
 
     // 팝업 관련 요소
@@ -18,15 +20,12 @@ document.addEventListener("DOMContentLoaded", () => {
     const closePopupButton = document.getElementById("close-popup");
     const rankingsContainer = document.getElementById("rankings");
 
-    // 전체 기록 보기 팝업 관련 요소
     const recordsPopup = document.getElementById("records-popup");
     const closeRecordsPopupButton = document.getElementById("close-records-popup");
+    const tabButtons = document.querySelectorAll(".tab-button");
     const allRankingsContainer = document.getElementById("all-rankings");
 
-    // Firestore 컬렉션 이름
-    const COLLECTION_NAME = "scores";
-
-    // Firebase 초기화
+    // Firebase 설정
     const firebaseConfig = {
         apiKey: "AIzaSyCwVxx0Pxd7poc_zGSp1aY9qfd89bpVUW0", // 실제 API 키로 대체
         authDomain: "finddalbong.firebaseapp.com",
@@ -35,11 +34,11 @@ document.addEventListener("DOMContentLoaded", () => {
         messagingSenderId: "982765399272",
         appId: "1:982765399272:web:02344ab408272c60e2ad5d"
     };
-
-    // Firebase 초기화
     firebase.initializeApp(firebaseConfig);
     const db = firebase.firestore();
+    const COLLECTION_NAME = "scores";
 
+    // 게임 상태 변수
     let selectedDifficulty = null;
     let score = 0;
     let level = 1;
@@ -50,8 +49,6 @@ document.addEventListener("DOMContentLoaded", () => {
     let speedIncreaseInterval;
     const initialWordSpeed = 5000; // 초기 단어 생성 간격 (밀리초)
     let currentWordSpeed = initialWordSpeed;
-
-    // 게임 종료 상태 플래그 추가
     let isGameOver = false;
 
     // 단어 데이터 로드
@@ -62,7 +59,7 @@ document.addEventListener("DOMContentLoaded", () => {
         })
         .catch(error => console.error('단어 데이터를 로드하는 중 오류 발생:', error));
 
-    // 난이도 선택
+    // 난이도 선택 이벤트 리스너
     difficultyButtons.forEach(button => {
         button.addEventListener("click", () => {
             // 모든 버튼의 선택 상태 제거
@@ -75,206 +72,286 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     });
 
-    // "기록보기" 버튼 이벤트 리스너 추가
-    const viewRecordsButton = document.querySelector(".view-records-button");
+    // "기록보기" 버튼 클릭 이벤트 리스너
     if (viewRecordsButton) {
         viewRecordsButton.addEventListener("click", () => {
-            // 기록보기 팝업 표시
             recordsPopup.classList.remove("hidden");
-            // 전체 순위 로드
-            loadAllRankings();
+            activateTab("한글"); // 기본 탭 활성화
         });
     }
 
+    // 탭 버튼 클릭 이벤트 리스너
+    tabButtons.forEach(tab => {
+        tab.addEventListener("click", () => {
+            // 모든 탭에서 active 클래스 제거
+            tabButtons.forEach(t => t.classList.remove("active"));
+            // 클릭한 탭에 active 클래스 추가
+            tab.classList.add("active");
+            const difficulty = tab.dataset.difficulty;
+            activateTab(difficulty);
+        });
+    });
+
+    // 탭 활성화 함수
+    function activateTab(difficulty) {
+        loadRankings(difficulty, allRankingsContainer);
+    }
+
+    // 게임 시작 함수
     function startGame() {
-        // 시작 화면 숨기기
-        startScreen.classList.remove("active");
         startScreen.classList.add("hidden");
-        // 게임 화면 보이기
         gameScreen.style.display = "flex";
-        // 게임 초기화
         initializeGame();
     }
 
+    // 게임 초기화 함수
     function initializeGame() {
         score = 0;
         level = 1;
         lives = 3;
-        isGameOver = false; // 게임 시작 시 플래그 초기화
+        isGameOver = false;
         currentWordSpeed = initialWordSpeed;
         updateScore();
         updateLevel();
-        updateLives(); // 생명 초기화
+        updateLives();
         wordInput.value = "";
         wordInput.focus();
 
         // 단어 생성 간격 설정
         gameInterval = setInterval(addWord, currentWordSpeed);
-        // 레벨 증가 간격 설정 (예: 30초마다 레벨 증가)
+        // 레벨 증가 간격 설정 (예: 30초마다)
         levelInterval = setInterval(increaseLevel, 30000);
-        // 속도 증가 간격 설정 (예: 10초마다 속도 10% 증가)
+        // 속도 증가 간격 설정 (예: 10초마다 10% 속도 증가)
         speedIncreaseInterval = setInterval(increaseSpeed, 10000);
     }
 
+    // 단어 추가 함수
     function addWord() {
-        if (isGameOver) return; // 게임 종료 시 단어 추가 중단
+        if (isGameOver) return;
 
-        // 난이도와 타입에 따른 필터링
         const filteredList = wordList.filter(wordObj => {
-            if (selectedDifficulty === "한글") {
-                return wordObj.difficulty === "한글" && wordObj.type === "word";
-            } else if (selectedDifficulty === "영어") {
-                return wordObj.difficulty === "영어" && wordObj.type === "word";
+            if (selectedDifficulty === "한글" || selectedDifficulty === "영어") {
+                return wordObj.difficulty === selectedDifficulty && wordObj.type === "word";
             } else if (selectedDifficulty === "산수") {
                 return wordObj.difficulty === "산수" && wordObj.type === "math";
             }
             return false;
         });
 
-        if (filteredList.length === 0) return; // 필터링된 단어가 없을 경우 추가하지 않음
+        if (filteredList.length === 0) return;
 
         const randomIndex = Math.floor(Math.random() * filteredList.length);
         const wordObj = filteredList[randomIndex];
-        const type = wordObj.type;
-
-        let displayText, correctAnswer;
-
-        if (type === "word") {
-            displayText = wordObj.word;
-            correctAnswer = wordObj.word.toLowerCase();
-        } else if (type === "math") {
-            displayText = wordObj.question;
-            correctAnswer = wordObj.answer.toLowerCase();
-        } else {
-            // 타입이 지정되지 않은 경우 기본 단어 사용
-            displayText = wordObj.word;
-            correctAnswer = wordObj.word.toLowerCase();
-        }
+        const displayText = wordObj.type === "math" ? wordObj.question : wordObj.word;
+        const correctAnswer = wordObj.type === "math" ? wordObj.answer.toLowerCase() : wordObj.word.toLowerCase();
+        const wordScore = getWordScore(wordObj.difficulty);
 
         const wordElement = document.createElement("div");
         wordElement.classList.add("falling-word");
         wordElement.textContent = displayText;
         wordElement.dataset.correctAnswer = correctAnswer;
-
-        // 난이도에 따른 점수 설정
-        let wordScore = 10; // 기본 점수
-        if (wordObj.difficulty === "영어") {
-            wordScore = 20;
-        } else if (wordObj.difficulty === "산수") {
-            wordScore = 30;
-        }
         wordElement.dataset.score = wordScore;
 
-        // 랜덤한 위치 설정
-        const wordWidth = 100; // 단어의 가정된 폭
-        const maxLeft = window.innerWidth - wordWidth - 20; // 여백 고려
-        const left = Math.floor(Math.random() * maxLeft) + 10; // 최소 10px 여백
+        // 랜덤 위치 설정
+        const wordWidth = 100; // 가정된 단어 폭
+        const maxLeft = window.innerWidth - wordWidth - 20;
+        const left = Math.floor(Math.random() * maxLeft) + 10;
         wordElement.style.left = `${left}px`;
         wordElement.style.animationDuration = `${getRandomSpeed()}s`;
 
         wordContainer.appendChild(wordElement);
 
-        // 단어가 화면을 벗어났을 때 제거 및 생명 감소
+        // 단어가 화면을 벗어나면 제거 및 생명 감소
         wordElement.addEventListener("animationend", () => {
             if (wordContainer.contains(wordElement)) {
                 wordContainer.removeChild(wordElement);
-                if (isGameOver) return; // 게임 종료 시 생명 감소 방지
-
-                lives -= 1;
-                updateLives(); // 생명 업데이트
-                if (lives <= 0) {
-                    endGame();
+                if (!isGameOver) {
+                    lives -= 1;
+                    updateLives();
+                    if (lives <= 0) {
+                        endGame();
+                    }
                 }
             }
         });
     }
 
-    function getRandomSpeed() {
-        return Math.random() * 3 + 4; // 4초에서 7초 사이
+    // 단어 점수 결정 함수
+    function getWordScore(difficulty) {
+        switch (difficulty) {
+            case "영어":
+                return 20;
+            case "산수":
+                return 30;
+            default:
+                return 10;
+        }
     }
 
+    // 랜덤 속도 함수
+    function getRandomSpeed() {
+        return Math.random() * 3 + 4; // 4초에서 7초
+    }
+
+    // 레벨 증가 함수
     function increaseLevel() {
         level += 1;
         updateLevel();
-        // 레벨이 올라갈 때마다 추가적인 난이도 조정 가능
     }
 
+    // 속도 증가 함수
     function increaseSpeed() {
-        currentWordSpeed = Math.max(currentWordSpeed - 500, 1000); // 최소 단어 생성 간격 1초
+        currentWordSpeed = Math.max(currentWordSpeed - 500, 1000); // 최소 1초
         clearInterval(gameInterval);
         gameInterval = setInterval(addWord, currentWordSpeed);
 
-        // 현재 단어들의 애니메이션 속도 증가
+        // 현재 단어들의 속도 증가
         Array.from(wordContainer.children).forEach(word => {
-            const newDuration = parseFloat(word.style.animationDuration) * 0.9; // 10% 빠르게
+            const newDuration = parseFloat(word.style.animationDuration) * 0.9;
             word.style.animationDuration = `${newDuration}s`;
         });
     }
 
+    // 게임 종료 함수
     function endGame() {
-        isGameOver = true; // 게임 종료 플래그 설정
+        isGameOver = true;
         clearInterval(gameInterval);
         clearInterval(levelInterval);
         clearInterval(speedIncreaseInterval);
-        // alert(`게임 종료! 최종 점수: ${score}`); // 사용자 경험을 위해 alert 대신 팝업 사용
-        // 모든 단어 제거
         removeAllWords();
-        // 팝업 표시
         showScorePopup();
     }
 
+    // 모든 단어 제거 함수
     function removeAllWords() {
         while (wordContainer.firstChild) {
             wordContainer.removeChild(wordContainer.firstChild);
         }
     }
 
+    // 점수 팝업 표시 함수
     function showScorePopup() {
-        // 점수가 0보다 클 때만 팝업 표시 및 기록 입력
         if (score > 0) {
             scorePopup.classList.remove("hidden");
-            // 난이도별 순위 로드
-            loadRankings(selectedDifficulty);
+            loadRankings(selectedDifficulty, rankingsContainer);
         } else {
             alert("0점은 기록되지 않습니다.");
-            // 게임 재시작
             resetGame();
         }
     }
 
+    // 점수 팝업 숨기기 함수
     function hideScorePopup() {
         scorePopup.classList.add("hidden");
-        // 게임 상태 초기화 및 화면 전환
         resetGame();
     }
 
+    // 게임 재설정 함수
     function resetGame() {
-        // 게임 화면 숨기기
         gameScreen.style.display = "none";
-        // 시작 화면 보이기
         startScreen.classList.remove("hidden");
-        startScreen.classList.add("active");
-        // 선택된 난이도 초기화
         selectedDifficulty = null;
-        // 모든 난이도 버튼의 선택 상태 제거
         difficultyButtons.forEach(btn => btn.classList.remove("selected"));
     }
 
-    /**
-     * loadRankings 함수 수정:
-     * - difficulty 매개변수를 추가하여 특정 난이도 또는 전체 난이도의 순위를 로드할 수 있도록 함.
-     * - difficulty가 null인 경우 전체 순위를 로드.
-     */
-    async function loadRankings(difficulty) {
-        rankingsContainer.innerHTML = ""; // 기존 순위 초기화
+    // 점수 업데이트 함수
+    function updateScore() {
+        scoreElement.textContent = score.toString();
+    }
 
-        // 순위 목록 헤더 설정
-        const rankingList = document.createElement("div");
-        if (difficulty) {
-            rankingList.innerHTML = `<h4>${capitalizeFirstLetter(difficulty)} 난이도 순위</h4>`;
-        } else {
-            rankingList.innerHTML = `<h4>전체 난이도 순위</h4>`;
+    // 레벨 업데이트 함수
+    function updateLevel() {
+        levelElement.textContent = level.toString();
+    }
+
+    // 생명 업데이트 함수
+    function updateLives() {
+        livesElement.innerHTML = '';
+        for (let i = 0; i < lives; i++) {
+            const img = document.createElement('img');
+            img.src = 'images/poo.png';
+            img.alt = 'Life';
+            img.title = '생명';
+            livesElement.appendChild(img);
         }
+    }
+
+    // 사용자 입력 처리
+    wordInput.addEventListener("input", () => {
+        const inputValue = wordInput.value.trim().toLowerCase();
+        if (inputValue === "") return;
+
+        const matchedWord = Array.from(wordContainer.children).find(word => word.dataset.correctAnswer === inputValue);
+
+        if (matchedWord) {
+            const wordScore = parseInt(matchedWord.dataset.score) || 10;
+            score += wordScore;
+            updateScore();
+            matchedWord.classList.add("matched");
+            successSound.currentTime = 0;
+            successSound.play();
+
+            setTimeout(() => {
+                if (wordContainer.contains(matchedWord)) {
+                    wordContainer.removeChild(matchedWord);
+                }
+            }, 500);
+
+            wordInput.value = "";
+            wordInput.focus();
+        }
+    });
+
+    // 기록 저장 버튼 이벤트 리스너
+    submitScoreButton.addEventListener("click", async () => {
+        const playerName = playerNameInput.value.trim();
+        if (playerName === "") {
+            alert("이름을 입력해주세요.");
+            return;
+        }
+
+        if (score <= 0) {
+            alert("0점은 기록되지 않습니다.");
+            hideScorePopup();
+            return;
+        }
+
+        try {
+            await db.collection(COLLECTION_NAME).add({
+                name: playerName,
+                difficulty: selectedDifficulty,
+                score: score,
+                timestamp: firebase.firestore.FieldValue.serverTimestamp()
+            });
+            alert("기록이 저장되었습니다!");
+            playerNameInput.value = "";
+            loadRankings(selectedDifficulty, rankingsContainer);
+        } catch (error) {
+            console.error("기록 저장 중 오류 발생:", error);
+            alert("기록 저장에 실패했습니다. 다시 시도해주세요.");
+        }
+    });
+
+    // 점수 팝업 닫기 버튼 이벤트 리스너
+    if (closePopupButton) {
+        closePopupButton.addEventListener("click", () => {
+            hideScorePopup();
+        });
+    }
+
+    // 전체 기록 보기 팝업 닫기 버튼 이벤트 리스너
+    if (closeRecordsPopupButton) {
+        closeRecordsPopupButton.addEventListener("click", () => {
+            recordsPopup.classList.add("hidden");
+        });
+    }
+
+    // 순위 로드 함수
+    async function loadRankings(difficulty, container) {
+        container.innerHTML = ""; // 기존 순위 초기화
+
+        const rankingList = document.createElement("div");
+        rankingList.innerHTML = `<h4>${capitalizeFirstLetter(difficulty)} 난이도 순위</h4>`;
 
         try {
             let query;
@@ -282,19 +359,18 @@ document.addEventListener("DOMContentLoaded", () => {
                 query = db.collection(COLLECTION_NAME)
                     .where("difficulty", "==", difficulty)
                     .orderBy("score", "desc")
-                    .limit(5); // 특정 난이도 상위 5개
+                    .limit(5);
             } else {
                 query = db.collection(COLLECTION_NAME)
                     .orderBy("score", "desc")
-                    .limit(10); // 전체 상위 10개
+                    .limit(10);
             }
 
             const querySnapshot = await query.get();
-
             const table = document.createElement("table");
             table.classList.add("rank-table");
 
-            // 테이블 헤더 생성
+            // 테이블 헤더
             const thead = document.createElement("thead");
             const headerRow = document.createElement("tr");
             const nameHeader = document.createElement("th");
@@ -316,7 +392,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 noDataRow.appendChild(noDataCell);
                 tbody.appendChild(noDataRow);
             } else {
-                querySnapshot.forEach((doc, index) => {
+                querySnapshot.forEach(doc => {
                     const data = doc.data();
                     const row = document.createElement("tr");
 
@@ -333,257 +409,18 @@ document.addEventListener("DOMContentLoaded", () => {
 
             table.appendChild(tbody);
             rankingList.appendChild(table);
-            rankingsContainer.appendChild(rankingList);
+            container.appendChild(rankingList);
         } catch (error) {
             console.error("순위 로드 중 오류 발생:", error);
             const errorMessage = document.createElement("p");
             errorMessage.textContent = "순위를 불러오는 중 오류가 발생했습니다.";
             rankingList.appendChild(errorMessage);
-            rankingsContainer.appendChild(rankingList);
+            container.appendChild(rankingList);
         }
     }
 
-    /**
-     * 전체 기록 로드 함수
-     */
-    async function loadAllRankings() {
-        allRankingsContainer.innerHTML = ""; // 기존 순위 초기화
-
-        // 각 난이도별로 순위 로드
-        const difficulties = ["한글", "영어", "산수"];
-        for (let difficulty of difficulties) {
-            const rankingList = document.createElement("div");
-            rankingList.innerHTML = `<h4>${capitalizeFirstLetter(difficulty)} 난이도 순위</h4>`;
-
-            try {
-                const querySnapshot = await db.collection(COLLECTION_NAME)
-                    .where("difficulty", "==", difficulty)
-                    .orderBy("score", "desc")
-                    .limit(5)
-                    .get();
-
-                const table = document.createElement("table");
-                table.classList.add("rank-table");
-
-                // 테이블 헤더 생성
-                const thead = document.createElement("thead");
-                const headerRow = document.createElement("tr");
-                const nameHeader = document.createElement("th");
-                nameHeader.textContent = "이름";
-                const scoreHeader = document.createElement("th");
-                scoreHeader.textContent = "점수";
-                headerRow.appendChild(nameHeader);
-                headerRow.appendChild(scoreHeader);
-                thead.appendChild(headerRow);
-                table.appendChild(thead);
-
-                const tbody = document.createElement("tbody");
-
-                if (querySnapshot.empty) {
-                    const noDataRow = document.createElement("tr");
-                    const noDataCell = document.createElement("td");
-                    noDataCell.colSpan = 2;
-                    noDataCell.textContent = "아직 기록이 없습니다.";
-                    noDataRow.appendChild(noDataCell);
-                    tbody.appendChild(noDataRow);
-                } else {
-                    querySnapshot.forEach((doc, index) => {
-                        const data = doc.data();
-                        const row = document.createElement("tr");
-
-                        const nameCell = document.createElement("td");
-                        nameCell.textContent = data.name;
-                        const scoreCell = document.createElement("td");
-                        scoreCell.textContent = `${data.score}점`;
-
-                        row.appendChild(nameCell);
-                        row.appendChild(scoreCell);
-                        tbody.appendChild(row);
-                    });
-                }
-
-                table.appendChild(tbody);
-                rankingList.appendChild(table);
-                allRankingsContainer.appendChild(rankingList);
-            } catch (error) {
-                console.error("순위 로드 중 오류 발생:", error);
-                const errorMessage = document.createElement("p");
-                errorMessage.textContent = `${capitalizeFirstLetter(difficulty)} 순위를 불러오는 중 오류가 발생했습니다.`;
-                rankingList.appendChild(errorMessage);
-                allRankingsContainer.appendChild(rankingList);
-            }
-        }
-    }
-
+    // 대문자 변환 함수
     function capitalizeFirstLetter(string) {
         return string.charAt(0).toUpperCase() + string.slice(1);
-    }
-
-    submitScoreButton.addEventListener("click", async () => {
-        const playerName = playerNameInput.value.trim();
-        if (playerName === "") {
-            alert("이름을 입력해주세요.");
-            return;
-        }
-
-        // 점수가 0보다 큰 경우에만 저장
-        if (score <= 0) {
-            alert("0점은 기록되지 않습니다.");
-            hideScorePopup();
-            return;
-        }
-
-        // 데이터 저장
-        try {
-            await db.collection(COLLECTION_NAME).add({
-                name: playerName,
-                difficulty: selectedDifficulty,
-                score: score,
-                timestamp: firebase.firestore.FieldValue.serverTimestamp()
-            });
-            alert("기록이 저장되었습니다!");
-            // 입력창 초기화 및 팝업 닫기
-            playerNameInput.value = "";
-            hideScorePopup();
-            // 순위 다시 로드 (게임 화면으로 돌아가기 전에 기록이 저장된 것을 반영)
-            // 필요 시 loadRankings(selectedDifficulty);
-        } catch (error) {
-            console.error("기록 저장 중 오류 발생:", error);
-            alert("기록 저장에 실패했습니다. 다시 시도해주세요.");
-        }
-    });
-
-    closePopupButton.addEventListener("click", () => {
-        hideScorePopup();
-    });
-
-    // 전체 기록 보기 팝업 닫기 버튼 이벤트 리스너 추가
-    if (closeRecordsPopupButton) {
-        closeRecordsPopupButton.addEventListener("click", () => {
-            recordsPopup.classList.add("hidden");
-        });
-    }
-
-    // 'input' 이벤트로 변경하여 입력할 때마다 단어(문제) 확인
-    wordInput.addEventListener("input", () => {
-        const inputValue = wordInput.value.trim().toLowerCase();
-        if (inputValue === "") return;
-
-        // 맞춘 단어(문제) 찾기
-        const matchedWord = Array.from(wordContainer.children).find(word => word.dataset.correctAnswer === inputValue);
-
-        if (matchedWord) {
-            const wordScore = parseInt(matchedWord.dataset.score) || 10;
-            score += wordScore;
-            updateScore();
-            matchedWord.classList.add("matched"); // 시각 효과 추가
-            successSound.currentTime = 0;
-            successSound.play(); // 효과음 재생
-            // 단어 제거 후 애니메이션 효과 제거
-            setTimeout(() => {
-                if (wordContainer.contains(matchedWord)) {
-                    wordContainer.removeChild(matchedWord);
-                }
-            }, 500); // 애니메이션 효과 시간과 일치시킴
-
-            // 입력창 초기화 강화
-            wordInput.value = "";
-            setTimeout(() => {
-                wordInput.focus(); // 포커스 다시 설정
-            }, 0);
-        }
-    });
-
-    function updateScore() {
-        scoreElement.textContent = score.toString();
-    }
-
-    function updateLevel() {
-        levelElement.textContent = level.toString();
-    }
-
-    function updateLives() {
-        livesElement.innerHTML = ''; // 기존 내용 제거
-
-        for (let i = 0; i < lives; i++) {
-            const img = document.createElement('img');
-            img.src = 'images/poo.png'; // 이미지 경로
-            img.alt = 'Life';
-            img.title = '생명'; // 도구 팁 추가
-            livesElement.appendChild(img);
-        }
-    }
-
-    /**
-     * loadAllRankings 함수 추가:
-     * - "기록보기" 버튼 클릭 시 전체 난이도별로 순위를 로드하여 표시
-     */
-    async function loadAllRankings() {
-        allRankingsContainer.innerHTML = ""; // 기존 순위 초기화
-
-        // 각 난이도별로 순위 로드
-        const difficulties = ["한글", "영어", "산수"];
-        for (let difficulty of difficulties) {
-            const rankingList = document.createElement("div");
-            rankingList.innerHTML = `<h4>${capitalizeFirstLetter(difficulty)} 난이도 순위</h4>`;
-
-            try {
-                const querySnapshot = await db.collection(COLLECTION_NAME)
-                    .where("difficulty", "==", difficulty)
-                    .orderBy("score", "desc")
-                    .limit(5)
-                    .get();
-
-                const table = document.createElement("table");
-                table.classList.add("rank-table");
-
-                // 테이블 헤더 생성
-                const thead = document.createElement("thead");
-                const headerRow = document.createElement("tr");
-                const nameHeader = document.createElement("th");
-                nameHeader.textContent = "이름";
-                const scoreHeader = document.createElement("th");
-                scoreHeader.textContent = "점수";
-                headerRow.appendChild(nameHeader);
-                headerRow.appendChild(scoreHeader);
-                thead.appendChild(headerRow);
-                table.appendChild(thead);
-
-                const tbody = document.createElement("tbody");
-
-                if (querySnapshot.empty) {
-                    const noDataRow = document.createElement("tr");
-                    const noDataCell = document.createElement("td");
-                    noDataCell.colSpan = 2;
-                    noDataCell.textContent = "아직 기록이 없습니다.";
-                    noDataRow.appendChild(noDataCell);
-                    tbody.appendChild(noDataRow);
-                } else {
-                    querySnapshot.forEach((doc, index) => {
-                        const data = doc.data();
-                        const row = document.createElement("tr");
-
-                        const nameCell = document.createElement("td");
-                        nameCell.textContent = data.name;
-                        const scoreCell = document.createElement("td");
-                        scoreCell.textContent = `${data.score}점`;
-
-                        row.appendChild(nameCell);
-                        row.appendChild(scoreCell);
-                        tbody.appendChild(row);
-                    });
-                }
-
-                table.appendChild(tbody);
-                rankingList.appendChild(table);
-                allRankingsContainer.appendChild(rankingList);
-            } catch (error) {
-                console.error("순위 로드 중 오류 발생:", error);
-                const errorMessage = document.createElement("p");
-                errorMessage.textContent = `${capitalizeFirstLetter(difficulty)} 순위를 불러오는 중 오류가 발생했습니다.`;
-                rankingList.appendChild(errorMessage);
-                allRankingsContainer.appendChild(rankingList);
-            }
-        }
     }
 });
