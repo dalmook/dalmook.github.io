@@ -19,7 +19,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const rankingsContainer = document.getElementById("rankings");
 
     // Firestore 컬렉션 이름
-    const COLLECTION_NAME = "typingscores";
+    const COLLECTION_NAME = "scores";
 
     // Firebase 초기화
     const firebaseConfig = {
@@ -32,7 +32,7 @@ document.addEventListener("DOMContentLoaded", () => {
     };
 
     // Firebase 초기화
-    const app = firebase.initializeApp(firebaseConfig);
+    firebase.initializeApp(firebaseConfig);
     const db = firebase.firestore();
 
     let selectedDifficulty = null;
