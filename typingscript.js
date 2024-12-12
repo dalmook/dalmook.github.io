@@ -40,7 +40,13 @@ document.addEventListener("DOMContentLoaded", () => {
             button.classList.add("selected");
             selectedDifficulty = button.dataset.difficulty;
             // 게임 시작 버튼 활성화
-            startButton.disabled = false;
+            // 시작 화면 숨기기
+            startScreen.classList.remove("active");
+            startScreen.classList.add("hidden");
+            // 게임 화면 보이기
+            gameScreen.style.display = "block";
+            // 게임 초기화
+            initializeGame();
         });
     });
 
