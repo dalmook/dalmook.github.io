@@ -31,7 +31,6 @@ document.addEventListener("DOMContentLoaded", () => {
         appId: "1:982765399272:web:02344ab408272c60e2ad5d"
     };
 
-
     // Firebase 초기화
     firebase.initializeApp(firebaseConfig);
     const db = firebase.firestore();
@@ -70,6 +69,17 @@ document.addEventListener("DOMContentLoaded", () => {
             startGame();
         });
     });
+
+    // "기록보기" 버튼 이벤트 리스너 추가
+    const viewRecordsButton = document.querySelector(".view-records-button");
+    if (viewRecordsButton) {
+        viewRecordsButton.addEventListener("click", () => {
+            // 팝업 표시
+            scorePopup.classList.remove("hidden");
+            // 전체 순위 로드
+            loadRankings(null); // null을 전달하여 전체 순위 로드
+        });
+    }
 
     function startGame() {
         // 시작 화면 숨기기
@@ -217,7 +227,7 @@ document.addEventListener("DOMContentLoaded", () => {
     function showScorePopup() {
         scorePopup.classList.remove("hidden");
         // 난이도별 순위 로드
-        loadRankings();
+        loadRankings(selectedDifficulty);
     }
 
     function hideScorePopup() {
@@ -238,24 +248,33 @@ document.addEventListener("DOMContentLoaded", () => {
         difficultyButtons.forEach(btn => btn.classList.remove("selected"));
     }
 
-    async function loadRankings() {
+    /**
+     * loadRankings 함수 수정:
+     * - difficulty 매개변수를 추가하여 특정 난이도 또는 전체 난이도의 순위를 로드할 수 있도록 함.
+     * - difficulty가 null인 경우 전체 순위를 로드.
+     */
+    async function loadRankings(difficulty) {
         rankingsContainer.innerHTML = ""; // 기존 순위 초기화
 
-        if (!selectedDifficulty) {
-            // 난이도가 선택되지 않았으면 순위 표시 안 함
-            return;
+        // 순위 목록 헤더 설정
+        const rankingList = document.createElement("div");
+        if (difficulty) {
+            rankingList.innerHTML = `<h4>${capitalizeFirstLetter(difficulty)} 난이도 순위</h4>`;
+        } else {
+            rankingList.innerHTML = `<h4>전체 난이도 순위</h4>`;
         }
 
-        // 난이도별로 상위 5개만 표시
-        const rankingList = document.createElement("div");
-        rankingList.innerHTML = `<h4>${capitalizeFirstLetter(selectedDifficulty)}</h4>`;
-
         try {
-            const querySnapshot = await db.collection(COLLECTION_NAME)
-                .where("difficulty", "==", selectedDifficulty)
-                .orderBy("score", "desc")
-                .limit(5)
-                .get();
+            let query = db.collection(COLLECTION_NAME).orderBy("score", "desc").limit(10); // 상위 10개 전체 순위
+
+            if (difficulty) {
+                query = db.collection(COLLECTION_NAME)
+                    .where("difficulty", "==", difficulty)
+                    .orderBy("score", "desc")
+                    .limit(5); // 특정 난이도 상위 5개
+            }
+
+            const querySnapshot = await query.get();
 
             const table = document.createElement("table");
             table.classList.add("rank-table");
@@ -332,8 +351,8 @@ document.addEventListener("DOMContentLoaded", () => {
             // 입력창 초기화 및 팝업 닫기
             playerNameInput.value = "";
             hideScorePopup();
-            // 순위 다시 로드
-            loadRankings();
+            // 순위 다시 로드 (게임 화면으로 돌아가기 전에 기록이 저장된 것을 반영)
+            // 필요 시 loadRankings(selectedDifficulty);
         } catch (error) {
             console.error("기록 저장 중 오류 발생:", error);
             alert("기록 저장에 실패했습니다. 다시 시도해주세요.");
