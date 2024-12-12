@@ -106,12 +106,12 @@ document.addEventListener("DOMContentLoaded", () => {
 
         // 난이도와 타입에 따른 필터링
         const filteredList = wordList.filter(wordObj => {
-            if (selectedDifficulty === "easy") {
-                return wordObj.difficulty === "easy" && wordObj.type === "word";
-            } else if (selectedDifficulty === "medium") {
-                return wordObj.difficulty === "medium" && wordObj.type === "word";
-            } else if (selectedDifficulty === "hard") {
-                return wordObj.difficulty === "hard" && wordObj.type === "math";
+            if (selectedDifficulty === "한글") {
+                return wordObj.difficulty === "한글" && wordObj.type === "word";
+            } else if (selectedDifficulty === "영어") {
+                return wordObj.difficulty === "영어" && wordObj.type === "word";
+            } else if (selectedDifficulty === "산수") {
+                return wordObj.difficulty === "산수" && wordObj.type === "math";
             }
             return false;
         });
@@ -143,9 +143,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
         // 난이도에 따른 점수 설정
         let wordScore = 10; // 기본 점수
-        if (wordObj.difficulty === "medium") {
+        if (wordObj.difficulty === "영어") {
             wordScore = 20;
-        } else if (wordObj.difficulty === "hard") {
+        } else if (wordObj.difficulty === "산수") {
             wordScore = 30;
         }
         wordElement.dataset.score = wordScore;
