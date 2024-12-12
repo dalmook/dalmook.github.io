@@ -7,6 +7,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>타이핑 게임</title>
     <link rel="stylesheet" href="typingstyles.css">
+
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore.js"></script>
 </head>
 <body>
     <div id="game-container">
@@ -42,6 +46,24 @@
             <audio id="success-sound" src="audio/success.mp3" preload="auto"></audio>
         </div>
     </div>
+
+    <!-- 이름 입력 팝업 -->
+    <div id="score-popup" class="popup hidden">
+        <div class="popup-content">
+            <h2>게임 종료!</h2>
+            <p>이름을 입력하여 기록을 남기세요:</p>
+            <input type="text" id="player-name" placeholder="이름 입력">
+            <div class="popup-buttons">
+                <button id="submit-score">기록하기</button>
+                <button id="close-popup">닫기</button>
+            </div>
+            <h3>난이도별 순위</h3>
+            <div id="rankings">
+                <!-- 순위 목록이 여기에 표시됩니다 -->
+            </div>
+        </div>
+    </div>
+
     <script src="typingscript.js"></script>
 </body>
 </html>
