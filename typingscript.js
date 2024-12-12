@@ -8,7 +8,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const wordInput = document.getElementById("word-input");
     const scoreElement = document.getElementById("score");
     const levelElement = document.getElementById("level");
-    const livesElement = document.getElementById("lives");
+    const livesElement = document.getElementById("lives"); // 생명 이미지 컨테이너
     const successSound = document.getElementById("success-sound");
 
     // 팝업 관련 요소
@@ -88,7 +88,7 @@ document.addEventListener("DOMContentLoaded", () => {
         currentWordSpeed = initialWordSpeed;
         updateScore();
         updateLevel();
-        updateLives();
+        updateLives(); // 생명 초기화
         wordInput.value = "";
         wordInput.focus();
 
@@ -165,7 +165,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 if (isGameOver) return; // 게임 종료 시 생명 감소 방지
 
                 lives -= 1;
-                updateLives();
+                updateLives(); // 생명 업데이트
                 if (lives <= 0) {
                     endGame();
                 }
@@ -383,7 +383,14 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     function updateLives() {
-        livesElement.textContent = lives.toString();
+        livesElement.innerHTML = ''; // 기존 내용 제거
+
+        for (let i = 0; i < lives; i++) {
+            const img = document.createElement('img');
+            img.src = 'images/poo.png'; // 이미지 경로
+            img.alt = 'Life';
+            livesElement.appendChild(img);
+        }
     }
 
     // 모바일에서 가상 키보드가 나타날 때 입력창에 포커스 유지
