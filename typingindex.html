@@ -74,8 +74,15 @@
     <div id="records-popup" class="popup hidden">
         <div class="popup-content">
             <h2>전체 기록</h2>
+            <!-- 탭 네비게이션 -->
+            <div class="tabs">
+                <button class="tab-button active" data-difficulty="한글">한글 순위</button>
+                <button class="tab-button" data-difficulty="영어">영어 순위</button>
+                <button class="tab-button" data-difficulty="산수">산수 순위</button>
+            </div>
+            <!-- 탭 콘텐츠 -->
             <div id="all-rankings">
-                <!-- 전체 기록 목록이 여기에 표시됩니다 -->
+                <!-- 선택된 난이도별 순위가 여기에 표시됩니다 -->
             </div>
             <div class="popup-buttons">
                 <button id="close-records-popup">닫기</button>
