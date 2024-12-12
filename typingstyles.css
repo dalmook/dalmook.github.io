@@ -145,6 +145,18 @@ body {
     color: #333;
 }
 
+/* 생명 표시 컨테이너 */
+#lives-board {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+#lives-board img {
+    width: 24px; /* 이미지 크기 조절 */
+    height: 24px;
+}
+
 /* 입력창 컨테이너 */
 #input-container {
     position: absolute;
