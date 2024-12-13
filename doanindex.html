@@ -7,24 +7,32 @@
 </head>
 <body>
     <div class="container">
-        <h1>이미지에서 색칠하기 도안 만들기</h1>
-        <input type="file" id="imageUpload" accept="image/*">
+        <h1>이미지에서 색칠하기 도안 생성하기</h1>
+        
+        <!-- 이미지 업로드 섹션 -->
+        <div class="upload-section">
+            <input type="file" id="imageUpload" accept="image/*">
+        </div>
+        
+        <!-- 이미지 URL 섹션 -->
+        <div class="url-section">
+            <input type="text" id="imageUrl" placeholder="이미지 URL을 입력하세요">
+            <button id="loadUrlBtn">URL에서 불러오기</button>
+        </div>
         
         <div class="options">
             <label>
                 <input type="checkbox" id="includeOriginal">
-                원본 이미지 추가
+                원본 이미지 우측 상단에 추가
             </label>
-     
         </div>
-        
-        <button id="generateBtn">도안 생성</button>
-        <button id="downloadBtn">도안 다운로드</button>               
         
         <div class="canvas-container">
             <canvas id="outlineCanvas"></canvas>
         </div>
-
+        
+        <button id="generateBtn">도안 생성</button>
+        <button id="downloadBtn">도안 다운로드</button>
     </div>
 
     <!-- OpenCV.js 라이브러리 로드 -->
