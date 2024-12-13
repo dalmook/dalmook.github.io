@@ -1,13 +1,8 @@
 let cvReady = false;
 let originalImage = null;
 
-// OpenCV.js 로드 완료 시 호출되는 함수
-function onOpenCvReady() {
-    cvReady = true;
-    console.log('OpenCV.js is ready.');
-}
+// onOpenCvReady 함수는 HTML에서 별도로 정의되었으므로 여기서는 정의하지 않습니다.
 
-// 도안 생성 버튼 클릭 이벤트 핸들러
 document.getElementById('generateBtn').addEventListener('click', function() {
     console.log('Generate button clicked.');
     if (!cvReady) {
