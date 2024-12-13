@@ -120,7 +120,6 @@ document.getElementById('generateBtn').addEventListener('click', function() {
     } catch (err) {
         console.error('도안 생성 중 오류 발생:', err);
         alert('도안 생성 중 오류가 발생했습니다. 콘솔을 확인해주세요.');
-        return; // 오류 발생 시 이후 코드 실행 중단
     } finally {
         // 메모리 해제
         if (src) src.delete();
