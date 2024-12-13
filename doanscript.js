@@ -88,6 +88,7 @@ document.getElementById('generateBtn').addEventListener('click', function() {
     } catch (err) {
         console.error('도안 생성 중 오류 발생:', err);
         alert('도안 생성 중 오류가 발생했습니다.');
+        return; // 오류 발생 시 이후 코드 실행 중단
     } finally {
         // 메모리 해제
         if (src) src.delete();
@@ -189,7 +190,9 @@ document.getElementById('imageUpload').addEventListener('change', function(e) {
     console.log('파일 업로드 시 imageUrl 입력 필드 비우기.');
 
     const img = new Image();
-    img.crossOrigin = 'anonymous'; // CORS 설정
+    // 파일 업로드를 통한 이미지 로드에는 crossOrigin 설정 불필요
+    // img.crossOrigin = 'anonymous'; // 제거
+
     img.onload = function() {
         originalImage = img;
         console.log('Image loaded via upload:', img.width, img.height);
