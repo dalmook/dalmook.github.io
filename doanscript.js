@@ -1,12 +1,6 @@
 let cvReady = false;
 let originalImage = null;
 
-// OpenCV.js 로드 완료 시 호출되는 함수
-function onOpenCvReady() {
-    cvReady = true;
-    console.log('OpenCV.js is ready.');
-}
-
 // 캔버스가 tainted 상태인지 확인하는 함수
 function isCanvasTainted(canvas) {
     try {
@@ -16,6 +10,23 @@ function isCanvasTainted(canvas) {
     } catch (e) {
         return true;
     }
+}
+
+// 이미지 리사이징 함수
+function resizeImage(img, maxWidth, maxHeight) {
+    let canvas = document.createElement('canvas');
+    let ctx = canvas.getContext('2d');
+
+    let ratio = Math.min(maxWidth / img.width, maxHeight / img.height);
+    if (ratio >= 1) {
+        return img;
+    }
+
+    canvas.width = img.width * ratio;
+    canvas.height = img.height * ratio;
+
+    ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+    return canvas;
 }
 
 // 도안 생성 버튼 클릭 이벤트 핸들러
@@ -56,6 +67,8 @@ document.getElementById('generateBtn').addEventListener('click', function() {
     let src, dst, gray, edges, contours, hierarchy;
     try {
         src = cv.imread(originalCanvas);
+        console.log('cv.imread() 호출 완료.');
+
         dst = new cv.Mat();
         gray = new cv.Mat();
         edges = new cv.Mat();
@@ -95,7 +108,7 @@ document.getElementById('generateBtn').addEventListener('click', function() {
 
         // 선화 이미지를 캔버스에 그리기
         cv.imshow(outlineCanvas, dst);
-        console.log('cv.imshow를 사용하여 outlineCanvas에 선화 이미지 그리기 완료.');
+        console.log('cv.imshow() 호출 완료.');
 
         // 캔버스 tainted 상태 확인
         if (isCanvasTainted(outlineCanvas)) {
@@ -213,9 +226,20 @@ document.getElementById('imageUpload').addEventListener('change', function(e) {
     // img.crossOrigin = 'anonymous'; // 제거
 
     img.onload = function() {
-        originalImage = img;
-        console.log('Image loaded via upload:', img.width, img.height);
-        // 새로운 이미지 업로드 시 outlineCanvas 초기화
+        // 이미지 리사이징 (선택 사항)
+        const MAX_WIDTH = 800;
+        const MAX_HEIGHT = 600;
+
+        if (img.width > MAX_WIDTH || img.height > MAX_HEIGHT) {
+            const resizedCanvas = resizeImage(img, MAX_WIDTH, MAX_HEIGHT);
+            originalImage = resizedCanvas;
+            console.log('이미지 리사이즈 완료:', resizedCanvas.width, resizedCanvas.height);
+        } else {
+            originalImage = img;
+            console.log('이미지 로드 완료:', img.width, img.height);
+        }
+
+        // outlineCanvas 초기화
         const outlineCanvas = document.getElementById('outlineCanvas');
         const ctxOutline = outlineCanvas.getContext('2d');
         outlineCanvas.width = 0;
