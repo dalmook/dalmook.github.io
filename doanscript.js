@@ -1,8 +1,13 @@
 let cvReady = false;
 let originalImage = null;
 
-// onOpenCvReady 함수는 HTML에서 별도로 정의되었으므로 여기서는 정의하지 않습니다.
+// OpenCV.js 로드 완료 시 호출되는 함수
+function onOpenCvReady() {
+    cvReady = true;
+    console.log('OpenCV.js is ready.');
+}
 
+// 도안 생성 버튼 클릭 이벤트 핸들러
 document.getElementById('generateBtn').addEventListener('click', function() {
     console.log('Generate button clicked.');
     if (!cvReady) {
@@ -82,7 +87,7 @@ document.getElementById('generateBtn').addEventListener('click', function() {
         console.log('cv.imshow를 사용하여 outlineCanvas에 선화 이미지 그리기 완료.');
     } catch (err) {
         console.error('도안 생성 중 오류 발생:', err);
-        alert('도안 생성 중 오류가 발생했습니다.');
+        alert('도안 생성 중 오류가 발생했습니다. 콘솔을 확인해주세요.');
         return; // 오류 발생 시 이후 코드 실행 중단
     } finally {
         // 메모리 해제
