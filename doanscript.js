@@ -114,7 +114,7 @@ document.getElementById('generateBtn').addEventListener('click', function() {
         if (isCanvasTainted(outlineCanvas)) {
             alert('이미지 처리가 실패했습니다. CORS 정책을 확인해주세요.\n이미지를 다운로드한 후, 로컬 파일 업로드를 이용해주세요.');
             console.error('캔버스가 tainted 상태입니다. CORS 문제 발생.');
-            return;
+            continue;
         }
 
     } catch (err) {
