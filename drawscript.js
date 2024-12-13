@@ -407,73 +407,86 @@ window.addEventListener('load', () => {
     }
 
     // 도장 찍기 함수
-    function placeStamp(e) {
-        const [x, y] = getPointerPosition(e);
-        if (currentStamp) {
-            const img = new Image();
-            img.src = currentStamp.src;
-            img.onload = () => {
-                const aspectRatio = img.height / img.width;
-                const height = stampSize * aspectRatio;
+function placeStamp(e) {
+    const [x, y] = getPointerPosition(e);
+    if (currentStamp) {
+        const img = new Image();
+        img.src = currentStamp.src;
+        img.onload = () => {
+            const aspectRatio = img.height / img.width;
+            const height = stampSize * aspectRatio;
 
-                // Create stamp object without rotation
-                const stampObj = {
-                    src: currentStamp.src,
-                    x: x,
-                    y: y,
-                    width: stampSize,
-                    height: height
-                };
-                stampsPlaced.push(stampObj);
-                drawAllStamps();
-
-                // 히스토리 저장
-                undoStack.push({
-                    imageData: ctx.getImageData(0, 0, drawingCanvas.width, drawingCanvas.height),
-                    stampsPlaced: JSON.parse(JSON.stringify(stampsPlaced))
-                });
-                if (undoStack.length > 20) {
-                    undoStack.shift();
-                }
-                // Redo 히스토리 초기화
-                redoStack = [];
+            const stampObj = {
+                src: currentStamp.src,
+                x: x,
+                y: y,
+                width: stampSize,
+                height: height
             };
-        }
+
+            stampsPlaced.push(stampObj);
+            drawAllStamps();
+
+            // 히스토리 저장
+            undoStack.push({
+                imageData: ctx.getImageData(0, 0, drawingCanvas.width, drawingCanvas.height),
+                stampsPlaced: JSON.parse(JSON.stringify(stampsPlaced))
+            });
+
+            // 히스토리 제한 (예: 20단계)
+            if (undoStack.length > 20) {
+                undoStack.shift();
+            }
+
+            // Redo 히스토리 초기화
+            redoStack = [];
+        };
     }
+}
+
 
     // 도장 모두 그리기 함수
-    function drawAllStamps() {
-        // 기존 그린 선들을 지우지 않고 도장만 그리기
-        stampsPlaced.forEach(stamp => {
-            const img = new Image();
-            img.src = stamp.src;
-            img.onload = () => {
-                ctx.drawImage(img, stamp.x - stamp.width / 2, stamp.y - stamp.height / 2, stamp.width, stamp.height);
-            };
-        });
-    }
+function drawAllStamps() {
+    // 기존 도장 지우기
+    ctx.clearRect(0, 0, drawingCanvas.width, drawingCanvas.height);
+
+    // 모든 도장을 순차적으로 다시 그리기
+    stampsPlaced.forEach(stamp => {
+        const img = new Image();
+        img.src = stamp.src;
+        img.onload = () => {
+            ctx.drawImage(img, stamp.x - stamp.width / 2, stamp.y - stamp.height / 2, stamp.width, stamp.height);
+        };
+    });
+}
 
     // 지우기 기능 (그림 캔버스 및 도장 모두 초기화)
     const clearBtn = document.getElementById('clear');
     clearBtn.addEventListener('click', clearDrawing);
     clearBtn.addEventListener('touchend', clearDrawing); // 모바일 터치 이벤트 추가
 
-    function clearDrawing(e) {
-        e.preventDefault();
-        // 히스토리 저장
-        undoStack.push({
-            imageData: ctx.getImageData(0, 0, drawingCanvas.width, drawingCanvas.height),
-            stampsPlaced: JSON.parse(JSON.stringify(stampsPlaced))
-        });
-        // 히스토리 제한
-        if (undoStack.length > 20) {
-            undoStack.shift();
-        }
-        // Redo 히스토리 초기화
-        redoStack = [];
-        ctx.clearRect(0, 0, drawingCanvas.width, drawingCanvas.height);
-        stampsPlaced = []; // 모든 도장 제거
+function clearDrawing(e) {
+    e.preventDefault();
+
+    // 히스토리 저장
+    undoStack.push({
+        imageData: ctx.getImageData(0, 0, drawingCanvas.width, drawingCanvas.height),
+        stampsPlaced: JSON.parse(JSON.stringify(stampsPlaced))
+    });
+
+    // 히스토리 제한
+    if (undoStack.length > 20) {
+        undoStack.shift();
     }
+
+    // Redo 히스토리 초기화
+    redoStack = [];
+
+    // 캔버스와 도장 초기화
+    ctx.clearRect(0, 0, drawingCanvas.width, drawingCanvas.height);
+    stampsPlaced = []; // 도장 데이터 초기화
+}
+
 
     // 저장하기 기능
     const saveBtn = document.getElementById('save');
