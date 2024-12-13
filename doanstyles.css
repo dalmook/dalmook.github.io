@@ -1,71 +1,182 @@
+/* 기본 스타일 */
 body {
-    font-family: Arial, sans-serif;
-    background-color: #f0f0f0;
-    text-align: center;
-    padding: 20px;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #f8f9fa;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
 }
 
 .container {
-    background-color: #fff;
+    background-color: #ffffff;
     padding: 20px;
-    border-radius: 8px;
-    display: inline-block;
-    max-width: 900px; /* 최대 너비를 약간 늘림 */
-    width: 100%;
+    border-radius: 12px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    width: 90%;
+    max-width: 800px;
+    box-sizing: border-box;
 }
 
-.image-inputs {
-    display: flex;
-    justify-content: center;
-    gap: 20px;
+h1 {
+    color: #343a40;
     margin-bottom: 20px;
+    font-size: 24px;
 }
 
-.input-group {
+.upload-section,
+.url-section {
     display: flex;
     flex-direction: column;
-    align-items: flex-start;
+    align-items: center;
+    margin-bottom: 15px;
 }
 
-.input-group label {
-    margin-bottom: 5px;
-    font-weight: bold;
-}
-
-.input-group input[type="text"] {
-    width: 250px;
-    padding: 5px;
-    margin-bottom: 5px;
-}
-
-.input-group button {
-    padding: 5px 10px;
+.upload-section input[type="file"] {
+    padding: 10px;
+    border: 2px dashed #6c757d;
+    border-radius: 8px;
+    width: 100%;
+    max-width: 400px;
     cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.upload-section input[type="file"]:hover {
+    background-color: #e9ecef;
+}
+
+.url-section {
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+}
+
+.url-section input {
+    flex: 1;
+    padding: 10px;
+    border: 1px solid #ced4da;
+    border-radius: 8px;
+    margin-right: 10px;
+    font-size: 16px;
+}
+
+.url-section button {
+    padding: 10px 20px;
+    border: none;
+    background-color: #007bff;
+    color: #ffffff;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: background-color 0.3s;
+}
+
+.url-section button:hover {
+    background-color: #0056b3;
 }
 
 .options {
-    margin-top: 10px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.options label {
+    font-size: 16px;
+    color: #495057;
+    display: flex;
+    align-items: center;
+}
+
+.options input[type="checkbox"] {
+    margin-right: 8px;
+    width: 18px;
+    height: 18px;
 }
 
 .canvas-container {
-    position: relative;
     display: flex;
     justify-content: center;
-    margin-top: 20px;
+    align-items: center;
+    overflow: auto;
+    max-height: 70vh;
+    margin-bottom: 20px;
 }
 
 canvas {
-    border: 1px solid #ccc;
+    border: 2px solid #dee2e6;
+    border-radius: 8px;
     max-width: 100%;
     height: auto;
 }
 
-.buttons {
-    margin-top: 20px;
+/* 버튼 스타일 */
+button {
+    padding: 12px 24px;
+    margin: 5px;
+    border: none;
+    border-radius: 8px;
+    background-color: #28a745;
+    color: #ffffff;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background-color 0.3s;
 }
 
-.buttons button {
-    padding: 10px 20px;
-    margin: 0 10px;
-    cursor: pointer;
+button:hover {
+    background-color: #218838;
+}
+
+#downloadBtn {
+    background-color: #17a2b8;
+}
+
+#downloadBtn:hover {
+    background-color: #117a8b;
+}
+
+/* 반응형 디자인 */
+@media (max-width: 768px) {
+    .url-section {
+        flex-direction: column;
+    }
+
+    .url-section input {
+        margin-right: 0;
+        margin-bottom: 10px;
+        width: 100%;
+    }
+
+    .url-section button {
+        width: 100%;
+    }
+
+    button {
+        width: 100%;
+    }
+}
+
+@media (max-width: 480px) {
+    h1 {
+        font-size: 20px;
+    }
+
+    .upload-section input[type="file"],
+    .url-section input {
+        font-size: 14px;
+    }
+
+    .url-section button,
+    button {
+        font-size: 14px;
+        padding: 10px 20px;
+    }
+
+    .options label {
+        font-size: 14px;
+    }
 }
