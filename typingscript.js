@@ -296,9 +296,9 @@ document.addEventListener("DOMContentLoaded", () => {
                     wordContainer.removeChild(matchedWord);
                 }
             }, 500);
-            console.log("Input event fired. Current value:", wordInput.value);
-            wordInput.value = "";
-            console.log("Value after clearing:", wordInput.value);            
+            wordInput.addEventListener("blur", () => {
+    wordInput.value = "";
+});       
             wordInput.focus();
         }
     });
