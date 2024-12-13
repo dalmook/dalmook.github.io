@@ -1,7 +1,7 @@
 let cvReady = false;
 let originalImage = null;
 
-// onOpenCvReady 함수는 HTML에서 별도로 정의됨
+// OpenCV.js 로드 완료 시 호출되는 함수
 function onOpenCvReady() {
     cvReady = true;
     console.log('OpenCV.js is ready.');
@@ -99,7 +99,7 @@ document.getElementById('generateBtn').addEventListener('click', function() {
 
         // 캔버스 tainted 상태 확인
         if (isCanvasTainted(outlineCanvas)) {
-            alert('이미지 처리가 실패했습니다. CORS 정책을 확인해주세요.');
+            alert('이미지 처리가 실패했습니다. CORS 정책을 확인해주세요.\n이미지를 다운로드한 후, 로컬 파일 업로드를 이용해주세요.');
             console.error('캔버스가 tainted 상태입니다. CORS 문제 발생.');
             return;
         }
