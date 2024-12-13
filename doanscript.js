@@ -64,71 +64,52 @@ document.getElementById('generateBtn').addEventListener('click', function() {
     console.log('originalCanvas에 이미지 그리기 완료.');
 
     // 이미지 처리 및 선화 생성
-    let src, dst, gray, edges, contours, hierarchy;
+    // 이미지 처리 및 선화 생성
+    const src = cv.imread(originalCanvas);
+    const dst = new cv.Mat();
+    const gray = new cv.Mat();
+    const edges = new cv.Mat();
+    const contours = new cv.MatVector();
+    const hierarchy = new cv.Mat();
+
     try {
-        src = cv.imread(originalCanvas);
-        console.log('cv.imread() 호출 완료.');
-
-        dst = new cv.Mat();
-        gray = new cv.Mat();
-        edges = new cv.Mat();
-        contours = new cv.MatVector();
-        hierarchy = new cv.Mat();
-        console.log('OpenCV Mat 객체 생성 완료.');
-
         // 그레이스케일 변환
         cv.cvtColor(src, gray, cv.COLOR_RGBA2GRAY, 0);
-        console.log('그레이스케일 변환 완료.');
 
         // 가우시안 블러 적용
         cv.GaussianBlur(gray, gray, new cv.Size(5, 5), 0, 0, cv.BORDER_DEFAULT);
-        console.log('가우시안 블러 적용 완료.');
 
         // 캐니 에지 검출
         cv.Canny(gray, edges, 50, 150, 3, false);
-        console.log('캐니 에지 검출 완료.');
 
         // 배경을 흰색, 선을 검정색으로 반전
         cv.bitwise_not(edges, edges);
-        console.log('에지 이미지 반전 완료.');
 
         // 외곽선 찾기
         cv.findContours(edges, contours, hierarchy, cv.RETR_EXTERNAL, cv.CHAIN_APPROX_SIMPLE);
-        console.log('외곽선 찾기 완료. 외곽선 개수:', contours.size());
 
-        // 흰색 배경을 가진 이미지 생성
-        dst.setTo(new cv.Scalar(255, 255, 255, 255)); // 흰색 배경
-        console.log('dst Mat을 흰색으로 초기화.');
-
-        // 외곽선을 검정색으로 채우기
+        // 외곽선을 채우기
         for (let i = 0; i < contours.size(); ++i) {
-            cv.drawContours(dst, contours, i, new cv.Scalar(0, 0, 0, 255), -1); // 검정색으로 채우기
+            cv.drawContours(dst, contours, i, new cv.Scalar(0, 0, 0, 255), -1); // 채우기
         }
-        console.log('외곽선 내부를 검정색으로 채우기 완료.');
+
+        // 배경을 흰색으로 설정
+        cv.cvtColor(edges, dst, cv.COLOR_GRAY2RGBA, 0);
+        dst.setTo(new cv.Scalar(255, 255, 255, 255), edges); // 흰색 배경
 
         // 선화 이미지를 캔버스에 그리기
         cv.imshow(outlineCanvas, dst);
-        console.log('cv.imshow() 호출 완료.');
-
-        // 캔버스 tainted 상태 확인
-        if (isCanvasTainted(outlineCanvas)) {
-            alert('이미지 처리가 실패했습니다. CORS 정책을 확인해주세요.\n이미지를 다운로드한 후, 로컬 파일 업로드를 이용해주세요.');
-            console.error('캔버스가 tainted 상태입니다. CORS 문제 발생.');
-            return;
-        }
-
     } catch (err) {
-        console.error('도안 생성 중 오류 발생:', err);
-        alert('도안 생성 중 오류가 발생했습니다. 콘솔을 확인해주세요.');
+        console.error(err);
+        alert('도안 생성 중 오류가 발생했습니다.');
     } finally {
         // 메모리 해제
-        if (src) src.delete();
-        if (dst) dst.delete();
-        if (gray) gray.delete();
-        if (edges) edges.delete();
-        if (contours) contours.delete();
-        if (hierarchy) hierarchy.delete();
-        console.log('OpenCV 메모리 해제 완료.');
+        src.delete();
+        dst.delete();
+        gray.delete();
+        edges.delete();
+        contours.delete();
+        hierarchy.delete();
     }
 
     // 원본 이미지 오버레이
