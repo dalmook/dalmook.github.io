@@ -35,8 +35,18 @@
         <button id="downloadBtn">도안 다운로드</button>
     </div>
 
+    <!-- onOpenCvReady 함수 정의 -->
+    <script>
+        function onOpenCvReady() {
+            cvReady = true;
+            console.log('OpenCV.js is ready.');
+        }
+    </script>
+
     <!-- OpenCV.js 라이브러리 로드 -->
     <script async src="https://docs.opencv.org/4.x/opencv.js" onload="onOpenCvReady();"></script>
+    
+    <!-- doanscript.js 로드 -->
     <script src="doanscript.js"></script>
 </body>
 </html>
