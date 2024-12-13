@@ -295,10 +295,9 @@ document.addEventListener("DOMContentLoaded", () => {
                 if (wordContainer.contains(matchedWord)) {
                     wordContainer.removeChild(matchedWord);
                 }
-            }, 500);
-            wordInput.addEventListener("blur", () => {
-    wordInput.value = "";
-});       
+            }, 500);            
+            wordInput.value = "1";
+            wordInput.value = "";
             wordInput.focus();
         }
     });
