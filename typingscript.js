@@ -300,6 +300,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 }
             }, 500);            
             wordInput.focus();
+            wordInput.value = "";
         }
     });
 
