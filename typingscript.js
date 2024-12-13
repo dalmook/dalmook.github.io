@@ -284,6 +284,7 @@ document.addEventListener("DOMContentLoaded", () => {
         const matchedWord = Array.from(wordContainer.children).find(word => word.dataset.correctAnswer === inputValue);
 
         if (matchedWord) {
+            wordInput.value = "";
             const wordScore = parseInt(matchedWord.dataset.score) || 10;
             score += wordScore;
             updateScore();
@@ -296,8 +297,6 @@ document.addEventListener("DOMContentLoaded", () => {
                     wordContainer.removeChild(matchedWord);
                 }
             }, 500);            
-            wordInput.value = "1";
-            wordInput.value = "";
             wordInput.focus();
         }
     });
