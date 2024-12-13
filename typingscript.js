@@ -284,10 +284,12 @@ document.addEventListener("DOMContentLoaded", () => {
         const matchedWord = Array.from(wordContainer.children).find(word => word.dataset.correctAnswer === inputValue);
 
         if (matchedWord) {
-            wordInput.value = "";
+            
             const wordScore = parseInt(matchedWord.dataset.score) || 10;
             score += wordScore;
             updateScore();
+            wordInput.value = "1";
+            wordInput.value = "";
             matchedWord.classList.add("matched");
             successSound.currentTime = 0;
             successSound.play();
