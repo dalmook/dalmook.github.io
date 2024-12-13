@@ -1,138 +1,127 @@
-/* 기본 스타일 */
-body {
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background-color: #f8f9fa;
+/* 기본 리셋 */
+* {
     margin: 0;
     padding: 0;
+    box-sizing: border-box;
+}
+
+/* 바디 스타일 */
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f0f0f0;
+    text-align: center;
+    padding: 10px;
     display: flex;
-    justify-content: center;
+    flex-direction: column;
     align-items: center;
     min-height: 100vh;
 }
 
+/* 컨테이너 스타일 */
 .container {
-    background-color: #ffffff;
-    padding: 20px;
-    border-radius: 12px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    width: 90%;
-    max-width: 800px;
-    box-sizing: border-box;
-}
-
-h1 {
-    color: #343a40;
-    margin-bottom: 20px;
-    font-size: 24px;
-}
-
-.upload-section,
-.url-section {
+    background-color: #fff;
+    padding: 15px;
+    border-radius: 8px;
+    width: 100%;
+    max-width: 500px;
     display: flex;
     flex-direction: column;
     align-items: center;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+/* 헤더 스타일 */
+h1 {
+    font-size: 1.8em;
     margin-bottom: 15px;
+    text-align: center;
+    color: #333;
 }
 
-.upload-section input[type="file"] {
-    padding: 10px;
-    border: 2px dashed #6c757d;
-    border-radius: 8px;
+/* 업로드 섹션 */
+.upload-section, .url-section {
+    margin-bottom: 10px;
     width: 100%;
-    max-width: 400px;
-    cursor: pointer;
-    transition: background-color 0.3s;
-}
-
-.upload-section input[type="file"]:hover {
-    background-color: #e9ecef;
-}
-
-.url-section {
-    flex-direction: row;
-    justify-content: center;
-    align-items: center;
 }
 
 .url-section input {
-    flex: 1;
+    width: 70%;
     padding: 10px;
-    border: 1px solid #ced4da;
-    border-radius: 8px;
-    margin-right: 10px;
-    font-size: 16px;
+    margin-right: 5px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 1em;
 }
 
 .url-section button {
-    padding: 10px 20px;
+    padding: 10px;
     border: none;
-    background-color: #007bff;
-    color: #ffffff;
-    border-radius: 8px;
+    background-color: #007BFF;
+    color: #fff;
+    border-radius: 4px;
     cursor: pointer;
-    font-size: 16px;
-    transition: background-color 0.3s;
+    font-size: 1em;
 }
 
 .url-section button:hover {
     background-color: #0056b3;
 }
 
+/* 옵션 스타일 */
 .options {
+    margin-bottom: 15px;
     display: flex;
-    justify-content: center;
     align-items: center;
-    margin-bottom: 20px;
+    gap: 10px;
 }
 
 .options label {
-    font-size: 16px;
-    color: #495057;
-    display: flex;
-    align-items: center;
+    font-size: 1em;
+    color: #333;
+    cursor: pointer;
 }
 
-.options input[type="checkbox"] {
-    margin-right: 8px;
-    width: 18px;
-    height: 18px;
-}
-
+/* 캔버스 컨테이너 */
 .canvas-container {
+    position: relative;
+    width: 100%;
+    height: auto;
     display: flex;
     justify-content: center;
     align-items: center;
-    overflow: auto;
-    max-height: 70vh;
-    margin-bottom: 20px;
+    margin-bottom: 15px;
 }
 
 canvas {
-    border: 2px solid #dee2e6;
-    border-radius: 8px;
+    border: 1px solid #ccc;
     max-width: 100%;
     height: auto;
 }
 
-/* 버튼 스타일 */
+/* 버튼 섹션 */
 button {
-    padding: 12px 24px;
+    padding: 12px 20px;
     margin: 5px;
     border: none;
-    border-radius: 8px;
-    background-color: #28a745;
-    color: #ffffff;
-    font-size: 16px;
+    border-radius: 5px;
+    font-size: 1em;
     cursor: pointer;
-    transition: background-color 0.3s;
+    width: 100%; /* 버튼이 모바일 화면에서 꽉 차게 */
+    max-width: 200px;
 }
 
-button:hover {
+#generateBtn {
+    background-color: #28a745;
+    color: white;
+}
+
+#generateBtn:hover {
     background-color: #218838;
 }
 
 #downloadBtn {
     background-color: #17a2b8;
+    color: white;
 }
 
 #downloadBtn:hover {
@@ -141,42 +130,26 @@ button:hover {
 
 /* 반응형 디자인 */
 @media (max-width: 768px) {
-    .url-section {
-        flex-direction: column;
+    .container {
+        padding: 10px;
+        max-width: 90%;
+    }
+
+    h1 {
+        font-size: 1.5em;
     }
 
     .url-section input {
-        margin-right: 0;
-        margin-bottom: 10px;
-        width: 100%;
+        width: 60%;
+        font-size: 0.9em;
     }
 
     .url-section button {
-        width: 100%;
+        padding: 8px;
+        font-size: 0.9em;
     }
 
     button {
-        width: 100%;
-    }
-}
-
-@media (max-width: 480px) {
-    h1 {
-        font-size: 20px;
-    }
-
-    .upload-section input[type="file"],
-    .url-section input {
-        font-size: 14px;
-    }
-
-    .url-section button,
-    button {
-        font-size: 14px;
-        padding: 10px 20px;
-    }
-
-    .options label {
-        font-size: 14px;
+        font-size: 0.9em;
     }
 }
