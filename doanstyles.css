@@ -1,128 +1,138 @@
-/* 기본 리셋 */
-@import url('https://fonts.googleapis.com/css2?family=Dongle:wght@300&family=Gamja+Flower&family=Gowun+Dodum&display=swap');
-* {
+/* 기본 스타일 */
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #f8f9fa;
     margin: 0;
     padding: 0;
-    box-sizing: border-box;
-}
-
-/* 바디 스타일 */
-body {
-    font-family: "Gowun Dodum", sans-serif;
-    background-color: #f0f0f0;
-    text-align: center;
-    padding: 10px;
     display: flex;
-    flex-direction: column;
+    justify-content: center;
     align-items: center;
     min-height: 100vh;
 }
 
-/* 컨테이너 스타일 */
 .container {
-    background-color: #fff;
-    padding: 15px;
-    border-radius: 8px;
-    width: 100%;
-    max-width: 500px;
+    background-color: #ffffff;
+    padding: 20px;
+    border-radius: 12px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    width: 90%;
+    max-width: 800px;
+    box-sizing: border-box;
+}
+
+h1 {
+    color: #343a40;
+    margin-bottom: 20px;
+    font-size: 24px;
+}
+
+.upload-section,
+.url-section {
     display: flex;
     flex-direction: column;
     align-items: center;
-    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
-}
-
-/* 헤더 스타일 */
-h1 {
-    font-size: 1.8em;
     margin-bottom: 15px;
-    text-align: center;
-    color: #333;
 }
 
-/* 업로드 섹션 */
-.upload-section, .url-section {
-    margin-bottom: 10px;
+.upload-section input[type="file"] {
+    padding: 10px;
+    border: 2px dashed #6c757d;
+    border-radius: 8px;
     width: 100%;
+    max-width: 400px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.upload-section input[type="file"]:hover {
+    background-color: #e9ecef;
+}
+
+.url-section {
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
 }
 
 .url-section input {
-    width: 70%;
+    flex: 1;
     padding: 10px;
-    margin-right: 5px;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    font-size: 1em;
+    border: 1px solid #ced4da;
+    border-radius: 8px;
+    margin-right: 10px;
+    font-size: 16px;
 }
 
 .url-section button {
-    padding: 10px;
+    padding: 10px 20px;
     border: none;
-    background-color: #007BFF;
-    color: #fff;
-    border-radius: 4px;
+    background-color: #007bff;
+    color: #ffffff;
+    border-radius: 8px;
     cursor: pointer;
-    font-size: 1em;
+    font-size: 16px;
+    transition: background-color 0.3s;
 }
 
 .url-section button:hover {
     background-color: #0056b3;
 }
 
-/* 옵션 스타일 */
 .options {
-    margin-bottom: 15px;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-}
-
-.options label {
-    font-size: 1em;
-    color: #333;
-    cursor: pointer;
-}
-
-/* 캔버스 컨테이너 */
-.canvas-container {
-    position: relative;
-    width: 100%;
-    height: auto;
     display: flex;
     justify-content: center;
     align-items: center;
-    margin-bottom: 15px;
+    margin-bottom: 20px;
+}
+
+.options label {
+    font-size: 16px;
+    color: #495057;
+    display: flex;
+    align-items: center;
+}
+
+.options input[type="checkbox"] {
+    margin-right: 8px;
+    width: 18px;
+    height: 18px;
+}
+
+.canvas-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: auto;
+    max-height: 70vh;
+    margin-bottom: 20px;
 }
 
 canvas {
-    border: 1px solid #ccc;
+    border: 2px solid #dee2e6;
+    border-radius: 8px;
     max-width: 100%;
     height: auto;
 }
 
-/* 버튼 섹션 */
+/* 버튼 스타일 */
 button {
-    padding: 12px 20px;
+    padding: 12px 24px;
     margin: 5px;
     border: none;
-    border-radius: 5px;
-    font-size: 1em;
-    cursor: pointer;
-    width: 100%; /* 버튼이 모바일 화면에서 꽉 차게 */
-    max-width: 200px;
-}
-
-#generateBtn {
+    border-radius: 8px;
     background-color: #28a745;
-    color: white;
+    color: #ffffff;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background-color 0.3s;
 }
 
-#generateBtn:hover {
+button:hover {
     background-color: #218838;
 }
 
 #downloadBtn {
     background-color: #17a2b8;
-    color: white;
 }
 
 #downloadBtn:hover {
@@ -130,27 +140,133 @@ button {
 }
 
 /* 반응형 디자인 */
-@media (max-width: 768px) {
+
+/* PC 및 대형 디스플레이 */
+@media (min-width: 1200px) {
     .container {
-        padding: 10px;
-        max-width: 90%;
+        max-width: 1000px;
+        padding: 30px;
     }
 
     h1 {
-        font-size: 1.5em;
+        font-size: 28px;
     }
 
     .url-section input {
-        width: 60%;
-        font-size: 0.9em;
+        font-size: 18px;
     }
 
-    .url-section button {
-        padding: 8px;
-        font-size: 0.9em;
-    }
-
+    .url-section button,
     button {
-        font-size: 0.9em;
+        font-size: 18px;
+        padding: 14px 28px;
+    }
+
+    .options label {
+        font-size: 18px;
+    }
+}
+
+/* 태블릿 세로 */
+@media (min-width: 768px) and (max-width: 991px) and (orientation: portrait) {
+    .container {
+        max-width: 700px;
+        padding: 25px;
+    }
+
+    h1 {
+        font-size: 26px;
+    }
+
+    .url-section input {
+        font-size: 17px;
+    }
+
+    .url-section button,
+    button {
+        font-size: 17px;
+        padding: 13px 26px;
+    }
+
+    .options label {
+        font-size: 17px;
+    }
+}
+
+/* 태블릿 가로 */
+@media (min-width: 768px) and (max-width: 991px) and (orientation: landscape) {
+    .container {
+        max-width: 800px;
+        padding: 25px;
+    }
+
+    h1 {
+        font-size: 26px;
+    }
+
+    .url-section input {
+        font-size: 17px;
+    }
+
+    .url-section button,
+    button {
+        font-size: 17px;
+        padding: 13px 26px;
+    }
+
+    .options label {
+        font-size: 17px;
+    }
+}
+
+/* 모바일 가로 */
+@media (min-width: 481px) and (max-width: 767px) and (orientation: landscape) {
+    .container {
+        max-width: 600px;
+        padding: 20px;
+    }
+
+    h1 {
+        font-size: 22px;
+    }
+
+    .url-section input {
+        font-size: 16px;
+    }
+
+    .url-section button,
+    button {
+        font-size: 16px;
+        padding: 12px 24px;
+    }
+
+    .options label {
+        font-size: 16px;
+    }
+}
+
+/* 모바일 세로 */
+@media (max-width: 480px) and (orientation: portrait) {
+    .container {
+        padding: 15px;
+    }
+
+    h1 {
+        font-size: 20px;
+    }
+
+    .upload-section input[type="file"],
+    .url-section input {
+        font-size: 14px;
+    }
+
+    .url-section button,
+    button {
+        font-size: 14px;
+        padding: 10px 20px;
+    }
+
+    .options label {
+        font-size: 14px;
     }
 }
