@@ -7,6 +7,7 @@ let currentWordIndex = 0;
 let stack = [];
 let gaugePosition = 0; // -1 (left), 0 (center), 1 (right)
 let isGameOver = false;
+let gaugeInterval;
 
 // DOM Elements
 const languageSelection = document.getElementById('language-selection');
@@ -17,7 +18,12 @@ const stackContainer = document.getElementById('stack-container');
 
 // Load JSON data
 fetch('wordtopdata.json')
-    .then(response => response.json())
+    .then(response => {
+        if (!response.ok) {
+            throw new Error('Network response was not ok');
+        }
+        return response.json();
+    })
     .then(json => {
         data = json;
     })
@@ -30,12 +36,6 @@ function selectLanguage(lang) {
     startGame();
 }
 
-languageSelection.querySelectorAll('button').forEach(button => {
-    button.addEventListener('click', () => {
-        selectLanguage(button.dataset.lang);
-    });
-});
-
 // Start the game
 function startGame() {
     languageSelection.style.display = 'none';
@@ -46,9 +46,29 @@ function startGame() {
 
 // Gauge animation
 function animateGauge() {
-    setInterval(() => {
-        gaugePosition = gaugePosition === -1 ? 1 : gaugePosition === 1 ? 0 : -1;
-    }, 1000);
+    let direction = 1; // 1 for right, -1 for left
+    let position = 0;
+    const maxPosition = 1;
+    const minPosition = -1;
+
+    gaugeInterval = setInterval(() => {
+        gaugePosition += direction * 0.1;
+
+        if (gaugePosition >= maxPosition) {
+            gaugePosition = maxPosition;
+            direction = -1;
+        } else if (gaugePosition <= minPosition) {
+            gaugePosition = minPosition;
+            direction = 1;
+        }
+
+        // Update indicator position
+        const gaugeWidth = gauge.clientWidth;
+        const indicatorWidth = indicator.clientWidth;
+        const maxOffset = gaugeWidth - indicatorWidth;
+        const currentOffset = ((gaugePosition - minPosition) / (maxPosition - minPosition)) * maxOffset;
+        indicator.style.left = `${currentOffset}px`;
+    }, 50);
 }
 
 // Handle stacking on click
@@ -62,13 +82,13 @@ function handleStacking() {
 
     // Position based on gaugePosition
     let offsetX = 0;
-    if (gaugePosition === -1) {
+    if (gaugePosition < -0.5) {
         offsetX = -50;
-    } else if (gaugePosition === 1) {
+    } else if (gaugePosition > 0.5) {
         offsetX = 50;
     }
 
-    wordElement.style.transform = `translateX(${ -50 + offsetX }%) translateY(-${stack.length * 30}px)`;
+    wordElement.style.transform = `translateX(${offsetX}%) translateY(-${stack.length * 30}px)`;
 
     stackContainer.appendChild(wordElement);
     stack.push({ element: wordElement, offset: offsetX });
@@ -95,6 +115,7 @@ function checkStability() {
 // Game Over
 function gameOver() {
     isGameOver = true;
+    clearInterval(gaugeInterval);
     alert('게임 오버! 다시 시작하려면 새로고침하세요.');
 }
 
@@ -106,4 +127,11 @@ document.addEventListener('DOMContentLoaded', () => {
         <button data-lang="korean">한국어</button>
         <button data-lang="english">English</button>
     `;
+
+    // Attach event listeners after buttons are added
+    languageSelection.querySelectorAll('button').forEach(button => {
+        button.addEventListener('click', () => {
+            selectLanguage(button.dataset.lang);
+        });
+    });
 });
