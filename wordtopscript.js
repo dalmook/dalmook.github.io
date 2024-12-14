@@ -8,6 +8,8 @@ let stack = [];
 let gaugePosition = 0; // -1 (left), 0 (center), 1 (right)
 let isGameOver = false;
 let gaugeInterval;
+let gaugeSpeed = 50; // 초기 게이지 업데이트 속도 (밀리초)
+const speedIncreaseFactor = 0.9; // 높이에 따라 속도를 증가시키는 비율
 
 // DOM Elements
 const languageSelection = document.getElementById('language-selection');
@@ -44,7 +46,7 @@ function startGame() {
     animateGauge();
 }
 
-// Gauge animation
+// Gauge animation with speed based on stack height
 function animateGauge() {
     let direction = 1; // 1 for right, -1 for left
     let position = 0;
@@ -52,7 +54,8 @@ function animateGauge() {
     const minPosition = -1;
 
     gaugeInterval = setInterval(() => {
-        gaugePosition += direction * 0.1;
+        // Update gauge position
+        gaugePosition += direction * 0.05;
 
         if (gaugePosition >= maxPosition) {
             gaugePosition = maxPosition;
@@ -68,7 +71,18 @@ function animateGauge() {
         const maxOffset = gaugeWidth - indicatorWidth;
         const currentOffset = ((gaugePosition - minPosition) / (maxPosition - minPosition)) * maxOffset;
         indicator.style.left = `${currentOffset}px`;
-    }, 50);
+
+        // Adjust speed based on stack height
+        if (stack.length > 0) {
+            let newSpeed = gaugeSpeed / Math.pow(speedIncreaseFactor, stack.length);
+            newSpeed = Math.max(newSpeed, 10); // 최소 속도 제한
+            if (newSpeed !== gaugeSpeed) {
+                gaugeSpeed = newSpeed;
+                clearInterval(gaugeInterval);
+                animateGauge(); // 재귀적으로 호출하여 속도 변경 적용
+            }
+        }
+    }, gaugeSpeed);
 }
 
 // Handle stacking on click
@@ -78,17 +92,26 @@ function handleStacking() {
     const word = words[currentWordIndex];
     const wordElement = document.createElement('div');
     wordElement.classList.add('stack-word');
-    wordElement.textContent = word;
+
+    // 층수 표시
+    const layerNumber = document.createElement('div');
+    layerNumber.classList.add('layer-number');
+    layerNumber.textContent = `층 ${stack.length + 1}`;
+    wordElement.appendChild(layerNumber);
+
+    wordElement.appendChild(document.createTextNode(word));
 
     // Position based on gaugePosition
     let offsetX = 0;
-    if (gaugePosition < -0.5) {
+    if (gaugePosition < -0.3) { // 왼쪽
         offsetX = -50;
-    } else if (gaugePosition > 0.5) {
+    } else if (gaugePosition > 0.3) { // 오른쪽
         offsetX = 50;
+    } else { // 중앙
+        offsetX = 0;
     }
 
-    wordElement.style.transform = `translateX(${offsetX}%) translateY(-${stack.length * 30}px)`;
+    wordElement.style.transform = `translateX(${offsetX}%) translateY(-${stack.length * 40}px)`;
 
     stackContainer.appendChild(wordElement);
     stack.push({ element: wordElement, offset: offsetX });
@@ -103,20 +126,39 @@ function handleStacking() {
 
 // Check stack stability
 function checkStability() {
+    // 기준을 중앙으로 설정, 오프셋이 클수록 불안정
+    const threshold = 50 - stack.length * 3; // 높이에 따라 임계값 감소
     for (let i = 0; i < stack.length; i++) {
         const block = stack[i];
-        if (Math.abs(block.offset) > 30) { // Threshold for instability
-            gameOver();
+        if (Math.abs(block.offset) > threshold) { // Threshold for instability
+            triggerUnstableEffect();
             break;
         }
     }
 }
 
-// Game Over
-function gameOver() {
+// Trigger unstable effects
+function triggerUnstableEffect() {
+    if (isGameOver) return;
+
     isGameOver = true;
     clearInterval(gaugeInterval);
-    alert('게임 오버! 다시 시작하려면 새로고침하세요.');
+
+    // 전체 스택에 흔들림 효과 추가
+    stack.forEach(block => {
+        block.element.classList.add('shake');
+    });
+
+    // 무너지는 효과를 1초 후에 실행
+    setTimeout(() => {
+        stack.forEach(block => {
+            block.element.classList.add('collapse');
+        });
+        // 게임 오버 메시지를 2초 후에 표시
+        setTimeout(() => {
+            alert('게임 오버! 다시 시작하려면 새로고침하세요.');
+        }, 1000);
+    }, 1000);
 }
 
 // Initialize
