@@ -1,0 +1,116 @@
+/* Reset some default styles */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    background-color: #f0f8ff;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+}
+
+.container {
+    background-color: #ffffff;
+    padding: 20px 30px;
+    border-radius: 10px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    text-align: center;
+    width: 90%;
+    max-width: 500px;
+}
+
+h1 {
+    margin-bottom: 20px;
+    color: #333333;
+}
+
+.controls {
+    margin-bottom: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.controls label {
+    margin-bottom: 5px;
+    font-size: 1.1em;
+    color: #555555;
+}
+
+.controls input {
+    width: 60px;
+    padding: 5px;
+    font-size: 1em;
+    margin-bottom: 10px;
+    text-align: center;
+}
+
+.controls button {
+    padding: 10px 20px;
+    font-size: 1em;
+    background-color: #4CAF50;
+    border: none;
+    border-radius: 5px;
+    color: white;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.controls button:hover {
+    background-color: #45a049;
+}
+
+.dice-container {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    margin-bottom: 20px;
+    min-height: 100px;
+}
+
+.die {
+    width: 60px;
+    height: 60px;
+    margin: 10px;
+    background-image: url('https://i.imgur.com/OdL0XPt.png'); /* Placeholder dice image */
+    background-size: cover;
+    position: relative;
+    animation: roll 1s;
+}
+
+@keyframes roll {
+    0% { transform: rotate(0deg); }
+    25% { transform: rotate(90deg); }
+    50% { transform: rotate(180deg); }
+    75% { transform: rotate(270deg); }
+    100% { transform: rotate(360deg); }
+}
+
+.result h2 {
+    font-size: 1.5em;
+    color: #333333;
+}
+
+/* Responsive Design */
+@media (min-width: 600px) {
+    .controls {
+        flex-direction: row;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .controls label, .controls input, .controls button {
+        margin: 0 10px;
+    }
+
+    .die {
+        width: 80px;
+        height: 80px;
+        margin: 15px;
+    }
+}
