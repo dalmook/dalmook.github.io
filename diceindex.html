@@ -3,12 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>주사위 굴리기 앱</title>
+    <title>3D 주사위 굴리기 앱</title>
     <link rel="stylesheet" href="dicestyles.css">
 </head>
 <body>
     <div class="container">
-        <h1>주사위 굴리기</h1>
+        <h1>3D 주사위 굴리기</h1>
         
         <div class="controls">
             <div class="control-group">
@@ -30,7 +30,8 @@
         </div>
         
         <div id="diceContainer" class="dice-container">
-            <!-- 주사위가 동적으로 삽입됩니다 -->
+            <!-- 3D 주사위가 여기서 렌더링됩니다 -->
+            <canvas id="diceCanvas"></canvas>
         </div>
         
         <div class="result">
@@ -45,8 +46,14 @@
         </div>
     </div>
 
-    <audio id="rollSound" src="audio/roll.mp3"></audio>
+    <audio id="rollSound" src="sounds/roll.mp3"></audio>
 
+    <!-- Three.js 라이브러리 포함 -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <!-- GLTFLoader 포함 -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/examples/js/loaders/GLTFLoader.js"></script>
+    <!-- OrbitControls 포함 (카메라 제어) -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/examples/js/controls/OrbitControls.js"></script>
     <script src="dicescript.js"></script>
 </body>
 </html>
