@@ -1,29 +1,51 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ko">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dice Roller App</title>
+    <title>주사위 굴리기 앱</title>
     <link rel="stylesheet" href="dicestyles.css">
 </head>
 <body>
     <div class="container">
-        <h1>Dice Roller</h1>
+        <h1>주사위 굴리기</h1>
         
         <div class="controls">
-            <label for="numDice">Number of Dice:</label>
-            <input type="number" id="numDice" name="numDice" min="1" max="10" value="2">
-            <button id="rollButton">Roll</button>
+            <div class="control-group">
+                <label for="numDice">주사위 개수:</label>
+                <input type="number" id="numDice" name="numDice" min="1" max="10" value="2">
+            </div>
+            
+            <div class="control-group">
+                <label for="diceType">주사위 종류:</label>
+                <select id="diceType" name="diceType">
+                    <option value="6">6면체 (D6)</option>
+                    <option value="8">8면체 (D8)</option>
+                    <option value="10">10면체 (D10)</option>
+                    <!-- 필요에 따라 더 많은 주사위 유형을 추가할 수 있습니다 -->
+                </select>
+            </div>
+            
+            <button id="rollButton">굴리기</button>
         </div>
         
         <div id="diceContainer" class="dice-container">
-            <!-- Dice will be dynamically inserted here -->
+            <!-- 주사위가 동적으로 삽입됩니다 -->
         </div>
         
         <div class="result">
-            <h2>Total: <span id="total">0</span></h2>
+            <h2>총 합: <span id="total">0</span></h2>
+        </div>
+        
+        <div class="history">
+            <h2>롤 히스토리</h2>
+            <ul id="historyList">
+                <!-- 이전 롤 결과가 여기에 표시됩니다 -->
+            </ul>
         </div>
     </div>
+
+    <audio id="rollSound" src="sounds/roll.mp3"></audio>
 
     <script src="dicescript.js"></script>
 </body>
