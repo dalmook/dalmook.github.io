@@ -53,7 +53,7 @@ document.addEventListener('DOMContentLoaded', () => {
         scene.add(directionalLight);
 
         // 카메라 컨트롤
-        controls = new THREE.OrbitControls(camera, renderer.domElement);
+        controls = new OrbitControls(camera, renderer.domElement);
         controls.enableDamping = true;
         controls.dampingFactor = 0.05;
         controls.enablePan = false;
@@ -83,9 +83,10 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // 애니메이션 루프
-    function animate() {
+    function animate(time) {
         requestAnimationFrame(animate);
         controls.update();
+        TWEEN.update(time);
         renderer.render(scene, camera);
     }
 
@@ -124,8 +125,8 @@ document.addEventListener('DOMContentLoaded', () => {
             // 애니메이션을 통해 회전
             new TWEEN.Tween(dice.rotation)
                 .to({
-                    x: THREE.MathUtils.degToRad(randomX + diceRotationMap[roll].x),
-                    y: THREE.MathUtils.degToRad(randomY + diceRotationMap[roll].y),
+                    x: THREE.MathUtils.degToRad(randomX + (diceRotationMap[roll]?.x || 0)),
+                    y: THREE.MathUtils.degToRad(randomY + (diceRotationMap[roll]?.y || 0)),
                     z: THREE.MathUtils.degToRad(randomZ)
                 }, 2000)
                 .easing(TWEEN.Easing.Quadratic.Out)
@@ -148,15 +149,8 @@ document.addEventListener('DOMContentLoaded', () => {
         return rollResults;
     }
 
-    // TWEEN 애니메이션 업데이트
-    function updateTweens(time) {
-        requestAnimationFrame(updateTweens);
-        TWEEN.update(time);
-    }
-
     // Three.js와 TWEEN 초기화
     initThreeJS();
-    updateTweens();
 
     // 굴리기 버튼 클릭 이벤트
     rollButton.addEventListener('click', () => {
