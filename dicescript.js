@@ -16,6 +16,16 @@ document.addEventListener('DOMContentLoaded', () => {
         10: 10
     };
 
+    // 주사위 숫자에 따른 회전 각도 매핑 (D6 기준)
+    const diceRotationMap = {
+        1: { x: 0, y: 0 },
+        2: { x: -90, y: 0 },
+        3: { x: 0, y: -90 },
+        4: { x: 0, y: 90 },
+        5: { x: 90, y: 0 },
+        6: { x: 180, y: 0 }
+    };
+
     rollButton.addEventListener('click', () => {
         let numDice = parseInt(numDiceInput.value);
         let diceType = parseInt(diceTypeSelect.value);
@@ -40,23 +50,35 @@ document.addEventListener('DOMContentLoaded', () => {
         let rollResults = [];
 
         for (let i = 0; i < numDice; i++) {
-            const die = document.createElement('div');
-            die.classList.add('die');
-
-            // 주사위 굴리기
             const roll = Math.floor(Math.random() * maxValue) + 1;
             total += roll;
             rollResults.push(roll);
 
-            // 주사위 표시
-            if (maxValue === 6) {
-                // D6 - 도트 표시
-                die.textContent = ''; // 도트는 CSS로 처리
-                die.classList.add(`num${roll}`);
-            } else {
-                // D8, D10 등 - 숫자 표시
-                die.textContent = roll;
+            // 주사위 요소 생성
+            const die = document.createElement('div');
+            die.classList.add('die', 'rolling');
+
+            // 주사위 각 면 생성
+            for (let face = 1; face <= 6; face++) {
+                const faceDiv = document.createElement('div');
+                faceDiv.classList.add('face');
+                faceDiv.textContent = face;
+                die.appendChild(faceDiv);
             }
+
+            // D6 주사위일 경우 회전 각도 적용
+            if (diceType === 6) {
+                const rotation = diceRotationMap[roll];
+                die.style.transform = `rotateX(${rotation.x}deg) rotateY(${rotation.y}deg)`;
+            } else {
+                // D8, D10 등 다른 주사위는 숫자만 표시
+                die.innerHTML = `<div class="face">${roll}</div>`;
+            }
+
+            // 애니메이션이 끝난 후 클래스 제거
+            die.addEventListener('animationend', () => {
+                die.classList.remove('rolling');
+            });
 
             // 주사위를 컨테이너에 추가
             diceContainer.appendChild(die);
