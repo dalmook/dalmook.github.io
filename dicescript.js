@@ -53,7 +53,7 @@ document.addEventListener('DOMContentLoaded', () => {
         scene.add(directionalLight);
 
         // 카메라 컨트롤
-        controls = new OrbitControls(camera, renderer.domElement);
+        controls = new THREE.OrbitControls(camera, renderer.domElement);
         controls.enableDamping = true;
         controls.dampingFactor = 0.05;
         controls.enablePan = false;
