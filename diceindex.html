@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dice Roller App</title>
+    <link rel="stylesheet" href="dicestyles.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Dice Roller</h1>
+        
+        <div class="controls">
+            <label for="numDice">Number of Dice:</label>
+            <input type="number" id="numDice" name="numDice" min="1" max="10" value="2">
+            <button id="rollButton">Roll</button>
+        </div>
+        
+        <div id="diceContainer" class="dice-container">
+            <!-- Dice will be dynamically inserted here -->
+        </div>
+        
+        <div class="result">
+            <h2>Total: <span id="total">0</span></h2>
+        </div>
+    </div>
+
+    <script src="dicescript.js"></script>
+</body>
+</html>
