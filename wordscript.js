@@ -316,6 +316,7 @@ function checkAnswer(selected, correct, mode) {
 }
 
 function startGame(difficulty) {
+    clearInterval(timer)
     // 난이도별 시간 제한 설정 및 점수 초기화
     if (difficulty === "easy") {
         timeLimit = 5;
@@ -717,6 +718,7 @@ function initializeApp() {
 // ====================
 
 function resetGame() {
+    clearInterval(timer)
     gameArea.style.display = "none";
     questionEl.textContent = "";
     optionsEl.innerHTML = "";
