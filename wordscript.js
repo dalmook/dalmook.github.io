@@ -619,7 +619,9 @@ startGameBtn.addEventListener("click", () => {
         return;
     }
     console.log("게임 시작 버튼 클릭");
+    resetGame();
     startGame(currentDifficulty);
+    
 });
 
 // 카드 플립 기능 추가: 카드 전체 클릭 시 플립
