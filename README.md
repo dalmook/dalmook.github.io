@@ -1,66 +1,72 @@
-# 혜이파파 플레이 — 2026 리뉴얼 오버레이
+# 혜이파파 플레이
 
-기존 `dalmook/dalmook.github.io`의 게임 파일을 삭제하거나 다시 쓰지 않고, 홈·게임 런처·콘텐츠·PWA·검증 파일을 덮어씌우는 안전한 개편본입니다.
+아이와 가족이 설치나 회원가입 없이 바로 즐길 수 있는 무료 웹게임 놀이터입니다. 기존 14개 게임은 유지하고, 홈·게임 런처·재방문 기능·콘텐츠·PWA·검증 체계를 현대적으로 개편했습니다.
 
-## 이번 개편에서 달라진 점
+## 주요 기능
 
-- 14개 기존 게임을 한곳에서 검색·필터·즐겨찾기
+- 14개 게임 검색, 카테고리 필터, 즐겨찾기
 - 매일 바뀌는 오늘의 도전, XP, 연속 방문, 최근 플레이
-- 모바일 우선 반응형 디자인과 다크 모드
-- 기존 게임을 그대로 실행하는 `play.html` 런처
-- 게임 새로고침, 전체 화면, 공유, 플레이 시간, 다음 게임 추천
-- 홈 화면 설치가 가능한 PWA와 오프라인 안내
-- 검색엔진용 설명, Open Graph 이미지, 구조화 데이터, 정리된 sitemap
-- 놀이 가이드·서비스 소개·개인정보 처리방침
-- 광고를 게임 조작 영역과 분리한 홈 1곳 + 게임 설명 아래 1곳 배치
+- 모바일 우선 반응형 화면과 다크 모드
+- 공통 게임 런처: 새로고침, 전체 화면, 공유, 플레이 시간, 추천 게임
+- 홈 화면 설치형 PWA와 오프라인 안내
+- 놀이 가이드, 서비스 소개, 개인정보 처리방침
+- Google Analytics 이벤트와 게임 조작부에서 분리한 광고 영역
 - GitHub Actions 정적 검증
 
-## 가장 안전한 적용 방법
+## 로컬 실행
 
-1. 이 폴더를 압축 해제합니다.
-2. PowerShell에서 아래처럼 실행합니다.
-
-```powershell
-Set-ExecutionPolicy -Scope Process Bypass
-.\APPLY_OVERLAY.ps1 -RepositoryPath "C:\경로\dalmook.github.io"
-```
-
-3. 저장소에서 검증합니다.
-
-```powershell
-cd "C:\경로\dalmook.github.io"
-python scripts\validate_site.py
-```
-
-4. `git diff`로 변경 범위를 확인한 다음 기능 브랜치에 커밋하고, GitHub Pages 미리보기 또는 로컬 서버에서 확인한 뒤 `main`에 병합합니다.
-
-```powershell
-git switch -c feature/modern-heypapa-2026
+```bash
 python -m http.server 8000
 ```
 
-브라우저에서 `http://localhost:8000`을 엽니다.
+브라우저에서 `http://localhost:8000`을 엽니다. `file://`로 직접 열면 서비스워커, iframe, 일부 브라우저 기능이 정상 작동하지 않을 수 있습니다.
 
-## 구조상 안전한 이유
+## 검증
 
-- `matchgame.html`, `logicgame.html` 등 기존 게임 14개는 수정하지 않습니다.
-- JavaScript가 꺼져도 메인 카드가 기존 게임 페이지로 직접 연결됩니다.
-- JavaScript가 켜지면 `play.html?game=...` 런처로 열어 공통 경험을 제공합니다.
-- 서비스워커는 정해진 루트 파일만 처리합니다. `/vietnam/` 같은 별도 하위 앱은 가로채지 않습니다.
-- `play.html`은 `noindex`라 검색 결과에 얇은 중복 페이지가 쌓이지 않습니다.
+```bash
+python scripts/validate_site.py
+node --check app.js
+node --check play.js
+node --check games-data.js
+node --check sw.js
+```
 
-## 배포 전에 콘솔에서 확인할 것
+검증 스크립트는 필수 공통 파일, 게임 데이터 형식, 14개 기존 게임 파일과 썸네일 경로, 기본 HTML 구조를 확인합니다.
 
-코드만으로 끝나지 않는 설정입니다.
+## 구조
 
-1. **Firebase Console**: Firestore Security Rules를 게임별 데이터 형식·쓰기 범위에 맞게 점검
-2. **Firebase App Check**: 각 Firebase 연동 게임에 App Check SDK를 연결하고, 먼저 모니터링한 뒤 정상 트래픽을 확인해 적용 검토
-3. **AdSense → 개인정보 보호 및 메시지**: Google 인증 CMP 메시지 설정
-4. **Google Search Console**: `https://dalmook.github.io/sitemap.xml` 제출 및 색인 상태 확인
-5. **GA4 DebugView**: `game_open`, `game_session_end`, `daily_challenge_complete`, `share_game` 이벤트 확인
+```text
+index.html / styles.css / app.js   홈과 재방문 기능
+games-data.js                      14개 게임의 단일 메타데이터 원본
+play.html / play.css / play.js     기존 게임을 감싸는 공통 런처
+guides.html                        보호자용 놀이 가이드
+about.html                         서비스 소개
+privacy.html                       개인정보·광고·분석 안내
+manifest.webmanifest / sw.js       PWA와 제한된 오프라인 캐시
+scripts/validate_site.py           배포 전 정적 검증
+```
 
-## 주의
+## 안전한 변경 원칙
 
-- 인기나 광고 수익은 디자인만으로 보장되지 않습니다. 재방문할 이유가 되는 새 게임·주간 도전·콘텐츠 업데이트가 핵심입니다.
-- Firebase 웹 설정값은 브라우저에 노출되는 값이지만, 실제 보호는 Security Rules와 App Check 구성에 달려 있습니다.
-- 공개 순위표에서는 어린이가 실명·학교·연락처를 입력하지 않도록 닉네임 안내를 유지하세요.
+- `matchgame.html`, `logicgame.html` 등 기존 게임은 기능별로 독립되어 있습니다. 게임 엔진을 바꿀 때는 해당 HTML·CSS·JavaScript와 Firebase 기록 흐름을 함께 확인하세요.
+- 홈과 런처는 `games-data.js`를 공통 데이터원으로 사용합니다. 게임을 추가하거나 경로를 바꾸면 이 파일과 `sitemap.xml`, 서비스워커 목록을 함께 갱신하세요.
+- JavaScript를 사용할 수 없는 환경에서는 홈의 `<noscript>` 링크로 기존 게임을 직접 열 수 있습니다.
+- 서비스워커는 명시된 루트 파일과 게임 자산만 처리하며 `/vietnam/` 같은 별도 하위 앱은 가로채지 않습니다.
+- `play.html`은 `noindex`로 설정해 원본 게임 페이지와 중복 색인이 생기지 않도록 했습니다.
+
+## 배포 후 별도 확인
+
+코드 저장소 밖에서 관리해야 하는 항목입니다.
+
+1. Firebase Console의 Firestore Security Rules와 App Check
+2. AdSense의 개인정보 보호 및 메시지/CMP 설정
+3. Search Console의 `sitemap.xml` 제출과 색인 상태
+4. GA4 DebugView의 `game_open`, `game_session_end`, `daily_challenge_complete`, `share_game` 이벤트
+
+## 개인정보와 공개 기록
+
+일부 기존 게임은 Firebase에 점수와 사용자가 입력한 이름을 저장합니다. 공개 순위표에는 실명·학교명·연락처 대신 닉네임을 사용하도록 안내하고, 민감한 값은 GitHub 이슈에 올리지 마세요. 자세한 내용은 `privacy.html`과 `SECURITY.md`를 참고하세요.
+
+## 수익화 원칙
+
+광고는 홈의 게임 목록 아래와 게임 설명 영역에만 배치하며, 시작·정답·다시하기·전체 화면 같은 조작 버튼 가까이에 두지 않습니다. 운영 지표와 콘텐츠 개선 순서는 `MONETIZATION.md`에 정리되어 있습니다.
