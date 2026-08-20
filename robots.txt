@@ -1,3 +1,4 @@
 User-agent: *
 Allow: /
+Disallow: /play.html
 Sitemap: https://dalmook.github.io/sitemap.xml

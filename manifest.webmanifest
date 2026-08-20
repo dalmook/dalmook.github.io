@@ -1,0 +1,23 @@
+{
+  "id": "/",
+  "name": "혜이파파 플레이",
+  "short_name": "혜이파파",
+  "description": "아이와 가족이 함께 즐기는 무료 교육·두뇌 웹게임 놀이터",
+  "lang": "ko-KR",
+  "start_url": "/?source=pwa",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#17142f",
+  "theme_color": "#6d5dfc",
+  "categories": ["games", "education", "family"],
+  "icons": [
+    {"src":"/icons/icon-192.png","sizes":"192x192","type":"image/png","purpose":"any maskable"},
+    {"src":"/icons/icon-512.png","sizes":"512x512","type":"image/png","purpose":"any maskable"}
+  ],
+  "shortcuts": [
+    {"name":"오늘의 도전","short_name":"오늘의 도전","url":"/?daily=1","icons":[{"src":"/icons/icon-192.png","sizes":"192x192"}]},
+    {"name":"짝 맞추기","short_name":"짝 맞추기","url":"/play.html?game=match","icons":[{"src":"/icons/icon-192.png","sizes":"192x192"}]},
+    {"name":"구구단","short_name":"구구단","url":"/play.html?game=multiplication","icons":[{"src":"/icons/icon-192.png","sizes":"192x192"}]}
+  ]
+}

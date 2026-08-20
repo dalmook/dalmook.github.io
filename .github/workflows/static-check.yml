@@ -1,0 +1,32 @@
+name: Static site check
+on:
+  pull_request:
+  push:
+    branches: [main, "feature/**"]
+permissions:
+  contents: read
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Validate site structure
+        run: python scripts/validate_site.py
+      - name: Check JavaScript syntax
+        run: |
+          node --check app.js
+          node --check play.js
+          node --check games-data.js
+          node --check sw.js
+      - name: Smoke-test core pages
+        run: |
+          python -m http.server 8000 >/tmp/heypapa-http.log 2>&1 &
+          SERVER_PID=$!
+          trap 'kill $SERVER_PID' EXIT
+          sleep 2
+          curl --fail --silent http://127.0.0.1:8000/ >/dev/null
+          curl --fail --silent 'http://127.0.0.1:8000/play.html?game=match' >/dev/null
+          curl --fail --silent http://127.0.0.1:8000/guides.html >/dev/null
