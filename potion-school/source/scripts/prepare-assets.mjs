@@ -1,0 +1,1 @@
+import {mkdirSync,copyFileSync} from 'node:fs';mkdirSync(new URL('../public/',import.meta.url),{recursive:true});for(const f of ['momo.webp','favicon.svg'])copyFileSync(new URL('../../'+f,import.meta.url),new URL('../public/'+f,import.meta.url));
