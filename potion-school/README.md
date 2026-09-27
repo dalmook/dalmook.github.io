@@ -3,7 +3,7 @@
 어린이용 물약 따르기 퍼즐. React · TypeScript · Vite · Radix UI · Lucide · Web Audio로 제작했습니다.
 
 ## 실행
-현재 폴더의 `index.html`, `assets/`, `momo.webp`, `friends-atlas.webp`, `favicon.svg`, `manifest.webmanifest`, `sw.js`는 완성된 정적 배포판입니다. GitHub Pages의 `/potion-school/`에서 실행할 수 있습니다. 별도 서버/API 키가 필요하지 않습니다.
+현재 폴더의 `index.html`, `assets/`, `momo.webp`, `friends-atlas.webp`, `favicon.svg`는 완성된 정적 배포판입니다. GitHub Pages의 `/potion-school/`에서 실행할 수 있습니다. 별도 서버/API 키가 필요하지 않습니다.
 
 ## 기능
 - 풀이 검증된 30개 레벨과 3개 테마
@@ -11,16 +11,19 @@
 - 별 보상과 일러스트로 그린 마법 친구 5종 수집
 - 무료 힌트, 되돌리기, 다시 시작, 빈 병 추가
 - 효과음/움직임 설정, 색 문양 표시, 키보드/터치 지원
-- 한 화면 플레이 장면, 진행 중 퍼즐·완료 기록·설정의 기기 저장
-- 설치 가능한 웹 앱 구성과 첫 접속 이후 오프라인 캐시
+- 이 기기에 완료 기록과 설정 저장 (현재 퍼즐 배치는 새로고침 시 초기화)
 - 회원가입/광고/결제/추적 코드 없음
 
 ## 수정 및 다시 빌드
 Node 22.13 이상에서 이 폴더에서 `npm install` 후 `npm run dev`.
-`npm run build`는 `build/`에 HTML과 번들을 출력합니다. 배포할 때 해당 파일을 현재 폴더에 복사하고 `momo.webp`, `friends-atlas.webp`, `favicon.svg`, `manifest.webmanifest`, `sw.js`를 함께 유지하세요. 정적 파일은 개발/빌드 전에 자동으로 복사됩니다.
+`npm run build`는 `build/`에 HTML과 번들을 출력합니다. 배포할 때 해당 파일을 현재 폴더에 복사하고 `momo.webp`, `friends-atlas.webp`, `favicon.svg`를 함께 유지하세요. 이미지는 개발/빌드 전에 자동으로 복사됩니다.
 
 ## 검증
 `npm test`로 전체 레벨 풀이, 수량 보존, 병 용량, 불가능한 이동, 입력 불변성을 검증합니다.
 
 ## 저작물
 모모와 친구 일러스트는 이 게임용으로 AI 생성했습니다. Lucide 및 Radix UI 아이콘/컴포넌트는 각각의 오픈소스 라이선스를 따릅니다.
+
+## Magic Quest update
+
+All screens share three original fantasy worlds: forest, moon ruins, and sky castle. Play includes measured bottle pouring, liquid transfer, Canvas magic bursts, stage introductions, and rank rewards. The world map and companion collection have dedicated full-screen layouts. Includes 30 solvable stages, hints, undo, extra bottles, persistent progress, sound and reduced-motion settings.
