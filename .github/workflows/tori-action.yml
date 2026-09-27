@@ -32,11 +32,17 @@ jobs:
           manifest = root / '.action-v2-package.json'
           if manifest.exists():
               meta = json.loads(manifest.read_text())
-              encoded = ''.join((root / ('.action-v2-part'+str(i)+'.txt')).read_text().strip() for i in range(4))
+              parts = []
+              for part in meta['pieces']:
+                  assert part['id'] in {'0','1','1tail','2a','2b','3a','3b'}
+                  text = (root / ('.action-v2-part'+part['id']+'.txt')).read_text().strip()[:part.get('take',999999)]
+                  print(part['id'], len(text), hashlib.sha256(text.encode()).hexdigest(), flush=True)
+                  assert hashlib.sha256(text.encode()).hexdigest() == part['sha256'], 'Piece mismatch: '+part['id']
+                  parts.append(text)
+              encoded = ''.join(parts)
               assert hashlib.sha256(encoded.encode()).hexdigest() == meta['sha256'], 'Transfer checksum mismatch'
               source = json.loads(zlib.decompress(base64.b64decode(encoded, validate=True)))
-              allowed = {'rig.mjs','scene.mjs','action-ui.mjs','action.css','audio.mjs','tests/action.py'}
-              assert set(source) == allowed
+              assert set(source) == {'rig.mjs','scene.mjs','action-ui.mjs','action.css','audio.mjs','tests/action.py'}
               for name, text in source.items():
                   target = root / name
                   target.parent.mkdir(parents=True, exist_ok=True)
@@ -74,7 +80,7 @@ jobs:
         if: github.ref == 'refs/heads/tori-action-v2'
         run: |
           if [ -f tori-math/.action-v2-package.json ]; then
-            rm tori-math/.action-v2-part{0,1,2,3}.txt tori-math/.action-v2-package.json
+            rm tori-math/.action-v2-part*.txt tori-math/.action-v2-package.json
             git config user.name 'github-actions[bot]'
             git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
             git add tori-math
