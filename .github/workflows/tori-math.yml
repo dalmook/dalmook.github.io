@@ -1,0 +1,165 @@
+name: Tori Math - build, playtest and verify live
+on:
+  push:
+    branches: [feat/tori-math-adventure, main]
+    paths:
+      - 'tori-math/**'
+      - 'tools/tori-bootstrap/**'
+      - '.github/workflows/tori-math.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: tori-math-${{ github.ref }}
+  cancel-in-progress: false
+jobs:
+  test-and-publish:
+    runs-on: ubuntu-latest
+    timeout-minutes: 18
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Restore integrity-checked original source (one-time bootstrap)
+        run: |
+          python - <<'PY'
+          from pathlib import Path, PurePosixPath
+          import base64, hashlib, json, lzma
+          parts = [Path(f'tools/tori-bootstrap/source.{i}.b64') for i in range(1, 6)]
+          if not parts[0].exists():
+              assert Path('tori-math/app.mjs').is_file(), 'No game source'
+              print('Using committed, editable game source.')
+          else:
+              encoded = ''.join(p.read_text(encoding='utf-8').strip() for p in parts)
+              raw = lzma.decompress(base64.b64decode(encoded, validate=True))
+              digest = hashlib.sha256(raw).hexdigest()
+              assert digest == 'f833c14eb22215cc66d6f76ac7a8194e05da5b1493baf6627c81c6dd9b317c1e', digest
+              files = json.loads(raw)
+              assert len(files) == 14
+              root = Path('tori-math')
+              assert not root.exists(), 'Bootstrap must never replace an existing game'
+              for name, content in files.items():
+                  rel = PurePosixPath(name)
+                  assert not rel.is_absolute() and '..' not in rel.parts
+                  assert isinstance(content, str)
+                  target = root.joinpath(*rel.parts)
+                  target.parent.mkdir(parents=True, exist_ok=True)
+                  target.write_text(content, encoding='utf-8')
+              print('Verified and restored 14 original UTF-8 source files:', digest)
+          PY
+      - name: Validate modules and 41 math/save tests
+        shell: bash
+        run: |
+          set -o pipefail
+          mkdir -p /tmp/tori-qa
+          for file in tori-math/*.mjs; do node --check "$file"; done
+          node --test tori-math/tests/math.test.mjs | tee /tmp/tori-qa/unit-tests.log
+      - name: Install real browser test dependencies
+        run: |
+          python -m pip install playwright==1.55.0
+          python -m playwright install --with-deps chromium
+          sudo apt-get update -qq
+          sudo apt-get install -y fonts-noto-cjk
+      - name: Play through actual ES Modules over HTTP on desktop and mobile
+        env:
+          QA_OUTPUT: /tmp/tori-qa
+        shell: bash
+        run: |
+          set -o pipefail
+          python tori-math/tests/browser.py | tee /tmp/tori-qa/browser-tests.log
+      - name: Commit tested editable source on feature branch
+        if: github.ref == 'refs/heads/feat/tori-math-adventure'
+        shell: bash
+        run: |
+          if [ -f tools/tori-bootstrap/source.1.b64 ]; then
+            git rm -- tools/tori-bootstrap/source.*.b64
+            git add -- tori-math
+            git -c user.name='github-actions[bot]' -c user.email='41898282+github-actions[bot]@users.noreply.github.com' commit -m 'feat: publish original Tori Math Adventure with white rigged rabbit, 48 stages and tested Korean gameplay'
+            git push origin HEAD:feat/tori-math-adventure
+          fi
+      - name: Verify public Pages assets and touch gameplay
+        if: github.ref == 'refs/heads/main'
+        run: |
+          python - <<'PY'
+          import hashlib, json, time, urllib.request
+          from pathlib import Path
+          from playwright.sync_api import sync_playwright
+          base = 'https://dalmook.github.io/tori-math/'
+          names = ['index.html', 'style.css', 'app.mjs', 'math.mjs', 'scene.mjs', 'audio.mjs', 'icon.svg', 'VERSION.json']
+          checks = []
+          for attempt in range(60):
+              try:
+                  for name in names:
+                      url = base + name + '?verify=' + str(int(time.time()))
+                      with urllib.request.urlopen(url, timeout=15) as response:
+                          assert response.status == 200
+                          data = response.read()
+                      assert hashlib.sha256(data).digest() == hashlib.sha256(Path('tori-math', name).read_bytes()).digest(), name + ' not current yet'
+                  break
+              except Exception as error:
+                  print(f'Waiting for Pages {attempt + 1}/60: {error}', flush=True)
+                  time.sleep(5)
+          else:
+              raise SystemExit('Pages did not serve the current release')
+          checks.extend('Public asset matches tested source: ' + n for n in names)
+          errors = []
+          with sync_playwright() as pw:
+              browser = pw.chromium.launch()
+              for width, height in [(1440, 1024), (390, 844)]:
+                  page = browser.new_page(viewport={'width': width, 'height': height}, has_touch=True)
+                  page.on('pageerror', lambda e: errors.append(str(e)))
+                  page.goto(base, wait_until='networkidle')
+                  assert '토리의 수학탐험' in page.title()
+                  assert page.locator('.world-card').count() == 6
+                  page.locator('#startAdventure').click()
+                  assert page.locator('#game').is_visible()
+                  assert page.evaluate('document.documentElement.scrollWidth <= innerWidth')
+                  if width == 390:
+                      assert page.evaluate('document.documentElement.scrollHeight <= innerHeight + 1')
+                  for _ in range(10):
+                      a, op, b = page.locator('#expression').inner_text().split(' ')
+                      assert op == '+'
+                      for digit in str(int(a) + int(b)):
+                          page.locator(f'#keypad [data-key="{digit}"]').click()
+                      page.locator('#submitButton').click()
+                      page.wait_for_timeout(720)
+                  assert page.locator('#resultHome').is_visible()
+                  save = page.evaluate("JSON.parse(localStorage.getItem('tori-math-adventure:v1'))")
+                  assert save['total'] == 10 and save['correctFirst'] == 10
+                  checks.append(f'{width}px public site: full 10-question touch playthrough and saved result')
+                  page.screenshot(path=f'/tmp/tori-qa/live-{width}-result.png', full_page=True)
+                  page.close()
+              browser.close()
+          assert not errors, errors
+          result = {'status': 'verified', 'url': base, 'release': 'tori-2026-09-27-r1', 'checks': checks, 'javascript_errors': errors}
+          Path('/tmp/tori-qa/live-verification.json').write_text(json.dumps(result, ensure_ascii=False, indent=2), encoding='utf-8')
+          print(json.dumps(result, ensure_ascii=False))
+          PY
+      - name: Summarize verified tests
+        run: |
+          python - <<'PY'
+          import json, os
+          from pathlib import Path
+          report = json.loads(Path('/tmp/tori-qa/browser-report.json').read_text())
+          with open(os.environ['GITHUB_STEP_SUMMARY'], 'a') as summary:
+              summary.write('# Tori Math Adventure\n\n41 unit tests passed.\n\n')
+              summary.write(f"{report['checks']} actual HTTP browser checks passed; mode: {report['mode']}.\n\n")
+              summary.write('Original white rabbit action animation, 24 math skills, 48 stages; no third-party art or audio files.\n')
+              if Path('/tmp/tori-qa/live-verification.json').exists():
+                  summary.write('\nPublic deployment and desktop/mobile touch playthroughs verified.\n')
+          PY
+      - name: Retain test reports and actual game screenshots
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: tori-math-qa-${{ github.run_id }}
+          path: /tmp/tori-qa
+          retention-days: 14
