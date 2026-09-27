@@ -1,0 +1,11 @@
+/* Keep the original visual framework. Layout and small HUD corrections are separate. */
+@import url('./layout.css');
+/* The original combo widget starts with visibility:hidden; explicitly show the OX counter.
+   Float it over the stage so it never steals width from score and answer totals. */
+.ox-game .combo{visibility:visible;position:absolute;left:4px;top:calc(100% + 5px);padding:3px 8px 5px;z-index:2;min-width:58px;pointer-events:none}
+.ox-game .combo b{font-size:24px}.ox-game .combo small{font-size:10px}
+.ox-game .hud2{padding-left:4px;padding-right:4px}
+.ox-game .tally{gap:4px}.ox-game .tally span{padding:3px 7px}
+.ox-game .dopa{max-width:48%;padding:3px 8px 4px}
+.ox-game .result-card button+button{margin-top:10px}
+@media(max-width:350px){.ox-game .tally span{padding:3px 5px}.ox-game .dopa{padding:3px 6px}.ox-game .combo b{font-size:21px}}

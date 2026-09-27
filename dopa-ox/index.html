@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#3b6bff">
+<meta name="description" content="원작의 캐릭터, 음악, 축제 같은 연출 그대로! 분야별 상식을 OX로 풀고 바보부터 초인까지 도전하는 비공식·비영리 도파드릴 OX 퀴즈판.">
+<title>도파드릴 OX 퀴즈 | 비공식 한국어판</title>
+<link rel="icon" href="icon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="base.css">
+<link rel="stylesheet" href="ox.css?v=1">
+<script type="module" src="app.mjs?v=1"></script>
+</head>
+<body class="lv0 ox-game">
+<div id="paper" aria-hidden="true"></div><div id="rays-fallback" aria-hidden="true"></div>
+<canvas id="bg" aria-hidden="true"></canvas><canvas id="fx-back" aria-hidden="true"></canvas>
+<svg id="actors-back" class="ox-actors back" aria-hidden="true"></svg>
+<main id="app">
+<section id="screen-title" class="screen is-active" aria-labelledby="logo">
+<button class="icon-btn settings-btn" id="open-settings" aria-label="설정">⚙</button>
+<button class="icon-btn settings-btn help-btn" id="open-guide" aria-label="게임 방법">?</button>
+<h1 id="logo" class="logo" aria-label="도파드릴 OX 퀴즈">
+<svg class="logo-burst" viewBox="-100 -100 200 200" aria-hidden="true"><path id="logo-burst-path" fill="#ffd23f" stroke="#1b1d4d" stroke-width="5" stroke-linejoin="round"/><path id="logo-burst-inner" fill="#ff7ab6" stroke="#1b1d4d" stroke-width="4" stroke-linejoin="round"/></svg>
+<span class="logo-top" aria-hidden="true"><i data-c="도">도</i><i data-c="파">파</i></span>
+<span class="logo-ribbon" aria-hidden="true"><svg class="ribbon-bg" viewBox="0 0 300 70" preserveAspectRatio="none"><path d="M4 22 L34 16 L28 36 L40 58 L6 62 L18 42Z M296 22 L266 16 L272 36 L260 58 L294 62 L282 42Z" fill="#2a4fd6" stroke="#1b1d4d" stroke-width="4"/><path d="M30 10 Q150 -4 270 10 L270 56 Q150 42 30 56Z" fill="#3b6bff" stroke="#1b1d4d" stroke-width="4.5"/><path d="M42 18 Q150 6 258 18" fill="none" stroke="#fff" stroke-width="3" stroke-dasharray="7 6"/></svg><i>O</i><i>X</i><i>퀴</i><i>즈</i></span>
+<span class="logo-bits" aria-hidden="true"><b style="--x:-46%;--y:4%;--r:-18deg;--c:#3fdcb0">O</b><b style="--x:44%;--y:-2%;--r:14deg;--c:#a77bff">?</b><b style="--x:-34%;--y:104%;--r:10deg;--c:#ff4f6d">X</b><b style="--x:36%;--y:102%;--r:-12deg;--c:#ffd23f">!</b></span>
+</h1>
+<div class="title-stage" id="title-stage" aria-hidden="true"></div>
+<p class="ox-tagline">알면 O! 아니면 X! 풀수록 신나는 상식 축제</p>
+<div class="modes" id="modes">
+<button id="start" class="big-btn level-btn">OX 퀴즈 시작!<small id="level-sub">초보 · 모든 분야 · 10문제</small></button>
+<div id="ranks" class="grades ox-ranks" role="group" aria-label="문제 난이도"></div>
+<button id="open-categories" class="sub-btn ox-category-button">📚 <span id="category-label">모든 분야</span> <span>▾</span></button>
+<div class="mode-row ox-menu"><button id="start-review" class="sub-btn">📖 오답 복습 <b id="review-count">0</b></button><button id="start-challenge" class="sub-btn">⚡ 60초 도전</button><button id="start-daily" class="sub-btn">☀ 오늘의 퀴즈</button><button id="open-library" class="sub-btn">🔎 문제 도서관</button><button id="open-trophy" class="sub-btn">🏆 트로피</button><button id="open-collect" class="sub-btn">🎨 컬렉션</button></div>
+</div>
+<section class="quest-card ox-progress" aria-labelledby="rank-heading"><div class="quest-head"><h2 id="rank-heading">나의 퀴즈 등급</h2><strong id="earned-rank">초보</strong></div><p id="xp-summary"></p><progress id="xp-bar" max="100" value="0" aria-label="다음 등급까지 경험치"></progress><p id="lifetime"></p></section>
+<section class="quest-card" id="quests" aria-labelledby="quest-title"><div class="quest-head"><h2 id="quest-title">오늘의 미션</h2><span id="quest-reward">매일 새롭게!</span></div><ol class="quest-list" id="quest-list"></ol></section>
+<p class="hint">O / ← 는 O · X / → 는 X · Enter 는 다음 문제</p>
+<p class="ox-bank-count" id="bank-count">문제은행을 불러오는 중…</p>
+<p class="ko-credit">비공식·비영리 OX 변형판 · 원작 © gear_machine<br><a href="../dopa-drill/">기존 산수판 그대로 플레이</a> · <a href="https://github.com/grmchn/dopa-drill" target="_blank" rel="noopener noreferrer">원작</a> · <a href="LICENSE">이용 조건</a><br>난이도 이름은 옛 온라인 퀴즈 감성으로 재구성했습니다.<br>한게임의 공식 등급표를 재현한 것은 아닙니다.</p>
+</section>
+<section id="screen-play" class="screen" aria-label="OX 퀴즈 게임">
+<header class="hud"><button id="leave-game" class="icon-btn" aria-label="게임 나가기">‹</button><div class="pips" id="pips" aria-hidden="true"></div><div class="clock"><span id="clock-label">플레이 시간</span><b id="clock">0:00</b></div><button class="icon-btn" id="mute" aria-label="소리 끄기" aria-pressed="false">♪</button></header>
+<div class="hud2"><div class="tally"><span>정답 <b id="ok">0</b><small id="ok-total">/10</small></span><span class="ng">아쉬워요 <b id="ng">0</b></span></div><div class="combo" id="combo-box"><b id="combo">0</b><small>콤보</small></div><div class="dopa" id="dopa-box"><small>도파</small><b id="dopa">0</b></div></div>
+<div class="stage" id="stage" aria-hidden="true"><svg class="bunting" viewBox="0 0 400 40" preserveAspectRatio="none"><path d="M0 4 Q200 34 400 4" fill="none" stroke="#1b1d4d" stroke-width="2.5"/><g id="flags"></g></svg><div class="spot spot-l"></div><div class="spot spot-r"></div><svg class="ground" viewBox="0 0 400 20" preserveAspectRatio="none"><path d="M4 12 Q60 6 120 11 T240 10 T396 12" fill="none" stroke="#1b1d4d" stroke-width="3"/></svg><span id="fever-label" class="ox-fever">지식 에너지 충전 중</span></div>
+<section class="card" id="card" aria-labelledby="question-text"><div class="marquee" aria-hidden="true"></div><div class="card-top"><span class="chip" id="qtitle">분야</span><span class="qno" id="qno">1번 문제</span></div><p id="question-text" class="ox-statement"></p><div class="ox-answer-row"><span id="question-rank" class="ox-rank-chip"></span><div id="answer-cell" class="ox-answer-cell" aria-label="내가 선택한 답">?</div><span class="ox-answer-hint">맞으면 O<br>틀리면 X</span></div></section>
+<section id="explanation" class="ox-explanation" aria-live="polite" hidden><strong id="verdict"></strong><p id="explanation-text"></p><div class="ox-explanation-links"><a id="source-link" target="_blank" rel="noopener noreferrer">근거 확인 ↗</a><button id="report-question" class="ox-text-button">오류 제보</button><button id="bookmark-question" class="ox-text-button">☆ 다시 볼 문제</button></div></section>
+<div class="ox-pad" id="pad" role="group" aria-label="정답 선택"><button type="button" id="answer-o" data-answer="true" aria-label="O, 맞아요"><b>O</b><small>맞아요 <kbd>← / O</kbd></small></button><button type="button" id="answer-x" data-answer="false" aria-label="X, 아니에요"><b>X</b><small>아니에요 <kbd>→ / X</kbd></small></button></div>
+<button id="next-question" class="big-btn ox-next" hidden>다음 문제 →</button><p id="play-help" class="hint">천천히 읽고 골라요. 틀려도 게임은 계속돼요!</p>
+</section>
+<section id="screen-result" class="screen" aria-labelledby="result-title"><div class="result-card"><p class="chip" id="result-title">퀴즈 완료!</p><p class="score"><b id="r-score">0</b><span>점</span></p><p id="result-cheer" class="ox-result-cheer"></p><dl class="stats"><div><dt>정답</dt><dd id="r-ok"></dd></div><div><dt>정답률</dt><dd id="r-rate"></dd></div><div><dt>최고 콤보</dt><dd id="r-combo"></dd></div><div><dt>플레이 시간</dt><dd id="r-time"></dd></div></dl><p id="r-xp" class="ox-xp-gain"></p><div id="result-review" class="ox-result-review"></div><button id="play-again" class="big-btn">한 판 더!</button><button id="result-wrong" class="sub-btn">틀린 문제 복습</button><button id="result-home" class="sub-btn">처음으로</button></div></section>
+<section id="screen-library" class="screen ox-list-screen" aria-labelledby="library-title"><header class="tree-head"><button class="icon-btn" data-home aria-label="돌아가기">‹</button><h2 id="library-title">문제 도서관</h2></header><p class="ox-small">분야·난이도를 골라 검색하고 해설을 확인해요.</p><input id="library-search" class="ox-search" type="search" placeholder="궁금한 단어 검색" aria-label="문제 검색"><div class="ox-filter-row"><select id="library-category" aria-label="분야"></select><select id="library-rank" aria-label="난이도"></select><label><input id="library-bookmarks" type="checkbox"> 별표만</label></div><p id="library-count" class="ox-small"></p><div id="library-list" class="ox-library-list"></div><button id="library-more" class="sub-btn">더 보기</button></section>
+<section id="screen-trophy" class="screen ox-list-screen" aria-labelledby="trophy-title"><header class="tree-head"><button class="icon-btn" data-home aria-label="돌아가기">‹</button><h2 id="trophy-title">트로피</h2></header><p class="ox-small">정답과 꾸준한 도전으로 하나씩 모아 봐요!</p><div id="trophy-list" class="ox-trophy-list"></div></section>
+<section id="screen-collect" class="screen ox-list-screen" aria-labelledby="collect-title"><header class="tree-head"><button class="icon-btn" data-home aria-label="돌아가기">‹</button><h2 id="collect-title">컬렉션</h2></header><div id="co-preview" class="co-preview" aria-hidden="true"></div><p class="ox-small">경험치를 쌓으면 원작의 색상·의상·음악이 열려요.</p><h3>캐릭터 색상</h3><div id="palette-list" class="ox-collect-grid"></div><h3>의상</h3><div id="costume-list" class="ox-collect-grid"></div><h3>배경과 음악</h3><div id="theme-list" class="ox-collect-grid"></div><div id="song-list" class="ox-collect-grid"></div></section>
+</main>
+<canvas id="fx" aria-hidden="true"></canvas><svg id="actors-front" class="ox-actors front" aria-hidden="true"></svg><div id="cutins" aria-hidden="true"></div><div id="flash" aria-hidden="true"></div>
+<dialog id="settings" class="ox-dialog"><form method="dialog"><h2>설정</h2><label>문제 수<select id="set-count"><option>10</option><option>20</option><option>30</option></select></label><label>소리<input id="set-volume" type="range" min="0" max="100" value="65"></label><label>움직임<select id="set-motion"><option value="1">신나게!</option><option value="0.45">가볍게</option><option value="0">움직임 최소화</option></select></label><label><input type="checkbox" id="set-mute"> 음소거</label><p class="ox-small">퀴즈 기록은 이 브라우저에만 저장됩니다. 산수판 기록과는 별개예요.</p><button class="sub-btn" type="button" id="export-save">기록 파일로 내보내기</button><label class="ox-import">기록 가져오기<input type="file" id="import-save" accept="application/json,.json"></label><button class="sub-btn" id="close-settings" value="close">닫기</button></form></dialog>
+<dialog id="category-dialog" class="ox-dialog"><form method="dialog"><h2>어떤 분야를 풀까요?</h2><div id="category-list" class="ox-category-list"></div><p class="ox-small">여러 분야를 동시에 선택할 수 있어요. 선택이 없으면 모든 분야에서 출제해요.</p><button class="big-btn" value="close">이대로 출발!</button></form></dialog>
+<dialog id="help-dialog" class="ox-dialog"><form method="dialog"><h2>알면 O! 아니면 X!</h2><p>문장을 읽고 맞으면 <b>O</b>, 틀리면 <b>X</b>를 눌러요. 캐릭터가 답을 가져다주고 정답과 해설을 보여 줘요.</p><p>풀수록 원작의 음악과 연출이 커져요. 틀려도 게임 오버는 없고, 틀린 문제는 복습에 모여요.</p><p>난이도는 <b>바보 → 초보 → 중수 → 고수 → 천재 → 초인</b>. 옛 퀴즈 게임의 재미있는 호칭을 재구성했어요. 실제 지능을 평가하는 이름이 아니에요.</p><p>60초 도전은 문제를 읽고 답을 고르는 시간만 계산해요. 해설을 읽거나 다른 탭에 있는 동안에는 시간이 멈춰요.</p><p>출처가 있는 상식 문제와 계산식으로 검증하는 수학 문제를 제공합니다. 문제 도서관에서 모두 볼 수 있어요.</p><button class="big-btn" value="close">알겠어요!</button></form></dialog>
+<dialog id="confirm-dialog" class="ox-dialog"><form method="dialog"><h2>잠깐 쉬어 갈까요?</h2><p>지금까지 푼 문제의 기록은 남아요. 산수판에는 영향을 주지 않아요.</p><button class="big-btn" id="confirm-leave" value="leave">이번 판 마치기</button><button class="sub-btn" value="continue">계속 풀기</button></form></dialog>
+<div id="toast" class="ox-toast" role="status" hidden></div><noscript><p>게임을 실행하려면 JavaScript를 켜 주세요.</p></noscript>
+</body>
+</html>
