@@ -9,3 +9,8 @@
 .ox-game .dopa{max-width:48%;padding:3px 8px 4px}
 .ox-game .result-card button+button{margin-top:10px}
 @media(max-width:350px){.ox-game .tally span{padding:3px 5px}.ox-game .dopa{padding:3px 6px}.ox-game .combo b{font-size:21px}}
+
+/* Only the Kids audience gets extra reading space; keep original art and effects. */
+.ox-game.kids-mode .ox-statement{line-height:1.6;word-break:keep-all}
+.ox-game.kids-mode .ox-explanation p{font-size:14px;line-height:1.7}
+.ox-game.kids-mode .ox-ranks button:first-child small{font-size:9px;letter-spacing:-.4px}

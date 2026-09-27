@@ -1,3 +1,4 @@
+import {replaceKids,KIDS_SOURCES} from './data/kids.mjs';
 import space from './data/space.mjs';
 import science from './data/science.mjs';
 import animals from './data/animals.mjs';
@@ -19,6 +20,7 @@ const country=(name,path)=>s('내셔널지오그래픽 키즈 · '+name,'https:/
 const mdn=(name,path)=>s('MDN · '+name,'https://developer.mozilla.org/en-US/docs/'+path);
 const ifab=(name,path)=>s('IFAB 2026/27 · '+name,'https://www.theifab.com/laws/latest/'+path+'/');
 export const SOURCES=Object.freeze({
+ ...KIDS_SOURCES,
  planets:nasa('태양계 행성','solar-system/planets/'),sun:nasa('태양','sun/facts/'),mercury:nasa('수성','mercury/facts/'),venus:nasa('금성','venus/venus-facts/'),mars:nasa('화성','mars/facts/'),saturn:nasa('토성','saturn/facts/'),uranus:nasa('천왕성','uranus/facts/'),neptune:nasa('해왕성','neptune/neptune-facts/'),moon:nasa('달','moon/facts/'),earth:nasa('지구','earth/facts/'),
  bat:zoo('박쥐','bat'),elephant:zoo('코끼리','elephant'),giraffe:zoo('기린','giraffe'),panda:zoo('자이언트판다','giant-panda'),koala:zoo('코알라','koala'),ostrich:zoo('타조','ostrich'),camel:zoo('낙타','camel'),penguin:zoo('아프리카펭귄','african-penguin'),frog:zoo('개구리·두꺼비','frog-and-toad'),ant:zoo('개미','ant'),spider:zoo('거미','spider'),coral:noaa('산호','coral'),seahorse:noaa('해마','seahorse'),
  matter:s('OpenStax · 물질의 상태와 분류','https://openstax.org/books/chemistry-2e/pages/1-2-phases-and-classification-of-matter'),atoms:s('OpenStax · 원자 구조','https://openstax.org/books/chemistry-2e/pages/2-3-atomic-structure-and-symbolism'),bonds:s('OpenStax · 공유 결합','https://openstax.org/books/chemistry-2e/pages/7-2-covalent-bonding'),waves:s('OpenStax · 파동','https://openstax.org/books/physics/pages/13-1-types-of-waves'),si:s('NIST · SI 기본 단위 정의','https://www.nist.gov/si-redefinition/definitions-si-base-units'),carbon:s('왕립화학회 · 탄소','https://periodic-table.rsc.org/element/6/carbon'),iron:s('왕립화학회 · 철','https://periodic-table.rsc.org/element/26/iron'),iupac:s('IUPAC · 주기율표','https://iupac.org/what-we-do/periodic-table-of-elements/'),
@@ -32,5 +34,5 @@ export const SOURCES=Object.freeze({
  'mdn-html':mdn('HTML','Web/HTML'),'mdn-css':mdn('CSS','Web/CSS'),'mdn-js':mdn('JavaScript','Web/JavaScript'),'mdn-storage':mdn('localStorage','Web/API/Window/localStorage'),'mdn-json':mdn('JSON','Web/JavaScript/Reference/Global_Objects/JSON'),'mdn-http':mdn('HTTP 개요','Web/HTTP/Guides/Overview'),'mdn-dns':mdn('DNS','Glossary/DNS'),'mdn-svg':mdn('SVG','Web/SVG'),'mdn-dom':mdn('DOM','Web/API/Document_Object_Model'),'mdn-cookie':mdn('쿠키','Web/HTTP/Guides/Cookies'),
  'math-proof':{name:'계산식·논리 검증',url:'./MATH.md',checked:'2026-09-28'}
 });
-export const BANK=Object.freeze([...space,...science,...animals,...nature,...world,...heritage,...korea,...language,...arts,...sports,...tech,...math]);
-export const BANK_INFO=Object.freeze({version:'2026-09-28.1',curated:BANK.filter(q=>q.kind==='curated').length,calculated:BANK.filter(q=>q.kind==='calculated').length,total:BANK.length,sourceCount:new Set(Object.values(SOURCES).map(s=>s.url)).size});
+export const BANK=Object.freeze(replaceKids([...space,...science,...animals,...nature,...world,...heritage,...korea,...language,...arts,...sports,...tech,...math]));
+export const BANK_INFO=Object.freeze({version:'2026-09-28.kids-1',curated:BANK.filter(q=>q.kind==='curated').length,calculated:BANK.filter(q=>q.kind==='calculated').length,total:BANK.length,sourceCount:new Set(Object.values(SOURCES).map(s=>s.url)).size});

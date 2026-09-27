@@ -1,7 +1,7 @@
 // Pure quiz rules: no dependency on the arithmetic game's save state or DOM.
 export const SAVE_KEY = 'dopa-ox-ko-v1';
 export const RANKS = Object.freeze([
- {id:1,name:'바보',label:'가볍게',xp:0}, {id:2,name:'초보',label:'쉬운 상식',xp:200},
+ {id:1,name:'키즈',label:'초등 1학년',xp:0}, {id:2,name:'초보',label:'쉬운 상식',xp:200},
  {id:3,name:'중수',label:'한 걸음 더',xp:900}, {id:4,name:'고수',label:'헷갈림 주의',xp:2600},
  {id:5,name:'천재',label:'깊이 생각',xp:7000}, {id:6,name:'초인',label:'최고 난도',xp:18000}
 ]);
@@ -14,12 +14,16 @@ export const CATEGORIES = Object.freeze([
  {id:'tech',name:'컴퓨터·생활',icon:'💻'}, {id:'math',name:'수학·논리',icon:'🧩'}
 ]);
 export const CATEGORY = Object.fromEntries(CATEGORIES.map(c=>[c.id,c]));
+export const KIDS_CATEGORY_NAMES=Object.freeze({space:'하늘과 우주',science:'쉬운 과학',animals:'동물 친구',nature:'자연과 날씨',world:'땅과 바다',heritage:'옛날 이야기',korea:'우리나라',language:'쉬운 한글',arts:'그림과 노래',sports:'운동과 놀이',tech:'생활 속 도구',math:'숫자 놀이'});
+export function categoryName(id,rank=2){return Number(rank)===1?KIDS_CATEGORY_NAMES[id]:CATEGORY[id]?.name;}
+export function quizRank(mode,rank){return mode==='daily'?(Number(rank)===1?1:3):Number(rank);}
+export function reviewForRank(bank,ids,rank){if(Number(rank)!==1)return ids;const allowed=new Set(bank.filter(q=>q.level===1).map(q=>q.id));return ids.filter(id=>allowed.has(id));}
 export function rng(seed=Date.now()) { let a=(Number(seed)||hash(String(seed)))>>>0; return ()=>{a+=0x6D2B79F5;let t=a;t=Math.imul(t^t>>>15,t|1);t^=t+Math.imul(t^t>>>7,t|61);return((t^t>>>14)>>>0)/4294967296;}; }
 export function hash(s) { let h=2166136261;for(const c of String(s)){h^=c.codePointAt(0);h=Math.imul(h,16777619);}return h>>>0; }
 export function shuffle(list,random=Math.random){const a=[...list];for(let i=a.length-1;i>0;i--){const j=Math.floor(random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
 export function dayKey(date=new Date()){return [date.getFullYear(),String(date.getMonth()+1).padStart(2,'0'),String(date.getDate()).padStart(2,'0')].join('-');}
 const integer=(x,lo=0,hi=1e9)=>Number.isFinite(Number(x))?Math.max(lo,Math.min(hi,Math.floor(Number(x)))):lo;
-export function freshState(){return{version:1,xp:0,answered:0,correct:0,bestCombo:0,sessions:0,bestChallenge:0,seen:[],review:[],bookmarks:[],days:{},history:[],categoryStats:{},settings:{rank:2,categories:[],count:10,volume:65,motion:1,muted:false,palette:'pink',costume:'',theme:'classic',song:'classic'}};}
+export function freshState(){return{version:1,xp:0,answered:0,correct:0,bestCombo:0,sessions:0,bestChallenge:0,seen:[],review:[],bookmarks:[],days:{},history:[],categoryStats:{},settings:{rank:1,categories:[],count:10,volume:65,motion:1,muted:false,palette:'pink',costume:'',theme:'classic',song:'classic'}};}
 export function sanitizeState(raw,validIds=null){
  const s=freshState();if(!raw||typeof raw!=='object'||Array.isArray(raw))return s;
  for(const k of ['xp','answered','correct','bestCombo','sessions','bestChallenge'])s[k]=integer(raw[k]);s.correct=Math.min(s.correct,s.answered);
@@ -28,7 +32,7 @@ export function sanitizeState(raw,validIds=null){
  if(raw.days&&typeof raw.days==='object')for(const [k,v] of Object.entries(raw.days).sort().slice(-730)){if(!/^\d{4}-\d{2}-\d{2}$/.test(k)||!v||typeof v!=='object')continue;s.days[k]={answered:integer(v.answered),correct:integer(v.correct),review:integer(v.review),categories:[...new Set((Array.isArray(v.categories)?v.categories:[]).filter(x=>CATEGORY[x]))],claimed:!!v.claimed};}
  for(const c of CATEGORIES){const v=raw.categoryStats?.[c.id];if(v&&typeof v==='object')s.categoryStats[c.id]={answered:integer(v.answered),correct:Math.min(integer(v.correct),integer(v.answered))};}
  s.history=(Array.isArray(raw.history)?raw.history:[]).filter(x=>x&&typeof x==='object').slice(-80).map(x=>({day:/^\d{4}-\d{2}-\d{2}$/.test(x.day)?x.day:'',mode:['basic','challenge','daily','review'].includes(x.mode)?x.mode:'basic',total:integer(x.total,0,1000),correct:integer(x.correct,0,1000),score:integer(x.score),rank:integer(x.rank,1,6)}));
- const v=raw.settings||{};s.settings.rank=integer(v.rank??2,1,6);s.settings.categories=[...new Set((Array.isArray(v.categories)?v.categories:[]).filter(x=>CATEGORY[x]))];s.settings.count=[10,20,30].includes(Number(v.count))?Number(v.count):10;s.settings.volume=integer(v.volume??65,0,100);s.settings.motion=[0,.45,1].includes(Number(v.motion))?Number(v.motion):1;s.settings.muted=!!v.muted;
+ const v=raw.settings||{};s.settings.rank=integer(v.rank??1,1,6);s.settings.categories=[...new Set((Array.isArray(v.categories)?v.categories:[]).filter(x=>CATEGORY[x]))];s.settings.count=[10,20,30].includes(Number(v.count))?Number(v.count):10;s.settings.volume=integer(v.volume??65,0,100);s.settings.motion=[0,.45,1].includes(Number(v.motion))?Number(v.motion):1;s.settings.muted=!!v.muted;
  const looks={palette:['pink','blue','yellow','mint','violet','gold','snow','rainbow'],costume:['','cap','glasses','ribbon','headphones','cape','wizard','crown'],theme:['classic','night','sea','space','festival','paper'],song:['classic','chip','matsuri','brass','electro']};
  for(const [k,values] of Object.entries(looks))if(values.includes(v[k]))s.settings[k]=v[k];return s;
 }
