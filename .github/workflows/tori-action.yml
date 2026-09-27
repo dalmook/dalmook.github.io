@@ -36,7 +36,6 @@ jobs:
               for part in meta['pieces']:
                   assert part['id'] in {'0','1','1tail','2a','2b','3a','3b'}
                   text = (root / ('.action-v2-part'+part['id']+'.txt')).read_text().strip()[:part.get('take',999999)]
-                  print(part['id'], len(text), hashlib.sha256(text.encode()).hexdigest(), flush=True)
                   assert hashlib.sha256(text.encode()).hexdigest() == part['sha256'], 'Piece mismatch: '+part['id']
                   parts.append(text)
               encoded = ''.join(parts)
@@ -54,15 +53,31 @@ jobs:
               index.write_text(index.read_text().replace('src="./app.mjs"','src="./app.mjs?v=2.0.0"'), encoding='utf-8')
               (root / 'VERSION.json').write_text(json.dumps({'version':'2.0.0','release':'tori-action-2026-09-27','storage_schema':1,'original_game_preserved':True},ensure_ascii=False,indent=2)+'\n', encoding='utf-8')
               readme = root / 'README.md'
-              readme.write_text(readme.read_text()+'\n\n## Action 2.0\n\nFull-viewport real-time action stage, articulated white Tori, digit-carry animation, persistent five-phase energy, layered original soundtrack, dash/spin/crystal/meteor choreography. Existing math, progress, outfits, review and storage schema remain intact. No raster character/video assets or third-party game assets are used.\n\nAdditional actual-browser checks: `python tests/action.py`. Motion, music and sound-effect settings remain available.\n', encoding='utf-8')
+              readme.write_text(readme.read_text()+'\n\n## Action 2.0\n\nFull-viewport action, articulated white Tori, digit-carry animation, persistent five-phase energy, layered original music, dash/spin/crystal/meteor choreography. Maths, review, outfits and the existing save schema remain intact.\n\nAdditional real-browser checks: `python tests/action.py`.\n', encoding='utf-8')
+          PY
+      - name: Retain exact application source and improve failure diagnostics
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          root = Path('tori-math')
+          out = Path('/tmp/tori-action-qa')
+          out.mkdir(parents=True, exist_ok=True)
+          names = ['index.html','style.css','app.mjs','math.mjs','scene.mjs','rig.mjs','action-ui.mjs','action.css','audio.mjs','icon.svg','tests/browser.py','tests/action.py']
+          (out / 'tested-source.json').write_text(json.dumps({n:(root/n).read_text() for n in names},ensure_ascii=False),encoding='utf-8')
+          test = root / 'tests/browser.py'
+          text = test.read_text()
+          text = text.replace('    assert ok,name','    if not ok:\n        print("JS errors:", errors, flush=True)\n        print("Failure state:", page.locator("body").inner_text(), flush=True)\n        print("Saved:", state(page), flush=True)\n        page.screenshot(path=str(OUT/"failure.png"),full_page=True)\n    assert ok,name')
+          text = text.replace("    page.wait_for_timeout(690)","    page.wait_for_timeout(690)\n    print('ANSWER TRACE', page.locator('#questionIndex').inner_text(), page.locator('#ultimateLabel').inner_text(), page.locator('#feedback').inner_text(), errors, flush=True)")
+          test.write_text(text,encoding='utf-8')
           PY
       - name: Syntax and original mathematics/storage regression tests
         run: |
           set -o pipefail
-          mkdir -p /tmp/tori-action-qa
           for file in tori-math/*.mjs; do node --check "$file"; done
           node --test tori-math/tests/math.test.mjs | tee /tmp/tori-action-qa/math-tests.log
       - name: Install browser
+        id: browser
         run: |
           python -m pip install playwright==1.55.0
           python -m playwright install --with-deps chromium
@@ -71,16 +86,22 @@ jobs:
       - name: Original complete-game browser regression
         env:
           QA_OUTPUT: /tmp/tori-action-qa/original
-        run: python tori-math/tests/browser.py
+        run: |
+          set -o pipefail
+          python tori-math/tests/browser.py | tee /tmp/tori-action-qa/original-tests.log
       - name: Full-screen action, mobile, animation, settings and saved-game tests
+        if: always() && steps.browser.outcome == 'success'
         env:
           QA_OUTPUT: /tmp/tori-action-qa/action
-        run: python tori-math/tests/action.py
+        run: |
+          set -o pipefail
+          python tori-math/tests/action.py | tee /tmp/tori-action-qa/action-tests.log
       - name: Commit only tested game files back to the feature branch
-        if: github.ref == 'refs/heads/tori-action-v2'
+        if: success() && github.ref == 'refs/heads/tori-action-v2'
         run: |
           if [ -f tori-math/.action-v2-package.json ]; then
             rm tori-math/.action-v2-part*.txt tori-math/.action-v2-package.json
+            git restore tori-math/tests/browser.py
             git config user.name 'github-actions[bot]'
             git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
             git add tori-math
