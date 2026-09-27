@@ -22,54 +22,33 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
-      - name: Materialize hash-verified original source on the feature branch
-        if: github.ref == 'refs/heads/tori-action-v2'
+      - name: Integrate checksum-verified original source
         run: |
           python - <<'PY'
-          import base64, hashlib, json, zlib
+          import base64, hashlib, json, runpy, zlib
           from pathlib import Path
-          root = Path('tori-math')
-          manifest = root / '.action-v2-package.json'
+          root=Path('tori-math'); manifest=root/'.action-v2-package.json'
           if manifest.exists():
-              meta = json.loads(manifest.read_text())
-              parts = []
+              meta=json.loads(manifest.read_text());parts=[]
               for part in meta['pieces']:
                   assert part['id'] in {'0','1','1tail','2a','2b','3a','3b'}
-                  text = (root / ('.action-v2-part'+part['id']+'.txt')).read_text().strip()[:part.get('take',999999)]
-                  assert hashlib.sha256(text.encode()).hexdigest() == part['sha256'], 'Piece mismatch: '+part['id']
+                  text=(root/('.action-v2-part'+part['id']+'.txt')).read_text().strip()[:part.get('take',999999)]
+                  assert hashlib.sha256(text.encode()).hexdigest()==part['sha256']
                   parts.append(text)
-              encoded = ''.join(parts)
-              assert hashlib.sha256(encoded.encode()).hexdigest() == meta['sha256'], 'Transfer checksum mismatch'
-              source = json.loads(zlib.decompress(base64.b64decode(encoded, validate=True)))
-              assert set(source) == {'rig.mjs','scene.mjs','action-ui.mjs','action.css','audio.mjs','tests/action.py'}
-              for name, text in source.items():
-                  target = root / name
-                  target.parent.mkdir(parents=True, exist_ok=True)
-                  target.write_text(text, encoding='utf-8')
-              app = root / 'app.mjs'
-              text = app.read_text().replace("'./scene.mjs'", "'./scene.mjs?v=2.0.0'").replace("'./audio.mjs'", "'./audio.mjs?v=2.0.0'")
-              app.write_text(text, encoding='utf-8')
-              index = root / 'index.html'
-              index.write_text(index.read_text().replace('src="./app.mjs"','src="./app.mjs?v=2.0.0"'), encoding='utf-8')
-              (root / 'VERSION.json').write_text(json.dumps({'version':'2.0.0','release':'tori-action-2026-09-27','storage_schema':1,'original_game_preserved':True},ensure_ascii=False,indent=2)+'\n', encoding='utf-8')
-              readme = root / 'README.md'
-              readme.write_text(readme.read_text()+'\n\n## Action 2.0\n\nFull-viewport action, articulated white Tori, digit-carry animation, persistent five-phase energy, layered original music, dash/spin/crystal/meteor choreography. Maths, review, outfits and the existing save schema remain intact.\n\nAdditional real-browser checks: `python tests/action.py`.\n', encoding='utf-8')
-          PY
-      - name: Retain exact application source and improve failure diagnostics
-        run: |
-          python - <<'PY'
-          import json
-          from pathlib import Path
-          root = Path('tori-math')
-          out = Path('/tmp/tori-action-qa')
-          out.mkdir(parents=True, exist_ok=True)
-          names = ['index.html','style.css','app.mjs','math.mjs','scene.mjs','rig.mjs','action-ui.mjs','action.css','audio.mjs','icon.svg','tests/browser.py','tests/action.py']
-          (out / 'tested-source.json').write_text(json.dumps({n:(root/n).read_text() for n in names},ensure_ascii=False),encoding='utf-8')
-          test = root / 'tests/browser.py'
-          text = test.read_text()
-          text = text.replace('    assert ok,name','    if not ok:\n        print("JS errors:", errors, flush=True)\n        print("Failure state:", page.locator("body").inner_text(), flush=True)\n        print("Saved:", state(page), flush=True)\n        page.screenshot(path=str(OUT/"failure.png"),full_page=True)\n    assert ok,name')
-          text = text.replace("    page.wait_for_timeout(690)","    page.wait_for_timeout(690)\n    print('ANSWER TRACE', page.locator('#questionIndex').inner_text(), page.locator('#ultimateLabel').inner_text(), page.locator('#feedback').inner_text(), errors, flush=True)")
-          test.write_text(text,encoding='utf-8')
+              encoded=''.join(parts)
+              assert hashlib.sha256(encoded.encode()).hexdigest()==meta['sha256']
+              source=json.loads(zlib.decompress(base64.b64decode(encoded,validate=True)))
+              assert set(source)=={'rig.mjs','scene.mjs','action-ui.mjs','action.css','audio.mjs','tests/action.py'}
+              for name,text in source.items():
+                  p=root/name;p.parent.mkdir(parents=True,exist_ok=True);p.write_text(text,encoding='utf-8')
+              p=root/'app.mjs';p.write_text(p.read_text().replace("'./scene.mjs'","'./scene.mjs?v=2.0.0'").replace("'./audio.mjs'","'./audio.mjs?v=2.0.0'"),encoding='utf-8')
+              p=root/'index.html';p.write_text(p.read_text().replace('src="./app.mjs"','src="./app.mjs?v=2.0.0"'),encoding='utf-8')
+              (root/'VERSION.json').write_text(json.dumps({'version':'2.0.0','storage_schema':1,'release':'tori-action-2026-09-27'},indent=2)+'\n')
+              p=root/'README.md';p.write_text(p.read_text()+'\n\n## Action 2.0\nFull-viewport action, articulated white Tori, digit-carry animation, five-phase energy, original layered music and dash/spin/crystal/meteor choreography. Maths, review, outfits and the save schema remain intact. Additional actual-browser checks: `python tests/action.py`.\n',encoding='utf-8')
+              runpy.run_path(str(root/'.action-v2-fixes.py'))
+          out=Path('/tmp/tori-action-qa');out.mkdir(parents=True,exist_ok=True)
+          names=['index.html','style.css','app.mjs','math.mjs','scene.mjs','rig.mjs','action-ui.mjs','action.css','audio.mjs','icon.svg','tests/browser.py','tests/action.py']
+          (out/'tested-source.json').write_text(json.dumps({n:(root/n).read_text() for n in names},ensure_ascii=False),encoding='utf-8')
           PY
       - name: Syntax and original mathematics/storage regression tests
         run: |
@@ -96,12 +75,11 @@ jobs:
         run: |
           set -o pipefail
           python tori-math/tests/action.py | tee /tmp/tori-action-qa/action-tests.log
-      - name: Commit only tested game files back to the feature branch
+      - name: Commit only verified game files to the feature branch
         if: success() && github.ref == 'refs/heads/tori-action-v2'
         run: |
           if [ -f tori-math/.action-v2-package.json ]; then
-            rm tori-math/.action-v2-part*.txt tori-math/.action-v2-package.json
-            git restore tori-math/tests/browser.py
+            rm tori-math/.action-v2-part*.txt tori-math/.action-v2-package.json tori-math/.action-v2-fixes.py
             git config user.name 'github-actions[bot]'
             git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
             git add tori-math
