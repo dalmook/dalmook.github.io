@@ -1,0 +1,53 @@
+name: Dopa Drill live deployment check
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'dopa-drill/**'
+      - '.github/workflows/dopa-drill-live.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  verify-live:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - name: Wait for Korean game to become available
+        run: |
+          python3 - <<'PY'
+          import json, time, urllib.request
+          from pathlib import Path
+          base = 'https://dalmook.github.io/dopa-drill/'
+          expected = '0720ddfe37334628bab61ba5b3a9282bd6bfb31c'
+          last_error = ''
+          for attempt in range(60):
+              try:
+                  def get(path):
+                      url = base + path + '?verify=' + str(int(time.time()))
+                      with urllib.request.urlopen(url, timeout=15) as res:
+                          assert res.status == 200, (url, res.status)
+                          return res.read().decode('utf-8')
+                  version = json.loads(get('VERSION.json'))
+                  assert version['commit'] == expected and version['locale'] == 'ko-KR'
+                  html = get('index.html')
+                  assert '<html lang="ko">' in html and '비공식·비영리 한국어판' in html
+                  assert 'startGame' in get('js/main.js')
+                  assert 'dopa-drill-ko:v1' in get('js/store.js')
+                  assert '--round:' in get('style.css')
+                  result = {'url':base, 'status':'verified', 'upstream':expected, 'locale':version['locale'], 'checked':['index.html','VERSION.json','js/main.js','js/store.js','style.css']}
+                  Path('live-verification.json').write_text(json.dumps(result,ensure_ascii=False,indent=2),encoding='utf-8')
+                  print(json.dumps(result,ensure_ascii=False))
+                  break
+              except Exception as exc:
+                  last_error = str(exc)
+                  print(f'Waiting for Pages, attempt {attempt+1}: {last_error}',flush=True)
+                  time.sleep(5)
+          else:
+              raise SystemExit('Public deployment not verified: ' + last_error)
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: dopa-live-verification
+          path: live-verification.json
+          retention-days: 7
