@@ -1,0 +1,77 @@
+name: Dopa OX quality and live verification
+on:
+  push:
+    branches: [main, feat/dopa-ox-quiz]
+    paths: ['dopa-ox/**', '.github/workflows/dopa-ox.yml']
+  pull_request:
+    paths: ['dopa-ox/**', '.github/workflows/dopa-ox.yml']
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: dopa-ox-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  quality:
+    runs-on: ubuntu-latest
+    timeout-minutes: 18
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Syntax and bank tests
+        id: unit
+        run: |
+          mkdir -p qa/ox
+          find dopa-ox -name '*.mjs' -exec node --check {} \;
+          set -o pipefail
+          node --test dopa-ox/tests/*.test.mjs 2>&1 | tee qa/ox/unit.log
+      - name: Install browser
+        if: always()
+        run: |
+          pip install playwright==1.55.0
+          python -m playwright install --with-deps chromium
+          sudo apt-get update -qq
+          sudo apt-get install -y fonts-noto-cjk
+      - name: Local browser checks
+        if: always()
+        run: |
+          python -m http.server 8765 > /tmp/ox-http.log 2>&1 &
+          sleep 2
+          python dopa-ox/tests/browser.py
+      - name: Wait for exact public revision
+        if: github.ref == 'refs/heads/main'
+        run: |
+          python - <<'PY'
+          import time, urllib.request, pathlib, hashlib
+          expected=pathlib.Path('dopa-ox/bank.mjs').read_bytes()
+          for attempt in range(36):
+              try:
+                  data=urllib.request.urlopen('https://dalmook.github.io/dopa-ox/bank.mjs?verify='+str(time.time()),timeout=15).read()
+                  if data==expected:
+                      print('Exact public bank revision verified',hashlib.sha256(data).hexdigest());break
+              except Exception as exc: print(str(exc))
+              time.sleep(10)
+          else: raise SystemExit('Public Pages revision did not match within the verification window')
+          PY
+      - name: Public Pages browser checks
+        if: github.ref == 'refs/heads/main'
+        env:
+          OX_URL: https://dalmook.github.io/dopa-ox/
+          OX_OUT: qa/ox-live
+        run: python dopa-ox/tests/browser.py
+      - name: Preserve source and test evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: dopa-ox-evidence
+          path: |
+            dopa-ox/
+            qa/
+          retention-days: 14
