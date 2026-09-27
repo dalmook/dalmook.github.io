@@ -1,0 +1,85 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#f7f9fc">
+<meta name="description" content="흰 토끼 토리와 떠나는 수학 액션 어드벤처. 정답을 모아 콤보를 만들고, 별빛 스킬로 6개 세계를 탐험하세요. 회원가입 없이 무료로 플레이합니다.">
+<title>토리의 수학탐험 · 정답이 모험이 되는 순간</title>
+<link rel="icon" href="./icon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="./style.css">
+</head>
+<body>
+<svg aria-hidden="true" width="0" height="0" style="position:absolute"><defs>
+<symbol id="i-star" viewBox="0 0 24 24"><path d="m12 3 2.8 5.7 6.2.9-4.5 4.4 1.1 6.2-5.6-3-5.6 3 1.1-6.2L3 9.6l6.2-.9Z"/></symbol>
+<symbol id="i-home" viewBox="0 0 24 24"><path d="m3 10 9-7 9 7M5 9v11h5v-6h4v6h5V9"/></symbol>
+<symbol id="i-map" viewBox="0 0 24 24"><path d="m3 5 6-2 6 3 6-2v15l-6 2-6-3-6 2Zm6-2v15m6-12v15"/></symbol>
+<symbol id="i-pencil" viewBox="0 0 24 24"><path d="m4 16-1 5 5-1L21 7l-4-4ZM14 6l4 4"/></symbol>
+<symbol id="i-shirt" viewBox="0 0 24 24"><path d="m8 3-6 4 3 5 3-2v11h8V10l3 2 3-5-6-4c0 5-8 5-8 0Z"/></symbol>
+<symbol id="i-chart" viewBox="0 0 24 24"><path d="M4 3v17h17M8 16v-5m5 5V7m5 9V4"/></symbol>
+<symbol id="i-sound" viewBox="0 0 24 24"><path d="m4 9 4 0 5-4v14l-5-4H4Zm13-1c3 2 3 6 0 8m3-11c4 4 4 10 0 14"/></symbol>
+<symbol id="i-mute" viewBox="0 0 24 24"><path d="m4 9 4 0 5-4v14l-5-4H4Zm13 0 5 6m0-6-5 6"/></symbol>
+<symbol id="i-gear" viewBox="0 0 24 24"><path d="m9 3-1 3-3 1-2 3 2 2-1 3 2 3 3-1 3 2 3-1 1-3 3-1 1-3-2-2 1-3-3-2-3 1Z"/><circle cx="11.5" cy="11.5" r="3"/></symbol>
+<symbol id="i-arrow" viewBox="0 0 24 24"><path d="M4 12h15m-6-6 6 6-6 6"/></symbol>
+<symbol id="i-leaf" viewBox="0 0 24 24"><path d="M5 20C3 7 8 3 21 3c0 13-5 18-14 14m-3 4L16 8"/></symbol>
+<symbol id="i-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2m0 16v2M2 12h2m16 0h2M5 5l2 2m10 10 2 2M5 19l2-2M17 7l2-2"/></symbol>
+<symbol id="i-cloud" viewBox="0 0 24 24"><path d="M6 18a5 5 0 0 1 0-10 6 6 0 0 1 12-1 5.5 5.5 0 0 1 0 11Z"/></symbol>
+<symbol id="i-book" viewBox="0 0 24 24"><path d="M12 5C7 2 3 4 3 4v15s4-2 9 1c5-3 9-1 9-1V4s-4-2-9 1v15"/></symbol>
+<symbol id="i-snow" viewBox="0 0 24 24"><path d="M12 2v20M3 7l18 10M3 17 21 7M9 4l3 3 3-3M9 20l3-3 3 3M4 10l4-1-1-4m13 9-4 1 1 4M4 14l4 1-1 4M20 10l-4-1 1-4"/></symbol>
+<symbol id="i-crown" viewBox="0 0 24 24"><path d="m3 6 5 5 4-8 4 8 5-5-2 13H5Z"/></symbol>
+<symbol id="i-bolt" viewBox="0 0 24 24"><path d="m13 2-9 12h7l-1 8 10-13h-8Z"/></symbol>
+<symbol id="i-gift" viewBox="0 0 24 24"><path d="M3 9h18v4H3Zm2 4v8h14v-8M12 9v12m0-12C4 9 4 2 8 3c3 1 4 6 4 6s1-5 4-6c4-1 4 6-4 6Z"/></symbol>
+<symbol id="i-check" viewBox="0 0 24 24"><path d="m5 12 5 5 10-11"/></symbol>
+<symbol id="i-lock" viewBox="0 0 24 24"><rect x="5" y="10" width="14" height="11" rx="3"/><path d="M8 10V7a4 4 0 0 1 8 0v3m-4 5v2"/></symbol>
+<symbol id="i-clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 6v6l4 2"/></symbol>
+<symbol id="i-retry" viewBox="0 0 24 24"><path d="M4 10a8 8 0 1 1 1 8M3 4v7h7"/></symbol>
+<symbol id="i-close" viewBox="0 0 24 24"><path d="m5 5 14 14M5 19 19 5"/></symbol>
+<symbol id="i-pause" viewBox="0 0 24 24"><path d="M8 5v14M16 5v14"/></symbol>
+<symbol id="i-heart" viewBox="0 0 24 24"><path d="M12 21 3 12C-2 4 7 0 12 6c5-6 14-2 9 6Z"/></symbol>
+</defs></svg>
+<div class="shell">
+<aside class="sidebar">
+<button class="brand" data-view="home" aria-label="토리의 수학탐험 홈"><img src="./icon.svg" alt="흰 토끼 토리" width="48" height="48"><span>토리의<strong>수학탐험<span class="brand-dot">.</span></strong></span></button>
+<div class="nav-label">나의 모험</div>
+<nav id="nav" aria-label="주요 메뉴">
+<button class="nav-item active" data-view="home"><svg><use href="#i-home"/></svg><span>탐험 본부</span></button>
+<button class="nav-item" data-view="map"><svg><use href="#i-map"/></svg><span>모험 지도</span><small>48</small></button>
+<button class="nav-item" data-view="practice"><svg><use href="#i-pencil"/></svg><span>자유 연습</span></button>
+<button class="nav-item" data-view="wardrobe"><svg><use href="#i-shirt"/></svg><span>토리 꾸미기</span></button>
+<button class="nav-item" data-view="records"><svg><use href="#i-chart"/></svg><span>탐험 기록</span></button>
+</nav>
+<div class="side-tip"><svg><use href="#i-heart"/></svg><strong>틀려도, 괜찮아.</strong><p>토리는 기다려 줄 거야.<br>한 걸음씩 같이 가자!</p></div>
+<div class="profile"><div class="level-badge" id="levelBadge">1</div><div><strong>작은 탐험가</strong><small id="xpLabel">다음 레벨까지 100 XP</small><div class="xp-track"><i id="xpBar"></i></div></div></div>
+</aside>
+<div class="workspace">
+<header class="topbar"><div class="breadcrumb"><span>토리의 수학탐험</span><b>/</b><strong id="pageName">탐험 본부</strong></div><div class="top-actions"><span class="currency" title="게임 안에서만 사용하는 별사탕"><svg><use href="#i-star"/></svg><b id="coins">0</b><span>별사탕</span></span><button class="icon-btn" id="soundButton" aria-label="소리 끄기"><svg><use href="#i-sound"/></svg></button><button class="icon-btn" id="settingsButton" aria-label="설정"><svg><use href="#i-gear"/></svg></button></div></header>
+<main id="main">
+<section id="home" class="view active" aria-label="탐험 본부">
+<div class="welcome"><div><span class="eyebrow">오늘도 한 뼘 더 자라는 시간</span><h1>반가워, 작은 탐험가!</h1></div><span class="status-pill"><i></i>모든 모험이 준비됐어요</span></div>
+<div class="hero">
+<div class="hero-copy"><span class="chapter-pill"><svg><use href="#i-bolt"/></svg>정답이 스킬이 되는 수학 모험</span><h2>작은 정답이,<br><em>커다란 모험이 돼!</em></h2><p>토리와 달리고, 별빛으로 공격하고.<br>한 문제씩 풀다 보면 어느새 수학 레벨 업!</p><button class="primary start-btn" id="startAdventure">모험 시작하기<svg><use href="#i-arrow"/></svg></button><button class="text-btn" id="assessmentButton">어디서 시작할까? 내 실력 알아보기 <span>↗</span></button><div class="hero-notes"><span><i></i>게임 오버 없음</span><span><i></i>회원가입 없음</span></div></div>
+<div class="hero-art"><canvas id="homeCanvas" aria-label="하얀 토끼 토리가 초록 스카프를 두르고 살아 움직이는 모험 장면"></canvas><div class="scene-label"><i></i><span>흰 토끼 토리<strong>별빛 탐험가 · Lv.<b class="levelText">1</b></strong></span></div><div class="floating-tag"><svg><use href="#i-star"/></svg>정답을 모아, 콤보를 터뜨려!</div></div>
+</div>
+<div class="section-title"><div><h2>오늘은 어디로 떠날까?</h2><p>학년은 길잡이일 뿐, 나에게 맞는 곳을 골라 봐.</p></div><button class="text-btn" data-view="map">전체 지도 <svg><use href="#i-arrow"/></svg></button></div>
+<div id="worldCards" class="world-grid"></div>
+<div class="home-bottom"><div class="mission-card"><div class="section-title compact"><h3><svg><use href="#i-gift"/></svg>오늘의 작은 목표</h3><span class="small-label">하루에 한 번 보상</span></div><div id="missions"></div></div><div class="challenge-card"><div class="challenge-icon"><svg><use href="#i-bolt"/></svg></div><div><span class="eyebrow">한 번 더 신나게!</span><h3>60초 별빛 질주</h3><p>빠르게 풀고, 나만의 기록에 도전해 봐.</p></div><button id="rushButton" class="round-arrow" aria-label="60초 별빛 질주 시작"><svg><use href="#i-arrow"/></svg></button></div><button class="review-card" id="reviewButton"><svg><use href="#i-retry"/></svg><span><strong>다시 만나면 쉬워질 거야</strong><small>복습할 문제 <b id="wrongCount">0</b>개</small></span><svg><use href="#i-arrow"/></svg></button></div>
+</section>
+<section id="map" class="view" aria-label="모험 지도"><div class="page-heading"><span class="eyebrow">한 칸씩, 새로운 세계로</span><h1>토리의 모험 지도</h1><p>6개의 세계, 48개의 모험. 각 세계의 첫 스테이지는 바로 시작할 수 있어.</p></div><div class="grade-tabs" id="mapTabs"></div><div class="map-banner" id="mapBanner"></div><div id="stageGrid" class="stage-grid"></div><p class="footnote">학년 표시는 연습 난이도 안내이며, 학교별 진도와 다를 수 있어요. 모든 연산은 자유 연습에서도 열려 있어요.</p></section>
+<section id="practice" class="view" aria-label="자유 연습"><div class="page-heading"><span class="eyebrow">서두르지 않아도 괜찮아</span><h1>나만의 속도로, 자유 연습</h1><p>배우고 싶은 주제를 골라 10문제씩 연습해 봐. 분수는 1/2처럼 입력해도 돼!</p></div><div class="grade-tabs" id="practiceTabs"></div><div id="skillGrid" class="skill-grid"></div><div class="soft-callout"><svg><use href="#i-heart"/></svg><span>모험을 깨지 않아도 모든 주제를 연습할 수 있어. 힌트는 언제나 무료야.</span></div></section>
+<section id="wardrobe" class="view" aria-label="토리 꾸미기"><div class="page-heading"><span class="eyebrow">언제나 하얀 토끼, 오늘은 다른 모험가</span><h1>토리의 작은 옷장</h1><p>정답을 모아 얻은 별사탕으로 탐험복을 골라 봐. 결제는 없어!</p></div><div class="closet"><div class="portrait-card"><canvas id="portraitCanvas" aria-label="선택한 탐험복을 입은 흰 토끼 토리"></canvas><div><span class="eyebrow">TORI · WHITE RABBIT</span><h2 id="outfitName">새싹 탐험가</h2><p>귀는 팔랑, 용기는 반짝.</p></div></div><div class="outfit-grid" id="outfitGrid"></div></div></section>
+<section id="records" class="view" aria-label="탐험 기록"><div class="page-heading"><span class="eyebrow">어제보다 자란 나를 발견해</span><h1>차곡차곡, 탐험 기록</h1><p>기록은 지금 쓰는 브라우저에만 저장돼. 다른 기기로 옮길 때는 기록 파일을 이용해 줘.</p></div><div id="recordStats" class="record-stats"></div><div class="record-columns"><div class="panel"><h3>나의 수학 스킬</h3><div id="masteryList"></div></div><div class="panel"><h3>빛나는 발자국</h3><div id="badgeList" class="badge-grid"></div><h3 class="recent-title">최근 탐험</h3><div id="recentRuns"></div></div></div><div class="record-actions"><button class="secondary" id="exportButton">기록 파일 저장</button><button class="secondary" id="importButton">기록 파일 가져오기</button><input type="file" id="importFile" accept="application/json,.json" hidden><button class="text-btn" id="recordReview">틀렸던 문제 다시 풀기 <svg><use href="#i-arrow"/></svg></button></div></section>
+<section id="game" class="view" aria-label="수학 모험 플레이">
+<div class="game-toolbar"><button class="secondary small" id="pauseButton"><svg><use href="#i-pause"/></svg>잠깐 쉬기</button><div><span id="gameMode">모험</span><strong id="gameTitle">새싹 숲 · 1</strong></div><span class="game-timer" id="timerLabel"><svg><use href="#i-heart"/></svg>천천히 풀어도 괜찮아</span></div>
+<div class="play-layout">
+<div class="arena-panel"><div class="arena-hud"><div><span class="hud-label" id="enemyLabel">숲의 작은 친구들</span><div class="enemy-track"><i id="enemyBar"></i></div></div><div class="combo"><b id="comboNumber">0</b><span>COMBO</span></div></div><canvas id="arenaCanvas" aria-label="토리가 정답에 맞춰 공격과 스킬을 사용하는 수학 액션 무대"></canvas><div class="arena-caption" id="arenaCaption">정답을 입력하면 토리가 별빛 공격을 해!</div><div class="skillbar"><div class="skill-slot"><span class="skill-key">자동</span><svg><use href="#i-star"/></svg><span>별빛 베기<small>정답마다 발동</small></span></div><div class="skill-slot"><span class="skill-key">3+</span><svg><use href="#i-bolt"/></svg><span>당근 회오리<small>콤보로 강해져</small></span></div><button class="skill-slot ultimate" id="ultimateButton" disabled><span class="skill-key">Space</span><svg><use href="#i-crown"/></svg><span>별똥별 각성<small id="ultimateLabel">별빛 0 / 100</small></span><i id="chargeBar"></i></button></div></div>
+<div class="question-panel"><div class="question-top"><span class="question-type" id="questionType">10까지 덧셈</span><span class="question-count"><b id="questionIndex">1</b><span id="questionTotal"> / 10</span></span></div><div class="question-progress"><i id="questionProgress"></i></div><p class="question-prompt" id="questionPrompt">빈칸에 들어갈 숫자는?</p><div class="expression" id="expression">3 + 4</div><div class="answer-row"><span id="equalsLabel">=</span><input id="answer" type="text" readonly inputmode="none" aria-label="정답 입력" placeholder="?" autocomplete="off" maxlength="14"><button class="backspace" id="backspace" aria-label="한 자리 지우기">⌫</button></div><div class="feedback" id="feedback" role="status" aria-live="polite">정답으로 별빛을 모아 줘!</div><div class="keypad" id="keypad"><button data-key="1">1</button><button data-key="2">2</button><button data-key="3">3</button><button data-key="4">4</button><button data-key="5">5</button><button data-key="6">6</button><button data-key="7">7</button><button data-key="8">8</button><button data-key="9">9</button><button data-key="." class="extra-key" aria-label="소수점">.</button><button data-key="0">0</button><button data-key="/" class="extra-key" aria-label="분수 나누기 기호">/</button></div><button class="primary submit-btn" id="submitButton">정답 확인 <span>Enter ↵</span></button><button class="hint-btn" id="hintButton"><svg><use href="#i-sun"/></svg>토리야, 힌트 줄래?</button><div id="hintBox" class="hint-box" hidden></div></div>
+</div><p class="keyboard-tip">숫자 키로 입력 · Enter로 확인 · Backspace로 지우기 · Space로 각성 · Esc로 잠깐 쉬기</p>
+</section>
+</main>
+<footer>작은 정답, 커다란 모험. <span>토리의 수학탐험</span><button id="aboutButton">게임 정보</button></footer>
+</div>
+</div>
+<dialog id="dialog"><div id="dialogContent"></div></dialog><div id="toast" role="status" aria-live="polite"></div>
+<noscript>토리의 수학탐험을 플레이하려면 브라우저에서 JavaScript를 켜 주세요.</noscript>
+<script type="module" src="./app.mjs"></script>
+</body></html>
