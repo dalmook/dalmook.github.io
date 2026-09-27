@@ -1,0 +1,41 @@
+name: Dopa Drill Korean build
+on:
+  push:
+    branches: [feat/dopa-drill-ko]
+    paths:
+      - '.github/workflows/dopa-drill-ko.yml'
+      - 'tools/dopa-drill/**'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  source-and-tests:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/checkout@v4
+        with:
+          repository: grmchn/dopa-drill
+          ref: 0720ddfe37334628bab61ba5b3a9282bd6bfb31c
+          path: _dopa_upstream
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Test original game
+        working-directory: _dopa_upstream
+        run: node --test tests/*.test.mjs
+      - name: Package source for Korean localization
+        run: |
+          mkdir -p /tmp/dopa-source/app
+          cp -R _dopa_upstream/app/. /tmp/dopa-source/app/
+          rm -rf /tmp/dopa-source/app/fonts
+          cp -R _dopa_upstream/tests /tmp/dopa-source/tests
+          cp _dopa_upstream/LICENSE /tmp/dopa-source/LICENSE
+          cp _dopa_upstream/README.md /tmp/dopa-source/README.upstream.md
+      - uses: actions/upload-artifact@v4
+        with:
+          name: dopa-source
+          path: /tmp/dopa-source
+          retention-days: 1
