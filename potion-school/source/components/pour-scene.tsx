@@ -12,9 +12,10 @@ type Props = {
   onUnit: (count:number) => void;
   onDone: () => void;
   onBubble: () => void;
+  onFlow: () => void;
 };
 
-export function PourScene({flight,color,children,onUnit,onDone,onBubble}:Props) {
+export function PourScene({flight,color,children,onUnit,onDone,onBubble,onFlow}:Props) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const ghostRef = useRef<HTMLDivElement>(null);
 
@@ -30,7 +31,7 @@ export function PourScene({flight,color,children,onUnit,onDone,onBubble}:Props) 
     canvas.height = Math.round(bounds.height * scale);
     ctx.scale(scale,scale);
     const {source,destination,direction}=flight.geometry;
-    let frame=0, beginning:number|undefined, lastUnits=0, done=false;
+    let frame=0, beginning:number|undefined, lastUnits=0, done=false, flowStarted=false;
 
     function finish() {
       if (done) return;
@@ -47,6 +48,7 @@ export function PourScene({flight,color,children,onUnit,onDone,onBubble}:Props) 
       ctx.clearRect(0,0,bounds.width,bounds.height);
       const flow=pourStream(t);
       if (flow>0.01) {
+        if(!flowStarted){flowStarted=true;onFlow();}
         const tipX=source.x+source.width*.5+pose.x+direction*source.width*.22;
         const tipY=source.y+source.width*.2+pose.y+source.width*.11;
         const endX=destination.x+destination.width*.5;
@@ -66,7 +68,7 @@ export function PourScene({flight,color,children,onUnit,onDone,onBubble}:Props) 
         ctx.setLineDash([source.width*.25,source.width*.14]);ctx.lineDashOffset=-now*.13;
         ctx.beginPath();ctx.moveTo(tipX-direction*1.2,tipY);ctx.quadraticCurveTo(bendX-2,bendY,endX-2,endY);ctx.stroke();
         ctx.setLineDash([]);
-        for(let i=0;i<4;i++) {
+        for(let i=0;i<8;i++) {
           const p=((t*2.9+i/4)%1);
           const x=(1-p)**2*tipX+2*(1-p)*p*bendX+p*p*endX;
           const y=(1-p)**2*tipY+2*(1-p)*p*bendY+p*p*endY;
@@ -74,6 +76,9 @@ export function PourScene({flight,color,children,onUnit,onDone,onBubble}:Props) 
           ctx.globalAlpha=flow*(.22+.38*p);
           ctx.beginPath();ctx.arc(x+direction*(i%2?4:-3),y,Math.max(1.5,source.width*.035),0,Math.PI*2);ctx.fill();
         }
+        // Splash droplets and ripples stay attached to the receiving bottle.
+        for(let i=0;i<9;i++){const phase=(t*4+i/9)%1,a=i*2.4;ctx.globalAlpha=flow*(1-phase)*.85;ctx.fillStyle=i%3?color.light:'#fff8d7';const x=endX+Math.cos(a)*source.width*.4*phase,y=endY-Math.sin(phase*Math.PI)*source.width*.32;ctx.beginPath();ctx.arc(x,y,Math.max(1,source.width*.027)*(1-phase*.6),0,Math.PI*2);ctx.fill();}
+        ctx.strokeStyle=color.light;ctx.lineWidth=1.8;for(let i=0;i<2;i++){const phase=(t*3+i*.5)%1;ctx.globalAlpha=flow*(1-phase)*.7;ctx.beginPath();ctx.ellipse(endX,endY,source.width*(.12+phase*.22),source.width*(.035+phase*.045),0,0,Math.PI*2);ctx.stroke();}
         ctx.restore();
       }
       const units=pouredUnits(t,flight.count);

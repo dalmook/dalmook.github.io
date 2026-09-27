@@ -26,4 +26,8 @@ Node 22.13 이상에서 이 폴더에서 `npm install` 후 `npm run dev`.
 
 ## Magic Quest update
 
-All screens share three original fantasy worlds: forest, moon ruins, and sky castle. Play includes measured bottle pouring, liquid transfer, Canvas magic bursts, stage introductions, and rank rewards. The world map and companion collection have dedicated full-screen layouts. Includes 30 solvable stages, hints, undo, extra bottles, persistent progress, sound and reduced-motion settings.
+All screens share three original fantasy worlds: forest, moon ruins, and sky castle. Play includes measured bottle pouring, liquid transfer, Canvas magic bursts, stage introductions, and rank rewards. The world map and companion collection have dedicated full-screen layouts. Includes 300 solvable stages, hints, undo, extra bottles, persistent progress, sound and reduced-motion settings.
+
+## Sound & content expansion
+
+300 verified puzzles, 3 original music loops, separate audio volume, 8 colours, daily challenges, free practice, stronger target-position particles and completion chains, star-unlocked bottle styles, and persistent daily records. Music starts after the first tap. See docs/EXPANSION.md for research and validation details.

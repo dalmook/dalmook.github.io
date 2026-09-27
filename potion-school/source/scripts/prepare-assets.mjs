@@ -1,1 +1,3 @@
-import {mkdirSync,copyFileSync} from 'node:fs';mkdirSync(new URL('../public/',import.meta.url),{recursive:true});for(const f of ['momo.webp','friends-atlas.webp','worlds.webp','favicon.svg'])copyFileSync(new URL('../../'+f,import.meta.url),new URL('../public/'+f,import.meta.url));
+import {mkdirSync,copyFileSync,cpSync} from 'node:fs';mkdirSync(new URL('../public/',import.meta.url),{recursive:true});for(const f of ['momo.webp','friends-atlas.webp','worlds.webp','favicon.svg'])copyFileSync(new URL('../../'+f,import.meta.url),new URL('../public/'+f,import.meta.url));
+
+cpSync(new URL('../../audio/',import.meta.url),new URL('../public/audio/',import.meta.url),{recursive:true});

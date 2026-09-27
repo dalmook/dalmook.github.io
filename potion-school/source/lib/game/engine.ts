@@ -7,6 +7,9 @@ export const colors = [
  {name:'햇살',hex:'#f6c74e',light:'#fff1a9',symbol:'★'},
  {name:'포도',hex:'#a383eb',light:'#e0ccff',symbol:'●'},
  {name:'풀잎',hex:'#62cca0',light:'#bef9dc',symbol:'✿'},
+ {name:'귤빛',hex:'#ff9954',light:'#ffdab2',symbol:'▲'},
+ {name:'산호',hex:'#f05766',light:'#ffa5af',symbol:'✚'},
+ {name:'민트',hex:'#33d8cb',light:'#b0fff4',symbol:'■'},
 ];
 export function topRun(t:number[]) {if(!t.length)return 0;let n=1;while(n<t.length&&t[t.length-1-n]===t[t.length-1])n++;return n;}
 export function complete(t:number[]) {return t.length===4&&t.every(c=>c===t[0]);}
@@ -36,5 +39,5 @@ export function makeLevel(level:number):Board {
  }
  return [[0,0,1,1],[1,1,0,0],[2,2,2,2],[],[]];
 }
-export const worlds=[{name:'반짝이는 숲',subtitle:'첫 번째 마법 여행',icon:'🌿',color:'#3a946e'},{name:'달빛 호수',subtitle:'물결 속 비밀을 찾아서',icon:'🌙',color:'#747bc9'},{name:'구름 위 성',subtitle:'꼬마 마법사의 마지막 수업',icon:'☁️',color:'#c48b43'}];
-export const friends=[{name:'마법사 모모',emoji:'🐱',need:0,desc:'언제나 네 편인 첫 번째 친구'},{name:'숲속 토토',emoji:'🐰',need:5,desc:'다섯 번의 마법을 함께해요'},{name:'별빛 루루',emoji:'🦉',need:10,desc:'별을 읽는 작은 지혜의 친구'},{name:'꼬마 용 보보',emoji:'🐲',need:20,desc:'뜨거운 용기를 선물해요'},{name:'무지개 유니',emoji:'🦄',need:30,desc:'모든 여행을 마친 너에게'}];
+export const worlds=[{name:'반짝이는 숲',subtitle:'첫 번째 마법 여행',icon:'🌿',color:'#3a946e'},{name:'달빛 호수',subtitle:'물결 속 비밀을 찾아서',icon:'🌙',color:'#747bc9'},{name:'구름 위 성',subtitle:'하늘 위 마법 연구소',icon:'☁️',color:'#c48b43'}];
+export const friends=[{name:'마법사 모모',emoji:'🐱',need:0,desc:'언제나 네 편인 첫 번째 친구'},{name:'숲속 토토',emoji:'🐰',need:5,desc:'다섯 번의 마법을 함께해요'},{name:'별빛 루루',emoji:'🦉',need:10,desc:'별을 읽는 작은 지혜의 친구'},{name:'꼬마 용 보보',emoji:'🐲',need:20,desc:'뜨거운 용기를 선물해요'},{name:'무지개 유니',emoji:'🦄',need:30,desc:'서른 번의 도전을 함께한 친구'}];
