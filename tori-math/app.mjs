@@ -1,6 +1,6 @@
 import {WORLDS,SKILLS,OUTFITS,MISSIONS,SAVE_KEY,today,question,deck,stageSkills,isCorrect,readSave,writeSave,normalizeSave,freshSave,rememberWrong,recordAnswer,finishRun,claimMission,buyOutfit,ensureDay} from './math.mjs';
-import {Scene} from './scene.mjs';
-import {AudioEngine} from './audio.mjs';
+import {Scene} from './scene.mjs?v=2.0.0';
+import {AudioEngine} from './audio.mjs?v=2.0.0';
 const $=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)];
 const esc=s=>String(s).replace(/[&<>"']/g,x=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[x]));
 const icon=(id,cls='')=>`<svg class="${cls}" aria-hidden="true"><use href="#i-${id}"/></svg>`;

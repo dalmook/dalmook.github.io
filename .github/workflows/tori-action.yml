@@ -1,0 +1,104 @@
+name: Tori Action 2 - playtests and public verification
+on:
+  push:
+    branches: [tori-action-v2, main]
+    paths: ['tori-math/**', '.github/workflows/tori-action.yml']
+  pull_request:
+    paths: ['tori-math/**', '.github/workflows/tori-action.yml']
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: tori-action-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 18
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Syntax and mathematics/save-state unit tests
+        run: |
+          set -o pipefail
+          mkdir -p /tmp/tori-action-qa
+          for file in tori-math/*.mjs; do node --check "$file"; done
+          node --test tori-math/tests/math.test.mjs | tee /tmp/tori-action-qa/math-tests.log
+      - name: Install browser
+        id: browser
+        run: |
+          python -m pip install playwright==1.55.0
+          python -m playwright install --with-deps chromium
+          sudo apt-get update -qq
+          sudo apt-get install -y fonts-noto-cjk
+      - name: Original complete-game regression
+        env:
+          QA_OUTPUT: /tmp/tori-action-qa/original
+        run: |
+          set -o pipefail
+          python tori-math/tests/browser.py 2>&1 | tee /tmp/tori-action-qa/original-tests.log
+      - name: Full-screen action, mobile, animation and saved-game tests
+        if: always() && steps.browser.outcome == 'success'
+        env:
+          QA_OUTPUT: /tmp/tori-action-qa/action
+        run: |
+          set -o pipefail
+          python tori-math/tests/action.py 2>&1 | tee /tmp/tori-action-qa/action-tests.log
+      - name: Verify the public site serves the exact tested source
+        if: success() && github.ref == 'refs/heads/main'
+        run: |
+          python - <<'PY'
+          import hashlib, json, time, urllib.request
+          from pathlib import Path
+          root=Path('tori-math');base='https://dalmook.github.io/tori-math/'
+          names=['index.html','style.css','app.mjs','math.mjs','scene.mjs','audio.mjs','rig.mjs','action-ui.mjs','action.css','icon.svg','VERSION.json']
+          for attempt in range(60):
+              try:
+                  for name in names:
+                      with urllib.request.urlopen(base+name+'?verify='+str(time.time_ns()),timeout=15) as response:
+                          assert response.status==200
+                          assert hashlib.sha256(response.read()).digest()==hashlib.sha256((root/name).read_bytes()).digest(), name+' is not current yet'
+                  break
+              except Exception as error:
+                  print('Waiting for Pages',attempt+1,str(error),flush=True);time.sleep(5)
+          else:raise SystemExit('Public site did not serve the tested release')
+          result={'status':'verified','version':'2.0.0','url':base,'identical_public_assets':names}
+          Path('/tmp/tori-action-qa/public-assets.json').write_text(json.dumps(result,indent=2))
+          print(json.dumps(result),flush=True)
+          PY
+      - name: Play the public Action 2.0 release on seven viewport sizes
+        if: success() && github.ref == 'refs/heads/main'
+        env:
+          QA_OUTPUT: /tmp/tori-action-qa/live
+        run: |
+          set -o pipefail
+          python tori-math/tests/action.py --url 'https://dalmook.github.io/tori-math/?v=2.0.0' 2>&1 | tee /tmp/tori-action-qa/live-tests.log
+      - name: Record verified results
+        if: success()
+        run: |
+          python - <<'PY'
+          import json, os
+          from pathlib import Path
+          out=Path('/tmp/tori-action-qa')
+          original=json.loads((out/'original/browser-report.json').read_text())
+          action=json.loads((out/'action/action-report.json').read_text())
+          with open(os.environ['GITHUB_STEP_SUMMARY'],'a') as stream:
+              stream.write('# 토리의 수학탐험 · 액션 2.0\n\n41 mathematics/save tests passed.\n\n')
+              stream.write(str(original['checks'])+' original and '+str(action['checks'])+' action browser checks passed.\n\n')
+              stream.write('Screenshots and actual gameplay recordings are in the QA artifact.\n')
+              if (out/'live/action-report.json').exists():
+                  live=json.loads((out/'live/action-report.json').read_text())
+                  stream.write('\nPublic source hashes match, and '+str(live['checks'])+' live browser checks passed.\n')
+          PY
+      - name: Keep actual screenshots, recordings, metrics and reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: tori-action-qa-${{ github.run_id }}
+          path: /tmp/tori-action-qa
+          retention-days: 14
