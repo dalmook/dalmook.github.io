@@ -3,7 +3,7 @@ import re
 root=Path(__file__).resolve().parent
 css=root/'action.css'
 text=css.read_text()
-text+='\n/* Override the legacy phone arena height without changing other screens. */\n.action-v2 body.playing .arena-panel,.action-v2 body.playing .arena-panel canvas{height:100%;min-height:0;max-height:none}\n'
+text+='\n/* Override legacy phone sizing and keep every control reachable. */\n.action-v2 body.playing .arena-panel,.action-v2 body.playing .arena-panel canvas{height:100%;min-height:0;max-height:none}\n.action-v2 .topbar{z-index:32}\n.action-v2 body.playing .topbar{display:flex}\n.action-v2 .arena-hud>div:first-child{width:100%}\n.action-v2 .combo{flex-direction:row}\n'
 css.write_text(text)
 test=root/'tests/browser.py'
 text=test.read_text().replace('    page.wait_for_timeout(690)', '''    # Observe readiness, not a fixed wall-clock delay under the test's virtual clock.
