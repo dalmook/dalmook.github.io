@@ -30,20 +30,28 @@ def answer(page,touch=False):
         for c in s:page.locator(f'#keypad [data-key="{c}"]').click()
         page.locator('#submitButton').click()
     else:page.keyboard.type(s);page.keyboard.press('Enter')
-    page.wait_for_timeout(690)
+    # Observe readiness, not a fixed wall-clock delay under the test's virtual clock.
+    page.wait_for_function("() => document.querySelector('#dialog').open || !document.querySelector('#submitButton').disabled",timeout=5000)
 def load(page,saved=None):
     page.on('pageerror',lambda e:errors.append(str(e)))
     if not args.inline:
         page.goto(base,wait_until='networkidle');page.wait_for_timeout(350);return
     html=(ROOT/'index.html').read_text()
-    html=html.replace('<link rel="stylesheet" href="./style.css">','<style>'+(ROOT/'style.css').read_text()+'</style>')
+    html=html.replace('<link rel="stylesheet" href="./style.css">','<style>'+(ROOT/'style.css').read_text()+'\n'+(ROOT/'action.css').read_text()+'</style>')
     html=html.replace('./icon.svg','data:image/svg+xml;base64,'+base64.b64encode((ROOT/'icon.svg').read_bytes()).decode())
-    html=html.replace('<script type="module" src="./app.mjs"></script>','')
+    html=re.sub(r'<script type="module" src="\./app\.mjs[^"]*"></script>', '', html)
     page.set_content(html,wait_until='domcontentloaded')
     page.evaluate('''saved=>{const values={};if(saved)values['tori-math-adventure:v1']=JSON.stringify(saved);Object.defineProperty(window,'localStorage',{configurable:true,value:{getItem:k=>values[k]||null,setItem:(k,v)=>values[k]=v,removeItem:k=>delete values[k]}});}''',saved)
-    code='\n'.join((ROOT/f).read_text() for f in ['math.mjs','scene.mjs','audio.mjs','app.mjs'])
-    code=re.sub(r'^import .*?;\s*$', '',code,flags=re.M)
-    page.add_script_tag(type='module',content=code);page.wait_for_timeout(450)
+    chunks=[]
+    for name in ['math.mjs','rig.mjs','action-ui.mjs','scene.mjs','audio.mjs','app.mjs']:
+        code=(ROOT/name).read_text()
+        if name=='action-ui.mjs':code=code[:code.rfind("if(typeof document!=='undefined'){")]
+        code=re.sub(r'^import .*?;\s*$', '',code,flags=re.M)
+        code=re.sub(r'^export \{.*?\};\s*$', '',code,flags=re.M)
+        code=code.replace('export function ','function ').replace('export class ','class ').replace('export const ','const ')
+        chunks.append(code)
+    page.add_script_tag(type='module',content='\n'.join(chunks)+'\ninstallActionUI();');page.wait_for_timeout(450)
+
 def quit(page):
     page.locator('#pauseButton').click();page.locator('#quitRun').click()
 server=None

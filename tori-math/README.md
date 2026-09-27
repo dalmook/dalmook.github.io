@@ -63,3 +63,7 @@ grmchn/dopa-drill의 '문제를 풀수록 연출이 신나는 학습'이라는 �
 ## 개인정보와 저장
 
 계정과 백엔드가 없으며 학습 기록은 `localStorage`의 `tori-math-adventure:v1`에 저장합니다. 게임 코드에는 분석·추적·광고 도구와 외부 API 호출이 없습니다. GitHub Pages 호스팅의 일반적인 접속 로그 정책은 별개입니다. 기기 간 자동 동기화는 없고, 기록 파일로 옮길 수 있습니다. 브라우저의 사이트 데이터를 삭제하면 저장 기록이 사라집니다.
+
+
+## Action 2.0
+Full-viewport action, articulated white Tori, digit-carry animation, five-phase energy, original layered music and dash/spin/crystal/meteor choreography. Maths, review, outfits and the save schema remain intact. Additional actual-browser checks: `python tests/action.py`.
