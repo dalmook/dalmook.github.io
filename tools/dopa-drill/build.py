@@ -48,7 +48,8 @@ def build(source, target):
         s=s.replace('第${S.qi + 1}問','${S.qi + 1}번 문제').replace('第1問','1번 문제')
         s=s.replace("'正'", "'정'")
         s=translate(s).replace('（', '(').replace('）', ')')
-        s=s.replace('ja-JP','ko-KR').replace('dopa-drill:v1','dopa-drill-ko:v1')
+        # All versions and reset operations use this fork's namespace only.
+        s=s.replace('ja-JP','ko-KR').replace('dopa-drill','dopa-drill-ko')
         if p.name=='style.css':
             s=re.sub(r'@font-face\s*\{[^}]*\}', '', s)
             s=re.sub(r'--round:[^;]+;', '--round: "Apple SD Gothic Neo", "Malgun Gothic", "Noto Sans KR", system-ui, sans-serif;',s)
