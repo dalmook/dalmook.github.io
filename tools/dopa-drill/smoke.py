@@ -67,7 +67,7 @@ def run(browser):
     check('document language ko',page.locator('html').get_attribute('lang')=='ko');korean(page,'#screen-title');shot(page,'02-mobile-title')
     check('no horizontal overflow',page.evaluate('document.documentElement.scrollWidth<=innerWidth'))
     page.locator('#open-settings').click();shot(page,'03-mobile-settings');page.locator('[data-count="6"]').click()
-    page.locator('#motion').fill('0');page.locator('#motion').dispatch_event('input');page.locator('#motion').dispatch_event('change');page.locator('#close-settings').click()
+    page.locator('#motion').focus();page.keyboard.press('Home');page.keyboard.press('Tab');page.locator('#close-settings').click()
     check('reduced motion saved',state(page)['reduced'])
     for name in ['tree','trophy','collect']:
         page.locator('#open-'+name).click();page.wait_for_timeout(250);korean(page,'#screen-'+name);shot(page,'04-mobile-'+name);page.locator('#'+name+'-back').click()
