@@ -9,10 +9,11 @@ const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
 const IDS=new Set(BANK.map(q=>q.id)), BY_ID=new Map(BANK.map(q=>[q.id,q]));
 let storage;try{storage=window.localStorage;}catch{storage={getItem:()=>null,setItem:()=>{throw new Error('Storage disabled');}};}
 let state=loadState(storage,IDS),savedWarning=false;
+try{if(!storage.getItem(SAVE_KEY)&&matchMedia('(prefers-reduced-motion: reduce)').matches)state.settings.motion=0;}catch{}
 const audio=new AudioEngine(),fx=new FX($('#fx'),300),fxBack=new FX($('#fx-back'),380),bg=new Backdrop($('#bg'),$('#rays-fallback'));
 const hero=new Dopakichi($('#actors-back'),{scale:.85,front:$('#actors-front')});
 const friends=['blue','yellow','mint','violet','pink','blue'].map(p=>new Dopakichi($('#actors-back'),{palette:p,scale:.32,front:$('#actors-front')}));
-const S={screen:'title',phase:'idle',run:0,mode:'basic',deck:[],qi:0,results:[],combo:0,peak:0,elapsed:0,E:.06,visualE:.02,level:0,score:0,earned:0,ended:false,shake:0,flash:0,idleAt:0,rainAt:0,stepAt:0,question:null,libraryLimit:30,revision:'ox-1.0.0'};
+const S={screen:'title',phase:'idle',run:0,mode:'basic',deck:[],qi:0,results:[],combo:0,peak:0,elapsed:0,E:.06,visualE:.02,level:0,score:0,earned:0,ended:false,shake:0,flash:0,idleAt:0,rainAt:0,stepAt:0,question:null,libraryLimit:30,revision:'ox-1.0.1'};
 window.__ox={S,audio,hero,friends,bank:BANK,sources:SOURCES,get state(){return state;}};
 function persist(){if(!saveState(storage,state)&&!savedWarning){savedWarning=true;toast('이 브라우저에서 저장할 수 없어요. 설정에서 기록 파일을 내보내 주세요.');}}
 let toastTimer;
@@ -130,9 +131,9 @@ onFrame((dt,t)=>{
  if(document.hidden)return;
  const motion=state.settings.motion,playing=S.screen==='play'||S.screen==='result';audio.update();
  if(S.screen==='play'&&S.phase==='question'&&!modalOpen()){S.elapsed+=dt*1000;updateHUD();if(S.mode==='challenge'&&S.elapsed>=60000)finishGame();}
- const at=audio.now(),last=audio.kicks.at(-1),beat=last!==undefined?Math.exp(-Math.max(0,at-last)*13):0;
- S.visualE+=(S.E-S.visualE)*Math.min(1,dt*4);bg.state.E=motion?S.visualE*Math.max(.6,motion):0;bg.state.kick=beat*motion;bg.state.reach=audio.reach?.35:0;bg.state.flash=0;
- if(motion){hero.bob=playing?.7:.12;hero.update(dt,t,{beat});friends.forEach((m,i)=>{if(!m.visible)return;m.lift=Math.max(0,Math.sin(t/230+i*1.8))*13*S.E;m.tilt.target=Math.sin(t/250+i)*9*S.E;m.hands.forEach((h,j)=>h.raise=(.35+.25*Math.sin(t/200+i+j))*S.E);m.update(dt,t,{beat});});}
+ const at=audio.now(),last=audio.kicks.findLast(x=>x<=at),beat=last!==undefined?Math.exp(-Math.max(0,at-last)*13):0;
+ S.visualE+=(S.E-S.visualE)*Math.min(1,dt*4);bg.state.E=motion?S.visualE*Math.max(.6,motion):0;bg.state.kick=beat*motion;bg.state.reach=audio.reach ? .35 : 0;bg.state.flash=0;
+ if(motion){hero.bob=playing ? .7 : .12;hero.update(dt,t,{beat});friends.forEach((m,i)=>{if(!m.visible){m.update(dt,t,{beat});return;}m.lift=Math.max(0,Math.sin(t/230+i*1.8))*13*S.E;m.tilt.target=Math.sin(t/250+i)*9*S.E;m.hands.forEach((h,j)=>h.raise=(.35+.25*Math.sin(t/200+i+j))*S.E);m.update(dt,t,{beat});});}
  else{hero.bob=0;hero.lift=0;hero.rot=0;hero.update(0,0,{});friends.forEach(m=>{m.visible=false;m.update(0,0,{});});}
  if(motion&&t-S.rainAt>Math.max(220,1700-S.E*1400)&&playing&&S.E>.45){S.rainAt=t;fxBack.rain(innerWidth,Math.round(2+S.E*5),{kinds:S.E>.8?['confetti','mini']:['confetti']});}
  if(motion&&t>S.idleAt&&S.screen==='title'&&!modalOpen()){S.idleAt=t+4800;hero.celebrate(.08,{audio:null,variant:'earflap'});}
