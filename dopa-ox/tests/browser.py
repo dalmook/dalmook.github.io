@@ -9,7 +9,7 @@ def check(name, condition=True):
     checks.append(name);print('PASS',name,flush=True)
 def ready(page):
     page.goto(URL,wait_until='networkidle');page.wait_for_function("document.documentElement.dataset.oxReady==='true'",timeout=20000)
-def phase(page,value): page.wait_for_function('(p)=>window.__ox.S.phase===p',value,timeout=15000)
+def phase(page,value): page.wait_for_function('(p)=>window.__ox.S.phase===p',arg=value,timeout=15000)
 def play_answer(page,correct=True):
     phase(page,'question');value=page.evaluate('window.__ox.S.question.answer');value=value if correct else not value
     page.locator('#answer-o' if value else '#answer-x').click();phase(page,'answered')
@@ -17,7 +17,7 @@ def play_answer(page,correct=True):
 def screenshot(page,name):page.screenshot(path=str(OUT/(name+'.png')))
 try:
  with sync_playwright() as p:
-    browser=p.chromium.launch(args=['--no-sandbox'])
+    browser=p.chromium.launch(executable_path=os.getenv('CHROMIUM_PATH') or None,args=['--no-sandbox'])
     for width,height in [(320,568),(360,640),(390,844),(430,932),(768,1024),(1280,800),(844,390)]:
         context=browser.new_context(viewport={'width':width,'height':height},device_scale_factor=1)
         page=context.new_page();page.on('pageerror',lambda e:errors.append(str(e)))
