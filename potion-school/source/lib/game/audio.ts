@@ -11,12 +11,12 @@ export class PotionAudio {
  configure(opts:AudioOptions){this.opts=opts;this.sync();}
  async unlock(){
   if(this.disposed)return;this.unlocked=true;
-  try{this.context??=new AudioContext();if(this.context.state==='suspended')await this.context.resume();}catch{}
+  try{this.context??=new AudioContext();if(this.context.state==='suspended')void this.context.resume().catch(()=>{});}catch{}
   this.sync();
  }
  private sync(){
   if(!this.unlocked||this.disposed)return;
-  if(!this.player){this.player=new Audio();this.player.loop=true;this.player.preload='none';this.player.addEventListener('playing',()=>this.status(true));this.player.addEventListener('pause',()=>this.status(false));this.player.addEventListener('error',()=>this.status(false));}
+  if(!this.player){this.player=new Audio();this.player.hidden=true;this.player.dataset.potionMusic='true';document.body.appendChild(this.player);this.player.loop=true;this.player.preload='none';this.player.addEventListener('playing',()=>this.status(true));this.player.addEventListener('pause',()=>this.status(false));this.player.addEventListener('error',()=>this.status(false));}
   const p=this.player;
   if(this.track!==this.opts.world){this.track=this.opts.world;p.src=`./audio/${['forest','moon','castle'][this.track]}.ogg`;}
   p.volume=this.opts.musicVolume/100;
@@ -39,5 +39,5 @@ export class PotionAudio {
   if(type==='error'){tone(180,now,.12,.05,'triangle');tone(140,now+.10,.14,.04);return;}
   const notes=type==='hint'?[660,880,1100]:type==='undo'?[600,400]:[840];notes.forEach((n,i)=>tone(n,now+i*.06,.15,.07));
  }
- dispose(){this.disposed=true;this.player?.pause();if(this.player){this.player.removeAttribute('src');this.player.load();}void this.context?.close();}
+ dispose(){this.disposed=true;this.player?.pause();if(this.player){this.player.removeAttribute('src');this.player.load();this.player.remove();}void this.context?.close();}
 }
