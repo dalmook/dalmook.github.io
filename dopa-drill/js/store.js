@@ -209,7 +209,7 @@ export function reset(storage = backend()) {
   try {
     for (let i = storage.length - 1; i >= 0; i--) {
       const key = storage.key(i);
-      if (key?.startsWith('dopa-drill')) {
+      if (key?.startsWith('dopa-drill-ko')) {
         try { storage.removeItem(key); } catch { /* Keep trying the remaining keys. */ }
       }
     }
