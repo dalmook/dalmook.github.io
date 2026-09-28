@@ -1,0 +1,9 @@
+{
+  "name":"wordbunny-island",
+  "version":"1.0.0",
+  "private":true,
+  "description":"Independent Korean-first vocabulary adventure for children. User-owned words and photos.",
+  "scripts":{"test":"node --test tests/core.test.cjs","validate":"node scripts/validate-content.cjs","build":"python3 scripts/build.py","start":"python3 scripts/serve.py"},
+  "engines":{"node":">=20"},
+  "license":"MIT"
+}

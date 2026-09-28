@@ -1,0 +1,115 @@
+{
+  "schemaVersion": 1,
+  "id": "school",
+  "title": "두근두근 학교",
+  "words": [
+    {
+      "id": "school-book",
+      "en": "book",
+      "ko": "책",
+      "category": "두근두근 학교",
+      "level": 1,
+      "image": "content/images/book.svg",
+      "example": "I read a book."
+    },
+    {
+      "id": "school-pencil",
+      "en": "pencil",
+      "ko": "연필",
+      "category": "두근두근 학교",
+      "level": 1,
+      "image": "content/images/pencil.svg",
+      "example": "This is my pencil."
+    },
+    {
+      "id": "school-bag",
+      "en": "bag",
+      "ko": "가방",
+      "category": "두근두근 학교",
+      "level": 1,
+      "image": "content/images/bag.svg",
+      "example": "This is my bag."
+    },
+    {
+      "id": "school-ruler",
+      "en": "ruler",
+      "ko": "자",
+      "category": "두근두근 학교",
+      "level": 1,
+      "image": "content/images/ruler.svg",
+      "example": "I have a ruler."
+    },
+    {
+      "id": "school-eraser",
+      "en": "eraser",
+      "ko": "지우개",
+      "category": "두근두근 학교",
+      "level": 1,
+      "image": "content/images/eraser.svg",
+      "example": "This is an eraser."
+    },
+    {
+      "id": "school-chair",
+      "en": "chair",
+      "ko": "의자",
+      "category": "두근두근 학교",
+      "level": 1,
+      "image": "content/images/chair.svg",
+      "example": "I sit on a chair."
+    },
+    {
+      "id": "school-desk",
+      "en": "desk",
+      "ko": "책상",
+      "category": "두근두근 학교",
+      "level": 1,
+      "image": "content/images/desk.svg",
+      "example": "My book is on the desk."
+    },
+    {
+      "id": "school-clock",
+      "en": "clock",
+      "ko": "시계",
+      "category": "두근두근 학교",
+      "level": 1,
+      "image": "content/images/clock.svg",
+      "example": "Look at the clock."
+    },
+    {
+      "id": "school-school",
+      "en": "school",
+      "ko": "학교",
+      "category": "두근두근 학교",
+      "level": 1,
+      "image": "content/images/school.svg",
+      "example": "I go to school."
+    },
+    {
+      "id": "school-paper",
+      "en": "paper",
+      "ko": "종이",
+      "category": "두근두근 학교",
+      "level": 1,
+      "image": "content/images/paper.svg",
+      "example": "I draw on paper."
+    },
+    {
+      "id": "school-crayon",
+      "en": "crayon",
+      "ko": "크레용",
+      "category": "두근두근 학교",
+      "level": 1,
+      "image": "content/images/crayon.svg",
+      "example": "This crayon is pink."
+    },
+    {
+      "id": "school-ball",
+      "en": "ball",
+      "ko": "공",
+      "category": "두근두근 학교",
+      "level": 1,
+      "image": "content/images/ball.svg",
+      "example": "I play with a ball."
+    }
+  ]
+}

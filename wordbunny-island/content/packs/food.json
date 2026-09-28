@@ -1,0 +1,115 @@
+{
+  "schemaVersion": 1,
+  "id": "food",
+  "title": "맛있는 숲",
+  "words": [
+    {
+      "id": "food-apple",
+      "en": "apple",
+      "ko": "사과",
+      "category": "맛있는 숲",
+      "level": 1,
+      "image": "content/images/apple.svg",
+      "example": "This is an apple."
+    },
+    {
+      "id": "food-banana",
+      "en": "banana",
+      "ko": "바나나",
+      "category": "맛있는 숲",
+      "level": 1,
+      "image": "content/images/banana.svg",
+      "example": "I like bananas."
+    },
+    {
+      "id": "food-orange",
+      "en": "orange",
+      "ko": "오렌지",
+      "category": "맛있는 숲",
+      "level": 1,
+      "image": "content/images/orange.svg",
+      "example": "An orange is round."
+    },
+    {
+      "id": "food-grape",
+      "en": "grape",
+      "ko": "포도",
+      "category": "맛있는 숲",
+      "level": 1,
+      "image": "content/images/grape.svg",
+      "example": "This is a grape."
+    },
+    {
+      "id": "food-strawberry",
+      "en": "strawberry",
+      "ko": "딸기",
+      "category": "맛있는 숲",
+      "level": 1,
+      "image": "content/images/strawberry.svg",
+      "example": "The strawberry is red."
+    },
+    {
+      "id": "food-carrot",
+      "en": "carrot",
+      "ko": "당근",
+      "category": "맛있는 숲",
+      "level": 1,
+      "image": "content/images/carrot.svg",
+      "example": "A rabbit likes carrots."
+    },
+    {
+      "id": "food-bread",
+      "en": "bread",
+      "ko": "빵",
+      "category": "맛있는 숲",
+      "level": 1,
+      "image": "content/images/bread.svg",
+      "example": "I eat bread."
+    },
+    {
+      "id": "food-milk",
+      "en": "milk",
+      "ko": "우유",
+      "category": "맛있는 숲",
+      "level": 1,
+      "image": "content/images/milk.svg",
+      "example": "I drink milk."
+    },
+    {
+      "id": "food-egg",
+      "en": "egg",
+      "ko": "달걀",
+      "category": "맛있는 숲",
+      "level": 1,
+      "image": "content/images/egg.svg",
+      "example": "This is an egg."
+    },
+    {
+      "id": "food-cookie",
+      "en": "cookie",
+      "ko": "쿠키",
+      "category": "맛있는 숲",
+      "level": 1,
+      "image": "content/images/cookie.svg",
+      "example": "I like this cookie."
+    },
+    {
+      "id": "food-water",
+      "en": "water",
+      "ko": "물",
+      "category": "맛있는 숲",
+      "level": 1,
+      "image": "content/images/water.svg",
+      "example": "I drink water."
+    },
+    {
+      "id": "food-corn",
+      "en": "corn",
+      "ko": "옥수수",
+      "category": "맛있는 숲",
+      "level": 1,
+      "image": "content/images/corn.svg",
+      "example": "The corn is yellow."
+    }
+  ]
+}

@@ -1,0 +1,115 @@
+{
+  "schemaVersion": 1,
+  "id": "animals",
+  "title": "동물 친구들",
+  "words": [
+    {
+      "id": "animals-cat",
+      "en": "cat",
+      "ko": "고양이",
+      "category": "동물 친구들",
+      "level": 1,
+      "image": "content/images/cat.svg",
+      "example": "The cat is cute."
+    },
+    {
+      "id": "animals-dog",
+      "en": "dog",
+      "ko": "개",
+      "category": "동물 친구들",
+      "level": 1,
+      "image": "content/images/dog.svg",
+      "example": "The dog can run."
+    },
+    {
+      "id": "animals-rabbit",
+      "en": "rabbit",
+      "ko": "토끼",
+      "category": "동물 친구들",
+      "level": 1,
+      "image": "content/images/rabbit.svg",
+      "example": "The rabbit can hop."
+    },
+    {
+      "id": "animals-panda",
+      "en": "panda",
+      "ko": "판다",
+      "category": "동물 친구들",
+      "level": 1,
+      "image": "content/images/panda.svg",
+      "example": "The panda eats bamboo."
+    },
+    {
+      "id": "animals-lion",
+      "en": "lion",
+      "ko": "사자",
+      "category": "동물 친구들",
+      "level": 1,
+      "image": "content/images/lion.svg",
+      "example": "The lion is big."
+    },
+    {
+      "id": "animals-bear",
+      "en": "bear",
+      "ko": "곰",
+      "category": "동물 친구들",
+      "level": 1,
+      "image": "content/images/bear.svg",
+      "example": "This is a bear."
+    },
+    {
+      "id": "animals-fox",
+      "en": "fox",
+      "ko": "여우",
+      "category": "동물 친구들",
+      "level": 1,
+      "image": "content/images/fox.svg",
+      "example": "The fox has a tail."
+    },
+    {
+      "id": "animals-pig",
+      "en": "pig",
+      "ko": "돼지",
+      "category": "동물 친구들",
+      "level": 1,
+      "image": "content/images/pig.svg",
+      "example": "The pig is pink."
+    },
+    {
+      "id": "animals-bird",
+      "en": "bird",
+      "ko": "새",
+      "category": "동물 친구들",
+      "level": 1,
+      "image": "content/images/bird.svg",
+      "example": "The bird can fly."
+    },
+    {
+      "id": "animals-fish",
+      "en": "fish",
+      "ko": "물고기",
+      "category": "동물 친구들",
+      "level": 1,
+      "image": "content/images/fish.svg",
+      "example": "The fish can swim."
+    },
+    {
+      "id": "animals-turtle",
+      "en": "turtle",
+      "ko": "거북이",
+      "category": "동물 친구들",
+      "level": 1,
+      "image": "content/images/turtle.svg",
+      "example": "The turtle is slow."
+    },
+    {
+      "id": "animals-duck",
+      "en": "duck",
+      "ko": "오리",
+      "category": "동물 친구들",
+      "level": 1,
+      "image": "content/images/duck.svg",
+      "example": "The duck can swim."
+    }
+  ]
+}

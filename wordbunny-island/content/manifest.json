@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "version": "1.0.0",
+  "packs": [
+    {
+      "id": "food",
+      "title": "맛있는 숲",
+      "file": "content/packs/food.json"
+    },
+    {
+      "id": "animals",
+      "title": "동물 친구들",
+      "file": "content/packs/animals.json"
+    },
+    {
+      "id": "school",
+      "title": "두근두근 학교",
+      "file": "content/packs/school.json"
+    },
+    {
+      "id": "world",
+      "title": "반짝이는 세상",
+      "file": "content/packs/world.json"
+    }
+  ]
+}

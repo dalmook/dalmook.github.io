@@ -1,0 +1,115 @@
+{
+  "schemaVersion": 1,
+  "id": "world",
+  "title": "반짝이는 세상",
+  "words": [
+    {
+      "id": "world-sun",
+      "en": "sun",
+      "ko": "해",
+      "category": "반짝이는 세상",
+      "level": 1,
+      "image": "content/images/sun.svg",
+      "example": "The sun is bright."
+    },
+    {
+      "id": "world-moon",
+      "en": "moon",
+      "ko": "달",
+      "category": "반짝이는 세상",
+      "level": 1,
+      "image": "content/images/moon.svg",
+      "example": "I see the moon."
+    },
+    {
+      "id": "world-star",
+      "en": "star",
+      "ko": "별",
+      "category": "반짝이는 세상",
+      "level": 1,
+      "image": "content/images/star.svg",
+      "example": "Look at the star."
+    },
+    {
+      "id": "world-tree",
+      "en": "tree",
+      "ko": "나무",
+      "category": "반짝이는 세상",
+      "level": 1,
+      "image": "content/images/tree.svg",
+      "example": "The tree is green."
+    },
+    {
+      "id": "world-flower",
+      "en": "flower",
+      "ko": "꽃",
+      "category": "반짝이는 세상",
+      "level": 1,
+      "image": "content/images/flower.svg",
+      "example": "This flower is pink."
+    },
+    {
+      "id": "world-cloud",
+      "en": "cloud",
+      "ko": "구름",
+      "category": "반짝이는 세상",
+      "level": 1,
+      "image": "content/images/cloud.svg",
+      "example": "The cloud is white."
+    },
+    {
+      "id": "world-rain",
+      "en": "rain",
+      "ko": "비",
+      "category": "반짝이는 세상",
+      "level": 1,
+      "image": "content/images/rain.svg",
+      "example": "I can hear the rain."
+    },
+    {
+      "id": "world-snow",
+      "en": "snow",
+      "ko": "눈",
+      "category": "반짝이는 세상",
+      "level": 1,
+      "image": "content/images/snow.svg",
+      "example": "The snow is white."
+    },
+    {
+      "id": "world-house",
+      "en": "house",
+      "ko": "집",
+      "category": "반짝이는 세상",
+      "level": 1,
+      "image": "content/images/house.svg",
+      "example": "This is my house."
+    },
+    {
+      "id": "world-car",
+      "en": "car",
+      "ko": "자동차",
+      "category": "반짝이는 세상",
+      "level": 1,
+      "image": "content/images/car.svg",
+      "example": "The car is purple."
+    },
+    {
+      "id": "world-boat",
+      "en": "boat",
+      "ko": "배",
+      "category": "반짝이는 세상",
+      "level": 1,
+      "image": "content/images/boat.svg",
+      "example": "The boat is on the water."
+    },
+    {
+      "id": "world-airplane",
+      "en": "airplane",
+      "ko": "비행기",
+      "category": "반짝이는 세상",
+      "level": 1,
+      "image": "content/images/airplane.svg",
+      "example": "The airplane can fly."
+    }
+  ]
+}
