@@ -69,12 +69,16 @@ export function mountPicker(root, mode, pool, onResult) {
     };
   } else if (mode === "dice") {
     candidates = shuffle(pool).slice(0, 6);
-    root.innerHTML = `<div class="dice-stage"><div class="die" aria-label="주사위">⚄</div><div class="die second" hidden>⚂</div></div><label class="dice-option"><input id="double-dice" type="checkbox"> 주사위 2개 · 첫 주사위는 행, 두 번째는 열</label><div id="dice-mapping"></div><button class="button primary" id="roll">주사위 굴리기</button>`;
+    root.innerHTML = `<div class="dice-stage"><div class="die" aria-label="주사위"><img src="assets/icons/ui/dice-5.svg" alt=""></div><div class="die second" hidden><img src="assets/icons/ui/dice-3.svg" alt=""></div></div><label class="dice-option"><input id="double-dice" type="checkbox"> 주사위 2개 · 첫 주사위는 행, 두 번째는 열</label><div id="dice-mapping"></div><button class="button primary" id="roll">주사위 굴리기</button>`;
     const mapping = root.querySelector("#dice-mapping");
     const double = root.querySelector("#double-dice");
     let grid = [];
     function setup() {
-      grid = Array.from({ length: 36 }, (_, i) => pool[i % pool.length]);
+      const selected = shuffle(pool).slice(0, 36);
+      grid = Array.from(
+        { length: 36 },
+        (_, i) => selected[i % selected.length],
+      );
       grid = shuffle(grid);
       root.querySelector(".second").hidden = !double.checked;
       mapping.innerHTML = double.checked
@@ -97,7 +101,7 @@ export function mountPicker(root, mode, pool, onResult) {
       later(() => {
         root.querySelectorAll(".die").forEach((el, i) => {
           el.classList.remove("rolling");
-          el.textContent = ["⚀", "⚁", "⚂", "⚃", "⚄", "⚅"][i ? b : a];
+          el.innerHTML = `<img src="assets/icons/ui/dice-${(i ? b : a) + 1}.svg" alt="">`;
           el.setAttribute("aria-label", `주사위 ${i ? b + 1 : a + 1}`);
         });
         double.disabled = false;
@@ -144,7 +148,7 @@ export function mountPicker(root, mode, pool, onResult) {
         }),
     );
   } else {
-    root.innerHTML = `<p>마음이 가는 카드를 콕! 오늘의 놀이가 숨어 있어요.</p><div class="draw-cards">${candidates.map((g, i) => `<button class="draw-card" data-card="${i}" aria-label="${i + 1}번 카드 뒤집기"><span class="back">✦<small>PLAY DAY</small></span><span class="front"><img src="${g.thumbnail}" alt=""><b>${g.title}</b></span></button>`).join("")}</div><button class="button" id="reshuffle">카드 다시 섞기</button>`;
+    root.innerHTML = `<p>마음이 가는 카드를 콕! 오늘의 놀이가 숨어 있어요.</p><div class="draw-cards">${candidates.map((g, i) => `<button class="draw-card" data-card="${i}" aria-label="${i + 1}번 카드 뒤집기"><span class="back"><img src="assets/images/v2/hero.webp" alt=""><small>PLAY DAY</small></span><span class="front"><div class="card-art" style="background-image:url('${g.thumbnail}')"></div><b>${g.title}</b></span></button>`).join("")}</div><button class="button" id="reshuffle">카드 다시 섞기</button>`;
     root.querySelectorAll("[data-card]").forEach(
       (b) =>
         (b.onclick = () => {
@@ -164,7 +168,7 @@ export function mountPicker(root, mode, pool, onResult) {
         b.classList.remove("flipped");
         b.disabled = false;
         b.querySelector(".front").innerHTML =
-          `<img src="${candidates[i].thumbnail}" alt=""><b>${candidates[i].title}</b>`;
+          `<div class="card-art" style="background-image:url('${candidates[i].thumbnail}')"></div><b>${candidates[i].title}</b>`;
       });
       resetResult();
       busy = false;

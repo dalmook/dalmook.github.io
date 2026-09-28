@@ -26,7 +26,13 @@ test("62 complete unique playable entries and local assets", async () => {
         g.minPlayers <= g.maxPlayers &&
         g.steps.length >= 3,
     );
-    assert.ok(g.safety.length && g.tips.length && g.shortScenes.length >= 3);
+    assert.ok(g.safety.length && g.tips.length);
+    assert.equal(g.shortScenes.length, 4, 'The current image player needs four panels');
+    assert.equal(g.storyboard.columns, 2);
+    assert.equal(g.storyboard.rows, 2);
+    const image = await fs.readFile(new URL('../' + g.storyboard.image, import.meta.url));
+    assert.equal(image.subarray(0, 4).toString(), 'RIFF');
+    assert.equal(image.subarray(8, 12).toString(), 'WEBP');
     assert.ok(
       g.shortScenes.every(
         (s) =>
