@@ -1,0 +1,82 @@
+name: WordBunny Island checks
+on:
+  push:
+    branches: [main]
+    paths: ['wordbunny-island/**', '.github/workflows/wordbunny-island.yml']
+  workflow_dispatch:
+permissions:
+  contents: write
+concurrency:
+  group: wordbunny-island-${{ github.ref }}
+  cancel-in-progress: false
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Restore initial standalone source
+        id: bootstrap
+        run: |
+          python - <<'PY'
+          import hashlib, io, os, pathlib, tarfile
+          root = pathlib.Path('wordbunny-island').resolve()
+          bootstrap = root / '.bootstrap'
+          if bootstrap.is_dir():
+              parts = sorted(bootstrap.glob('part-*.bin'))
+              assert len(parts) == 11, 'Incomplete source transport'
+              payload = b''.join(p.read_bytes() for p in parts)
+              assert len(payload) == 94852
+              assert hashlib.sha256(payload).hexdigest() == '8f421b209262f0a945d25196afeb3622e2ef5614a740282a7b9148cafb6880b3'
+              with tarfile.open(fileobj=io.BytesIO(payload), mode='r:xz') as archive:
+                  members = archive.getmembers()
+                  assert len(members) == 78
+                  for member in members:
+                      relative = pathlib.PurePosixPath(member.name)
+                      assert member.isfile() and not relative.is_absolute() and '..' not in relative.parts
+                      destination = (root / member.name).resolve()
+                      assert destination.is_relative_to(root)
+                      assert not destination.exists(), f'Refusing to replace {destination}'
+                      destination.parent.mkdir(parents=True, exist_ok=True)
+                      destination.write_bytes(archive.extractfile(member).read())
+              for part in parts:
+                  part.unlink()
+              bootstrap.rmdir()
+              with open(os.environ['GITHUB_OUTPUT'], 'a') as out:
+                  out.write('restored=true\n')
+              print('Restored 78 verified source files inside wordbunny-island only.')
+          PY
+      - name: Validate JavaScript, word packs and learning logic
+        run: |
+          set -euo pipefail
+          for file in wordbunny-island/js/*.js; do node --check "$file"; done
+          node wordbunny-island/scripts/validate-content.cjs
+          node --test wordbunny-island/tests/core.test.cjs
+          python wordbunny-island/scripts/build.py
+      - name: Publish restored source only
+        if: steps.bootstrap.outputs.restored == 'true'
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add -- wordbunny-island
+          if git diff --cached --name-only | grep -v '^wordbunny-island/'; then
+            echo 'Unexpected staged path outside the new app'; exit 1
+          fi
+          git commit -m 'Publish standalone WordBunny Island source, artwork and editable word packs'
+          git push origin HEAD:main
+      - name: Build evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: wordbunny-island-source
+          path: wordbunny-island/
+          retention-days: 7
