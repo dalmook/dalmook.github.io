@@ -1,7 +1,7 @@
 import {BASE,TOPICS} from './words.mjs';
 import {Scene} from './scene.mjs';
 import {dopakichiSVG} from './vendor/dopakichi.js';
-import {SAVE_KEY,REVISION,LEVELS,MODE_NAMES,letters,normalWord,escapeHTML as esc,vocabulary,freshState,loadState,saveState,eligible,makeDeck,makeChoices,overlap,progressOf,recordAnswer,upsertWord,removeWord,parseImport,planImport,applyImport,exportCSV,parseBackup,dayKey} from './model.mjs';
+import {SAVE_KEY,REVISION,LEVELS,MODE_NAMES,letters,normalWord,escapeHTML as esc,vocabulary,freshState,loadState,saveState,eligible,makeDeck,makeChoices,overlap,progressOf,recordAnswer,upsertWord,removeWord,parseImport,planImport,applyImport,exportCSV,parseBackup,dayKey,categoryCatalog,selectCategories,chooseCategoryMode,plannedCount} from './model.mjs?v=categories-1';
 const $=id=>document.getElementById(id),$$=s=>[...document.querySelectorAll(s)];
 let storage;try{storage=localStorage;}catch{storage={getItem:()=>null,setItem:()=>{throw Error('storage');}};}
 let state=loadState(storage),baseRevision=state.revision,stale=false,storageWarned=false;
@@ -24,11 +24,20 @@ function setView(name){clearTimeout(checkTimer);G.screen=name;G.token++;$$('.scr
 function home(){G.phase='idle';setView('title');renderHome();}
 function reviewWords(){return eligible(state,{review:true});}
 function rank(){return state.xp>=3000?'단어 마스터':state.xp>=1000?'영어 탐험가':state.xp>=300?'단어 수집가':'새싹 탐험가';}
+function renderCategoryShortcuts(){
+ const list=categoryCatalog(state).filter(c=>c.custom>0);
+ $('custom-categories').hidden=!list.length;
+ $('custom-category-list').innerHTML=list.map(c=>`<button data-home-category="${esc(c.name)}" aria-pressed="${state.settings.groups.includes(c.name)}"><b>${esc(c.name)}</b><small>${c.total}단어</small></button>`).join('');
+}
 function renderHome(){
  const o=state.settings;$$('[data-mode]').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.mode===o.mode)));
  $('levels').innerHTML=LEVELS.map(l=>`<button data-level="${l.id}" aria-pressed="${l.id===o.level}">${l.name}<small>${l.note}</small></button>`).join('');$('source').value=o.source;
- $('open-topics').textContent=o.groups.length?`${o.groups.length}개 주제 ▾`:'모든 주제 ▾';const pool=eligible(state),n=Math.min(o.count,pool.length);
- $('start-sub').textContent=`${MODE_NAMES[o.mode]} · ${o.source==='custom'?'내 단어':o.source==='all'?'기본 + 내 단어':'기본 단어'} · ${n}문제`;
+ $('open-topics').textContent=o.groups.length===1?`${o.groups[0]} ▾`:o.groups.length?`${o.groups.length}개 카테고리 ▾`:'카테고리 선택 ▾';$('open-topics').title=o.groups.join(' · ')||'기본·내 카테고리 모두 보기';const pool=eligible(state),n=plannedCount(state,pool.length);
+ $('session-count').value=o.count;renderCategoryShortcuts();
+ const chosen=categoryCatalog(state).filter(c=>o.groups.includes(c.name));
+ $('selection-summary').textContent=o.groups.length?`${o.groups.join(' · ')} · 전체 ${chosen.reduce((n,c)=>n+c.total,0)}단어 / 현재 조건 ${pool.length}단어`:'';
+ $('reset-category-filters').hidden=!o.groups.length||(!o.level&&o.source==='all'&&o.count===0);
+ $('start-sub').textContent=`${MODE_NAMES[o.mode]} · ${o.groups.length===1?o.groups[0]:o.groups.length?o.groups.length+'개 카테고리':o.source==='custom'?'내 단어':o.source==='all'?'기본 + 내 단어':'기본 단어'} · ${n}문제`;
  $('pool-count').textContent=pool.length?`지금 고른 조건에 ${pool.length}단어 · 한 판에 중복 없이 ${n}문제`:'이 조건에 단어가 없어요. 다른 길이·주제를 고르거나 내 단어를 등록해요.';
  $('review-count').textContent=reviewWords().length;$('start').disabled=!pool.length;
  const d=state.days[dayKey()]||{answered:0,correct:0};$('today-count').textContent=`${Math.min(10,d.answered)} / 10`;$('daily-progress').value=Math.min(10,d.answered);
@@ -36,10 +45,10 @@ function renderHome(){
 }
 function start(review=false){
  if(!usable())return;scene.audio.unlock();const deck=makeDeck(state,{review});if(!deck.length){toast(review?'이 모드에 복습할 단어가 없어요.':'조건에 맞는 단어가 없어요. 단어장을 확인해 주세요.');return;}
- Object.assign(G,{deck,i:0,results:[],mode:state.settings.mode,review,combo:0,peak:0,xp:0,phase:'enter'});$('pips').innerHTML=deck.map(()=>'<span class="pip"></span>').join('');setView('play');scene.apply(state.settings);scene.start();question();
+ Object.assign(G,{deck,i:0,results:[],mode:state.settings.mode,review,combo:0,peak:0,xp:0,phase:'enter'});$('pips').innerHTML=deck.slice(0,30).map(()=>'<span class="pip"></span>').join('');setView('play');scene.apply(state.settings);scene.start();question();
 }
 function current(){return G.deck[G.i];}
-function hud(){ $('qno').textContent=`${G.i+1} / ${G.deck.length}`;$('correct-count').textContent=G.results.filter(r=>r.clean).length;$('combo').textContent=G.combo;$('energy-number').textContent=G.results.length*100+G.results.filter(r=>r.clean).length*50;$$('#pips .pip').forEach((p,i)=>{p.classList.toggle('now',i===G.i);p.classList.toggle('good',G.results[i]?.clean===true);p.classList.toggle('helped',G.results[i]?.clean===false);});}
+function hud(){ $('qno').textContent=`${G.i+1} / ${G.deck.length}`;$('correct-count').textContent=G.results.filter(r=>r.clean).length;$('combo').textContent=G.combo;$('energy-number').textContent=G.results.length*100+G.results.filter(r=>r.clean).length*50;$$('#pips .pip').forEach((p,j)=>{const i=Math.floor(G.i/30)*30+j;p.hidden=i>=G.deck.length;p.classList.toggle('now',i===G.i);p.classList.toggle('good',G.results[i]?.clean===true);p.classList.toggle('helped',G.results[i]?.clean===false);});}
 function question(){
  if(G.i>=G.deck.length){finish();return;}clearTimeout(checkTimer);scene.stopSpeech();G.token++;G.phase='question';G.buffer='';G.mistakes=0;G.assisted=false;G.rejected=new Set();const w=current();
  $('screen-play').classList.remove('answered');$('screen-play').scrollTop=0;$('answer-panel').hidden=true;$('feedback').textContent='';$('qgroup').textContent=w.group;$('mode-label').textContent=MODE_NAMES[G.mode];$('question').classList.toggle('english',G.mode==='choice');$('question').lang=G.mode==='choice'?'en':'ko';$('question').textContent=G.mode==='spell'?w.meaning:w.word;
@@ -87,13 +96,17 @@ function openWords(){setView('words');G.limit=35;renderGroups();renderWords();}
 function renderGroups(){const existing=$('list-group').value;const groups=[...new Set(vocabulary(state).map(w=>w.group))];$('list-group').innerHTML='<option value="">모든 주제</option>'+groups.map(g=>`<option value="${esc(g)}">${esc(g)}</option>`).join('');if(groups.includes(existing))$('list-group').value=existing;$('group-names').innerHTML=groups.map(g=>`<option value="${esc(g)}"></option>`).join('');}
 function renderWords(){
  const search=$('word-search').value.trim().toLowerCase(),source=$('list-source').value,group=$('list-group').value;
- const pool=vocabulary(state).filter(w=>(source==='all'||w.origin===source)&&(!group||w.group===group)&&(!search||`${w.word} ${w.meaning}`.toLowerCase().includes(search)));
+ const pool=vocabulary(state).filter(w=>(!group?(source==='all'||w.origin===source):w.group===group)&&(!search||`${w.word} ${w.meaning}`.toLowerCase().includes(search)));
  $('list-count').textContent=`${pool.length}단어 · 기본 ${BASE.length}개 / 내 단어 ${state.custom.length}개`;
  $('word-list').innerHTML=pool.slice(0,G.limit).map(w=>`<article class="word-entry"><div class="entry-top"><b lang="en">${esc(w.word)}</b><small>${w.origin==='custom'?'내 단어':'기본'}</small></div><p>${esc(w.meaning)}</p><footer><span>${esc(w.group)} · ${letters(w.word).length}글자</span><button data-speak="${esc(w.id)}" aria-label="${esc(w.word)} 발음 듣기">🔊</button><button data-edit="${esc(w.id)}">${w.origin==='custom'?'수정':'내 뜻으로'}</button>${w.origin==='custom'?`<button data-delete="${esc(w.id)}">삭제</button>`:''}</footer></article>`).join('')||'<p class="empty">아직 단어가 없어요.<br>한 단어 등록 또는 일괄 등록으로 시작해요!</p>';
  $('list-more').hidden=pool.length<=G.limit;$('study-custom').disabled=!state.custom.length;
+ const category=categoryCatalog(state).find(c=>c.name===group);
+ $('category-study').hidden=!category;
+ if(category){$('category-study-title').textContent=category.name+' · 전체 '+category.total+'단어';$('category-study-note').textContent='아래 버튼은 검색어·길이 제한 없이 이 카테고리 전체를 학습해요.';}
+ $('study-custom').hidden=false;$('study-custom').textContent=category?'이 카테고리로 바로 연습':'내 단어로 바로 연습';$('study-custom').disabled=category?false:!state.custom.length;
 }
 function editWord(id=null){if(!usable())return;const w=vocabulary(state).find(w=>w.id===id);editID=w?.origin==='custom'?id:null;$('edit-title').textContent=w?'단어 수정':'한 단어 등록';$('edit-word').value=w?.word||'';$('edit-meaning').value=w?.meaning||'';$('edit-group').value=w?.origin==='custom'?w.group:'내 단어';$('edit-error').textContent='';$('edit-dialog').showModal();setTimeout(()=>$('edit-word').focus(),30);}
-$('edit-form').addEventListener('submit',e=>{e.preventDefault();if(!usable())return;try{upsertWord(state,{word:$('edit-word').value,meaning:$('edit-meaning').value,group:$('edit-group').value},editID);persist();$('edit-dialog').close();renderGroups();renderWords();renderHome();toast('내 단어장에 저장했어요. 두 모드에서 바로 연습할 수 있어요.');}catch(err){$('edit-error').textContent=err.message;}});
+$('edit-form').addEventListener('submit',e=>{e.preventDefault();if(!usable())return;try{const saved=upsertWord(state,{word:$('edit-word').value,meaning:$('edit-meaning').value,group:$('edit-group').value},editID);selectCategories(state,[saved.group]);persist();$('edit-dialog').close();renderGroups();$('list-source').value='all';$('list-group').value='';$('word-search').value='';renderWords();renderHome();toast('내 단어장에 저장했어요. 두 모드에서 바로 연습할 수 있어요.');}catch(err){$('edit-error').textContent=err.message;}});
 function openImport(){if(!usable())return;importPlan=null;$('import-preview').innerHTML='';$('import-error').textContent='';$('apply-import').disabled=true;$('apply-import').textContent='미리 보기를 먼저 확인해요';$('import-dialog').showModal();}
 function invalidateImport(){importPlan=null;$('apply-import').disabled=true;$('apply-import').textContent='바뀐 내용을 다시 미리 보기';$('import-preview').innerHTML='';}
 function previewImport(){try{
@@ -102,11 +115,18 @@ function previewImport(){try{
  $('apply-import').disabled=!count;$('apply-import').textContent=count?`정상 ${count}개 등록${p.errors.length?' (오류 행 제외)':''}`:'등록할 새 단어가 없어요';
  }catch(e){invalidateImport();$('import-error').textContent=e.message;}}
 $('import-file').addEventListener('change',async e=>{const f=e.target.files[0];if(!f)return;try{if(f.size>1_000_000)throw Error('1MB 이하의 파일로 나눠 주세요.');$('import-text').value=await f.text();invalidateImport();previewImport();}catch(err){$('import-error').textContent=err.message;}finally{e.target.value='';}});
-$('apply-import').onclick=()=>{if(!importPlan||!usable())return;try{const n=applyImport(state,importPlan);persist();$('import-dialog').close();importPlan=null;renderGroups();renderWords();renderHome();toast(`${n}개를 내 단어장에 등록했어요. ‘내 단어로 바로 연습’을 눌러요.`);}catch(e){$('import-error').textContent=e.message;}};
+$('apply-import').onclick=()=>{if(!importPlan||!usable())return;try{const importedGroups=[...new Set([...importPlan.adds,...importPlan.updates].map(w=>w.group))];const n=applyImport(state,importPlan);selectCategories(state,importedGroups);persist();$('import-dialog').close();importPlan=null;renderGroups();$('list-source').value='all';$('list-group').value='';$('word-search').value='';renderWords();renderHome();toast(`${n}개 등록 완료! 해당 카테고리가 학습 대상으로 선택됐어요.`);}catch(e){$('import-error').textContent=e.message;}};
 function download(name,text,type){const url=URL.createObjectURL(new Blob([text],{type}));const a=document.createElement('a');a.href=url;a.download=name;document.body.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),3000);}
 function settings(){const o=state.settings;$('set-count').value=o.count;$('set-volume').value=o.volume;$('set-motion').value=o.motion;$('set-muted').checked=o.muted;$('settings').showModal();}
 $('restore-file').addEventListener('change',async e=>{const f=e.target.files[0];if(!f)return;try{if(f.size>5_000_000)throw Error('백업 파일이 너무 커요.');const replacement=parseBackup(await f.text());$('settings').close();ask('백업 기록을 가져올까요?',`내 단어 ${replacement.custom.length}개와 학습 기록으로 이 브라우저의 영단어 기록을 바꿔요. 기존 기록이 필요하면 먼저 내보내 주세요. 산수판과 OX판에는 영향이 없어요.`,()=>{state=replacement;stale=false;persist({force:true});scene.apply(state.settings);home();toast('단어장과 학습 기록을 가져왔어요.');});}catch(err){toast(err.message);}finally{e.target.value='';}});
-function topics(){const source=state.settings.source,pool=vocabulary(state).filter(w=>source==='all'||w.origin===source),groups=[...new Set(pool.map(w=>w.group))],sel=state.settings.groups;$('topic-list').innerHTML=`<button type="button" data-topic="" aria-pressed="${!sel.length}">🎲 모든 주제<small>${pool.length}단어</small></button>`+groups.map(g=>`<button type="button" data-topic="${esc(g)}" aria-pressed="${sel.includes(g)}">${TOPICS.find(t=>t[0]===g)?.[1]||'📚'} ${esc(g)}<small>${pool.filter(w=>w.group===g).length}단어</small></button>`).join('');}
+function topics(){
+ const catalog=categoryCatalog(state),sel=state.settings.groups;
+ $('topic-list').innerHTML=`<button type="button" data-topic="" aria-pressed="${!sel.length}">🎲 모든 카테고리<small>${vocabulary(state).length}단어</small></button>`+
+ catalog.map(c=>`<button type="button" data-topic="${esc(c.name)}" aria-pressed="${sel.includes(c.name)}">${c.custom?'📚':TOPICS.find(t=>t[0]===c.name)?.[1]||'📖'} ${esc(c.name)}<small>${c.total}단어${c.custom?' · 내가 등록함':''}</small></button>`).join('');
+}
+function categoryStart(name,mode){
+ if(!usable())return;try{chooseCategoryMode(state,name,mode);persist();renderHome();start();}catch(err){toast(err.message);}
+}
 function progress(){setView('progress');const words=vocabulary(state);$('profile-rank').textContent=rank()+' · '+state.xp.toLocaleString()+' XP';$('profile-summary').textContent=`${state.sessions}판 학습 · 스스로 맞힌 단어 ${state.correct}회 · 최고 ${state.bestCombo}콤보`;
  $('progress-topics').innerHTML=[...new Set(words.map(w=>w.group))].map(g=>{const a=words.filter(w=>w.group===g);return`<section class="progress-topic"><strong>${esc(g)}</strong>⌨ 스펠링 익숙함 ${a.filter(w=>(progressOf(state,w,'spell')?.streak||0)>=3).length} / ${a.length}<br>❶ 뜻 고르기 익숙함 ${a.filter(w=>(progressOf(state,w,'choice')?.streak||0)>=3).length} / ${a.length}</section>`;}).join('');
  $('history-list').innerHTML=[...state.history].reverse().map(h=>`<div class="history-item">${esc(h.day)} · ${MODE_NAMES[h.mode]}<br>${h.total}단어 학습 · 스스로 정답 ${h.correct}개</div>`).join('')||'<p class="empty">첫 단어 탐험을 시작해 보세요!</p>';
@@ -123,13 +143,18 @@ $('confirm-ok').onclick=()=>{const action=confirmAction;confirmAction=null;$('co
 $$('[data-mode]').forEach(b=>b.onclick=()=>{if(!usable())return;state.settings.mode=b.dataset.mode;persist();renderHome();scene.tap();});
 $('levels').onclick=e=>{const b=e.target.closest('[data-level]');if(b&&usable()){state.settings.level=Number(b.dataset.level);persist();renderHome();scene.tap();}};
 $('source').onchange=e=>{if(!usable())return;state.settings.source=e.target.value;state.settings.groups=[];if(e.target.value==='custom')state.settings.level=0;persist();renderHome();};
-$('open-topics').onclick=()=>{topics();$('topics-dialog').showModal();};$('topic-list').onclick=e=>{const b=e.target.closest('[data-topic]');if(!b||!usable())return;const g=b.dataset.topic;if(!g)state.settings.groups=[];else if(state.settings.groups.includes(g))state.settings.groups=state.settings.groups.filter(x=>x!==g);else state.settings.groups.push(g);persist();topics();renderHome();};
+$('open-topics').onclick=()=>{topics();$('topics-dialog').showModal();};$('topic-list').onclick=e=>{const b=e.target.closest('[data-topic]');if(!b||!usable())return;const g=b.dataset.topic;const names=!g?[]:state.settings.groups.includes(g)?state.settings.groups.filter(x=>x!==g):[...state.settings.groups,g];selectCategories(state,names);if(!names.length){state.settings.source='all';state.settings.level=0;}persist();topics();renderHome();};
 $('mute').onclick=()=>{if(!usable())return;state.settings.muted=!state.settings.muted;scene.audio.unlock();scene.apply(state.settings);persist();};
 for(const [id,key]of [['set-count','count'],['set-volume','volume'],['set-motion','motion']])$(id).oninput=e=>{if(!usable())return;state.settings[key]=Number(e.target.value);persist();scene.apply(state.settings);renderHome();};$('set-muted').onchange=e=>{if(!usable())return;state.settings.muted=e.target.checked;persist();scene.apply(state.settings);};
 $('add-word').onclick=()=>editWord();$('bulk-word').onclick=openImport;$('preview-import').onclick=previewImport;for(const id of ['import-text','import-group','overwrite'])$(id).addEventListener('input',invalidateImport);
-$('word-search').oninput=()=>{G.limit=35;renderWords();};$('list-source').onchange=$('list-group').onchange=()=>{G.limit=35;renderWords();};$('list-more').onclick=()=>{G.limit+=35;renderWords();};
-$('word-list').onclick=e=>{const b=e.target.closest('button');if(!b)return;if(b.dataset.edit)editWord(b.dataset.edit);else if(b.dataset.delete&&usable()){const w=vocabulary(state).find(x=>x.id===b.dataset.delete);ask('내 단어를 삭제할까요?',`${w.word} — ${w.meaning}\n이 단어의 개인 학습 기록도 지워요. 기본 단어를 수정했던 경우 원래 기본 뜻으로 돌아가요.`,()=>{removeWord(state,w.id);persist();renderGroups();renderWords();renderHome();});}else if(b.dataset.speak){const w=vocabulary(state).find(x=>x.id===b.dataset.speak);if(!scene.speak(w.word))toast('이 기기에서 영어 음성을 사용할 수 없어요.');}};
-$('study-custom').onclick=()=>{if(!usable())return;state.settings.source='custom';state.settings.level=0;state.settings.groups=[];persist();start();};
+$('word-search').oninput=()=>{G.limit=35;renderWords();};$('list-source').onchange=()=>{G.limit=35;$('list-group').value='';renderWords();};$('list-group').onchange=()=>{G.limit=35;$('list-source').value='all';$('word-search').value='';renderWords();};$('list-more').onclick=()=>{G.limit+=35;renderWords();};
+$('word-list').onclick=e=>{const b=e.target.closest('button');if(!b)return;if(b.dataset.edit)editWord(b.dataset.edit);else if(b.dataset.delete&&usable()){const w=vocabulary(state).find(x=>x.id===b.dataset.delete);ask('내 단어를 삭제할까요?',`${w.word} — ${w.meaning}\n이 단어의 개인 학습 기록도 지워요. 기본 단어를 수정했던 경우 원래 기본 뜻으로 돌아가요.`,()=>{removeWord(state,w.id);state.settings.groups=state.settings.groups.filter(g=>categoryCatalog(state).some(c=>c.name===g));persist();renderGroups();renderWords();renderHome();});}else if(b.dataset.speak){const w=vocabulary(state).find(x=>x.id===b.dataset.speak);if(!scene.speak(w.word))toast('이 기기에서 영어 음성을 사용할 수 없어요.');}};
+$('study-custom').onclick=()=>{if(!usable())return;const group=$('list-group').value;if(group){categoryStart(group,state.settings.mode);return;}state.settings.source='custom';state.settings.level=0;state.settings.groups=[];state.settings.count=0;persist();renderHome();start();};
+$('category-spell').onclick=()=>categoryStart($('list-group').value,'spell');
+$('category-choice').onclick=()=>categoryStart($('list-group').value,'choice');
+$('custom-category-list').onclick=e=>{const b=e.target.closest('[data-home-category]');if(!b||!usable())return;selectCategories(state,[b.dataset.homeCategory]);persist();renderHome();toast(b.dataset.homeCategory+' 전체 단어를 선택했어요. 원하는 모드로 시작해요.');};
+$('session-count').onchange=e=>{if(!usable())return;state.settings.count=Number(e.target.value);persist();renderHome();};
+$('reset-category-filters').onclick=()=>{if(!usable())return;selectCategories(state,state.settings.groups);persist();renderHome();};
 $('export-words').onclick=()=>{if(!state.custom.length){toast('먼저 내 단어를 등록해 주세요.');return;}download('내_영단어_'+dayKey()+'.csv',exportCSV(state.custom),'text/csv;charset=utf-8');};$('backup').onclick=()=>download('dopa-word-backup-'+dayKey()+'.json',JSON.stringify(state,null,2),'application/json');
 $('screen-collection').onclick=e=>{const b=e.target.closest('[data-look]');if(!b||b.disabled||!usable())return;const k=b.dataset.look,v=b.dataset.value,entry=LOOKS[k]?.find(x=>x[0]===v);if(!entry||state.xp<entry[2])return;state.settings[k]=v;persist();scene.apply(state.settings);collection();scene.audio.unlock();if(k==='song'){scene.audio.startMusic();scene.audio.setLevel(5,120);}else scene.audio.jingle();};
 document.addEventListener('keydown',e=>{if(e.repeat||e.isComposing||e.ctrlKey||e.altKey||e.metaKey||document.querySelector('dialog[open]')||['INPUT','TEXTAREA','SELECT'].includes(document.activeElement?.tagName)||document.activeElement?.isContentEditable||G.screen!=='play')return;
