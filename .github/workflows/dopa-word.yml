@@ -1,0 +1,77 @@
+name: Dopa Word quality and live verification
+on:
+  push:
+    branches: [main, feat/dopa-word]
+    paths: ['dopa-word/**', '.github/workflows/dopa-word.yml']
+  pull_request:
+    paths: ['dopa-word/**', '.github/workflows/dopa-word.yml']
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: dopa-word-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  quality:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Syntax, data and isolation tests
+        run: |
+          mkdir -p qa/word
+          find dopa-word -name '*.mjs' -exec node --check {} \;
+          set -o pipefail
+          node --test dopa-word/tests/*.test.mjs 2>&1 | tee qa/word/unit.log
+      - name: Install Chromium
+        if: always()
+        run: |
+          pip install playwright==1.55.0
+          python -m playwright install --with-deps chromium
+          sudo apt-get install -y fonts-noto-cjk
+      - name: Local browser verification
+        if: always()
+        run: |
+          python -m http.server 8765 > /tmp/word-http.log 2>&1 &
+          sleep 2
+          python dopa-word/tests/browser.py
+      - name: Wait for exact public application revision
+        if: github.ref == 'refs/heads/main'
+        run: |
+          python - <<'PY'
+          import pathlib,time,urllib.request,hashlib
+          expected={p:pathlib.Path('dopa-word',p).read_bytes() for p in ('index.html','app.mjs','model.mjs','words.mjs','scene.mjs','word.css')}
+          for attempt in range(36):
+              try:
+                  ok=all(urllib.request.urlopen('https://dalmook.github.io/dopa-word/'+p+'?verify='+str(time.time()),timeout=20).read()==b for p,b in expected.items())
+                  if ok:
+                      print('All six public application files match this commit');break
+              except Exception as exc: print(str(exc))
+              time.sleep(10)
+          else: raise SystemExit('Public revision was not verified within six minutes')
+          PY
+      - name: Public Pages browser verification
+        if: github.ref == 'refs/heads/main'
+        env:
+          WORD_URL: https://dalmook.github.io/dopa-word/
+          WORD_OUT: qa/word-live
+        run: python dopa-word/tests/browser.py
+      - name: Preserve source and QA evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: dopa-word-evidence
+          path: |
+            dopa-word/
+            dopa-drill/
+            qa/word/
+            qa/word-live/
+          retention-days: 14
