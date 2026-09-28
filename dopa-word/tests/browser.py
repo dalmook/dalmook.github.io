@@ -1,8 +1,9 @@
-"""Run the original browser suite and full-category regressions on the same URL."""
+"""Run both browser suites and retain diagnostics even when one fails."""
 import pathlib
 import subprocess
 import sys
 
 root=pathlib.Path(__file__).parent
-for suite in ('browser_legacy.py','categories_browser.py'):
-    subprocess.run([sys.executable,str(root/suite)],check=True)
+results=[subprocess.run([sys.executable,str(root/suite)]).returncode
+         for suite in ('browser_legacy.py','categories_browser.py')]
+sys.exit(1 if any(results) else 0)
