@@ -1,0 +1,10 @@
+{
+  "app": "WordBunny Island",
+  "repository": "dalmook/dalmook.github.io",
+  "path": "wordbunny-island/",
+  "url": "https://dalmook.github.io/wordbunny-island/",
+  "source_commit": "ff0f7f1c36a4fd3f36206a63b8e489b5f500303f",
+  "source_archive_sha256": "8f421b209262f0a945d25196afeb3622e2ef5614a740282a7b9148cafb6880b3",
+  "checks_run": "https://github.com/dalmook/dalmook.github.io/actions/runs/36377822310",
+  "isolation": "Independent app directory; existing homepage, games and heather_word unchanged."
+}
