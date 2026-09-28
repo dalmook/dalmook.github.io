@@ -1,0 +1,118 @@
+name: WordBunny live browser check
+on:
+  push:
+    branches: [main]
+    paths: ['wordbunny-island/**', '.github/workflows/wordbunny-live-check.yml']
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: wordbunny-live-${{ github.ref }}
+  cancel-in-progress: false
+jobs:
+  live:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install test browser
+        run: |
+          python -m pip install playwright==1.55.0
+          python -m playwright install --with-deps chromium
+      - name: Check deployed app, custom photo and persistence
+        run: |
+          python - <<'PY'
+          import json, pathlib, re, time, urllib.request
+          from playwright.sync_api import sync_playwright, expect
+          url = 'https://dalmook.github.io/wordbunny-island/'
+          output = pathlib.Path('live-evidence'); output.mkdir()
+          expected = 'ff0f7f1c36a4fd3f36206a63b8e489b5f500303f'
+          for attempt in range(60):
+              try:
+                  with urllib.request.urlopen(url + 'DEPLOYMENT.json?check=' + str(time.time()), timeout=15) as response:
+                      receipt = json.load(response)
+                  if receipt.get('source_commit') == expected:
+                      break
+              except Exception:
+                  pass
+              time.sleep(5)
+          else:
+              raise AssertionError('Expected public Pages release did not become available')
+          passed = []; errors = []
+          def mark(text):
+              passed.append(text); print('PASS:', text, flush=True)
+          def nav(page, route):
+              page.locator('[data-action=nav][data-route=' + route + ']').filter(visible=True).first.click()
+          with sync_playwright() as pw:
+              browser = pw.chromium.launch()
+              context = browser.new_context(viewport={'width':1440,'height':1000})
+              page = context.new_page(); page.on('pageerror', lambda e: errors.append(str(e)))
+              response = page.goto(url, wait_until='networkidle')
+              assert response.status == 200
+              expect(page.locator('.hero-card')).to_be_visible()
+              assert page.evaluate('document.documentElement.scrollWidth <= innerWidth + 1')
+              page.screenshot(path=str(output/'desktop.png'), full_page=True)
+              mark('Public HTTPS home loads without horizontal overflow')
+              nav(page, 'words'); expect(page.locator('.word-card')).to_have_count(48)
+              mark('All 48 starter word cards are available')
+              for mode in ['picture','listen','spell','memory','balloon','ox','meaning','type']:
+                  nav(page, 'games'); page.locator('.game-card[data-mode=' + mode + ']').click()
+                  expect(page.locator('#start-selected-game')).to_be_visible()
+                  page.locator('[data-action=close-modal]').first.click()
+              mark('All eight game setup dialogs open')
+              nav(page, 'words'); page.locator('.page-head [data-action=add-word]').click()
+              expect(page.locator('#parent-gate')).to_be_visible()
+              nums = re.findall(r'\d+', page.locator('.gate-question').inner_text())
+              page.locator('#gate-answer').fill(str(sum(map(int, nums))))
+              page.locator('#parent-gate button[type=submit]').click()
+              page.locator('#word-en').fill('rocket')
+              page.locator('#word-ko').fill('로켓')
+              page.locator('#word-cat').fill('사진 테스트')
+              page.locator('#photo-file').set_input_files('wordbunny-island/assets/icon-192.png')
+              expect(page.locator('#photo-preview img')).to_be_visible()
+              expect(page.locator('#save-word')).to_be_enabled()
+              page.locator('#save-word').click()
+              expect(page.locator('.word-card')).to_have_count(1)
+              assert page.locator('.word-card .word-image img').get_attribute('src').startswith('data:image/')
+              mark('User-entered word and photo save correctly')
+              page.reload(wait_until='networkidle'); nav(page, 'words')
+              page.locator('#word-search').fill('rocket')
+              expect(page.locator('.word-card')).to_have_count(1)
+              assert page.locator('.word-card h3').inner_text() == 'rocket'
+              assert page.locator('.word-card .word-image img').get_attribute('src').startswith('data:image/')
+              assert page.locator('.word-card .word-image img').evaluate('(img)=>img.complete && img.naturalWidth>0')
+              mark('Custom word and photo persist after actual page reload')
+              nav(page, 'games'); page.locator('.game-card[data-mode=spell]').click()
+              page.locator('#game-category').select_option('사진 테스트')
+              page.locator('#start-selected-game').click()
+              expect(page.locator('.question-card')).to_be_visible()
+              assert page.locator('.question-image img').get_attribute('src').startswith('data:image/')
+              for letter in 'rocket':
+                  page.locator('.letter-btn').filter(has_text=re.compile('^'+letter+'$', re.I)).first.click()
+              page.locator('[data-action=submit-spell]').click()
+              expect(page.locator('.feedback')).to_be_visible()
+              page.locator('[data-action=next-question]').click()
+              expect(page.locator('.summary')).to_be_visible()
+              mark('Photo-linked custom spelling game completes')
+              mobile = browser.new_page(viewport={'width':390,'height':844}, is_mobile=True, has_touch=True)
+              mobile.on('pageerror', lambda e: errors.append(str(e)))
+              mobile.goto(url, wait_until='networkidle')
+              expect(mobile.locator('.hero-card')).to_be_visible()
+              assert mobile.evaluate('document.documentElement.scrollWidth <= innerWidth + 1')
+              mobile.screenshot(path=str(output/'mobile.png'), full_page=True)
+              mark('Mobile home loads without horizontal overflow')
+              assert not errors, errors
+              mark('No JavaScript page errors during the checks')
+              browser.close()
+          (output/'results.json').write_text(json.dumps({'url':url,'passed':passed,'page_errors':errors}, ensure_ascii=False, indent=2), encoding='utf-8')
+          PY
+      - name: Upload live screenshots and test evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: wordbunny-live-evidence
+          path: live-evidence/
+          retention-days: 7
