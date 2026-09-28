@@ -23,7 +23,7 @@
 
 ## 변경 파일 목록
 
-신규 파일은 모두 `dalbong-playground/` 아래에 있습니다.
+앱 신규 파일은 `dalbong-playground/` 아래에 있습니다. 기존 Pages 저장소 PR에는 별도로 루트 `.github/workflows/dalbong-playground.yml` 검증 워크플로를 추가했습니다.
 
 - 진입/문서: `index.html`, `package.json`, `.nojekyll`, `.gitignore`, `README.md`, `DELIVERY.md`
 - 화면: `css/style.css`
@@ -44,3 +44,11 @@
 - 독립 Actions 방식은 `npm test` → `npm run build` → `dist/` 업로드.
 - 기존 Pages 하위 폴더 추가 PR에서는 앱 바깥의 메인 화면을 수정하지 않음. 실제 공개는 PR 병합과 기존 Pages 배포 완료 이후 확인해야 함.
 - 배포 후 JSON/SVG 응답, 모바일 홈, 즐겨찾기, 룰렛 결과, 해시 상세 URL 새로고침 확인.
+
+## GitHub 결과
+
+- 검토 PR: https://github.com/dalmook/dalmook.github.io/pull/6
+- `Dalbong Playground checks`: GitHub에서도 단위 검증 및 정적 빌드 성공.
+- 기존 `Static site check`: 새 앱과 별개인 `matchgame1.html`, `matchgame2.html`, 두 `google*.html` 파일의 HTML 루트 태그 검사에서 실패. 이 PR은 해당 네 파일을 변경하지 않았습니다. 앱 자체 검증 성공과 저장소 전체 검증 실패를 구분해야 합니다.
+- 실제 공개 배포 및 실기기 확인은 수행하지 않았습니다. 로컬 미리보기와 검토 브랜치를 제공했습니다.
+
