@@ -1,0 +1,9 @@
+/* Original-inspired vocabulary layout and small usability corrections. */
+@import url('./layout.css');
+/* On small screens the import dialog should scroll, never crush the editor. */
+.word-game .word-dialog.wide > * { flex-shrink: 0; }
+.word-game .word-dialog.wide textarea { min-height: 150px; }
+.word-game .word-dialog.wide .preview-wrap { flex-shrink: 0; }
+/* Keep long imported meanings and expressions inside the mobile viewport. */
+.word-game .word-entry .entry-top b,
+.word-game .answer-line b { overflow-wrap: anywhere; }
