@@ -2,49 +2,56 @@
 <html lang="ko">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="theme-color" content="#24664d" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, viewport-fit=cover"
+    />
+    <meta name="theme-color" content="#152b49" />
     <meta
       name="description"
-      content="오늘 뭐 하고 놀지? 달봉이와 함께 60가지 놀이를 찾고, 뽑고, 움직이는 설명으로 배워요."
+      content="달봉이와 만나는 골목놀이 시네마. 62가지 놀이를 한 화면에서 고르고, 이미지 쇼츠로 배워요."
     />
-    <title>달봉이의 놀이동산 · 오늘도, 같이 놀자!</title>
-    <link rel="icon" href="assets/icons/logo.svg" type="image/svg+xml" />
-    <link rel="stylesheet" href="css/style.css" />
+    <title>달봉이의 놀이동산 · 골목놀이 시네마</title>
+    <link rel="icon" href="assets/images/v2/mascot.webp" />
+    <link rel="stylesheet" href="css/cinema.css" />
+    <link rel="preload" as="image" href="assets/images/v2/mascot.webp" />
   </head>
   <body>
-    <a class="skip" href="#main">본문으로 건너뛰기</a>
-    <header class="header">
-      <a class="brand" href="#home"
-        ><img src="assets/icons/logo.svg" alt="" width="44" height="44" /><span
-          >달봉이의 <strong>놀이동산</strong
-          ><small>EVERY DAY IS A PLAY DAY</small></span
-        ></a
-      >
-      <nav aria-label="주 메뉴">
-        <a href="#home">놀이터 홈</a><a href="#library">놀이 도감</a
-        ><a href="#pick/wheel">오늘의 뽑기</a
-        ><a href="#collection">내 보물함 <span id="fav-count">0</span></a>
-      </nav>
-      <button
-        class="icon-button"
-        id="sound"
-        aria-label="효과음 켜기"
-        aria-pressed="false"
-      >
-        ♫
-      </button>
-    </header>
-    <main id="main" tabindex="-1">
-      <div class="loading">달봉이가 놀이를 준비하고 있어요…</div>
-    </main>
-    <footer>
-      <a class="brand" href="#home">달봉이의 놀이동산</a>
-      <p>작은 놀이 하나가, 커다란 추억이 되도록.</p>
-      <small>함께 정한 규칙 · 서로를 배려하는 놀이 · 매일 새로운 발견</small>
-    </footer>
+    <a class="skip" href="#main">본문으로</a>
+    <div class="app-shell">
+      <aside class="sidebar">
+        <a class="brand" href="#home"
+          ><div class="brand-face">
+            <img src="assets/images/v2/mascot.webp" alt="달봉이" />
+          </div>
+          <span>달봉이의<br /><b>놀이동산</b></span></a
+        >
+        <nav id="navigation" aria-label="주 메뉴"></nav>
+        <div class="sidebar-note">
+          <span>PLAY OFFLINE.<br />MAKE MEMORIES.</span>
+          <p>화면 밖에서 만나는<br />우리들의 진짜 놀이.</p>
+        </div>
+        <button id="sound" class="sound-button" aria-pressed="false"></button>
+      </aside>
+      <header class="mobile-header">
+        <a href="#home">달봉이의 <b>놀이동산</b></a
+        ><button
+          id="mobile-sound"
+          aria-label="효과음 켜기"
+          aria-pressed="false"
+        ></button>
+      </header>
+      <main id="main" tabindex="-1">
+        <div class="loading">달봉이가 문을 열고 있어요.</div>
+      </main>
+      <nav
+        class="mobile-navigation"
+        id="mobile-navigation"
+        aria-label="모바일 메뉴"
+      ></nav>
+    </div>
     <div id="toast" role="status" aria-live="polite"></div>
     <div id="confetti" aria-hidden="true"></div>
-    <script type="module" src="js/app.js"></script>
+    <script type="module" src="js/cinema-app.js"></script>
   </body>
 </html>
