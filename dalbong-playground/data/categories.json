@@ -1,0 +1,44 @@
+[
+  {
+    "id": "chase",
+    "title": "술래잡기",
+    "subtitle": "발끝부터 신나는",
+    "color": "#dcecd7"
+  },
+  {
+    "id": "reaction",
+    "title": "반응 놀이",
+    "subtitle": "집중하면 더 재밌는",
+    "color": "#fce2ce"
+  },
+  {
+    "id": "traditional",
+    "title": "전통 놀이",
+    "subtitle": "오래오래 사랑받는",
+    "color": "#f8ebbc"
+  },
+  {
+    "id": "ground",
+    "title": "공간 놀이",
+    "subtitle": "우리 동네가 놀이터",
+    "color": "#dceaf0"
+  },
+  {
+    "id": "team",
+    "title": "함께하는 놀이",
+    "subtitle": "마음을 모아 함께",
+    "color": "#e8e1f2"
+  },
+  {
+    "id": "word",
+    "title": "말과 생각 놀이",
+    "subtitle": "생각이 쑥쑥 자라는",
+    "color": "#e8edd9"
+  },
+  {
+    "id": "party",
+    "title": "파티 놀이",
+    "subtitle": "웃음이 터지는 순간",
+    "color": "#f6dce1"
+  }
+]

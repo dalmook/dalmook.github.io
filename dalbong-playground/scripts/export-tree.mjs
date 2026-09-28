@@ -1,0 +1,4 @@
+// Maintainer helper: print a bounded page of UTF-8 files for GitHub tree uploads.
+import fs from 'node:fs/promises';import path from 'node:path';
+async function walk(dir=''){let files=[];for(const item of await fs.readdir(dir||'.',{withFileTypes:true})){if(['node_modules','dist','test-results','.git'].includes(item.name))continue;const p=path.posix.join(dir,item.name);if(item.isDirectory())files.push(...await walk(p));else files.push(p);}return files;}
+const files=(await walk()).sort();const page=Number(process.argv[2]||0);const size=10;const entries=await Promise.all(files.slice(page*size,(page+1)*size).map(async p=>({path:'dalbong-playground/'+p,mode:'100644',type:'blob',content:await fs.readFile(p,'utf8')})));console.log(JSON.stringify({count:files.length,pages:Math.ceil(files.length/size),entries}));

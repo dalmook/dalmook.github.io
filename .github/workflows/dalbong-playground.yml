@@ -1,0 +1,22 @@
+name: Dalbong Playground checks
+on:
+  pull_request:
+    paths: ['dalbong-playground/**', '.github/workflows/dalbong-playground.yml']
+  push:
+    branches: [main]
+    paths: ['dalbong-playground/**', '.github/workflows/dalbong-playground.yml']
+permissions:
+  contents: read
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: dalbong-playground
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: npm test
+      - run: npm run build
