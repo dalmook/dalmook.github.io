@@ -1,0 +1,76 @@
+name: Verify meaning-choice arms
+on:
+  push:
+    branches: [main]
+    paths: ['dopa-word/**', '.github/workflows/dopa-word-choice-arm.yml']
+  pull_request:
+    paths: ['dopa-word/**', '.github/workflows/dopa-word-choice-arm.yml']
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: choice-arm-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Model and original-asset regression tests
+        run: |
+          mkdir -p qa/choice-arm
+          node --check dopa-word/app.mjs
+          node --check dopa-word/choice-motion.mjs
+          set -o pipefail
+          node --test dopa-word/tests/*.test.mjs 2>&1 | tee qa/choice-arm/unit.log
+      - name: Install Chromium
+        run: |
+          pip install -r dopa-word/tests/requirements.txt
+          python -m playwright install --with-deps chromium
+          sudo apt-get install -y fonts-noto-cjk
+      - name: Verify real original arm paths and scoring before merge
+        if: github.ref != 'refs/heads/main'
+        run: |
+          python dopa-word/tests/http_server.py >qa/choice-arm/server.log 2>&1 &
+          sleep 1
+          python dopa-word/tests/choice_arm_browser.py
+      - name: Verify public files match deployed revision
+        if: github.ref == 'refs/heads/main'
+        run: |
+          python - <<'PY'
+          import pathlib,time,urllib.request
+          expected={p:pathlib.Path('dopa-word',p).read_bytes() for p in ('app.mjs','index.html','choice-motion.mjs','choice-motion.css')}
+          for attempt in range(30):
+              try:
+                  if all(urllib.request.urlopen('https://dalmook.github.io/dopa-word/'+p+'?verify='+str(time.time()),timeout=20).read()==b for p,b in expected.items()):break
+              except Exception as e:print(str(e))
+              time.sleep(10)
+          else:raise SystemExit('Public revision does not match')
+          print('Four public files match the commit')
+          PY
+      - name: Verify public original arm paths and scoring
+        if: github.ref == 'refs/heads/main'
+        env:
+          WORD_URL: https://dalmook.github.io/dopa-word/
+          WORD_OUT: qa/choice-arm-live
+        run: python dopa-word/tests/choice_arm_browser.py
+      - name: Preserve source, paths and video
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: word-choice-arm-evidence
+          path: |
+            qa/choice-arm/
+            qa/choice-arm-live/
+            dopa-word/
+          retention-days: 14
