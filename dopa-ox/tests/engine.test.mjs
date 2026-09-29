@@ -1,3 +1,4 @@
+import {createHash} from 'node:crypto';
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
@@ -31,4 +32,4 @@ test('rank thresholds and progress remain in range',()=>{for(const r of RANKS){a
 test('score is based on real answers, not quiz difficulty',()=>{assert.equal(sessionScore([]),0);assert.equal(sessionScore([{correct:true},{correct:false}]),50);assert.equal(sessionScore([{correct:true,combo:1}],'challenge'),110);});
 test('local dates and safe text escaping',()=>{assert.equal(dayKey(new Date(2026,8,28)),'2026-09-28');assert.equal(escapeHTML('<img src=x>'),'&lt;img src=x&gt;');assert.equal(hash('same'),hash('same'));assert.equal(rng(4)(),rng(4)());});
 for(const [to,from] of [['base.css','style.css'],['LICENSE','LICENSE'],['icon.svg','icon.svg'],...['core','audio','dopakichi','bg','fx'].map(s=>['vendor/'+s+'.js','js/'+s+'.js'])])test(`original asset byte preservation: ${to}`,()=>assert.deepEqual(readFileSync(new URL('../'+to,import.meta.url)),readFileSync(new URL('../../dopa-drill/'+from,import.meta.url))));
-test('no original arithmetic or Tori files changed from starting main',()=>{try{const files=execFileSync('git',['diff','--name-only','90a6d60bb44bf69b98f90771c9fdbc7e3462a30d','HEAD'],{encoding:'utf8'}).trim().split('\n').filter(Boolean);assert.ok(files.every(p=>p.startsWith('dopa-ox/')||p==='.github/workflows/dopa-ox.yml'),files.join('\n'));}catch(e){if(process.env.CI)throw e;}});
+test('three-game original assets and learning data remain pinned',()=>{const manifest=JSON.parse(readFileSync(new URL('../../dopa-runtime/protected-files.json',import.meta.url)));for(const [path,sha]of Object.entries(manifest)){assert.equal(createHash('sha256').update(readFileSync(new URL('../../'+path,import.meta.url))).digest('hex'),sha,path);}});

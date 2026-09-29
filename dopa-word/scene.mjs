@@ -1,10 +1,10 @@
 // Original Dopa Drill drawing, choreography, synth music and particles are unmodified.
 import {startClock,onFrame,clamp,centerOf} from './vendor/core.js';
 import {Dopakichi} from './vendor/dopakichi.js';
-import {SessionAudio} from './audio-session.mjs?v=smooth-1';
+import {SessionAudio} from './audio-session.mjs?v=all-smooth-1';
 import {FX} from './vendor/fx.js';
 import {Backdrop} from './vendor/bg.js';
-import {RenderBudget, PERFORMANCE_VERSION} from './render-budget.mjs';
+import {RenderBudget, PERFORMANCE_VERSION} from './render-budget.mjs?v=all-smooth-1';
 const $=id=>document.getElementById(id);
 export class Scene{
  constructor(){
