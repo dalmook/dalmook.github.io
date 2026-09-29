@@ -1,6 +1,6 @@
-"""Exercise the real original arm geometry and delayed choice transaction.
-No animation mocks and no writes to private/public word data. Local and Pages
-runs create new disposable browser profiles; publication remains read-only.
+"""Exercise real original arm geometry and delayed choice transactions.
+Short-lived lock states are sampled inside the input event/rAF, not by slow
+successive RPCs. Touch/click/keyboard still enter through the real UI.
 """
 import json, os, pathlib, sys, traceback
 from playwright.sync_api import sync_playwright
@@ -16,52 +16,66 @@ def ready(page):
     page.wait_for_function("window.__word?.choiceMotionVersion==='choice-arm-1'",timeout=20000)
 def launch_quiz(page):
     page.locator('[data-mode="choice"]').click();page.locator('#start').click();phase(page,'question')
-def probe(page,index):
-    page.evaluate('''(index)=>{
+def probe(page,index,event='click'):
+    page.evaluate('''({index,event})=>{
       const a=window.__word,b=document.querySelector(`[data-choice="${index}"]`);
-      const rect=b.getBoundingClientRect();window.armProbe={index,start:performance.now(),source:{x:rect.x+rect.width/2,y:rect.y+rect.height/2},samples:[]};
-      const sample=()=>{const p=window.armProbe;if(!p)return;
+      const rect=b.getBoundingClientRect();
+      const p=window.armProbe={index,start:performance.now(),source:{x:rect.x+rect.width/2,y:rect.y+rect.height/2},samples:[],input:null};
+      const observeInput=e=>{
+        if(event==='click'&&!e.target.closest(`[data-choice="${index}"]`))return;
+        if(event==='keydown'&&e.key!==String(index+1))return;
+        document.removeEventListener(event,observeInput);
+        const r=b.getBoundingClientRect();p.source={x:r.x+r.width/2,y:r.y+r.height/2};
+        // Installed after app handlers: capture the synchronous selection lock,
+        // then attempt another selection during the very same event turn.
+        p.input={phase:a.G.phase,results:a.G.results.length,disabled:document.querySelectorAll('#choices button:disabled').length};
+        document.dispatchEvent(new KeyboardEvent('keydown',{key:String((index+1)%4+1),bubbles:true}));
+        document.querySelector(`[data-choice="${(index+1)%4}"]`).click();
+      };
+      document.addEventListener(event,observeInput);
+      const sample=()=>{
+        if(window.armProbe!==p)return;
         p.samples.push({ms:performance.now()-p.start,phase:a.G.phase,stage:a.choiceMotion.stage,results:a.G.results.length,choicesVisible:!document.querySelector('#choices').hidden,
+          disabled:document.querySelectorAll('#choices button:disabled').length,
           hands:a.scene.hero.hands.map((h,i)=>({job:h.job,carry:h.carry,x:h.x,y:h.y,mode:h.mode,path:a.scene.hero.arms[i].out.getAttribute('d')}))});
-        if(p.samples.length<160&&a.G.phase!=='answered')requestAnimationFrame(sample);
+        if(p.samples.length<1000&&a.G.phase!=='answered')requestAnimationFrame(sample);
       };sample();
-    }''',index)
+    }''',{'index':index,'event':event})
 def verify_probe(page,name):
     data=page.evaluate('window.armProbe');samples=data['samples']
+    (OUT/(name+'-geometry.json')).write_text(json.dumps(data,ensure_ascii=False,indent=2),encoding='utf8')
+    initial=data['input']
+    check(name+': motion locks selection before grading',initial and initial['phase']=='choosing' and initial['results']==0)
+    check(name+': all buttons disabled during one arm action',initial['disabled']==4)
     check(name+': real engine reaches then carries before placement',{'reach','carry','placed'}<=set(s['stage'] for s in samples))
     moving=[s for s in samples if s['phase']=='choosing']
-    check(name+': quiz stays visible and uncommitted throughout motion',bool(moving) and all(s['choicesVisible'] and s['results']==0 for s in moving))
+    check(name+': quiz stays visible, locked and uncommitted throughout motion',bool(moving) and all(s['choicesVisible'] and s['results']==0 and s['disabled']==4 for s in moving))
     paths={h['path'] for s in moving for h in s['hands'] if h['job']}
     check(name+': original SVG arm bends along multiple frames',len(paths)>3)
     near=[h for s in samples for h in s['hands'] if ((h['x']-data['source']['x'])**2+(h['y']-data['source']['y'])**2)**.5<14]
     check(name+': hand reaches the selected answer, not a decorative location',bool(near))
-    (OUT/(name+'-geometry.json')).write_text(json.dumps(data,ensure_ascii=False,indent=2),encoding='utf8')
 def answer(page):
     i=page.evaluate('window.__word.G.options.findIndex(o=>o.correct)');page.locator(f'[data-choice="{i}"]').click();phase(page,'answered')
 try:
   with sync_playwright() as p:
     browser=p.chromium.launch(executable_path=os.getenv('CHROMIUM_PATH') or None,args=['--no-sandbox'])
     for width,height,touch in [(320,640,True),(390,844,True),(1280,800,False),(844,390,True)]:
-      ctx=browser.new_context(viewport={'width':width,'height':height},has_touch=touch)
+      ctx=browser.new_context(viewport={'width':width,'height':height},has_touch=touch,record_video_dir=str(OUT/'video'),record_video_size={'width':width,'height':height})
       page=ctx.new_page();page.on('pageerror',lambda e:errors.append(str(e)));ready(page);launch_quiz(page)
       index=page.evaluate('window.__word.G.options.findIndex(o=>o.correct)');probe(page,index)
       button=page.locator(f'[data-choice="{index}"]')
       if touch:button.tap()
       else:button.click()
-      check(str(width)+': motion locks selection before grading',page.evaluate("window.__word.G.phase==='choosing'&&window.__word.G.results.length===0"))
-      check(str(width)+': all buttons disabled during one arm action',page.locator('#choices button:disabled').count()==4)
-      page.keyboard.press(str((index+1)%4+1))
-      page.wait_for_function("window.__word.choiceMotion.stage==='carry'",timeout=10000)
-      page.screenshot(path=str(OUT/(str(width)+'-arm-carry.png')))
       phase(page,'answered');verify_probe(page,str(width))
       check(str(width)+': one completed answer, no double-click score',page.evaluate('window.__word.G.results.length===1&&window.__word.G.results[0].clean'))
       check(str(width)+': chosen meaning appears in receiver',page.locator('#choice-target span').inner_text()==page.locator('#answer-meaning').inner_text())
       check(str(width)+': temporary floating label cleaned up',page.locator('.choice-carry-label').count()==0)
-      ctx.close()
+      video=page.video;ctx.close();video.save_as(str(OUT/(str(width)+'-selection.webm')))
     ctx=browser.new_context(viewport={'width':390,'height':844});page=ctx.new_page();page.on('pageerror',lambda e:errors.append(str(e)));ready(page);launch_quiz(page)
-    wrong=page.evaluate('window.__word.G.options.findIndex(o=>!o.correct)');probe(page,wrong)
-    page.keyboard.press(str(wrong+1));check('number keys start the same arm action',page.evaluate("window.__word.G.phase==='choosing'"))
+    wrong=page.evaluate('window.__word.G.options.findIndex(o=>!o.correct)');probe(page,wrong,'keydown')
+    page.keyboard.press(str(wrong+1))
     page.wait_for_function("window.__word.G.phase==='question'&&window.__word.G.mistakes===1",timeout=15000)
+    verify_probe(page,'number-key-wrong')
     check('wrong choice is disabled after arm finishes, other choices enabled',page.locator('#choices button:disabled').count()==1)
     check('wrong choice does not count as learned answer',page.evaluate('window.__word.G.results.length')==0)
     answer(page);check('corrected answer retains non-first-try grading',page.evaluate('!window.__word.G.results[0].clean'))
