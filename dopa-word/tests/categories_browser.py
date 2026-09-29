@@ -11,7 +11,22 @@ def check(name,ok=True):
  checks.append(name);print('CATEGORY PASS',name,flush=True)
 def phase(page,value):page.wait_for_function('(p)=>window.__word.G.phase===p',arg=value,timeout=15000)
 def ready(page):
- page.goto(URL,wait_until='networkidle');page.wait_for_function("window.__word?.revision==='word-1.1.0-categories'",timeout=20000)
+ page.goto(URL,wait_until='domcontentloaded',timeout=45000);page.wait_for_function("window.__word?.revision==='word-1.1.0-categories'",timeout=20000)
+def reload_ready(page):
+ # Network idleness is not an application-readiness assertion. Require a fresh
+ # document, the exact application revision and the existing persistence checks.
+ page.evaluate("window.__categoryReloadProbe='old-document'")
+ try:
+  response=page.reload(wait_until='domcontentloaded',timeout=45000)
+  check('reload HTTP response succeeds',response is not None and response.ok)
+  page.wait_for_function("window.__word?.revision==='word-1.1.0-categories'&&document.documentElement.dataset.wordReady==='true'",timeout=20000)
+  check('reload produced a newly initialized document',page.evaluate("window.__categoryReloadProbe===undefined"))
+ except Exception:
+  try:
+   (OUT/'reload-failure-state.json').write_text(json.dumps({'url':page.url,'errors':errors},ensure_ascii=False),encoding='utf8')
+   page.screenshot(path=str(OUT/'reload-failure.png'),timeout=5000)
+  except Exception:pass
+  raise
 def go_home(page):
  if page.evaluate('window.__word.G.screen')=='play':
   page.locator('#leave').click();page.locator('#confirm-ok').click()
@@ -56,7 +71,7 @@ try:
     page.locator('#next').click()
    phase(page,'result');check(mode+': full category finishes, no 10-word truncation',page.locator('#r-total').inner_text()=='35개')
    check(mode+': result accuracy computed from all 35',page.locator('#score').inner_text()==('97' if mode=='spell' else '100'))
-   go_home(page);page.reload(wait_until='networkidle');page.wait_for_function("document.documentElement.dataset.wordReady==='true'")
+   go_home(page);reload_ready(page)
    check(mode+': full count and 35-word history survive reload',page.evaluate('window.__word.state.settings.count===0&&window.__word.state.history.at(-1).total===35'))
    if mode=='spell':
     check('category review excludes unrelated prior mistake',page.locator('#review-count').inner_text()=='1');page.locator('#start-review').click();phase(page,'question');check('review deck only contains selected category',page.evaluate("window.__word.G.deck.length===1&&window.__word.G.deck[0].group==='테스트 마트'"));go_home(page)
