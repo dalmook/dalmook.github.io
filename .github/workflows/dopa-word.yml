@@ -29,6 +29,7 @@ jobs:
         run: |
           mkdir -p qa/word
           find dopa-word -name '*.mjs' -exec node --check {} \;
+          python -m compileall -q dopa-word/tests
           set -o pipefail
           node --test dopa-word/tests/*.test.mjs 2>&1 | tee qa/word/unit.log
       - name: Install Chromium
@@ -40,20 +41,21 @@ jobs:
       - name: Local browser verification
         if: always()
         run: |
-          python -m http.server 8765 > /tmp/word-http.log 2>&1 &
+          python dopa-word/tests/http_server.py > qa/word/http-server.log 2>&1 &
           sleep 2
           python dopa-word/tests/browser.py
       - name: Wait for exact public application revision
         if: github.ref == 'refs/heads/main'
         run: |
           python - <<'PY'
-          import pathlib,time,urllib.request,hashlib
-          expected={p:pathlib.Path('dopa-word',p).read_bytes() for p in ('index.html','app.mjs','model.mjs','words.mjs','scene.mjs','word.css')}
+          import pathlib,time,urllib.request
+          names=('index.html','app.mjs','model.mjs','words.mjs','scene.mjs','word.css','shared-model.mjs','shared-ui.mjs')
+          expected={p:pathlib.Path('dopa-word',p).read_bytes() for p in names}
           for attempt in range(36):
               try:
                   ok=all(urllib.request.urlopen('https://dalmook.github.io/dopa-word/'+p+'?verify='+str(time.time()),timeout=20).read()==b for p,b in expected.items())
                   if ok:
-                      print('All six public application files match this commit');break
+                      print('All eight public application files match this commit');break
               except Exception as exc: print(str(exc))
               time.sleep(10)
           else: raise SystemExit('Public revision was not verified within six minutes')
