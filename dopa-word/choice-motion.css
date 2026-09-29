@@ -1,0 +1,13 @@
+/* A stable drop slot prevents cards jumping while the original arm carries a choice. */
+.word-game #choice-target{display:flex;align-items:center;gap:9px;max-width:100%;height:39px;margin:10px auto 0;padding:4px 10px;border:2px dashed var(--blue);border-radius:13px;background:var(--blue-soft);color:var(--ink);font-size:12px;line-height:1.5}
+.word-game #choice-target b{display:grid;place-items:center;flex:0 0 25px;width:25px;height:26px;border:2px solid var(--ink);border-radius:8px;background:var(--yellow);font:900 18px Arial,sans-serif}
+.word-game #choice-target span{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.word-game #choice-target.right{background:#d4f6e5;border-color:#147047;border-style:solid}
+.word-game #choice-target.wrong{background:#ffe0e8;border-color:#b8294b;border-style:solid}
+.word-game .choices[aria-busy=true] button:disabled{opacity:1;cursor:wait}
+.word-game .choices[aria-busy=true] button.wrong{opacity:.5}
+.word-game .choices button.picking{outline:3px solid var(--blue);outline-offset:2px}
+.word-game .choices button.grabbed{background:var(--yellow);transform:translateY(-3px) rotate(-1deg)}
+.word-game .choice-carry-label{position:fixed;z-index:7;pointer-events:none;max-width:min(190px,60vw);padding:5px 9px;border:2px solid var(--ink);border-radius:11px;background:var(--yellow);color:var(--ink);box-shadow:0 3px 0 var(--ink);font:800 12px var(--round);line-height:1.5;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;transform:translate(-50%,-100%)}
+.word-game #screen-play.choosing .choices{touch-action:none}
+@media(max-height:740px){.word-game #choice-target{height:34px;margin-top:7px;font-size:11px}.word-game #choice-target b{height:24px}}

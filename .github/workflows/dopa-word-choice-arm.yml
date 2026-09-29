@@ -1,0 +1,86 @@
+name: Verify meaning-choice arms
+on:
+  push:
+    branches: [main, fix/dopa-word-choice-arms]
+    paths: ['dopa-word/**', '.github/choice-arm-integration.py', '.github/workflows/dopa-word-choice-arm.yml']
+  pull_request:
+    paths: ['dopa-word/**', '.github/workflows/dopa-word-choice-arm.yml']
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: choice-arm-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Apply one-time exact-source integration
+        if: github.ref == 'refs/heads/fix/dopa-word-choice-arms' && hashFiles('.github/choice-arm-integration.py') != ''
+        run: python .github/choice-arm-integration.py
+      - name: Model and original-asset regression tests
+        run: |
+          mkdir -p qa/choice-arm
+          node --check dopa-word/app.mjs
+          node --check dopa-word/choice-motion.mjs
+          set -o pipefail
+          node --test dopa-word/tests/*.test.mjs 2>&1 | tee qa/choice-arm/unit.log
+      - name: Install Chromium
+        run: |
+          pip install -r dopa-word/tests/requirements.txt
+          python -m playwright install --with-deps chromium
+          sudo apt-get install -y fonts-noto-cjk
+      - name: Verify real original arm paths and scoring
+        run: |
+          python dopa-word/tests/http_server.py >qa/choice-arm/server.log 2>&1 &
+          sleep 1
+          python dopa-word/tests/choice_arm_browser.py
+      - name: Commit tested integration to feature branch only
+        if: github.ref == 'refs/heads/fix/dopa-word-choice-arms' && hashFiles('.github/choice-arm-integration.py') != ''
+        run: |
+          git add dopa-word/app.mjs dopa-word/index.html dopa-word/tests/browser_legacy.py
+          git rm .github/choice-arm-integration.py
+          git -c user.name='github-actions[bot]' -c user.email='41898282+github-actions[bot]@users.noreply.github.com' commit -m 'fix(word): integrate tested meaning-choice arm sequence'
+          git push origin HEAD:fix/dopa-word-choice-arms
+      - name: Verify public files match deployed revision
+        if: github.ref == 'refs/heads/main'
+        run: |
+          python - <<'PY'
+          import pathlib,time,urllib.request
+          expected={p:pathlib.Path('dopa-word',p).read_bytes() for p in ('app.mjs','index.html','choice-motion.mjs','choice-motion.css')}
+          for attempt in range(30):
+              try:
+                  if all(urllib.request.urlopen('https://dalmook.github.io/dopa-word/'+p+'?verify='+str(time.time()),timeout=20).read()==b for p,b in expected.items()):break
+              except Exception as e:print(str(e))
+              time.sleep(10)
+          else:raise SystemExit('Public revision does not match')
+          print('Four public files match the commit')
+          PY
+      - name: Verify public original arm paths and scoring
+        if: github.ref == 'refs/heads/main'
+        env:
+          WORD_URL: https://dalmook.github.io/dopa-word/
+          WORD_OUT: qa/choice-arm-live
+        run: python dopa-word/tests/choice_arm_browser.py
+      - name: Preserve source, paths and screenshots
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: word-choice-arm-evidence
+          path: |
+            qa/choice-arm/
+            qa/choice-arm-live/
+            dopa-word/
+          retention-days: 14
