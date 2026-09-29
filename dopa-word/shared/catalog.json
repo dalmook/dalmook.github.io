@@ -1,1 +1,98 @@
-{"schema":1,"updatedAt":"","packs":[]}
+{
+  "schema": 1,
+  "updatedAt": "2026-09-29T01:51:24.912Z",
+  "packs": [
+    {
+      "v": 1,
+      "title": "Unit 1 마트",
+      "words": [
+        [
+          "produce",
+          "과일·채소; 농산물"
+        ],
+        [
+          "meat",
+          "고기"
+        ],
+        [
+          "poultry",
+          "가금류 고기; 닭·오리·거위 고기"
+        ],
+        [
+          "dairy products",
+          "유제품"
+        ],
+        [
+          "frozen foods",
+          "냉동식품"
+        ],
+        [
+          "bakery",
+          "빵 및 과자류"
+        ],
+        [
+          "deli counter",
+          "가게에서 조리한 음식을 파는 공간"
+        ],
+        [
+          "pet food",
+          "애완동물 사료"
+        ],
+        [
+          "cleaning products",
+          "청소 제품"
+        ],
+        [
+          "shopping basket",
+          "쇼핑 바구니"
+        ],
+        [
+          "receipt",
+          "영수증"
+        ],
+        [
+          "cash register",
+          "금전 등록기"
+        ],
+        [
+          "paper bag",
+          "종이 가방"
+        ],
+        [
+          "aisle",
+          "통로"
+        ],
+        [
+          "canned goods",
+          "통조림 식품"
+        ],
+        [
+          "beverages",
+          "음료"
+        ],
+        [
+          "barcode scanner",
+          "바코드 스캐너"
+        ],
+        [
+          "plastic bag",
+          "비닐봉지"
+        ],
+        [
+          "shopper",
+          "고객; 쇼핑하는 사람"
+        ],
+        [
+          "shopping cart",
+          "쇼핑 카트"
+        ]
+      ],
+      "id": "p-11",
+      "owner": "dalmook",
+      "issue": 11,
+      "version": 1,
+      "updatedAt": "2026-09-29T01:51:24.912Z",
+      "status": "public"
+    }
+  ]
+}
