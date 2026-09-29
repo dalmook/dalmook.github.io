@@ -1,8 +1,8 @@
 name: Verify all three Dopa games
 on:
   push:
-    branches: [main, perf/all-three-games]
-    paths: ['dopa-runtime/**', 'dopa-word/**', 'dopa-ox/**', 'dopa-drill/**', '.github/all-three*', '.github/workflows/dopa-all-performance.yml']
+    branches: [main]
+    paths: ['dopa-runtime/**', 'dopa-word/**', 'dopa-ox/**', 'dopa-drill/**', '.github/workflows/dopa-all-performance.yml']
   pull_request:
     paths: ['dopa-runtime/**', 'dopa-word/**', 'dopa-ox/**', 'dopa-drill/**', '.github/workflows/dopa-all-performance.yml']
   workflow_dispatch:
@@ -15,21 +15,17 @@ jobs:
   all-games:
     runs-on: ubuntu-latest
     timeout-minutes: 18
-    permissions:
-      contents: write
     steps:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
+          persist-credentials: false
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
-      - name: Apply verified source patch only on feature branch
-        if: github.ref == 'refs/heads/perf/all-three-games' && hashFiles('.github/all-three-stage.py') != ''
-        run: python .github/all-three-stage.py
       - name: Rules, protected data, assets and runtime unit tests
         run: |
           mkdir -p qa/three-games
@@ -54,14 +50,6 @@ jobs:
         env:
           WORD_OUT: qa/three-games/arms
         run: python dopa-word/tests/choice_arm_browser.py
-      - name: Save tested source on feature branch and remove staging transport
-        if: github.ref == 'refs/heads/perf/all-three-games' && hashFiles('.github/all-three-stage.py') != ''
-        run: |
-          git add dopa-runtime
-          git add -u -- dopa-word dopa-ox dopa-drill
-          git rm .github/all-three-stage.py .github/all-three.part1 .github/all-three.part2 .github/all-three.part3 .github/all-three.part4 .github/all-three.part5 .github/all-three.part6
-          git -c user.name='github-actions[bot]' -c user.email='41898282+github-actions[bot]@users.noreply.github.com' commit -m 'perf(dopa): apply verified shared performance runtime to all three games'
-          git push origin HEAD:perf/all-three-games
       - name: Wait for exact public runtime and three entry points
         if: github.ref == 'refs/heads/main'
         run: |
@@ -90,7 +78,7 @@ jobs:
           WORD_URL: https://dalmook.github.io/dopa-word/
           WORD_OUT: qa/three-games-live/arms
         run: python dopa-word/tests/choice_arm_browser.py
-      - name: Preserve exact source and verification evidence
+      - name: Preserve source and verification evidence
         if: always()
         uses: actions/upload-artifact@v4
         with:
