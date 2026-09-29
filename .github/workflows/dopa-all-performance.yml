@@ -1,0 +1,93 @@
+name: Verify all three Dopa games
+on:
+  push:
+    branches: [main]
+    paths: ['dopa-runtime/**', 'dopa-word/**', 'dopa-ox/**', 'dopa-drill/**', '.github/workflows/dopa-all-performance.yml']
+  pull_request:
+    paths: ['dopa-runtime/**', 'dopa-word/**', 'dopa-ox/**', 'dopa-drill/**', '.github/workflows/dopa-all-performance.yml']
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: all-dopa-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  all-games:
+    runs-on: ubuntu-latest
+    timeout-minutes: 18
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Rules, protected data, assets and runtime unit tests
+        run: |
+          mkdir -p qa/three-games
+          node --check dopa-drill/js/main.js
+          node --check dopa-ox/app.mjs
+          node --check dopa-word/app.mjs
+          set -o pipefail
+          node --test dopa-runtime/tests/*.test.mjs dopa-word/tests/*.test.mjs dopa-ox/tests/*.test.mjs 2>&1 | tee qa/three-games/unit.log
+      - name: Install browser
+        run: |
+          pip install -r dopa-word/tests/requirements.txt
+          python -m playwright install --with-deps chromium
+          sudo apt-get install -y fonts-noto-cjk
+      - name: Local full-game, saved-record and sustained-load tests
+        if: github.ref != 'refs/heads/main'
+        run: |
+          python dopa-word/tests/http_server.py >qa/three-games/http.log 2>&1 &
+          sleep 1
+          python dopa-runtime/tests/three_games.py
+      - name: Retain real original vocabulary arm selection
+        if: github.ref != 'refs/heads/main'
+        env:
+          WORD_OUT: qa/three-games/arms
+        run: python dopa-word/tests/choice_arm_browser.py
+      - name: Wait for exact public runtime and three entry points
+        if: github.ref == 'refs/heads/main'
+        run: |
+          python - <<'PY'
+          import pathlib,time,urllib.request
+          paths=['dopa-runtime/'+n for n in ('audio-runtime.mjs','voice-pool.mjs','render-budget.mjs','performance.css')]
+          paths+=['dopa-drill/index.html','dopa-drill/js/main.js','dopa-ox/index.html','dopa-ox/app.mjs','dopa-word/index.html','dopa-word/app.mjs','dopa-word/scene.mjs','dopa-word/audio-session.mjs','dopa-word/render-budget.mjs','dopa-word/voice-pool.mjs']
+          expected={p:pathlib.Path(p).read_bytes() for p in paths}
+          for attempt in range(36):
+              try:
+                  if all(urllib.request.urlopen('https://dalmook.github.io/'+p+'?verify='+str(time.time()),timeout=20).read()==b for p,b in expected.items()):break
+              except Exception as e:print(e)
+              time.sleep(10)
+          else:raise SystemExit('Public source does not match this deployment')
+          print('All fourteen public entry/runtime files match')
+          PY
+      - name: Verify original public URLs including old Kids query
+        if: github.ref == 'refs/heads/main'
+        env:
+          DOPA_ROOT: https://dalmook.github.io/
+          DOPA_OUT: qa/three-games-live
+        run: python dopa-runtime/tests/three_games.py
+      - name: Verify real arm on public vocabulary game
+        if: github.ref == 'refs/heads/main'
+        env:
+          WORD_URL: https://dalmook.github.io/dopa-word/
+          WORD_OUT: qa/three-games-live/arms
+        run: python dopa-word/tests/choice_arm_browser.py
+      - name: Preserve source and verification evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: all-dopa-performance-evidence
+          path: |
+            dopa-runtime/
+            dopa-word/
+            dopa-ox/
+            dopa-drill/
+            qa/three-games/
+            qa/three-games-live/
+          retention-days: 14

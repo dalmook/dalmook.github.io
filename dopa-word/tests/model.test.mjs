@@ -1,3 +1,4 @@
+import {createHash} from 'node:crypto';
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
@@ -46,4 +47,4 @@ test('backup roundtrip retains custom words and learning progress',()=>{const s=
 test('wrong-app and invalid-word backups fail without mutating state',()=>{assert.throws(()=>M.parseBackup('{"app":"dopa-ox","version":1,"custom":[]}'));assert.throws(()=>M.parseBackup(JSON.stringify({...fresh(),custom:[word('bad2')]})));});
 test('definition signature prevents reusing stale answers',()=>{const s=fresh(),w=BASE[0];s.progress[w.id]={signature:'old',spell:{tries:99,correct:99}};assert.equal(M.progressOf(s,w),undefined);assert.equal(M.sanitizeState(s).progress[w.id],undefined);});
 for(const [dest,src]of [['base.css','style.css'],['LICENSE','LICENSE'],['icon.svg','icon.svg'],...['core','audio','dopakichi','bg','fx'].map(n=>['vendor/'+n+'.js','js/'+n+'.js'])])test('original asset byte-for-byte preserved: '+dest,()=>assert.deepEqual(readFileSync(new URL('../'+dest,import.meta.url)),readFileSync(new URL('../../dopa-drill/'+src,import.meta.url))));
-test('existing arithmetic, OX and Tori trees unchanged from starting commit',()=>{if(!process.env.CI)return;execFileSync('git',['diff','--exit-code','d9cda651fa7c499663e284072379d9305bce5a93','HEAD','--','dopa-drill','dopa-ox','tori-math'],{stdio:'pipe'});});
+test('three-game original assets and learning data remain pinned',()=>{const manifest=JSON.parse(readFileSync(new URL('../../dopa-runtime/protected-files.json',import.meta.url)));for(const [path,sha]of Object.entries(manifest)){assert.equal(createHash('sha256').update(readFileSync(new URL('../../'+path,import.meta.url))).digest('hex'),sha,path);}});

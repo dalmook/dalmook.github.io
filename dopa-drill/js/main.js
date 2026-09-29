@@ -3,7 +3,10 @@
 import { startClock, onFrame, wait, tween, clamp, lerp, rand, pick, chance, centerOf, params,
   easeOutBack, easeOutCubic, easeInCubic, easeInOutCubic, easeOutQuint } from './core.js';
 import { makeRng, generate, makeProblem, signature, BASIC_SETS, EXTRA_TIERS } from './problems.js';
-import { AudioEngine } from './audio.js';
+import { AudioEngine as OriginalAudio } from './audio.js';
+import {createSessionAudio} from '../../dopa-runtime/audio-runtime.mjs?v=all-smooth-1';
+import {RenderBudget,PERFORMANCE_VERSION} from '../../dopa-runtime/render-budget.mjs?v=all-smooth-1';
+const AudioEngine=createSessionAudio(OriginalAudio);
 import { Dopakichi, COSTUMES, dopakichiSVG } from './dopakichi.js';
 import { FX } from './fx.js';
 import { Backdrop } from './bg.js';
@@ -26,6 +29,7 @@ const audio = new AudioEngine({ capture });
 const fx = new FX($('#fx'), 300);
 const fxBack = new FX($('#fx-back'), 520);
 const bg = new Backdrop($('#bg'), $('#rays-fallback'));
+const budget=new RenderBudget({fx,back:fxBack,bg},{game:'dopa-drill',anchor:'#motion',capture});
 const backLayer = $('#actors-back');
 const frontLayer = $('#actors-front');
 const hero = new Dopakichi(backLayer, { scale: 0.72, front: frontLayer });
@@ -45,7 +49,7 @@ const S = {
   dopa: { L: 0, shown: 0, unit: '' }, reduced: false, motion: 1, settingsOpen: false,
   run: 0, muted: false, kick: 0, flash: 0, shake: 0, cells: {}, lines: {}, idleAt: 0, busyUntil: 0,
 };
-window.__dopa = { S, audio };
+window.__dopa = { S, audio, budget, performanceVersion:PERFORMANCE_VERSION };
 const guide = createGuide({ hero, reduced: () => S.reduced, onClose: () => {
   store.markGuideSeen();
   S.guideOpen = false;
@@ -76,6 +80,7 @@ function showScreen(name) {
 }
 
 function layoutActors() {
+  stageDirty=true;
   // A scripted scene (the hammer) moves the hero itself.
   if (S.scene || S.guideOpen) return;
   // Cancel any running body action so it does not drag the hero back to old coordinates.
@@ -663,7 +668,7 @@ async function clearProblem() {
   }
   $('#step-label').innerHTML = `<b>${S.problem.answerText}</b>`;
   if (gained) pointsPop(gained);
-  if (wasReach) audio.reachHit(E); else audio.clear(E);
+  if (wasReach) audio.reachHit(E); else if((extra?S.extra.solved:S.solved)%5===0||(!extra&&S.qi===S.N-1))audio.clear(E);else audio.correct(S.combo,Math.min(.3,E));
   hanamaru(E);
   const lastBasic = !extra && S.qi === S.N - 1;
   celebrate(E, wasReach, lastBasic);
@@ -948,7 +953,7 @@ function unitSlam(unit, L) {
 async function parade(E, big) {
   if (actors.length > 10 || S.motion < 0.5) return;
   const r = stage.getBoundingClientRect();
-  const n = Math.round(3 + 4 * Math.min(1, E) + (big ? 2 : 0));
+  const n = Math.max(1,Math.round((3 + 4 * Math.min(1, E) + (big ? 2 : 0))*budget.density));
   const dir = chance(0.5) ? 1 : -1;
   for (let i = 0; i < n; i++) {
     const cl = crowdLook(i);
@@ -979,6 +984,7 @@ function ensureCrowd(E) {
   if (E >= 0.68) want.push({ i: 1, side: 1, s: 0.46 });
   if (E >= 0.88) want.push({ i: 2, side: -1.9, s: 0.36 }, { i: 3, side: 1.9, s: 0.36 });
   if (S.reduced || S.motion < 0.5) want.length = 0;
+  if(want.length>budget.dancers)want.length=budget.dancers;
   while (crowd.length > want.length) { const m = crowd.pop(); m.destroy(); actors.splice(actors.indexOf(m), 1); }
   for (let i = crowd.length; i < want.length; i++) {
     const w = want[i];
@@ -1446,15 +1452,24 @@ function toTitle() {
 }
 
 // ---------------------------------------------------------------- frame loop
-let lastClockText = '';
+let lastClockText = '',lastPerfTier=-1,decorDt=0,bgShown=null,emptyFx=false,emptyBack=false,stageRect=null,lastTargetRead=0;
+const hudEl=$('.hud'),flashEl=$('#flash'),padEl=$('#pad');
+let stageDirty=true;
+addEventListener('resize',()=>stageDirty=true);document.addEventListener('scroll',()=>stageDirty=true,true);
 onFrame((dt, t) => {
-  audio.update();
+  if(document.hidden&&!capture)return;
+  if(capture)audio.update();
+  budget.frame(t);
+  if(lastPerfTier!==budget.level){lastPerfTier=budget.level;ensureCrowd(S.E);stageDirty=true;}
+  const decor=capture||budget.decorDue(t);decorDt+=dt;
+  const decorElapsed=Math.min(.12,decorDt);
+  if(stageDirty||!stageRect||t-lastTargetRead>250){stageRect=stage.getBoundingClientRect();stageDirty=false;}
   demoTick(t);
   tickCombo(t);
   const pulse = audio.pulse();
   const targetKick = audio.playing ? pulse.kick * (S.level >= 1 ? 1 : 0.2) : 0;
   S.kick = S.reduced ? 0 : targetKick;
-  body.style.setProperty('--kick', S.kick.toFixed(3));
+  if(decor){card.style.setProperty('--kick',S.kick.toFixed(2));padEl.style.setProperty('--kick',S.kick.toFixed(2));}
 
   // dopa counter rolls in log space
   const d = S.dopa;
@@ -1493,7 +1508,7 @@ onFrame((dt, t) => {
       hero.hop(20 + 40 * S.E, 420, { to: { x, y: hero.home.y }, spin: S.E > 0.6 && chance(0.3) ? 360 : 0 }).then((ok) => { if (ok) hero.x = x; });
     }
     const target = S.problem && S.problem.steps[S.step] ? S.cells[S.problem.steps[S.step].cell] : null;
-    if (target && !hero.hands.some((h) => h.job)) hero.lookAt(centerOf(target));
+    if (target && !hero.hands.some((h) => h.job)&&t-lastTargetRead>100){lastTargetRead=t;hero.lookAt(centerOf(target));}
   }
 
   // screen shake (keypad stays still to keep tap targets stable)
@@ -1503,9 +1518,9 @@ onFrame((dt, t) => {
   const sy = shk > 0.1 && !S.reduced ? rand(-shk, shk) : 0;
   const tr = shk > 0.1 ? `translate(${sx}px, ${sy}px)` : '';
   stage.style.translate = tr ? `${sx}px ${sy}px` : '';
-  $('.hud').style.translate = tr ? `${sx * 0.5}px ${sy * 0.5}px` : '';
+  hudEl.style.translate = tr ? `${sx * 0.5}px ${sy * 0.5}px` : '';
   S.flash = Math.max(0, S.flash - dt * 3.2);
-  $('#flash').style.opacity = S.reduced ? 0 : ((S.flash * S.motion) ** 1.5 * 0.6).toFixed(3);
+  flashEl.style.opacity = S.reduced ? 0 : ((S.flash * S.motion) ** 1.5 * 0.6).toFixed(3);
 
   // backdrop
   const vE = S.settingsOpen || S.screen === 'collect' ? S.previewE : (S.screen === 'title' || S.screen === 'tree' || S.screen === 'trophy') ? 0.04 : lerp(Math.min(S.E, 0.3), S.E, S.motion);
@@ -1517,20 +1532,28 @@ onFrame((dt, t) => {
   st.reach = lerp(st.reach, S.reach ? 1 : 0, Math.min(1, dt * 5));
   st.hue += dt * 0.03 * S.visualE;
   const hc = hero.headCenter;
-  st.cx = lerp(st.cx || hc.x, S.screen === 'play' ? stage.getBoundingClientRect().left + stage.clientWidth / 2 : innerWidth / 2, Math.min(1, dt * 3));
-  st.cy = lerp(st.cy || hc.y, S.screen === 'play' ? stage.getBoundingClientRect().top + stage.clientHeight * 0.55 : innerHeight * 0.4, Math.min(1, dt * 3));
-  bg.render(t);
-  fx.update(dt);
-  fx.draw();
-  fxBack.update(dt);
-  fxBack.draw();
-  // Late idle or slider callbacks must not erase the final reset warning face.
-  if (S.confirm?.urgent) setConfirmFace(true);
-  const ctx = { beat: S.kick };
-  for (const a of actors) {
-    if (a === hero && S.guideOpen && S.reduced) a.update(0, 0);
-    else a.update(dt, t, ctx);
+  st.cx = lerp(st.cx || hc.x, S.screen === 'play' ? stageRect.left + stageRect.width / 2 : innerWidth / 2, Math.min(1, dt * 3));
+  st.cy = lerp(st.cy || hc.y, S.screen === 'play' ? stageRect.top + stageRect.height * .55 : innerHeight * 0.4, Math.min(1, dt * 3));
+  const shown=!S.reduced&&(st.E>.1||st.reach>.01||st.flash>.01);
+  if(shown!==bgShown){bgShown=shown;bg.canvas.style.visibility=shown?'visible':'hidden';bg.fallback.style.visibility=shown?'visible':'hidden';}
+  if(shown&&(capture||budget.backgroundDue(t)))bg.render(t);
+  if(decor){
+    if(!S.reduced){fx.update(decorElapsed);fxBack.update(decorElapsed);}else{fx.parts.length=0;fxBack.parts.length=0;}
+    if(fx.parts.length||!emptyFx)fx.draw();emptyFx=!fx.parts.length;
+    if(fxBack.parts.length||!emptyBack)fxBack.draw();emptyBack=!fxBack.parts.length;
   }
+  if(S.confirm?.urgent)setConfirmFace(true);
+  const ctx={beat:S.kick};
+  for(const a of actors){
+    if(!a.visible){if(a._painted!==false){a.root.style.display='none';a.armsFront.style.display='none';a._painted=false;}continue;}
+    // Hero, active hands, guide and finale scenes keep native frame cadence.
+    if(a===hero||S.scene||a.hands.some(h=>h.job)||decor){
+      if(a===hero&&S.guideOpen&&S.reduced)a.update(0,0);
+      else a.update(a===hero||S.scene||a.hands.some(h=>h.job)?dt:decorElapsed,t,ctx);
+      a._painted=true;
+    }
+  }
+  if(decor)decorDt=0;
 });
 
 // Title screen idle performance.

@@ -1,0 +1,5 @@
+/* Shared performance controls; do not override a game's user-selected motion level. */
+.dopa-performance-control{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:8px;font:700 13px var(--round, sans-serif);width:100%;margin:8px 0}
+.dopa-performance-control select{max-width:100%;font:700 13px var(--round,sans-serif);padding:8px;border:2px solid var(--ink,#1b1d4d);border-radius:10px;background:#fff;color:var(--ink,#1b1d4d)}
+.perf-light.lv9 .card{box-shadow:0 7px 0 var(--ink),0 0 0 5px var(--pink),0 0 16px rgba(255,210,63,.35)}
+.perf-light .spot{filter:none}
