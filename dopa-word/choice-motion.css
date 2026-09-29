@@ -8,6 +8,6 @@
 .word-game .choices[aria-busy=true] button.wrong{opacity:.5}
 .word-game .choices button.picking{outline:3px solid var(--blue);outline-offset:2px}
 .word-game .choices button.grabbed{background:var(--yellow);transform:translateY(-3px) rotate(-1deg)}
-.word-game .choice-carry-label{position:fixed;z-index:7;pointer-events:none;max-width:min(190px,60vw);padding:5px 9px;border:2px solid var(--ink);border-radius:11px;background:var(--yellow);color:var(--ink);box-shadow:0 3px 0 var(--ink);font:800 12px var(--round);line-height:1.5;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;transform:translate(-50%,-100%)}
+.word-game .choice-carry-label{position:fixed;left:0;top:0;will-change:transform;z-index:7;pointer-events:none;max-width:min(190px,60vw);padding:5px 9px;border:2px solid var(--ink);border-radius:11px;background:var(--yellow);color:var(--ink);box-shadow:0 3px 0 var(--ink);font:800 12px var(--round);line-height:1.5;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;transform:translate(-50%,-100%)}
 .word-game #screen-play.choosing .choices{touch-action:none}
 @media(max-height:740px){.word-game #choice-target{height:34px;margin-top:7px;font-size:11px}.word-game #choice-target b{height:24px}}

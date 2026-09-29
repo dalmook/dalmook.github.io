@@ -1,8 +1,8 @@
 import {BASE,TOPICS} from './words.mjs';
 import {installSharing} from './shared-ui.mjs';
 import {rememberPack,sharedGroup} from './shared-model.mjs';
-import {Scene} from './scene.mjs';
-import {ChoiceMotion, CHOICE_MOTION_VERSION} from './choice-motion.mjs';
+import {Scene} from './scene.mjs?v=smooth-1';
+import {ChoiceMotion, CHOICE_MOTION_VERSION} from './choice-motion.mjs?v=smooth-1';
 import {dopakichiSVG} from './vendor/dopakichi.js';
 import {SAVE_KEY,REVISION,LEVELS,MODE_NAMES,letters,normalWord,escapeHTML as esc,vocabulary,freshState,loadState,saveState,eligible,makeDeck,makeChoices,overlap,progressOf,recordAnswer,upsertWord,removeWord,parseImport,planImport,applyImport,exportCSV,parseBackup,dayKey,categoryCatalog,selectCategories,chooseCategoryMode,plannedCount} from './model.mjs?v=shared-1';
 const $=id=>document.getElementById(id),$$=s=>[...document.querySelectorAll(s)];
