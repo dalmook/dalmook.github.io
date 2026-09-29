@@ -1,0 +1,33 @@
+name: Word category navigation regression
+on:
+  pull_request:
+    paths: ['dopa-word/tests/categories_browser.py']
+permissions:
+  contents: read
+jobs:
+  navigation:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: |
+          pip install playwright==1.55.0
+          python -m playwright install --with-deps chromium
+          sudo apt-get install -y fonts-noto-cjk
+      - name: Full category sessions and actual fresh reload
+        env:
+          WORD_OUT: qa/navigation
+        run: |
+          mkdir -p qa/navigation
+          python dopa-word/tests/http_server.py >qa/navigation/server.log 2>&1 &
+          sleep 1
+          python dopa-word/tests/categories_browser.py
+      - if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: word-navigation-evidence
+          path: qa/navigation/
+          retention-days: 3
