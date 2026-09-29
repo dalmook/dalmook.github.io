@@ -7,3 +7,22 @@
 /* Keep long imported meanings and expressions inside the mobile viewport. */
 .word-game .word-entry .entry-top b,
 .word-game .answer-line b { overflow-wrap: anywhere; }
+
+/* Category selection is visible; full-category study does not inherit hidden filters. */
+.word-game .session-row{display:flex;align-items:center;justify-content:space-between;gap:10px;width:100%;font-size:12px}
+.word-game .session-row select{font-size:13px;max-width:64%;padding:8px}
+.word-game .selection-summary{font-size:12px;line-height:1.7;text-align:center;color:var(--blue);margin:0}
+.word-game .selection-summary:empty{display:none}
+.word-game .custom-categories{width:100%;padding:12px;border:2px solid var(--ink);border-radius:16px;background:#fff}
+.word-game .custom-categories h3{font-size:13px;margin:0 0 9px}
+.word-game #custom-category-list{display:flex;flex-wrap:wrap;gap:8px;max-height:160px;overflow:auto;padding:2px 2px 5px}
+.word-game #custom-category-list button{max-width:100%;padding:7px 10px;border:2px solid var(--ink);border-radius:12px;background:var(--blue-soft);font-size:13px;overflow-wrap:anywhere;text-align:left;box-shadow:0 2px 0 var(--ink)}
+.word-game #custom-category-list small{font-size:10px;margin-left:7px}
+.word-game #custom-category-list button[aria-pressed=true]{background:var(--yellow)}
+.word-game .category-study{width:100%;padding:13px;border:2px solid var(--ink);border-radius:16px;background:#fff9d9;line-height:1.6}
+.word-game .category-study strong{display:block;font-size:15px;overflow-wrap:anywhere}
+.word-game .category-study p{margin:5px 0 10px}
+.word-game .category-study .menu-grid button{font-size:12px;height:auto;min-height:46px}
+.word-game .source-row>button{max-width:58%;font-size:12px}
+.word-game .source-row label{min-width:0}
+.word-game #pips .pip[hidden]{display:none!important}

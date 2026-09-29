@@ -2,7 +2,8 @@
 import {BASE} from './words.mjs';
 export const SAVE_KEY='dopa-word-ko-v1';
 export const MAX_WORDS=3000;
-export const REVISION='word-1.0.0';
+export const REVISION='word-1.1.0-categories';
+export const MAX_SESSION_WORDS=MAX_WORDS+BASE.length;
 export const MODE_NAMES={spell:'스펠링 맞히기',choice:'뜻 고르기'};
 export const LEVELS=[{id:0,name:'전체',note:'길이 무관'},{id:1,name:'첫 단어',note:'2~4글자'},{id:2,name:'기초',note:'5~6글자'},{id:3,name:'도전',note:'7글자 이상'}];
 export const normalWord=s=>String(s??'').normalize('NFKC').replace(/[’‘]/g,"'").replace(/[‐‑–—]/g,'-').trim().replace(/\s+/g,' ').toLowerCase();
@@ -12,7 +13,7 @@ export const signature=w=>JSON.stringify([w.word,w.meaning]);
 export function escapeHTML(s){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
 const cleanText=s=>String(s??'').normalize('NFKC').trim().replace(/[\r\n\t]+/g,' ').replace(/ +/g,' ');
 export function validateWord(raw){
- const word=normalWord(raw?.word),meaning=cleanText(raw?.meaning),group=cleanText(raw?.group||'내 단어');
+ const word=normalWord(raw?.word),meaning=cleanText(raw?.meaning),group=cleanText(raw?.group||'내 단어')||'내 단어';
  if(!/^[a-z]+(?:[ '-][a-z]+)*$/.test(word)||word.length>40)return{error:'영어는 알파벳으로 1~40자, 띄어쓰기·하이픈·아포스트로피만 사용할 수 있어요.'};
  if(!meaning||meaning.length>100||/[\x00-\x08\x0b\x0c\x0e-\x1f\ufffd]/.test(meaning))return{error:'뜻은 비어 있지 않은 100자 이내의 올바른 글자로 적어 주세요.'};
  if(group.length>30||/[\x00-\x1f\ufffd]/.test(group))return{error:'단어장 이름은 30자 이내로 적어 주세요.'};
@@ -32,9 +33,9 @@ export function sanitizeState(raw){
   for(const mode of ['spell','choice']){const v=p[mode];if(v&&typeof v==='object')out[mode]={tries:integer(v.tries),correct:Math.min(integer(v.correct),integer(v.tries)),streak:integer(v.streak,99),review:!!v.review};}s.progress[id]=out;
  }
  if(raw.days&&typeof raw.days==='object')for(const [day,v] of Object.entries(raw.days).sort().slice(-366)){if(/^\d{4}-\d{2}-\d{2}$/.test(day)&&v&&typeof v==='object')s.days[day]={answered:integer(v.answered),correct:integer(v.correct)};}
- s.history=(Array.isArray(raw.history)?raw.history:[]).slice(-50).filter(v=>v&&['spell','choice'].includes(v.mode)).map(v=>({mode:v.mode,total:integer(v.total,30),correct:Math.min(integer(v.correct,30),integer(v.total,30)),day:cleanText(v.day).slice(0,10)}));
+ s.history=(Array.isArray(raw.history)?raw.history:[]).slice(-50).filter(v=>v&&['spell','choice'].includes(v.mode)).map(v=>({mode:v.mode,total:integer(v.total,MAX_SESSION_WORDS),correct:Math.min(integer(v.correct,MAX_SESSION_WORDS),integer(v.total,MAX_SESSION_WORDS)),day:cleanText(v.day).slice(0,10)}));
  const o=raw.settings||{},d=s.settings;for(const [key,allowed] of Object.entries({mode:['spell','choice'],source:['base','custom','all'],palette:['pink','blue','yellow','mint','violet','gold','snow','rainbow'],costume:['','cap','glasses','ribbon','headphones','cape','wizard','crown'],theme:['classic','night','sea','space','festival','paper'],song:['classic','chip','matsuri','brass','electro']}))if(allowed.includes(o[key]))d[key]=o[key];
- if([0,1,2,3].includes(Number(o.level)))d.level=Number(o.level);if([10,20,30].includes(Number(o.count)))d.count=Number(o.count);if([0,.45,1].includes(Number(o.motion)))d.motion=Number(o.motion);if(o.volume!==undefined)d.volume=integer(o.volume,100);d.muted=!!o.muted;d.groups=[...new Set((Array.isArray(o.groups)?o.groups:[]).filter(x=>typeof x==='string'&&x.length<=30))];return s;
+ if([0,1,2,3].includes(Number(o.level)))d.level=Number(o.level);if([0,10,20,30].includes(Number(o.count)))d.count=Number(o.count);if([0,.45,1].includes(Number(o.motion)))d.motion=Number(o.motion);if(o.volume!==undefined)d.volume=integer(o.volume,100);d.muted=!!o.muted;d.groups=[...new Set((Array.isArray(o.groups)?o.groups:[]).filter(x=>typeof x==='string'&&x.length<=30))];return s;
 }
 export function loadState(storage){try{return sanitizeState(JSON.parse(storage.getItem(SAVE_KEY)||'null'));}catch{return freshState();}}
 export function saveState(storage,s){try{storage.setItem(SAVE_KEY,JSON.stringify(s));return true;}catch{return false;}}
@@ -43,11 +44,35 @@ export function hash(s){let h=2166136261;for(const c of String(s)){h^=c.codePoin
 export function rng(seed){let a=hash(seed);return()=>{a+=0x6D2B79F5;let t=Math.imul(a^a>>>15,a|1);t^=t+Math.imul(t^t>>>7,t|61);return((t^t>>>14)>>>0)/4294967296;};}
 export function shuffle(items,random=Math.random){const a=[...items];for(let i=a.length-1;i>0;i--){const j=Math.floor(random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
 export function progressOf(s,w,mode=s.settings.mode){const p=s.progress[w.id];return p?.signature===signature(w)?p[mode]:undefined;}
-export function eligible(s,{review=false}={}){return vocabulary(s).filter(w=>review?progressOf(s,w)?.review:((s.settings.source==='all'||w.origin===s.settings.source)&&(!s.settings.level||w.level===s.settings.level)&&(!s.settings.groups.length||s.settings.groups.includes(w.group))));}
+export function eligible(s,{review=false}={}){return vocabulary(s).filter(w=>review?(progressOf(s,w)?.review&&(!s.settings.groups.length||s.settings.groups.includes(w.group))):((s.settings.source==='all'||w.origin===s.settings.source)&&(!s.settings.level||w.level===s.settings.level)&&(!s.settings.groups.length||s.settings.groups.includes(w.group))));}
+// Category discovery is intentionally independent of source and word-length filters.
+// Choosing a category is an explicit request for its full contents, not an empty
+// intersection with a hidden previous "base / first words" selection.
+export function categoryCatalog(s){
+ const map=new Map();for(const w of vocabulary(s)){
+  if(!map.has(w.group))map.set(w.group,{name:w.group,total:0,custom:0,base:0});
+  const c=map.get(w.group);c.total++;c[w.origin]++;
+ }
+ return [...map.values()].sort((a,b)=>Number(b.custom>0)-Number(a.custom>0));
+}
+export function selectCategories(s,names,{allWords=true}={}){
+ const known=new Set(categoryCatalog(s).map(c=>c.name));
+ s.settings.groups=[...new Set(names.map(cleanText).filter(n=>known.has(n)))];
+ if(s.settings.groups.length){s.settings.source='all';s.settings.level=0;if(allWords)s.settings.count=0;}
+ return s.settings.groups;
+}
+export function chooseCategoryMode(s,name,mode){
+ if(!['spell','choice'].includes(mode))throw new Error('학습 모드를 다시 선택해 주세요.');
+ if(!categoryCatalog(s).some(c=>c.name===name))throw new Error('이 카테고리에 단어가 없어요. 단어장을 확인해 주세요.');
+ selectCategories(s,[name]);s.settings.mode=mode;
+}
+export function plannedCount(s,total){return s.settings.count===0?total:Math.min(s.settings.count,total);}
 export function makeDeck(s,{review=false,seed=Date.now()}={}){
- const random=rng(seed),by=new Map();for(const w of shuffle(eligible(s,{review}),random)){if(!by.has(w.group))by.set(w.group,[]);by.get(w.group).push(w);}
+ const pool=eligible(s,{review}),target=plannedCount(s,pool.length),random=rng(seed),by=new Map();
+ for(const w of shuffle(pool,random)){if(!by.has(w.group))by.set(w.group,[]);by.get(w.group).push(w);}
  for(const a of by.values())a.sort((x,y)=>(progressOf(s,x)?.tries||0)-(progressOf(s,y)?.tries||0));
- const deck=[];let groups=shuffle([...by.keys()],random);while(groups.length&&deck.length<s.settings.count){for(const g of groups){deck.push(by.get(g).shift());if(deck.length===s.settings.count)break;}groups=shuffle(groups.filter(g=>by.get(g).length),random);}return shuffle(deck,random);
+ const deck=[];let groups=shuffle([...by.keys()],random);
+ while(groups.length&&deck.length<target){for(const g of groups){deck.push(by.get(g).shift());if(deck.length===target)break;}groups=shuffle(groups.filter(g=>by.get(g).length),random);}return shuffle(deck,random);
 }
 // Shared Korean senses (including semicolon-separated glosses) must not become distractors.
 const synonymous={엄마:'어머니',아빠:'아버지',고양이:'고양이',커다란:'큰',조그만:'작은',자전거:'자전거',회색:'회색'};
