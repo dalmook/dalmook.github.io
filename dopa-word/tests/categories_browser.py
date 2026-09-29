@@ -1,6 +1,4 @@
-"""Category regressions using generated fixtures, not the user's private vocabulary.
-Browser contexts are disposable. Learning answers go through the actual UI.
-"""
+"""Full-category regressions with synthetic data imported through the supported UI."""
 import json, os, pathlib, re, sys, traceback
 from playwright.sync_api import sync_playwright
 URL=os.getenv('WORD_URL','http://127.0.0.1:8765/dopa-word/')
@@ -13,9 +11,13 @@ def phase(page,value):page.wait_for_function('(p)=>window.__word.G.phase===p',ar
 def ready(page):
  page.goto(URL,wait_until='domcontentloaded',timeout=45000);page.wait_for_function("window.__word?.revision==='word-1.1.0-categories'",timeout=20000)
 def reload_ready(page):
- # Network idleness is not an application-readiness assertion. Require a fresh
- # document, the exact application revision and the existing persistence checks.
  page.evaluate("window.__categoryReloadProbe='old-document'")
+ before=page.evaluate("({ready:document.readyState,screen:window.__word.G.screen,count:window.__word.state.history.at(-1)?.total,muted:window.__word.scene.audio.muted,ctx:window.__word.scene.audio.ctx?.state,bytes:localStorage.getItem('dopa-word-ko-v1').length})")
+ (OUT/'reload-before.json').write_text(json.dumps(before,ensure_ascii=False),encoding='utf8')
+ navigation=[]
+ def on_response(response):
+  if response.request.is_navigation_request():navigation.append({'url':response.url,'status':response.status})
+ page.on('response',on_response)
  try:
   response=page.reload(wait_until='domcontentloaded',timeout=45000)
   check('reload HTTP response succeeds',response is not None and response.ok)
@@ -23,7 +25,7 @@ def reload_ready(page):
   check('reload produced a newly initialized document',page.evaluate("window.__categoryReloadProbe===undefined"))
  except Exception:
   try:
-   (OUT/'reload-failure-state.json').write_text(json.dumps({'url':page.url,'errors':errors},ensure_ascii=False),encoding='utf8')
+   (OUT/'reload-failure-state.json').write_text(json.dumps({'url':page.url,'errors':errors,'navigation':navigation,'before':before},ensure_ascii=False),encoding='utf8')
    page.screenshot(path=str(OUT/'reload-failure.png'),timeout=5000)
   except Exception:pass
   raise
@@ -35,9 +37,12 @@ def fixture():
  words=[{'word':'test word '+chr(97+i//26)+chr(97+i%26),'meaning':'테스트 뜻 '+str(i),'group':'테스트 마트'} for i in range(35)]
  words.append({'word':'test other','meaning':'다른 주제 테스트','group':'다른 카테고리'})
  return {'app':'dopa-word','version':1,'revision':0,'custom':words,'xp':123,'answered':4,'correct':3,'settings':{'source':'base','level':1,'count':10,'mode':'spell','groups':[],'muted':True,'motion':0},'progress':{'word:test other':{'signature':json.dumps(['test other','다른 주제 테스트'],ensure_ascii=False,separators=(',',':')),'spell':{'tries':1,'correct':0,'streak':0,'review':True}}}}
-def install(context):
- data=json.dumps(json.dumps(fixture(),ensure_ascii=False),ensure_ascii=False)
- context.add_init_script("if(!localStorage.getItem('dopa-word-ko-v1'))localStorage.setItem('dopa-word-ko-v1',"+data+");")
+def install(page):
+ # Use the same import interaction as a real user, with no persistent init hooks.
+ page.locator('#open-settings').click()
+ page.locator('#restore-file').set_input_files({'name':'category-fixture.json','mimeType':'application/json','buffer':json.dumps(fixture(),ensure_ascii=False).encode('utf8')})
+ page.locator('#confirm-ok').click()
+ page.wait_for_function("window.__word.state.custom.length===36")
 def answer(page,mode,incorrect=False):
  phase(page,'question')
  if mode=='spell':
@@ -53,9 +58,9 @@ try:
  with sync_playwright() as p:
   browser=p.chromium.launch(executable_path=os.getenv('CHROMIUM_PATH') or None,args=['--no-sandbox'])
   for mode,w,h in [('spell',390,844),('choice',1280,800)]:
-   context=browser.new_context(viewport={'width':w,'height':h});install(context);page=context.new_page();page.on('pageerror',lambda e:errors.append(str(e)));writes=[]
+   context=browser.new_context(viewport={'width':w,'height':h});page=context.new_page();page.on('pageerror',lambda e:errors.append(str(e)));writes=[]
    page.on('request',lambda req:writes.append(req.url) if req.method not in ('GET','HEAD') else None)
-   ready(page);check(mode+': existing records and old defaults retained',page.evaluate("window.__word.state.xp===123&&window.__word.state.settings.source==='base'&&window.__word.state.settings.level===1"))
+   ready(page);install(page);check(mode+': existing records and old defaults retained',page.evaluate("window.__word.state.xp===123&&window.__word.state.settings.source==='base'&&window.__word.state.settings.level===1"))
    check(mode+': existing custom category visible on home',page.locator('[data-home-category="테스트 마트"]').count()==1)
    page.locator('#open-topics').click();check(mode+': custom category shown despite base-only source',page.locator('[data-topic="테스트 마트"]').is_visible())
    page.locator('[data-topic="테스트 마트"]').click();page.locator('#topics-dialog button[value="close"]').click()
@@ -71,6 +76,7 @@ try:
     page.locator('#next').click()
    phase(page,'result');check(mode+': full category finishes, no 10-word truncation',page.locator('#r-total').inner_text()=='35개')
    check(mode+': result accuracy computed from all 35',page.locator('#score').inner_text()==('97' if mode=='spell' else '100'))
+   check(mode+': muted full sessions do not create inaudible audio graphs',page.evaluate('window.__word.scene.audio.ctx===null'))
    go_home(page);reload_ready(page)
    check(mode+': full count and 35-word history survive reload',page.evaluate('window.__word.state.settings.count===0&&window.__word.state.history.at(-1).total===35'))
    if mode=='spell':
@@ -82,7 +88,6 @@ try:
    page.locator('#category-spell' if mode=='spell' else '#category-choice').click();phase(page,'question');check(mode+': direct button studies full category ignoring list search',page.evaluate("window.__word.G.deck.length===35&&window.__word.G.mode==='"+mode+"'"));go_home(page)
    check(mode+': other category review is retained',page.evaluate("window.__word.state.progress['word:test other'].spell.review"))
    check(mode+': no vocabulary upload requests',not writes);context.close()
-  # New data creation uses actual bulk-import and single-word forms.
   context=browser.new_context(viewport={'width':320,'height':640});page=context.new_page();page.on('pageerror',lambda e:errors.append(str(e)));ready(page)
   check('separate visitor cannot see another context custom words',page.evaluate('window.__word.state.custom.length')==0 and page.locator('[data-home-category="테스트 마트"]').count()==0)
   page.locator('#open-words').click();page.locator('#bulk-word').click();page.locator('#import-text').fill('word\tmeaning\tgroup\ntest apple\t연습 사과\t연습 장보기\ntest banana\t연습 바나나\t연습 장보기\ntest long phrase\t긴 표현 연습\t연습 장보기');page.locator('#preview-import').click();page.locator('#apply-import').click()
