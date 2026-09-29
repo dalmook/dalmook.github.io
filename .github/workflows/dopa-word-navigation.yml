@@ -1,7 +1,7 @@
 name: Word category navigation regression
 on:
   pull_request:
-    paths: ['dopa-word/tests/categories_browser.py']
+    paths: ['dopa-word/tests/categories_browser.py', 'dopa-word/tests/requirements.txt', '.github/workflows/dopa-word-navigation.yml']
 permissions:
   contents: read
 jobs:
@@ -14,7 +14,7 @@ jobs:
         with:
           python-version: '3.12'
       - run: |
-          pip install playwright==1.55.0
+          pip install -r dopa-word/tests/requirements.txt
           python -m playwright install --with-deps chromium
           sudo apt-get install -y fonts-noto-cjk
       - name: Full category sessions and actual fresh reload

@@ -24,7 +24,7 @@ jobs:
           python-version: '3.12'
       - name: Install Chromium
         run: |
-          pip install playwright==1.55.0
+          pip install -r dopa-word/tests/requirements.txt
           python -m playwright install --with-deps chromium
           sudo apt-get install -y fonts-noto-cjk
       - name: Verify anonymous actual public wordbook in both modes
