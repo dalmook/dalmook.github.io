@@ -1,13 +1,13 @@
 // Original Dopa Drill drawing, choreography, synth music and particles are unmodified.
 import {startClock,onFrame,clamp,centerOf} from './vendor/core.js';
 import {Dopakichi} from './vendor/dopakichi.js';
-import {AudioEngine} from './vendor/audio.js';
+import {SessionAudio} from './audio-session.mjs';
 import {FX} from './vendor/fx.js';
 import {Backdrop} from './vendor/bg.js';
 const $=id=>document.getElementById(id);
 export class Scene{
  constructor(){
-  this.screen='title';this.E=.06;this.visual=.02;this.rainAt=0;this.idleAt=0;this.opts={motion:1,volume:55,muted:false};this.audio=new AudioEngine();
+  this.screen='title';this.E=.06;this.visual=.02;this.rainAt=0;this.idleAt=0;this.opts={motion:1,volume:55,muted:false};this.audio=new SessionAudio();this.utterance=null;
   this.fx=new FX($('fx'),270);this.back=new FX($('fx-back'),330);this.bg=new Backdrop($('bg'),$('rays-fallback'));
   this.hero=new Dopakichi($('actors-back'),{scale:.8,front:$('actors-front')});this.friends=['blue','yellow','mint','violet','pink','blue'].map(p=>new Dopakichi($('actors-back'),{palette:p,scale:.28,front:$('actors-front')}));
   const burst=(n,o,inn)=>Array.from({length:n*2},(_,i)=>{const a=i*Math.PI/n-Math.PI/2,r=i%2?inn:o;return`${i?'L':'M'}${Math.cos(a)*r},${Math.sin(a)*r}`;}).join(' ')+'Z';
@@ -16,6 +16,7 @@ export class Scene{
   for(const el of document.querySelectorAll('.screen'))el.addEventListener('scroll',()=>this.layout(),{passive:true});
   window.addEventListener('resize',()=>this.layout());
   document.addEventListener('visibilitychange',()=>{if(document.hidden){this.audio.stopMusic();this.stopSpeech();}else if(['play','result'].includes(this.screen))this.audio.startMusic();});
+  window.addEventListener('pagehide',e=>{this.stopSpeech();if(!e.persisted)this.audio.dispose();});
   onFrame((dt,t)=>this.frame(dt,t));startClock();
  }
  apply(opts){this.opts={...opts};const a=this.audio;a.setMuted(opts.muted);a.setVolume(opts.volume/100);a.setSong(opts.song);this.hero.setPalette(opts.palette);this.hero.setCostume(opts.costume);this.bg.setTheme(opts.theme);this.fx.reduced=this.back.reduced=opts.motion===0;this.fx.motion=this.back.motion=opts.motion;document.body.classList.toggle('reduced',opts.motion===0);$('mute').textContent=opts.muted?'♩':'♪';$('mute').setAttribute('aria-pressed',String(opts.muted));$('mute').setAttribute('aria-label',opts.muted?'소리 켜기':'소리 끄기');}
@@ -37,10 +38,10 @@ export class Scene{
  swipe(el){if(this.opts.motion&&el)this.hero.swipe(centerOf(el));}
  cutin(text){if(!this.opts.motion)return;const el=document.createElement('div');el.className='word-cutin';el.textContent=text;$('cutins').append(el);this.audio.cutin();setTimeout(()=>el.remove(),950);}
  success(combo,clean){const E=Math.min(1,this.E);this.audio.correct(Math.max(1,combo),E);this.audio.clear(E*.7);if(!this.opts.motion)return;this.hero.celebrate(E,{big:combo%3===0||E>.7,audio:this.audio});const c=centerOf($('card'));this.fx.burst(c.x,c.y,{count:25+Math.round(E*60),speed:400+E*250,kinds:E>.65?['star','confetti','coin','mini']:['star','confetti'],up:120});this.fx.ring(c.x,c.y,{radius:90+E*60});if(clean&&combo&&combo%5===0){this.cutin(combo+'콤보!');this.back.fireworks(innerWidth,innerHeight,3);}if(E>.75)this.back.streamers(innerWidth,innerHeight,4);}
- wrong(el){this.audio.wrong(Math.min(1,this.E));if(this.opts.motion)this.hero.hurt(Math.min(.6,this.E),centerOf(el||$('card')),{audio:this.audio});}
+ wrong(el){this.audio.wrong(Math.min(.6,this.E));if(this.opts.motion)this.hero.hurt(Math.min(.6,this.E),centerOf(el||$('card')),{audio:this.audio});}
  finale(){this.audio.finale();if(this.opts.motion){this.hero.celebrate(Math.min(1,this.E),{big:true,audio:this.audio});this.back.fireworks(innerWidth,innerHeight,4);this.back.rain(innerWidth,75,{kinds:['star','confetti']});}}
- stopSpeech(){if('speechSynthesis'in window)speechSynthesis.cancel();this.audio.setVolume(this.opts.volume/100);}
- speak(word){if(!('speechSynthesis'in window)||!('SpeechSynthesisUtterance'in window))return false;this.stopSpeech();const voices=speechSynthesis.getVoices(),voice=voices.find(v=>/^en-US/i.test(v.lang))||voices.find(v=>/^en/i.test(v.lang));if(voices.length&&!voice)return false;const u=new SpeechSynthesisUtterance(word);u.lang=voice?.lang||'en-US';if(voice)u.voice=voice;u.rate=.78;u.onend=u.onerror=()=>this.audio.setVolume(this.opts.volume/100);this.audio.setVolume(this.opts.volume/100*.25);speechSynthesis.speak(u);return true;}
+ stopSpeech(){if(this.utterance&&'speechSynthesis'in window){this.utterance.onend=this.utterance.onerror=null;speechSynthesis.cancel();this.utterance=null;}this.audio.setVolume(this.opts.volume/100);}
+ speak(word){if(!('speechSynthesis'in window)||!('SpeechSynthesisUtterance'in window))return false;this.stopSpeech();const voices=speechSynthesis.getVoices(),voice=voices.find(v=>/^en-US/i.test(v.lang))||voices.find(v=>/^en/i.test(v.lang));if(voices.length&&!voice)return false;const u=new SpeechSynthesisUtterance(word);u.lang=voice?.lang||'en-US';if(voice)u.voice=voice;u.rate=.78;this.utterance=u;u.onend=u.onerror=()=>{if(this.utterance===u)this.utterance=null;this.audio.setVolume(this.opts.volume/100);};this.audio.setVolume(this.opts.volume/100*.25);speechSynthesis.speak(u);return true;}
  frame(dt,t){if(document.hidden)return;const motion=this.opts.motion,playing=['play','result'].includes(this.screen);this.audio.update();const at=this.audio.now(),last=this.audio.kicks.findLast(x=>x<=at),beat=last===undefined?0:Math.exp(-Math.max(0,at-last)*13);this.visual+=(this.E-this.visual)*Math.min(1,dt*4);this.bg.state.E=motion?this.visual*Math.max(.6,motion):0;this.bg.state.kick=beat*motion;this.bg.state.reach=0;this.bg.state.flash=0;
   if(motion){this.hero.bob=playing?.7:.12;this.hero.update(dt,t,{beat});this.friends.forEach((m,i)=>{if(m.visible){m.lift=Math.max(0,Math.sin(t/230+i*1.8))*13*this.E;m.tilt.target=Math.sin(t/250+i)*9*this.E;m.hands.forEach((h,j)=>h.raise=(.35+.25*Math.sin(t/200+i+j))*this.E);}m.update(dt,t,{beat});});}
   else{this.hero.bob=0;this.hero.lift=0;this.hero.rot=0;this.hero.update(0,0,{});this.friends.forEach(m=>{m.visible=false;m.update(0,0,{});});}
