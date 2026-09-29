@@ -30,6 +30,26 @@ for item in patches:
    text=text[:start]+replacement+text[end:];boundary=start
  after=text.encode('utf8')
  assert hashlib.sha256(after).hexdigest()==item['after'],'Result mismatch: '+str(path)
+ if str(path)=='dopa-runtime/tests/three_games.py':
+  start=text.index('def close_drill_prompts(page):');end=text.index('def ready(',start)
+  text=text[:start]+'''def close_drill_prompts(page):
+ # Original attendance/trophy modals appear 450-500ms after dismissing the
+ # first-visit guide. Wait for the actual UI to stay clear, then open settings.
+ deadline=time.monotonic()+8;quiet=None
+ while time.monotonic()<deadline:
+  clicked=False
+  for selector in ['#guide-skip','#bonus-ok','#tg-ok','#hammer-no']:
+   el=page.locator(selector)
+   if el.count() and el.is_visible():el.click();clicked=True;quiet=None;break
+  if not clicked:
+   if quiet is None:quiet=time.monotonic()
+   if time.monotonic()-quiet>.85:return
+  page.wait_for_timeout(100)
+ raise AssertionError('Original arithmetic welcome/reward dialogs did not settle')
+'''+text[end:]
+  text=text.replace('word defaults and public book preserved','word starter vocabulary preserved')
+  after=text.encode('utf8')
+  assert hashlib.sha256(after).hexdigest()=='24f9bb5230ff49008c26a29921c9dd3fdf6cef24a209f209264b29a2af69490d'
  outputs.append((path,after))
 for path,data in outputs:
  path.parent.mkdir(parents=True,exist_ok=True);path.write_bytes(data)
