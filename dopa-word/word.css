@@ -26,3 +26,28 @@
 .word-game .source-row>button{max-width:58%;font-size:12px}
 .word-game .source-row label{min-width:0}
 .word-game #pips .pip[hidden]{display:none!important}
+
+/* Sharing uses the original layout, controls and game scene. */
+.word-game .public-home{display:grid;grid-template-columns:1.15fr 1fr;width:100%;gap:9px;align-items:center}
+.word-game .public-home .big-btn{height:49px;font-size:18px;background:var(--mint)}
+.word-game .public-home p{grid-column:1/-1;margin:0}
+.word-game .shared-card{background:white;border:3px solid var(--ink);border-radius:19px;box-shadow:0 4px 0 var(--ink);padding:16px;margin:4px 0 16px}
+.word-game .shared-card h3{font-size:20px;line-height:1.5;word-break:keep-all;overflow-wrap:anywhere;margin:0 0 5px}
+.word-game .shared-card .menu-grid{margin:12px 0 8px}
+.word-game .shared-card button{height:auto;min-height:43px}
+.word-game .shared-card details{margin-top:12px;font-size:13px;line-height:1.8}
+.word-game .shared-card summary{cursor:pointer;color:var(--blue)}
+.word-game .shared-words{max-height:280px;overflow:auto;user-select:text}
+.word-game .shared-words div{display:flex;gap:10px;justify-content:space-between;border-bottom:1px dashed #c6cbdd;padding:6px 1px;font-size:13px}
+.word-game .shared-words b{font-family:Arial;overflow-wrap:anywhere;min-width:0;max-width:50%}
+.word-game .shared-words span{overflow-wrap:anywhere;min-width:0;text-align:right;max-width:55%}
+.word-game .shared-origin{display:inline-block;background:var(--blue-soft);border-radius:8px;padding:3px 7px;font-size:11px}
+.word-game .shared-warning{padding:10px;background:#fff1cf;border-radius:10px;font-size:12px;line-height:1.8}
+.word-game .share-consent{align-items:flex-start!important;justify-content:flex-start!important;line-height:1.7}
+.word-game .share-consent input{flex:0 0 22px;margin-top:3px}
+.word-game .shared-preview{max-height:165px;overflow:auto;background:white;border:2px solid var(--ink);border-radius:13px;padding:9px;font-size:13px;line-height:1.8;user-select:text}
+.word-game .publish-link{display:block;text-align:center;padding:12px;background:var(--yellow);border:2px solid var(--ink);border-radius:12px;color:var(--ink);font-weight:900;margin-top:12px;text-decoration:none}
+.word-game #share-link-result textarea,.word-game #publish-body{font-size:12px;min-height:90px}
+.word-game #share-dialog hr{width:100%;border:0;border-top:1px dashed #aaa}
+.word-game .shared-footer{display:flex;flex-wrap:wrap;gap:10px;font-size:11px;line-height:1.8;margin-top:9px}
+.word-game .shared-footer a{word-break:break-all}

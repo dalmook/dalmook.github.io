@@ -9,7 +9,7 @@ def check(name,ok=True):
  checks.append(name);print('CATEGORY PASS',name,flush=True)
 def phase(page,value):page.wait_for_function('(p)=>window.__word.G.phase===p',arg=value,timeout=15000)
 def ready(page):
- page.goto(URL,wait_until='domcontentloaded',timeout=45000);page.wait_for_function("window.__word?.revision==='word-1.1.0-categories'",timeout=20000)
+ page.goto(URL,wait_until='domcontentloaded',timeout=45000);page.wait_for_function("window.__word?.revision==='word-1.2.0-sharing'",timeout=20000)
 def reload_ready(page):
  page.evaluate("window.__categoryReloadProbe='old-document'")
  before=page.evaluate("({ready:document.readyState,screen:window.__word.G.screen,count:window.__word.state.history.at(-1)?.total,muted:window.__word.scene.audio.muted,ctx:window.__word.scene.audio.ctx?.state,bytes:localStorage.getItem('dopa-word-ko-v1').length})")
@@ -21,7 +21,7 @@ def reload_ready(page):
  try:
   response=page.reload(wait_until='domcontentloaded',timeout=45000)
   check('reload HTTP response succeeds',response is not None and response.ok)
-  page.wait_for_function("window.__word?.revision==='word-1.1.0-categories'&&document.documentElement.dataset.wordReady==='true'",timeout=20000)
+  page.wait_for_function("window.__word?.revision==='word-1.2.0-sharing'&&document.documentElement.dataset.wordReady==='true'",timeout=20000)
   check('reload produced a newly initialized document',page.evaluate("window.__categoryReloadProbe===undefined"))
  except Exception:
   try:

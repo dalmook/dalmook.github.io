@@ -1,7 +1,9 @@
 import {BASE,TOPICS} from './words.mjs';
+import {installSharing} from './shared-ui.mjs';
+import {rememberPack,sharedGroup} from './shared-model.mjs';
 import {Scene} from './scene.mjs';
 import {dopakichiSVG} from './vendor/dopakichi.js';
-import {SAVE_KEY,REVISION,LEVELS,MODE_NAMES,letters,normalWord,escapeHTML as esc,vocabulary,freshState,loadState,saveState,eligible,makeDeck,makeChoices,overlap,progressOf,recordAnswer,upsertWord,removeWord,parseImport,planImport,applyImport,exportCSV,parseBackup,dayKey,categoryCatalog,selectCategories,chooseCategoryMode,plannedCount} from './model.mjs?v=categories-1';
+import {SAVE_KEY,REVISION,LEVELS,MODE_NAMES,letters,normalWord,escapeHTML as esc,vocabulary,freshState,loadState,saveState,eligible,makeDeck,makeChoices,overlap,progressOf,recordAnswer,upsertWord,removeWord,parseImport,planImport,applyImport,exportCSV,parseBackup,dayKey,categoryCatalog,selectCategories,chooseCategoryMode,plannedCount} from './model.mjs?v=shared-1';
 const $=id=>document.getElementById(id),$$=s=>[...document.querySelectorAll(s)];
 let storage;try{storage=localStorage;}catch{storage={getItem:()=>null,setItem:()=>{throw Error('storage');}};}
 let state=loadState(storage),baseRevision=state.revision,stale=false,storageWarned=false;
@@ -37,7 +39,7 @@ function renderHome(){
  const chosen=categoryCatalog(state).filter(c=>o.groups.includes(c.name));
  $('selection-summary').textContent=o.groups.length?`${o.groups.join(' · ')} · 전체 ${chosen.reduce((n,c)=>n+c.total,0)}단어 / 현재 조건 ${pool.length}단어`:'';
  $('reset-category-filters').hidden=!o.groups.length||(!o.level&&o.source==='all'&&o.count===0);
- $('start-sub').textContent=`${MODE_NAMES[o.mode]} · ${o.groups.length===1?o.groups[0]:o.groups.length?o.groups.length+'개 카테고리':o.source==='custom'?'내 단어':o.source==='all'?'기본 + 내 단어':'기본 단어'} · ${n}문제`;
+ $('start-sub').textContent=`${MODE_NAMES[o.mode]} · ${o.groups.length===1?o.groups[0]:o.groups.length?o.groups.length+'개 카테고리':o.source==='custom'?'내 단어':o.source==='shared'?'공개 단어':o.source==='all'?'전체 단어':'기본 단어'} · ${n}문제`;
  $('pool-count').textContent=pool.length?`지금 고른 조건에 ${pool.length}단어 · 한 판에 중복 없이 ${n}문제`:'이 조건에 단어가 없어요. 다른 길이·주제를 고르거나 내 단어를 등록해요.';
  $('review-count').textContent=reviewWords().length;$('start').disabled=!pool.length;
  const d=state.days[dayKey()]||{answered:0,correct:0};$('today-count').textContent=`${Math.min(10,d.answered)} / 10`;$('daily-progress').value=Math.min(10,d.answered);
@@ -98,7 +100,7 @@ function renderWords(){
  const search=$('word-search').value.trim().toLowerCase(),source=$('list-source').value,group=$('list-group').value;
  const pool=vocabulary(state).filter(w=>(!group?(source==='all'||w.origin===source):w.group===group)&&(!search||`${w.word} ${w.meaning}`.toLowerCase().includes(search)));
  $('list-count').textContent=`${pool.length}단어 · 기본 ${BASE.length}개 / 내 단어 ${state.custom.length}개`;
- $('word-list').innerHTML=pool.slice(0,G.limit).map(w=>`<article class="word-entry"><div class="entry-top"><b lang="en">${esc(w.word)}</b><small>${w.origin==='custom'?'내 단어':'기본'}</small></div><p>${esc(w.meaning)}</p><footer><span>${esc(w.group)} · ${letters(w.word).length}글자</span><button data-speak="${esc(w.id)}" aria-label="${esc(w.word)} 발음 듣기">🔊</button><button data-edit="${esc(w.id)}">${w.origin==='custom'?'수정':'내 뜻으로'}</button>${w.origin==='custom'?`<button data-delete="${esc(w.id)}">삭제</button>`:''}</footer></article>`).join('')||'<p class="empty">아직 단어가 없어요.<br>한 단어 등록 또는 일괄 등록으로 시작해요!</p>';
+ $('word-list').innerHTML=pool.slice(0,G.limit).map(w=>`<article class="word-entry"><div class="entry-top"><b lang="en">${esc(w.word)}</b><small>${w.origin==='custom'?'내 단어':w.origin==='shared'?'공개 보관본':'기본'}</small></div><p>${esc(w.meaning)}</p><footer><span>${esc(w.group)} · ${letters(w.word).length}글자</span><button data-speak="${esc(w.id)}" aria-label="${esc(w.word)} 발음 듣기">🔊</button><button data-edit="${esc(w.id)}">${w.origin==='custom'?'수정':'내 뜻으로'}</button>${w.origin==='custom'?`<button data-delete="${esc(w.id)}">삭제</button>`:''}</footer></article>`).join('')||'<p class="empty">아직 단어가 없어요.<br>한 단어 등록 또는 일괄 등록으로 시작해요!</p>';
  $('list-more').hidden=pool.length<=G.limit;$('study-custom').disabled=!state.custom.length;
  const category=categoryCatalog(state).find(c=>c.name===group);
  $('category-study').hidden=!category;
@@ -142,7 +144,7 @@ $$('[data-home]').forEach(b=>b.onclick=home);$$('[data-close]').forEach(b=>b.onc
 $('confirm-ok').onclick=()=>{const action=confirmAction;confirmAction=null;$('confirm-dialog').close();action?.();};
 $$('[data-mode]').forEach(b=>b.onclick=()=>{if(!usable())return;state.settings.mode=b.dataset.mode;persist();renderHome();scene.tap();});
 $('levels').onclick=e=>{const b=e.target.closest('[data-level]');if(b&&usable()){state.settings.level=Number(b.dataset.level);persist();renderHome();scene.tap();}};
-$('source').onchange=e=>{if(!usable())return;state.settings.source=e.target.value;state.settings.groups=[];if(e.target.value==='custom')state.settings.level=0;persist();renderHome();};
+$('source').onchange=e=>{if(!usable())return;state.settings.source=e.target.value;state.settings.groups=[];if(['custom','shared'].includes(e.target.value))state.settings.level=0;persist();renderHome();};
 $('open-topics').onclick=()=>{topics();$('topics-dialog').showModal();};$('topic-list').onclick=e=>{const b=e.target.closest('[data-topic]');if(!b||!usable())return;const g=b.dataset.topic;const names=!g?[]:state.settings.groups.includes(g)?state.settings.groups.filter(x=>x!==g):[...state.settings.groups,g];selectCategories(state,names);if(!names.length){state.settings.source='all';state.settings.level=0;}persist();topics();renderHome();};
 $('mute').onclick=()=>{if(!usable())return;state.settings.muted=!state.settings.muted;scene.audio.unlock();scene.apply(state.settings);persist();};
 for(const [id,key]of [['set-count','count'],['set-volume','volume'],['set-motion','motion']])$(id).oninput=e=>{if(!usable())return;state.settings[key]=Number(e.target.value);persist();scene.apply(state.settings);renderHome();};$('set-muted').onchange=e=>{if(!usable())return;state.settings.muted=e.target.checked;persist();scene.apply(state.settings);};
@@ -163,3 +165,21 @@ document.addEventListener('keydown',e=>{if(e.repeat||e.isComposing||e.ctrlKey||e
  else if(/^[1-4]$/.test(k)){e.preventDefault();const i=Number(k)-1;choose(i,document.querySelector(`[data-choice="${i}"]`));}if(k==='escape')$('leave').click();
 });
 scene.apply(state.settings);renderHome();scene.layout();document.documentElement.dataset.wordReady='true';
+
+installSharing({
+ getState:()=>state, persist, usable, toast, setView, renderHome,
+ study(pack,mode){
+  if(!usable())return;rememberPack(state,pack);
+  state.settings.mode=mode;state.settings.source='shared';state.settings.groups=[sharedGroup(pack)];state.settings.level=0;state.settings.count=0;
+  persist();renderHome();start();
+ },
+ forget(id){
+  if(!usable())return;state.sharedPacks=(state.sharedPacks||[]).filter(p=>p.id!==id);
+  for(const key of Object.keys(state.progress))if(key.startsWith('shared:'+id+':'))delete state.progress[key];
+  state.settings.groups=state.settings.groups.filter(g=>categoryCatalog(state).some(c=>c.name===g));persist();renderHome();
+ },
+ copy(pack){
+  if(!usable())return 0;const p=planImport(state,{valid:pack.words.map(([word,meaning])=>({word,meaning,group:pack.title,id:'word:'+word})),errors:[]},false);
+  const n=applyImport(state,p);if(n){selectCategories(state,[pack.title]);persist();renderHome();renderGroups();renderWords();}return n;
+ }
+});
