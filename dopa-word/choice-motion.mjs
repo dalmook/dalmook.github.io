@@ -10,7 +10,7 @@ export class ChoiceMotion {
     this.stage = 'idle';
     const style = document.createElement('link');
     style.rel = 'stylesheet';
-    style.href = new URL('./choice-motion.css', import.meta.url).href;
+    style.href = new URL('./choice-motion.css?v=smooth-1', import.meta.url).href;
     document.head.append(style);
     this.target = document.createElement('div');
     this.target.id = 'choice-target';
@@ -81,12 +81,20 @@ export class ChoiceMotion {
       let grabbed = false;
       let placed = false;
       let off = () => {};
+      let geometryDirty = true;
+      const dirty = () => { geometryDirty = true; };
+      window.addEventListener('resize', dirty);
+      document.addEventListener('scroll', dirty, true);
+      window.visualViewport?.addEventListener('resize', dirty);
       const operation = { cancel: () => finish(false) };
       const finish = (accepted, error = null) => {
         if (done) return;
         // Cancel before invoking h.cancel: the original cancel calls onPlace.
         done = true;
         off();
+        window.removeEventListener('resize', dirty);
+        document.removeEventListener('scroll', dirty, true);
+        window.visualViewport?.removeEventListener('resize', dirty);
         bubble.remove();
         button.classList.remove('picking', 'grabbed');
         if (!accepted) {
@@ -111,14 +119,15 @@ export class ChoiceMotion {
         }
         // Original carry accepts point objects. Update those objects as the
         // viewport/scroll changes so hands still hit the actual selected card.
-        Object.assign(from, centerOf(button));
-        Object.assign(to, centerOf(this.badge));
+        if (geometryDirty) {
+          Object.assign(from, centerOf(button)); Object.assign(to, centerOf(this.badge));
+          geometryDirty = false;
+        }
         scene.hero.visible = true;
         if (grabbed && !placed) {
           const x = Math.max(16, Math.min(innerWidth - 16, hand.x));
           const y = Math.max(20, Math.min(innerHeight - 20, hand.y - 46));
-          bubble.style.left = x + 'px';
-          bubble.style.top = y + 'px';
+          bubble.style.transform = `translate3d(${x}px,${y}px,0) translate(-50%,-100%)`;
         }
       });
       try {
@@ -126,7 +135,7 @@ export class ChoiceMotion {
           E: Math.min(1, scene.E),
           onGrab: () => {
             if (done || !isCurrent()) { finish(false); return; }
-            grabbed = true;
+            grabbed = true; geometryDirty = true;
             bubble.hidden = false;
             button.classList.add('grabbed');
             this.stage = this.target.dataset.phase = 'carry';

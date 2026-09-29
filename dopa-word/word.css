@@ -51,3 +51,7 @@
 .word-game #share-dialog hr{width:100%;border:0;border-top:1px dashed #aaa}
 .word-game .shared-footer{display:flex;flex-wrap:wrap;gap:10px;font-size:11px;line-height:1.8;margin-top:9px}
 .word-game .shared-footer a{word-break:break-all}
+
+/* Preserve the celebratory outline without repainting a large animated blur on slow devices. */
+.word-game.perf-light.lv9 .card{box-shadow:0 7px 0 var(--ink),0 0 0 5px var(--pink),0 0 16px rgba(255,210,63,.35)}
+.word-game.perf-light .spot{filter:none}
