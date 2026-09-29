@@ -1,0 +1,2 @@
+# Browser automation version; the web game itself has no Python dependency.
+playwright==1.63.0

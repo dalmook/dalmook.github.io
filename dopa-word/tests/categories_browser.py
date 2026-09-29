@@ -9,23 +9,22 @@ def check(name,ok=True):
  checks.append(name);print('CATEGORY PASS',name,flush=True)
 def phase(page,value):page.wait_for_function('(p)=>window.__word.G.phase===p',arg=value,timeout=15000)
 def ready(page):
- page.goto(URL,wait_until='domcontentloaded',timeout=45000);page.wait_for_function("window.__word?.revision==='word-1.1.0-categories'",timeout=20000)
+ page.goto(URL,wait_until='domcontentloaded',timeout=45000);page.wait_for_function("window.__word?.revision==='word-1.2.0-sharing'",timeout=20000)
 def reload_ready(page):
+ # Require a real committed reload, then verify the new document initialized.
+ # This avoids coupling the reload RPC to lifecycle event delivery in the sync
+ # wrapper. No old-document or saved-history assertion is removed.
  page.evaluate("window.__categoryReloadProbe='old-document'")
  before=page.evaluate("({ready:document.readyState,screen:window.__word.G.screen,count:window.__word.state.history.at(-1)?.total,muted:window.__word.scene.audio.muted,ctx:window.__word.scene.audio.ctx?.state,bytes:localStorage.getItem('dopa-word-ko-v1').length})")
  (OUT/'reload-before.json').write_text(json.dumps(before,ensure_ascii=False),encoding='utf8')
- navigation=[]
- def on_response(response):
-  if response.request.is_navigation_request():navigation.append({'url':response.url,'status':response.status})
- page.on('response',on_response)
  try:
-  response=page.reload(wait_until='domcontentloaded',timeout=45000)
+  response=page.reload(wait_until='commit',timeout=45000)
   check('reload HTTP response succeeds',response is not None and response.ok)
-  page.wait_for_function("window.__word?.revision==='word-1.1.0-categories'&&document.documentElement.dataset.wordReady==='true'",timeout=20000)
+  page.wait_for_function("window.__categoryReloadProbe===undefined&&window.__word?.revision==='word-1.2.0-sharing'&&document.documentElement.dataset.wordReady==='true'&&document.readyState!=='loading'",timeout=20000)
   check('reload produced a newly initialized document',page.evaluate("window.__categoryReloadProbe===undefined"))
  except Exception:
   try:
-   (OUT/'reload-failure-state.json').write_text(json.dumps({'url':page.url,'errors':errors,'navigation':navigation,'before':before},ensure_ascii=False),encoding='utf8')
+   (OUT/'reload-failure-state.json').write_text(json.dumps({'url':page.url,'errors':errors,'before':before},ensure_ascii=False),encoding='utf8')
    page.screenshot(path=str(OUT/'reload-failure.png'),timeout=5000)
   except Exception:pass
   raise
@@ -38,7 +37,6 @@ def fixture():
  words.append({'word':'test other','meaning':'다른 주제 테스트','group':'다른 카테고리'})
  return {'app':'dopa-word','version':1,'revision':0,'custom':words,'xp':123,'answered':4,'correct':3,'settings':{'source':'base','level':1,'count':10,'mode':'spell','groups':[],'muted':True,'motion':0},'progress':{'word:test other':{'signature':json.dumps(['test other','다른 주제 테스트'],ensure_ascii=False,separators=(',',':')),'spell':{'tries':1,'correct':0,'streak':0,'review':True}}}}
 def install(page):
- # Use the same import interaction as a real user, with no persistent init hooks.
  page.locator('#open-settings').click()
  page.locator('#restore-file').set_input_files({'name':'category-fixture.json','mimeType':'application/json','buffer':json.dumps(fixture(),ensure_ascii=False).encode('utf8')})
  page.locator('#confirm-ok').click()

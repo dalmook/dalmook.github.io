@@ -1,9 +1,10 @@
 // Pure domain rules. User input is never executed as HTML or code.
 import {BASE} from './words.mjs';
+import {validatePack,packWords,MAX_CACHED_PACKS} from './shared-model.mjs';
 export const SAVE_KEY='dopa-word-ko-v1';
 export const MAX_WORDS=3000;
-export const REVISION='word-1.1.0-categories';
-export const MAX_SESSION_WORDS=MAX_WORDS+BASE.length;
+export const REVISION='word-1.2.0-sharing';
+export const MAX_SESSION_WORDS=MAX_WORDS+BASE.length+MAX_CACHED_PACKS*500;
 export const MODE_NAMES={spell:'스펠링 맞히기',choice:'뜻 고르기'};
 export const LEVELS=[{id:0,name:'전체',note:'길이 무관'},{id:1,name:'첫 단어',note:'2~4글자'},{id:2,name:'기초',note:'5~6글자'},{id:3,name:'도전',note:'7글자 이상'}];
 export const normalWord=s=>String(s??'').normalize('NFKC').replace(/[’‘]/g,"'").replace(/[‐‑–—]/g,'-').trim().replace(/\s+/g,' ').toLowerCase();
@@ -20,13 +21,14 @@ export function validateWord(raw){
  const n=letters(word).length;
  return{value:{id:wordID(word),word,meaning,group,level:n<=4?1:n<=6?2:3,origin:'custom'}};
 }
-export function vocabulary(state){const map=new Map(BASE.map(w=>[w.id,w]));for(const w of state.custom)map.set(w.id,w);return [...map.values()];}
-export function freshState(){return{app:'dopa-word',version:1,revision:0,xp:0,answered:0,correct:0,sessions:0,bestCombo:0,custom:[],progress:{},days:{},history:[],settings:{mode:'spell',source:'base',level:1,groups:[],count:10,volume:55,motion:1,muted:false,palette:'pink',costume:'',theme:'classic',song:'classic'}};}
+export function vocabulary(state){const map=new Map(BASE.map(w=>[w.id,w]));for(const w of state.custom)map.set(w.id,w);return [...map.values(),...(state.sharedPacks||[]).flatMap(packWords)];}
+export function freshState(){return{app:'dopa-word',version:1,revision:0,xp:0,answered:0,correct:0,sessions:0,bestCombo:0,custom:[],sharedPacks:[],progress:{},days:{},history:[],settings:{mode:'spell',source:'base',level:1,groups:[],count:10,volume:55,motion:1,muted:false,palette:'pink',costume:'',theme:'classic',song:'classic'}};}
 const integer=(n,max=1e8)=>Number.isFinite(Number(n))?Math.max(0,Math.min(max,Math.floor(Number(n)))):0;
 export function sanitizeState(raw){
  const s=freshState();if(!raw||typeof raw!=='object'||Array.isArray(raw))return s;
  for(const k of ['revision','xp','answered','correct','sessions','bestCombo'])s[k]=integer(raw[k]);s.correct=Math.min(s.correct,s.answered);
  const map=new Map();for(const r of (Array.isArray(raw.custom)?raw.custom:[]).slice(0,MAX_WORDS)){const v=validateWord(r).value;if(v)map.set(v.id,v);}s.custom=[...map.values()];
+ const packs=new Map();for(const rawPack of (Array.isArray(raw.sharedPacks)?raw.sharedPacks:[]).slice(0,MAX_CACHED_PACKS)){try{const p=validatePack(rawPack);packs.set(p.id,p);}catch{}}s.sharedPacks=[...packs.values()];
  const known=new Map(vocabulary(s).map(w=>[w.id,signature(w)]));
  if(raw.progress&&typeof raw.progress==='object')for(const [id,p] of Object.entries(raw.progress)){
   if(!known.has(id)||!p||p.signature!==known.get(id))continue;const out={signature:p.signature};
@@ -34,7 +36,7 @@ export function sanitizeState(raw){
  }
  if(raw.days&&typeof raw.days==='object')for(const [day,v] of Object.entries(raw.days).sort().slice(-366)){if(/^\d{4}-\d{2}-\d{2}$/.test(day)&&v&&typeof v==='object')s.days[day]={answered:integer(v.answered),correct:integer(v.correct)};}
  s.history=(Array.isArray(raw.history)?raw.history:[]).slice(-50).filter(v=>v&&['spell','choice'].includes(v.mode)).map(v=>({mode:v.mode,total:integer(v.total,MAX_SESSION_WORDS),correct:Math.min(integer(v.correct,MAX_SESSION_WORDS),integer(v.total,MAX_SESSION_WORDS)),day:cleanText(v.day).slice(0,10)}));
- const o=raw.settings||{},d=s.settings;for(const [key,allowed] of Object.entries({mode:['spell','choice'],source:['base','custom','all'],palette:['pink','blue','yellow','mint','violet','gold','snow','rainbow'],costume:['','cap','glasses','ribbon','headphones','cape','wizard','crown'],theme:['classic','night','sea','space','festival','paper'],song:['classic','chip','matsuri','brass','electro']}))if(allowed.includes(o[key]))d[key]=o[key];
+ const o=raw.settings||{},d=s.settings;for(const [key,allowed] of Object.entries({mode:['spell','choice'],source:['base','custom','shared','all'],palette:['pink','blue','yellow','mint','violet','gold','snow','rainbow'],costume:['','cap','glasses','ribbon','headphones','cape','wizard','crown'],theme:['classic','night','sea','space','festival','paper'],song:['classic','chip','matsuri','brass','electro']}))if(allowed.includes(o[key]))d[key]=o[key];
  if([0,1,2,3].includes(Number(o.level)))d.level=Number(o.level);if([0,10,20,30].includes(Number(o.count)))d.count=Number(o.count);if([0,.45,1].includes(Number(o.motion)))d.motion=Number(o.motion);if(o.volume!==undefined)d.volume=integer(o.volume,100);d.muted=!!o.muted;d.groups=[...new Set((Array.isArray(o.groups)?o.groups:[]).filter(x=>typeof x==='string'&&x.length<=30))];return s;
 }
 export function loadState(storage){try{return sanitizeState(JSON.parse(storage.getItem(SAVE_KEY)||'null'));}catch{return freshState();}}
@@ -50,7 +52,7 @@ export function eligible(s,{review=false}={}){return vocabulary(s).filter(w=>rev
 // intersection with a hidden previous "base / first words" selection.
 export function categoryCatalog(s){
  const map=new Map();for(const w of vocabulary(s)){
-  if(!map.has(w.group))map.set(w.group,{name:w.group,total:0,custom:0,base:0});
+  if(!map.has(w.group))map.set(w.group,{name:w.group,total:0,custom:0,base:0,shared:0});
   const c=map.get(w.group);c.total++;c[w.origin]++;
  }
  return [...map.values()].sort((a,b)=>Number(b.custom>0)-Number(a.custom>0));
