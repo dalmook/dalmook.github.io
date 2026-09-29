@@ -1,8 +1,8 @@
 name: Verify sustained vocabulary performance
 on:
   push:
-    branches: [main, fix/dopa-word-performance]
-    paths: ['dopa-word/**', '.github/word-performance-integration.py', '.github/workflows/dopa-word-performance.yml']
+    branches: [main]
+    paths: ['dopa-word/**', '.github/workflows/dopa-word-performance.yml']
   pull_request:
     paths: ['dopa-word/**', '.github/workflows/dopa-word-performance.yml']
   workflow_dispatch:
@@ -15,21 +15,17 @@ jobs:
   performance:
     runs-on: ubuntu-latest
     timeout-minutes: 12
-    permissions:
-      contents: write
     steps:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
+          persist-credentials: false
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
-      - name: Apply exact-source integration on feature branch only
-        if: github.ref == 'refs/heads/fix/dopa-word-performance' && hashFiles('.github/word-performance-integration.py') != ''
-        run: python .github/word-performance-integration.py
       - name: Unit, resource bounds and unchanged original assets
         run: |
           mkdir -p qa/performance
@@ -54,13 +50,6 @@ jobs:
         env:
           WORD_OUT: qa/performance/arms
         run: python dopa-word/tests/choice_arm_browser.py
-      - name: Save tested integration and remove temporary patch
-        if: github.ref == 'refs/heads/fix/dopa-word-performance' && hashFiles('.github/word-performance-integration.py') != ''
-        run: |
-          git add dopa-word/app.mjs dopa-word/scene.mjs dopa-word/choice-motion.mjs dopa-word/choice-motion.css dopa-word/word.css dopa-word/index.html
-          git rm .github/word-performance-integration.py
-          git -c user.name='github-actions[bot]' -c user.email='41898282+github-actions[bot]@users.noreply.github.com' commit -m 'perf(word): integrate verified audio scheduling and render budgets'
-          git push origin HEAD:fix/dopa-word-performance
       - name: Wait for exact public performance revision
         if: github.ref == 'refs/heads/main'
         run: |
