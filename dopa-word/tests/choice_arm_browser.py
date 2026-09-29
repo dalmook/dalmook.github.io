@@ -1,6 +1,5 @@
-"""Exercise real original arm geometry and delayed choice transactions.
-Short-lived lock states are sampled inside the input event/rAF, not by slow
-successive RPCs. Touch/click/keyboard still enter through the real UI.
+"""Verify real arm geometry and delayed choices; no animation/score mocks.
+Capture subsecond lock states inside events and rAF, not delayed test RPCs.
 """
 import json, os, pathlib, sys, traceback
 from playwright.sync_api import sync_playwright
@@ -26,8 +25,6 @@ def probe(page,index,event='click'):
         if(event==='keydown'&&e.key!==String(index+1))return;
         document.removeEventListener(event,observeInput);
         const r=b.getBoundingClientRect();p.source={x:r.x+r.width/2,y:r.y+r.height/2};
-        // Installed after app handlers: capture the synchronous selection lock,
-        // then attempt another selection during the very same event turn.
         p.input={phase:a.G.phase,results:a.G.results.length,disabled:document.querySelectorAll('#choices button:disabled').length};
         document.dispatchEvent(new KeyboardEvent('keydown',{key:String((index+1)%4+1),bubbles:true}));
         document.querySelector(`[data-choice="${(index+1)%4}"]`).click();
@@ -50,63 +47,62 @@ def verify_probe(page,name):
     check(name+': real engine reaches then carries before placement',{'reach','carry','placed'}<=set(s['stage'] for s in samples))
     moving=[s for s in samples if s['phase']=='choosing']
     check(name+': quiz stays visible, locked and uncommitted throughout motion',bool(moving) and all(s['choicesVisible'] and s['results']==0 and s['disabled']==4 for s in moving))
-    paths={h['path'] for s in moving for h in s['hands'] if h['job']}
-    check(name+': original SVG arm bends along multiple frames',len(paths)>3)
+    active=[h for s in moving for h in s['hands'] if h['job']]
+    paths={h['path'] for h in active}
+    # Reach, pickup and placement are three physically distinct poses even on a
+    # slow video-capturing software renderer. Assert geometry, not an FPS target.
+    spread=max((abs(a['x']-b['x'])+abs(a['y']-b['y']) for a in active for b in active),default=0)
+    check(name+': original arm renders distinct poses with substantial travel',len(paths)>=3 and spread>100)
     near=[h for s in samples for h in s['hands'] if ((h['x']-data['source']['x'])**2+(h['y']-data['source']['y'])**2)**.5<14]
-    check(name+': hand reaches the selected answer, not a decorative location',bool(near))
+    check(name+': hand reaches the actual selected answer',bool(near))
 def answer(page):
     i=page.evaluate('window.__word.G.options.findIndex(o=>o.correct)');page.locator(f'[data-choice="{i}"]').click();phase(page,'answered')
 try:
   with sync_playwright() as p:
     browser=p.chromium.launch(executable_path=os.getenv('CHROMIUM_PATH') or None,args=['--no-sandbox'])
     for width,height,touch in [(320,640,True),(390,844,True),(1280,800,False),(844,390,True)]:
-      ctx=browser.new_context(viewport={'width':width,'height':height},has_touch=touch,record_video_dir=str(OUT/'video'),record_video_size={'width':width,'height':height})
+      video_options={'record_video_dir':str(OUT/'video'),'record_video_size':{'width':width,'height':height}} if width==390 else {}
+      ctx=browser.new_context(viewport={'width':width,'height':height},has_touch=touch,**video_options)
       page=ctx.new_page();page.on('pageerror',lambda e:errors.append(str(e)));ready(page);launch_quiz(page)
       index=page.evaluate('window.__word.G.options.findIndex(o=>o.correct)');probe(page,index)
       button=page.locator(f'[data-choice="{index}"]')
       if touch:button.tap()
       else:button.click()
       phase(page,'answered');verify_probe(page,str(width))
-      check(str(width)+': one completed answer, no double-click score',page.evaluate('window.__word.G.results.length===1&&window.__word.G.results[0].clean'))
+      check(str(width)+': one completed answer despite simultaneous duplicate input',page.evaluate('window.__word.G.results.length===1&&window.__word.G.results[0].clean'))
       check(str(width)+': chosen meaning appears in receiver',page.locator('#choice-target span').inner_text()==page.locator('#answer-meaning').inner_text())
       check(str(width)+': temporary floating label cleaned up',page.locator('.choice-carry-label').count()==0)
-      video=page.video;ctx.close();video.save_as(str(OUT/(str(width)+'-selection.webm')))
+      video=page.video;ctx.close()
+      if video:video.save_as(str(OUT/(str(width)+'-selection.webm')))
     ctx=browser.new_context(viewport={'width':390,'height':844});page=ctx.new_page();page.on('pageerror',lambda e:errors.append(str(e)));ready(page);launch_quiz(page)
-    wrong=page.evaluate('window.__word.G.options.findIndex(o=>!o.correct)');probe(page,wrong,'keydown')
-    page.keyboard.press(str(wrong+1))
+    wrong=page.evaluate('window.__word.G.options.findIndex(o=>!o.correct)');probe(page,wrong,'keydown');page.keyboard.press(str(wrong+1))
     page.wait_for_function("window.__word.G.phase==='question'&&window.__word.G.mistakes===1",timeout=15000)
     verify_probe(page,'number-key-wrong')
-    check('wrong choice is disabled after arm finishes, other choices enabled',page.locator('#choices button:disabled').count()==1)
+    check('wrong choice disabled after arm finishes, other choices enabled',page.locator('#choices button:disabled').count()==1)
     check('wrong choice does not count as learned answer',page.evaluate('window.__word.G.results.length')==0)
     answer(page);check('corrected answer retains non-first-try grading',page.evaluate('!window.__word.G.results[0].clean'))
     for i in range(1,10):page.locator('#next').click();phase(page,'question');answer(page)
     page.locator('#next').click();phase(page,'result');check('10-word quiz completes with original score rule',page.locator('#score').inner_text()=='90')
-    page.locator('#screen-result [data-home]').click()
-    page.reload(wait_until='domcontentloaded',timeout=30000);page.wait_for_function("window.__word?.choiceMotionVersion==='choice-arm-1'")
+    page.locator('#screen-result [data-home]').click();page.reload(wait_until='domcontentloaded',timeout=30000);page.wait_for_function("window.__word?.choiceMotionVersion==='choice-arm-1'")
     check('completion and review remain saved after reload',page.evaluate('window.__word.state.history.at(-1).total===10&&window.__word.state.correct===9'))
-    launch_quiz(page);index=page.evaluate('window.__word.G.options.findIndex(o=>o.correct)')
-    before=page.evaluate('window.__word.state.answered')
+    launch_quiz(page);index=page.evaluate('window.__word.G.options.findIndex(o=>o.correct)');before=page.evaluate('window.__word.state.answered')
     page.evaluate('''(i)=>{document.querySelector(`[data-choice="${i}"]`).click();document.querySelector('#leave').click();}''',index)
     page.wait_for_timeout(700);check('exit prompt cancels in-flight grading',page.evaluate('window.__word.state.answered')==before)
     page.locator('#confirm-dialog [data-close]').click();phase(page,'question');answer(page)
     check('continue after cancellation still permits selection',page.evaluate('window.__word.G.results.length')==1)
-    page.locator('#next').click();phase(page,'question')
-    index=page.evaluate('window.__word.G.options.findIndex(o=>o.correct)')
+    page.locator('#next').click();phase(page,'question');index=page.evaluate('window.__word.G.options.findIndex(o=>o.correct)')
     page.evaluate('''(i)=>{document.querySelector(`[data-choice="${i}"]`).click();document.querySelector('#leave').click();document.querySelector('#confirm-ok').click();}''',index)
-    phase(page,'result');page.wait_for_timeout(700)
-    check('leaving mid-reach cannot add a stale result',page.evaluate('window.__word.G.results.length')==1)
-    check('leaving removes arm label and pending transaction',page.locator('.choice-carry-label').count()==0 and page.evaluate('window.__word.choiceMotion.pending===null'))
-    ctx.close()
+    phase(page,'result');page.wait_for_timeout(700);check('leaving mid-reach cannot add a stale result',page.evaluate('window.__word.G.results.length')==1)
+    check('leaving removes arm label and pending transaction',page.locator('.choice-carry-label').count()==0 and page.evaluate('window.__word.choiceMotion.pending===null'));ctx.close()
     for motion in ['0','0.45']:
       ctx=browser.new_context(viewport={'width':390,'height':844});page=ctx.new_page();page.on('pageerror',lambda e:errors.append(str(e)));ready(page)
       page.locator('#open-settings').click();page.locator('#set-motion').select_option(motion);page.locator('#settings button[value="close"]').click();launch_quiz(page);answer(page)
       check('motion '+motion+': selection still graded once',page.evaluate('window.__word.G.results.length===1&&window.__word.G.results[0].clean'))
-      check('motion '+motion+': temporary nodes do not leak',page.locator('.choice-carry-label').count()==0)
-      ctx.close()
+      check('motion '+motion+': temporary nodes do not leak',page.locator('.choice-carry-label').count()==0);ctx.close()
     ctx=browser.new_context(viewport={'width':390,'height':700});page=ctx.new_page();page.on('pageerror',lambda e:errors.append(str(e)));ready(page);launch_quiz(page)
     index=page.evaluate('window.__word.G.options.findIndex(o=>o.correct)');page.locator(f'[data-choice="{index}"]').click();page.set_viewport_size({'width':844,'height':390});phase(page,'answered')
-    check('viewport rotation does not lose choice or lock controls',page.evaluate('window.__word.G.results.length===1'))
-    ctx.close();check('no JavaScript runtime errors',not errors);browser.close()
+    check('viewport rotation does not lose choice or lock controls',page.evaluate('window.__word.G.results.length===1'));ctx.close()
+    check('no JavaScript runtime errors',not errors);browser.close()
 except Exception as exc:
     errors.append(str(exc));traceback.print_exc()
     try:page.screenshot(path=str(OUT/'failure.png'),timeout=5000)
