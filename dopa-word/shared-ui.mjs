@@ -3,7 +3,7 @@ const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;'
 const $=id=>document.getElementById(id);
 const SOURCE='https://raw.githubusercontent.com/'+PUBLIC_REPO+'/main/'+CATALOG_PATH;
 export function installSharing(api){
- let catalog={schema:1,updatedAt:'',packs:[]},incoming=null,loading=false,sourceLabel='',lastRefresh=0;
+ let catalog={schema:1,updatedAt:'',packs:[]},incoming=null,loading=false,sourceLabel='',lastRefresh=0,hashGeneration=0;
  const requested=new URLSearchParams(location.search).get('pack');
  const entryBase=()=>{const u=new URL(location.href);u.search='';u.hash='';return u.href;};
  function activePacks(){return catalog.packs.filter(p=>p.status==='public');}
@@ -88,12 +88,18 @@ export function installSharing(api){
   }catch(err){api.toast(err.message);}
  });
  function open(){api.setView('shared');render();load();}
+ async function openHash(){
+  const hash=location.hash,turn=++hashGeneration;incoming=null;
+  if(!hash.startsWith('#words=')){render();return;}
+  api.setView('shared');render();$('shared-status').textContent='공유 링크를 읽는 중…';
+  try{const pack=await decodeShare(hash);if(turn!==hashGeneration||location.hash!==hash)return;incoming=pack;render();$('shared-status').textContent='링크 내용을 불러왔어요. 로그인 없이 바로 학습할 수 있어요.';}
+  catch(err){if(turn!==hashGeneration)return;$('shared-status').textContent=err.message;render();}
+ }
  $('open-shared').onclick=open;$('refresh-shared').onclick=()=>load(true);$('shared-search').oninput=render;
  window.__word.sharing={load,open,get catalog(){return catalog;},get incoming(){return incoming;}};
- if(location.hash.startsWith('#words=')){
-  api.setView('shared');$('shared-status').textContent='공유 링크를 읽는 중…';
-  decodeShare(location.hash).then(pack=>{incoming=pack;render();$('shared-status').textContent='링크 내용을 불러왔어요. 로그인 없이 바로 학습할 수 있어요.';}).catch(err=>{$('shared-status').textContent=err.message;render();});
- }else if(requested){api.setView('shared');if(validPackID(requested))load();else $('shared-status').textContent='단어장 링크의 번호가 올바르지 않아요.';}
+ window.addEventListener('hashchange',openHash);
+ if(location.hash.startsWith('#words='))openHash();
+ else if(requested){api.setView('shared');if(validPackID(requested))load();else $('shared-status').textContent='단어장 링크의 번호가 올바르지 않아요.';}
  else if(new URLSearchParams(location.search).get('view')==='shared'){open();}
  document.documentElement.dataset.sharingReady='true';
 }
