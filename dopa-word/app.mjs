@@ -2,16 +2,17 @@ import {BASE,TOPICS} from './words.mjs';
 import {installSharing} from './shared-ui.mjs';
 import {rememberPack,sharedGroup} from './shared-model.mjs';
 import {Scene} from './scene.mjs';
+import {ChoiceMotion, CHOICE_MOTION_VERSION} from './choice-motion.mjs';
 import {dopakichiSVG} from './vendor/dopakichi.js';
 import {SAVE_KEY,REVISION,LEVELS,MODE_NAMES,letters,normalWord,escapeHTML as esc,vocabulary,freshState,loadState,saveState,eligible,makeDeck,makeChoices,overlap,progressOf,recordAnswer,upsertWord,removeWord,parseImport,planImport,applyImport,exportCSV,parseBackup,dayKey,categoryCatalog,selectCategories,chooseCategoryMode,plannedCount} from './model.mjs?v=shared-1';
 const $=id=>document.getElementById(id),$$=s=>[...document.querySelectorAll(s)];
 let storage;try{storage=localStorage;}catch{storage={getItem:()=>null,setItem:()=>{throw Error('storage');}};}
 let state=loadState(storage),baseRevision=state.revision,stale=false,storageWarned=false;
 try{if(!storage.getItem(SAVE_KEY)&&matchMedia('(prefers-reduced-motion: reduce)').matches)state.settings.motion=0;}catch{}
-const scene=new Scene();const G={screen:'title',phase:'idle',token:0,deck:[],i:0,results:[],mode:'spell',review:false,combo:0,peak:0,xp:0,buffer:'',mistakes:0,assisted:false,options:[],rejected:new Set(),limit:35};
+const scene=new Scene();const choiceMotion=new ChoiceMotion(scene);const G={screen:'title',phase:'idle',token:0,deck:[],i:0,results:[],mode:'spell',review:false,combo:0,peak:0,xp:0,buffer:'',mistakes:0,assisted:false,options:[],rejected:new Set(),limit:35};
 let checkTimer=0,toastTimer=0,editID=null,importPlan=null,confirmAction=null;
 // Read-only by convention, provided for diagnostics and deterministic browser tests.
-window.__word={G,scene,base:BASE,get state(){return state;},get words(){return vocabulary(state);},revision:REVISION};
+window.__word={G,scene,choiceMotion,choiceMotionVersion:CHOICE_MOTION_VERSION,base:BASE,get state(){return state;},get words(){return vocabulary(state);},revision:REVISION};
 function toast(text){clearTimeout(toastTimer);$('toast').textContent=text;$('toast').hidden=false;toastTimer=setTimeout(()=>$('toast').hidden=true,4000);}
 function ask(title,text,action){$('confirm-title').textContent=title;$('confirm-text').textContent=text;confirmAction=action;$('confirm-dialog').showModal();}
 function conflict(){stale=true;clearTimeout(checkTimer);if(!$('confirm-dialog').open)ask('다른 탭에서 기록이 바뀌었어요','덮어쓰지 않도록 저장을 멈췄어요. 새로 불러오면 다른 탭의 기록을 이어서 사용할 수 있어요.',()=>location.reload());}
@@ -22,7 +23,7 @@ function persist({force=false}={}){
 }
 window.addEventListener('storage',e=>{if(e.key===SAVE_KEY)conflict();});
 function usable(){if(stale){toast('다른 탭의 기록을 보존하려면 새로고침해 주세요.');return false;}return true;}
-function setView(name){clearTimeout(checkTimer);G.screen=name;G.token++;$$('.screen').forEach(el=>el.classList.toggle('is-active',el.id==='screen-'+name));scene.setScreen(name);}
+function setView(name){clearTimeout(checkTimer);G.screen=name;G.token++;choiceMotion.reset();$$('.screen').forEach(el=>el.classList.toggle('is-active',el.id==='screen-'+name));scene.setScreen(name);}
 function home(){G.phase='idle';setView('title');renderHome();}
 function reviewWords(){return eligible(state,{review:true});}
 function rank(){return state.xp>=3000?'단어 마스터':state.xp>=1000?'영어 탐험가':state.xp>=300?'단어 수집가':'새싹 탐험가';}
@@ -52,8 +53,8 @@ function start(review=false){
 function current(){return G.deck[G.i];}
 function hud(){ $('qno').textContent=`${G.i+1} / ${G.deck.length}`;$('correct-count').textContent=G.results.filter(r=>r.clean).length;$('combo').textContent=G.combo;$('energy-number').textContent=G.results.length*100+G.results.filter(r=>r.clean).length*50;$$('#pips .pip').forEach((p,j)=>{const i=Math.floor(G.i/30)*30+j;p.hidden=i>=G.deck.length;p.classList.toggle('now',i===G.i);p.classList.toggle('good',G.results[i]?.clean===true);p.classList.toggle('helped',G.results[i]?.clean===false);});}
 function question(){
- if(G.i>=G.deck.length){finish();return;}clearTimeout(checkTimer);scene.stopSpeech();G.token++;G.phase='question';G.buffer='';G.mistakes=0;G.assisted=false;G.rejected=new Set();const w=current();
- $('screen-play').classList.remove('answered');$('screen-play').scrollTop=0;$('answer-panel').hidden=true;$('feedback').textContent='';$('qgroup').textContent=w.group;$('mode-label').textContent=MODE_NAMES[G.mode];$('question').classList.toggle('english',G.mode==='choice');$('question').lang=G.mode==='choice'?'en':'ko';$('question').textContent=G.mode==='spell'?w.meaning:w.word;
+ if(G.i>=G.deck.length){finish();return;}clearTimeout(checkTimer);scene.stopSpeech();G.token++;choiceMotion.reset(G.mode);G.phase='question';G.buffer='';G.mistakes=0;G.assisted=false;G.rejected=new Set();const w=current();
+ $('screen-play').classList.remove('answered','choosing');$('choices').setAttribute('aria-busy','false');$('screen-play').scrollTop=0;$('answer-panel').hidden=true;$('feedback').textContent='';$('qgroup').textContent=w.group;$('mode-label').textContent=MODE_NAMES[G.mode];$('question').classList.toggle('english',G.mode==='choice');$('question').lang=G.mode==='choice'?'en':'ko';$('question').textContent=G.mode==='spell'?w.meaning:w.word;
  $('spell-controls').hidden=G.mode!=='spell';$('choices').hidden=G.mode!=='choice';$('choice-note').hidden=G.mode!=='choice';$('letter-slots').hidden=G.mode!=='spell';
  if(G.mode==='spell'){
   const ambiguous=vocabulary(state).some(v=>v.id!==w.id&&letters(v.word).length===letters(w.word).length&&overlap(w.meaning,v.meaning));
@@ -82,7 +83,26 @@ function submit(){
 }
 function hint(){if(G.phase!=='question'||G.mode!=='spell'||!usable())return;clearTimeout(checkTimer);G.assisted=true;const target=letters(current().word);let n=0;while(n<G.buffer.length&&target[n]===G.buffer[n])n++;G.buffer=target.slice(0,n+1);drawSlots();$('feedback').textContent='한 글자 도와줬어요. 나머지도 채워 볼까요?';scene.tap(n);if(G.buffer===target)complete();}
 function reveal(){if(G.phase!=='question'||!usable())return;clearTimeout(checkTimer);G.assisted=true;G.buffer=letters(current().word);complete();}
-function choose(index,el){if(G.phase!=='question'||G.mode!=='choice'||!usable()||document.querySelector('dialog[open]'))return;const opt=G.options[index];if(!opt||G.rejected.has(index))return;scene.tap(index);if(opt.correct){el?.classList.add('correct');complete();}else{G.rejected.add(index);G.mistakes++;if(el){el.classList.add('wrong');el.disabled=true;}$('feedback').textContent='다른 뜻이에요. 다시 골라 볼까요?';scene.wrong(el);}}
+async function choose(index,el){
+ if(G.phase!=='question'||G.mode!=='choice'||!usable()||document.hidden||document.querySelector('dialog[open]'))return;
+ const opt=G.options[index];if(!opt||G.rejected.has(index))return;
+ const button=el||document.querySelector(`[data-choice="${index}"]`);if(!button)return;
+ const token=G.token,wordID=current().id;
+ const sameQuestion=()=>G.screen==='play'&&G.mode==='choice'&&G.token===token&&current()?.id===wordID;
+ const isCurrent=()=>sameQuestion()&&G.phase==='choosing'&&!stale&&!document.querySelector('dialog[open]');
+ G.phase='choosing';$('screen-play').classList.add('choosing');$('choices').setAttribute('aria-busy','true');
+ $$('#choices button').forEach(b=>b.disabled=true);scene.tap(index);
+ let accepted=false;
+ try{accepted=await choiceMotion.play(button,index,opt.label,isCurrent);}
+ catch(error){console.error('Choice animation failed',error);toast('선택 동작을 다시 눌러 주세요. 학습 기록은 바뀌지 않았어요.');}
+ if(!sameQuestion()||G.phase!=='choosing')return;
+ G.phase='question';$('screen-play').classList.remove('choosing');$('choices').setAttribute('aria-busy','false');
+ $$('#choices button').forEach(b=>b.disabled=G.rejected.has(Number(b.dataset.choice)));
+ if(!accepted||stale)return;
+ choiceMotion.outcome(opt.correct);
+ if(opt.correct){button.classList.add('correct');complete();}
+ else{G.rejected.add(index);G.mistakes++;button.classList.add('wrong');button.disabled=true;$('feedback').textContent='다른 뜻이에요. 다시 골라 볼까요?';scene.wrong(button);}
+}
 function complete(){
  if(G.phase!=='question'||!usable())return;G.phase='answered';clearTimeout(checkTimer);const w=current(),clean=!G.assisted&&!G.mistakes;G.combo=clean?G.combo+1:0;G.peak=Math.max(G.peak,G.combo);const xp=recordAnswer(state,w,G.mode,clean,G.combo);G.xp+=xp;G.results.push({word:w,clean,assisted:G.assisted,mistakes:G.mistakes});persist();
  $('screen-play').classList.add('answered');$('spell-controls').hidden=true;$('choices').hidden=true;$('choice-note').hidden=true;$('answer-panel').hidden=false;$('answer-title').textContent=clean?'정답! 단어 하나 더 모았어요!':'잘 배웠어요! 복습에서 다시 만나요.';$('answer-word').textContent=w.word;$('answer-meaning').textContent=w.meaning;$('answer-note').textContent=clean?`+${xp} XP · ${G.combo}콤보`:`+${xp} XP · 힌트·오답 단어는 복습에 저장돼요.`;$('next').textContent=G.i+1===G.deck.length?'결과 보기 →':'다음 단어 →';
