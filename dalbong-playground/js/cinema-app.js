@@ -114,7 +114,7 @@ function head(title, sub = "", right = "") {
   return `<header class="page-head"><div>${sub ? `<p class="eyebrow">${sub}</p>` : ""}<h1>${title}</h1></div>${right}</header>`;
 }
 function select(name, label, items) {
-  return `<label class="select-row"><span>${icon(name === "place" ? "map-pin" : name === "players" ? "users" : "clock")} ${label}</span><select name="${name}">${[["", "상관없어요"], ...items].map(([v, t]) => `<option value="${v}" ${filters[name] === v ? "selected" : ""}>${t}</option>`).join("")}</select></label>`;
+  return `<label class="select-row"><span>${icon(name === "place" ? "map-pin" : name === "players" ? "users" : "clock")} ${label}</span><select name="${name}">${[["", "전체"], ...items].map(([v, t]) => `<option value="${v}" ${filters[name] === v ? "selected" : ""}>${t}</option>`).join("")}</select></label>`;
 }
 function basics() {
   return `${select(
