@@ -2537,12 +2537,15 @@ main:focus-visible {
 }
 .film-caption {
   bottom: 28px;
-  left: 17px;
-  right: 17px;
-  height: calc(27% - 32px);
+  left: 0;
+  right: 0;
+  min-height: calc(27% - 28px);
+  height: auto;
+  padding: 8px 17px 4px;
   display: flex;
   flex-direction: column;
   justify-content: center;
+  background: linear-gradient(180deg, #142b49ed, #142b49 32%);
 }
 .film-caption > span {
   align-self: flex-start;
@@ -2686,11 +2689,27 @@ p {
   word-break: keep-all;
 }
 .film-caption h2 {
-  overflow: auto;
-  scrollbar-width: thin;
-  max-height: 100%;
+  overflow: visible;
+  max-height: none;
+  flex-shrink: 0;
 }
 @media (max-width: 699px) {
+  /* Keep the illustration's 2:3 crop while giving every caption the
+     available screen width. The old narrow film hid long rules in a scrollbox. */
+  .film {
+    width: 100%;
+    aspect-ratio: auto;
+  }
+  .film-visual {
+    inset: 0 auto auto 50%;
+    height: 73%;
+    width: auto;
+    aspect-ratio: 2 / 3;
+    transform: translateX(-50%);
+  }
+  .film-caption {
+    padding-inline: 15px;
+  }
   .film-caption h2 {
     font-size: 18px;
   }
